@@ -22,6 +22,12 @@
 #      	       	       	      - Root name of the filter (e.g., *nc*_dods)
 #
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.12  1999/05/18 20:01:58  jimg
+# Fixed version feature and help feature so that they work with nph-*/version,
+# nph-*/version/, and nph-*/ (the latter for help).
+# Fixed the help message so that it does not say `Error...' (suggested by
+# the GCMD).
+#
 # Revision 1.11  1999/05/05 00:38:46  jimg
 # Fixed the help message so that it no longer says `Error'.
 # When a URL with no extension is used the help message, not the error message,
@@ -266,11 +272,11 @@ sub command {
 	$server_pgm .= " -v " . $self->{'caller_revision'} . " ";
 	$full_script = $cgi_dir . $script;
 	$command = $server_pgm . " " . $filename . " " . $full_script;
-    } elsif ($ext eq "ver" || $ext eq "/version") {
+    } elsif ($ext eq "ver" || $ext eq "/version" || $ext eq "/version/") {
 	$server_pgm = $cgi_dir . $script . "_dods";
 	$server_pgm .= " -v " . $self->{'caller_revision'} . " ";
 	$command = $server_pgm . " -V " . $filename;
-    } elsif ($ext eq "help" || $ext eq "/help" || $ext eq "") {
+    } elsif ($ext eq "help" || $ext eq "/help" || $ext eq "" || $ext eq "/") {
 	$self->print_help_message();
 	exit(0);
     } elsif ($ext eq "das" || $ext eq "dds") {
@@ -331,20 +337,28 @@ submitted should have worked), then please contact the\n";
 my $DODS_Local_Admin = "administrator of this site at: ";
 my $DODS_Support = "DODS user support coordinator at: ";
 
-my $DODS_Para2 = "\nThe URL sent to the server must include one of the
-following six file extensions: .das, .dds, .dods, .info, .ver or .help.
-The extensions tell the DODS server which object to return:<dl>
+my $DODS_Para2 = "To access most of the features of this DODS server, append
+one of the following a five suffixes to a URL: .das, .dds, .dods., .info,
+.ver or .help. Using these suffixes, you can ask this server for:<dl>
 <dt> das  <dd> attribute object
 <dt> dds  <dd> data type object
 <dt> dods <dd> data object
 <dt> info <dd> info object (attributes, types and other information)
 <dt> ver  <dd> return the version number of the server
-(dt> help <dd> help information (this text)</dl>
+<dt> help <dd> help information (this text)</dl>
+</dl>
+For example, to request the DAS object from the FNOC1 dataset at URI/GSO (a
+test dataset) you would appand `.das' to the URL: http://dods.gso.uri.edu/gi-bin/nph-nc/data/fnoc1.nc.das.
 
 <p><b>Note</b>: Many DODS clients supply these extensions for you so you don't
 need to append them (for example when using interfaces supplied by us or
 software re-linked with a DODS client-library). Generally, you only need to
 add these if you are typing a URL directly into a WWW browser.
+
+<p><b>Note</b>: If you would like version information for this server but
+don't know a specific data file or data set name, use `/version' for the
+filename. For example: http://dods.gso.uri.edu/cgi-bin/nph-nc/version will
+return the version number for the netCDF server used in the first example. 
 
 <p><b>Suggestion</b>: If you're typing this URL into a WWW browser and
 would like information about the dataset, use the `.info' extension\n";
