@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.74 2003/02/10 22:39:15 jimg Exp $
+# $Id: acinclude.m4,v 1.75 2003/02/28 00:56:15 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -238,6 +238,7 @@ AC_DEFUN(DODS_GCC_VERSION, [dnl
     case $GCC_VER in
         *egcs*) AC_MSG_RESULT(Found egcs version ${GCC_VER}.) ;;
 	2.[[7-9]]*)   AC_MSG_RESULT(Found gcc/g++ version ${GCC_VER}) ;;
+	3.[[0-9]]*)   AC_MSG_RESULT(Found gcc/g++ version ${GCC_VER}) ;;
         *)      AC_MSG_ERROR(must be at least version 2.7.x) ;;
     esac])
 
