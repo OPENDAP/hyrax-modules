@@ -1,0 +1,12 @@
+Usage: asciival [mngvVt] -- [<url> [-r <var>:<newvar> ...] ...]
+       m: Output a MIME header.
+       n: Turn on name canonicalization.
+       g: Use the GUI to show progress
+       v: Verbose output.
+       V: Print the version number and exit
+       t: Trace network I/O (HTTP, ...). See geturl
+       r: Per-URL name mappings; var becomes newvar.
+
+<url> may be a true URL, which asciival will dereference,
+it may be a local file or it may be standard input.
+In the later case use `-' for <url>.
