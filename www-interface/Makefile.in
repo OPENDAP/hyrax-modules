@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.1 1999/04/20 00:21:01 jimg Exp $
+# $Id: Makefile.in,v 1.2 1999/05/06 16:36:43 jimg Exp $
 
 @SET_MAKE@
 
@@ -20,6 +20,7 @@ LDFLAGS = @LDFLAGS@ -L. -L$(DODS_ROOT)/lib
 LFLAGS = -8
 YFLAGS = -d
 LIBS = -ldap++ @LIBS@
+TEST_COV_FLAGS = -ftest-coverage -fprofile-arcs
 TAGS_FLAGS = --include=../dap/TAGS
 
 # Set the instalation directories; prefix can be set on the command line
@@ -98,6 +99,23 @@ Makefile: ${srcdir}/Makefile.in
 # Tests
 
 check: 
+	@echo "No tests"
+
+test-coverage: clean
+	$(MAKE) $(MFLAGS) CXXFLAGS="$(CXXFLAGS) $(TEST_COV_FLAGS)" check
+
+# Note that the gcov options -f and -b are useful but sometimes make looking
+# at the results of coverage analysis a little taxing. -b reports on all
+# branched and -f reports on all functions. The -l -o options summarize on a
+# per-file basis. 3/27/98 jhrg
+collect-coverage-data:
+	(cd test-coverage; \
+         cov_dat="coverage-data-`date +%m.%d.%y`"; \
+	 touch $$cov_dat; \
+	 for f in $(ALLSRCS); do \
+	     echo "\n*** Coverage data for $$f ***\n" >> $$cov_dat; \
+	     gcov -l -o ../ $$f >> $$cov_dat; \
+         done)
 
 # these tests all fail when das-test is linked with -lnew_debug.
 
