@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.41 1998/08/11 17:49:36 jimg Exp $
+# $Id: acinclude.m4,v 1.42 1998/09/10 18:51:03 jehamby Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -174,6 +174,13 @@ AC_DEFUN(DODS_COMPRESSION_LIB, [dnl
     AC_CHECK_LIB(z, zlibVersion,
 		 HAVE_Z=1; LIBS="$LIBS -lz",
 		 packages="$packages libz"; HAVE_Z=1; LIBS="$LIBS -lz")
+    AC_SUBST(packages)])
+
+AC_DEFUN(DODS_RX_LIB, [dnl
+    AC_REQUIRE([DODS_PACKAGES_SUPPORT])
+    AC_CHECK_LIB(rx, rx_version_string,
+		 HAVE_RX=1; LIBS="$LIBS -lrx",
+		 packages="$packages libz"; HAVE_RX=1; LIBS="$LIBS -lrx")
     AC_SUBST(packages)])
 
 # Look for the web library. Then look for the include files. If the library
