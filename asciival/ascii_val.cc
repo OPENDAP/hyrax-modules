@@ -13,6 +13,9 @@
     @author: jhrg */
 
 // $Log: ascii_val.cc,v $
+// Revision 1.9  1999/05/18 20:59:32  jimg
+// Removed name_from_url(...) since int is never used.
+//
 // Revision 1.8  1999/04/30 17:06:56  jimg
 // Merged with no-gnu and release-2-24
 //
@@ -42,7 +45,7 @@
 
 #include "config_dap.h"
 
-static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.8 1999/04/30 17:06:56 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.9 1999/05/18 20:59:32 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -94,19 +97,6 @@ usage(string name)
 	 << "it may be a local file or it may be standard input." << endl
 	 << "In the later case use `-' for <url>."
 	 << endl;
-}
-
-static string
-name_from_url(string url)
-{
-    // find the last part of the URL (after the last `/') and then strip off
-    // the trailing extension (anything following the `.')
-    int start = url.rfind("/") + 1;
-    int end = url.rfind(".");
-    
-    string name = url.substr(start, end-start);
-
-    return name;
 }
 
 static void
