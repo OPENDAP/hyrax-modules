@@ -9,6 +9,12 @@
     @author: jhrg */
 
 // $Log: www_int.cc,v $
+// Revision 1.4  1999/11/05 00:12:23  jimg
+// Result of merge with 3-1-2
+//
+// Revision 1.3.2.1  1999/08/17 22:22:06  jimg
+// Final changes for the 3.1 build
+//
 // Revision 1.3  1999/06/22 17:14:19  jimg
 // Added links for help location.
 //
@@ -21,7 +27,7 @@
 
 #include "config_dap.h"
 
-static char rcsid[] not_used = {"$Id: www_int.cc,v 1.3 1999/06/22 17:14:19 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: www_int.cc,v 1.4 1999/11/05 00:12:23 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -43,9 +49,9 @@ static char rcsid[] not_used = {"$Id: www_int.cc,v 1.3 1999/06/22 17:14:19 jimg 
 
 #include "javascript.h"		// Try to hide this stuff...
 
-const char *VERSION = WWW_INT_VER;
+const char *version = WWW_INT_VER;
 #ifndef HELP_LOCATION
-const char *HELP_LOCATION = "http://dcz.dods.org/dods/";
+const char *HELP_LOCATION = "http://localhost/dods/";
 #endif
 DAS global_das;
 WWWOutput wo(cout);
@@ -254,7 +260,7 @@ main(int argc, char * argv[])
 	  case 'm': regular_header = true; break;
 	  case 'n': nph_header = true; break;
 	  case 'v': verbose = true; break;
-	  case 'V': {cerr << "WWW Interface version: " << VERSION << endl
+	  case 'V': {cerr << "WWW Interface version: " << version << endl
 			  << "DAP version: " << DVR << endl; exit(0);}
 	  case 't':
 	    trace = true;

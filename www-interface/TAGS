@@ -1,193 +1,188 @@
 
-WWWArray.cc,155
-NewArray(36,548
-WWWArray::ptr_duplicate(42,634
-WWWArray::WWWArray(47,697
-WWWArray::~WWWArray(51,765
-WWWArray::read(56,797
-WWWArray::print_val(63,883
+WWWArray.cc,156
+NewArray(42,676
+WWWArray::ptr_duplicate(48,762
+WWWArray::WWWArray(53,825
+WWWArray::~WWWArray(57,893
+WWWArray::read(62,925
+WWWArray::print_val(69,1011
 
 WWWByte.cc,126
-NewByte(45,1278
-WWWByte::WWWByte(50,1335
-WWWByte::ptr_duplicate(55,1395
-WWWByte::read(61,1461
-WWWByte::print_val(68,1546
+NewByte(51,1406
+WWWByte::WWWByte(56,1463
+WWWByte::ptr_duplicate(61,1523
+WWWByte::read(67,1589
+WWWByte::print_val(74,1674
 
 WWWFloat32.cc,139
-NewFloat32(27,444
-WWWFloat32::WWWFloat32(32,507
-WWWFloat32::ptr_duplicate(37,576
-WWWFloat32::read(43,649
-WWWFloat32::print_val(50,737
+NewFloat32(33,572
+WWWFloat32::WWWFloat32(38,635
+WWWFloat32::ptr_duplicate(43,704
+WWWFloat32::read(49,777
+WWWFloat32::print_val(56,865
 
 WWWFloat64.cc,139
-NewFloat64(29,481
-WWWFloat64::WWWFloat64(34,544
-WWWFloat64::ptr_duplicate(39,613
-WWWFloat64::read(45,686
-WWWFloat64::print_val(52,774
-
-WWWFunction.cc,148
-NewFunction(28,459
-WWWFunction::ptr_duplicate(36,549
-WWWFunction::WWWFunction(43,629
-WWWFunction::~WWWFunction(47,690
-WWWFunction::read(52,728
+NewFloat64(35,609
+WWWFloat64::WWWFloat64(40,672
+WWWFloat64::ptr_duplicate(45,741
+WWWFloat64::read(51,814
+WWWFloat64::print_val(58,902
 
 WWWGrid.cc,147
-NewGrid(31,502
-WWWGrid::ptr_duplicate(37,570
-WWWGrid::WWWGrid(42,631
-WWWGrid::~WWWGrid(46,680
-WWWGrid::read(51,710
-WWWGrid::print_val(58,794
+NewGrid(37,630
+WWWGrid::ptr_duplicate(43,698
+WWWGrid::WWWGrid(48,759
+WWWGrid::~WWWGrid(52,808
+WWWGrid::read(57,838
+WWWGrid::print_val(64,922
 
 WWWInt16.cc,127
-NewInt16(27,436
-WWWInt16::WWWInt16(32,495
-WWWInt16::ptr_duplicate(37,558
-WWWInt16::read(43,626
-WWWInt16::print_val(50,712
+NewInt16(33,564
+WWWInt16::WWWInt16(38,623
+WWWInt16::ptr_duplicate(43,686
+WWWInt16::read(49,754
+WWWInt16::print_val(56,840
 
 WWWInt32.cc,127
-NewInt32(29,473
-WWWInt32::WWWInt32(34,532
-WWWInt32::ptr_duplicate(39,595
-WWWInt32::read(45,663
-WWWInt32::print_val(52,749
+NewInt32(35,601
+WWWInt32::WWWInt32(40,660
+WWWInt32::ptr_duplicate(45,723
+WWWInt32::read(51,791
+WWWInt32::print_val(58,877
 
 WWWList.cc,147
-NewList(28,446
-WWWList::ptr_duplicate(34,530
-WWWList::WWWList(39,591
-WWWList::~WWWList(43,656
-WWWList::read(48,687
-WWWList::print_val(55,772
+NewList(34,574
+WWWList::ptr_duplicate(40,658
+WWWList::WWWList(45,719
+WWWList::~WWWList(49,784
+WWWList::read(54,815
+WWWList::print_val(61,900
 
-WWWOutput.cc,444
-WWWOutput::WWWOutput(19,340
-WWWOutput::write_html_header(25,453
-WWWOutput::write_disposition(35,739
-WWWOutput::write_attributes(56,1474
-WWWOutput::write_global_attributes(72,1824
-WWWOutput::write_variable_list(97,2390
-WWWOutput::write_variable_entries(112,2828
-WWWOutput::write_variable_attributes(132,3428
-fancy_typename(146,3813
-name_in_kill_file(205,5339
-downcase(213,5528
-name_is_global(223,5691
-write_simple_variable(231,5882
+WWWOutput.cc,445
+WWWOutput::WWWOutput(21,360
+WWWOutput::write_html_header(27,473
+WWWOutput::write_disposition(38,784
+WWWOutput::write_attributes(60,1629
+WWWOutput::write_global_attributes(76,1979
+WWWOutput::write_variable_list(101,2535
+WWWOutput::write_variable_entries(116,2977
+WWWOutput::write_variable_attributes(136,3581
+fancy_typename(150,3966
+name_in_kill_file(207,5444
+downcase(215,5633
+name_is_global(225,5796
+write_simple_variable(233,5987
 
-WWWSequence.cc,306
-extern DAS global_das;30,501
-extern WWWOutput wo;31,524
-NewSequence(34,557
-WWWSequence::ptr_duplicate(40,633
-WWWSequence::WWWSequence(45,702
-WWWSequence::~WWWSequence(49,763
-WWWSequence::read(54,802
-WWWSequence::length(61,889
-WWWSequence::is_simple_sequence(67,936
-WWWSequence::print_val(87,1340
+WWWSequence.cc,308
+extern DAS global_das;36,629
+extern WWWOutput wo;37,652
+NewSequence(40,685
+WWWSequence::ptr_duplicate(46,761
+WWWSequence::WWWSequence(51,830
+WWWSequence::~WWWSequence(55,891
+WWWSequence::read(60,930
+WWWSequence::length(67,1017
+WWWSequence::is_simple_sequence(73,1064
+WWWSequence::print_val(93,1468
 
 WWWStr.cc,115
-NewStr(32,523
-WWWStr::WWWStr(37,578
-WWWStr::ptr_duplicate(42,635
-WWWStr::read(48,699
-WWWStr::print_val(55,783
+NewStr(38,649
+WWWStr::WWWStr(43,704
+WWWStr::ptr_duplicate(48,761
+WWWStr::read(54,825
+WWWStr::print_val(61,909
 
-WWWStructure.cc,289
-extern DAS global_das;30,527
-extern WWWOutput wo;31,550
-NewStructure(34,584
-WWWStructure::ptr_duplicate(40,662
-WWWStructure::WWWStructure(45,733
-WWWStructure::~WWWStructure(49,797
-WWWStructure::read(57,938
-WWWStructure::print_val(67,1122
-WWWStructure::is_simple_structure(84,1611
+WWWStructure.cc,290
+extern DAS global_das;36,655
+extern WWWOutput wo;37,678
+NewStructure(40,712
+WWWStructure::ptr_duplicate(46,790
+WWWStructure::WWWStructure(51,861
+WWWStructure::~WWWStructure(55,925
+WWWStructure::read(63,1066
+WWWStructure::print_val(73,1250
+WWWStructure::is_simple_structure(90,1739
 
 WWWUInt16.cc,133
-NewUInt16(26,419
-WWWUInt16::WWWUInt16(31,480
-WWWUInt16::ptr_duplicate(36,546
-WWWUInt16::read(42,616
-WWWUInt16::print_val(49,703
+NewUInt16(32,547
+WWWUInt16::WWWUInt16(37,608
+WWWUInt16::ptr_duplicate(42,674
+WWWUInt16::read(48,744
+WWWUInt16::print_val(55,831
 
 WWWUInt32.cc,133
-NewUInt32(29,476
-WWWUInt32::WWWUInt32(34,537
-WWWUInt32::ptr_duplicate(39,603
-WWWUInt32::read(45,673
-WWWUInt32::print_val(52,760
+NewUInt32(35,604
+WWWUInt32::WWWUInt32(40,665
+WWWUInt32::ptr_duplicate(45,731
+WWWUInt32::read(51,801
+WWWUInt32::print_val(58,888
 
 WWWUrl.cc,68
-NewUrl(23,365
-WWWUrl::WWWUrl(28,420
-WWWUrl::ptr_duplicate(33,480
+NewUrl(29,493
+WWWUrl::WWWUrl(34,548
+WWWUrl::ptr_duplicate(39,608
 
-www_int.cc,292
-static char rcsid[15,247
-static char rcsid[] __unused__ 15,247
-const char *VERSION 35,593
-DAS global_das;36,622
-usage(40,671
-found_override(56,1137
-remove_mime_header(83,1773
-get_user_supplied_docs(123,3314
-process_trace_options(167,4216
-output_error_object(200,5322
-main(222,6136
+www_int.cc,294
+static char rcsid[35,863
+static char rcsid[] not_used 35,863
+const char *version 57,1312
+DAS global_das;58,1347
+usage(62,1396
+found_override(85,2247
+remove_mime_header(112,2883
+get_user_supplied_docs(152,4424
+process_trace_options(196,5326
+output_error_object(229,6432
+main(251,7246
 
 WWWArray.h,28
-#define _WWWArray_h 17,332
+#define _WWWArray_h 23,462
 
 WWWByte.h,27
-#define _WWWByte_h 18,377
+#define _WWWByte_h 24,507
 
 WWWFloat32.h,30
-#define _WWWFloat32_h 16,310
+#define _WWWFloat32_h 22,440
 
 WWWFloat64.h,30
-#define _WWWFloat64_h 16,310
-
-WWWFunction.h,31
-#define _WWWFunction_h 17,323
+#define _WWWFloat64_h 22,440
 
 WWWGrid.h,27
-#define _WWWGrid_h 17,311
+#define _WWWGrid_h 23,441
 
 WWWInt16.h,28
-#define _WWWInt16_h 17,311
+#define _WWWInt16_h 23,441
 
 WWWInt32.h,28
-#define _WWWInt32_h 17,311
+#define _WWWInt32_h 23,441
 
 WWWList.h,27
-#define _WWWList_h 17,302
+#define _WWWList_h 23,432
 
 WWWOutput.h,28
 #define __www_output_h5,40
 
 WWWSequence.h,31
-#define _WWWSequence_h 17,319
+#define _WWWSequence_h 23,449
 
 WWWStr.h,26
-#define _WWWStr_h 16,298
+#define _WWWStr_h 22,428
 
 WWWStructure.h,32
-#define _WWWStructure_h 17,322
+#define _WWWStructure_h 23,452
 
 WWWUInt16.h,29
-#define _WWWUInt16_h 17,314
+#define _WWWUInt16_h 23,444
 
 WWWUInt32.h,29
-#define _WWWUInt32_h 17,314
+#define _WWWUInt32_h 23,444
 
 WWWUrl.h,26
-#define _WWWUrl_h 16,298
+#define _WWWUrl_h 22,428
 
-../dap/TAGS,include
+javascript.h,28
+const string java_code 1,0
+
+version.h,0
+
+../../dap/TAGS,include

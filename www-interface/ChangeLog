@@ -1,3 +1,14 @@
+1999-11-04  James Gallagher  <jimg@dcz.dods.org>
+
+	* Merged: cvs update -j release-3-1-1 -j release-3-1, the next
+	merge should use -j release-3-1-2 -j release-3-1
+
+1999-11-03  James Gallagher  <jimg@dcz.dods.org>
+
+	* The help page is now stored at Unidata.
+
+	* Fixed IE5 bugs in the JavaScript code.
+
 1999-06-22  James Gallagher  <jimg@dcz.dods.org>
 
 	* FilterDirHTML is now called from DODS_Dispatch.pm.
