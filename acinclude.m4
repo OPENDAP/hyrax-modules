@@ -10,13 +10,13 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.28 1997/02/06 19:41:07 jimg Exp $
+# $Id: acinclude.m4,v 1.29 1997/02/10 06:19:54 jimg Exp $
 
 # Check for fill value usage.
 
 AC_DEFUN(DODS_FILLVALUES, [dnl
     AC_MSG_CHECKING(for fill value usage)
-    if test "${OLD_FILLVALUES-}" = yes
+    if test "${OLD_FILLVALUES-}" = "yes"
     then
         OLD_FILLVALUES=1
 	AC_DEFINE(OLD_FILLVALUES)
@@ -97,7 +97,7 @@ AC_DEFUN(DODS_PROG_LEX, [dnl
 	    flex_ver2=`echo $flex_ver1 | sed 's/\.//g'`
 	    if test -z $flex_ver2 -a $flex_ver2 -lt 252
 	    then
-		AC_MSG_WARN(Flex version: found ${flex_venr1} should be at least 2.5.2)
+		AC_MSG_ERROR(Flex version: found ${flex_venr1} should be at least 2.5.2)
 	    else
 		AC_MSG_RESULT(Found flex version ${flex_ver1}.)
 	    fi
@@ -107,7 +107,7 @@ AC_DEFUN(DODS_PROG_LEX, [dnl
 	    ;;
     esac])
 
-# Look for Bison version 1.22 or greater. Define DODS_BISON_VER to be the
+# Look for Bison version 1.24 or greater. Define DODS_BISON_VER to be the
 # version number without the decimal point.
 
 AC_DEFUN(DODS_PROG_BISON, [dnl
@@ -117,9 +117,9 @@ AC_DEFUN(DODS_PROG_BISON, [dnl
 	    bison_ver1=`bison -V 2>&1 | sed 's/[[^0-9]]*\(.*\)/\1/'`
 	    bison_ver2=`echo $bison_ver1 | sed 's/\.//g'`
 	    AC_DEFINE_UNQUOTED(DODS_BISON_VER, $bison_ver2)
-	    if test -z $bison_ver2 -a $bison_ver2 -lt 122
+	    if test -z $bison_ver2 -a $bison_ver2 -lt 124
 	    then
-		AC_MSG_WARN(Bison version: found ${bison_ver1} should be at least 1.22)
+		AC_MSG_ERROR(Bison version: found ${bison_ver1} should be at least 1.24)
 	    else
 		AC_MSG_RESULT(Found bison version ${bison_ver1}.)
 	    fi
@@ -146,6 +146,16 @@ AC_DEFUN(DODS_CHECK_GCC_DEBUG, [dnl
     else
 	AC_MSG_RESULT(supported)
     fi])
+
+# Look for the location of the g++ include directory
+
+AC_DEFUN(DODS_FIND_GPP_INC, [dnl
+    AC_MSG_CHECKING(for the g++ include directories)
+    specs=`gcc -v 2>&1`
+    dir=`echo $specs | sed 's@Reading specs from \(.*\)gcc-lib.*@\1@'`
+    GPP_INC="${dir}g++include"
+    AC_MSG_RESULT($GPP_INC)
+    AC_SUBST(GPP_INC)])
 
 dnl look for expect 5.21, 5.20 *or* 5.19. NB: 5.19 has a bug that DODS
 dnl exercises but there are patched version of the library out so many will
@@ -447,7 +457,7 @@ AC_DEFUN(DODS_MACHINE, [dnl
             ;;
         irix*)
             case $MACHINE in
-                ip20)
+                ip2?)
                     MACHINE=sgi
                     ;;
             esac
@@ -547,7 +557,7 @@ AC_DEFUN(DODS_CHECK_SIZES, [dnl
 
     AC_C_CROSS
 
-    if test "$cross_compiling" = yes
+    if test "$cross_compiling" = "yes"
     then
 	    case "$host" in
 	    *alpha*) ac_cv_sizeof_long=8
