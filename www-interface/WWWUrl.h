@@ -10,16 +10,8 @@
 //
 // 4/7/99 jhrg
 
-// $Log: WWWUrl.h,v $
-// Revision 1.2  1999/05/09 04:14:52  jimg
-// String --> string
-//
-// Revision 1.1  1999/04/20 00:21:05  jimg
-// First version
-//
-
-#ifndef _WWWUrl_h
-#define _WWWUrl_h 1
+#ifndef _wwwurl_h
+#define _wwwurl_h 1
 
 #ifdef __GNUG__
 #pragma interface
@@ -34,6 +26,17 @@ public:
 
     virtual BaseType *ptr_duplicate();
 };
+
+// $Log: WWWUrl.h,v $
+// Revision 1.3  2000/10/03 20:07:21  jimg
+// Moved Logs to the end of each file.
+//
+// Revision 1.2  1999/05/09 04:14:52  jimg
+// String --> string
+//
+// Revision 1.1  1999/04/20 00:21:05  jimg
+// First version
+//
 
 #endif
 

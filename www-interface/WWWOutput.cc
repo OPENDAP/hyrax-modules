@@ -1,13 +1,24 @@
 
+// (c) COPYRIGHT URI/MIT 1999,2000
+// Please read the full copyright statement in the file COPYRIGHT.
+//
+// Authors:
+//      jhrg,jimg       James Gallagher (jgallagher@gso.uri.edu)
+
+#ifdef __GNUG__
+#pragma implementation
+#endif
+
+#include "config_www_int.h"
+
+static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.5 2000/10/03 20:07:21 jimg Exp $"};
+
 #include <string>
 #include <iostream>
 #include <strstream.h>
 
 #include "Regex.h"
 
-#if 0
-#include "config_dap.h"
-#endif
 #include "BaseType.h"
 #include "Array.h"
 #include "List.h"
@@ -269,3 +280,8 @@ write_simple_variable(ostream &os, const string &name, const string &type)
     
     os << "<br>\n\n";
 }
+
+// $Log: WWWOutput.cc,v $
+// Revision 1.5  2000/10/03 20:07:21  jimg
+// Moved Logs to the end of each file.
+//

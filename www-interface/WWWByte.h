@@ -12,19 +12,8 @@
 //
 // 4/7/99 jhrg
 
-// $Log: WWWByte.h,v $
-// Revision 1.3  2000/10/02 22:42:44  jimg
-// Modified the read method to match the new definition in the dap
-//
-// Revision 1.2  1999/05/09 04:14:51  jimg
-// String --> string
-//
-// Revision 1.1  1999/04/20 00:21:02  jimg
-// First version
-//
-
-#ifndef _WWWByte_h
-#define _WWWByte_h 1
+#ifndef _wwwbyte_h
+#define _wwwbyte_h 1
 
 #ifdef __GNUG__
 #pragma interface
@@ -44,6 +33,20 @@ public:
     virtual void print_val(ostream &os, string space = "", 
 			   bool print_decl_p = true);
 };
+
+// $Log: WWWByte.h,v $
+// Revision 1.4  2000/10/03 20:07:20  jimg
+// Moved Logs to the end of each file.
+//
+// Revision 1.3  2000/10/02 22:42:44  jimg
+// Modified the read method to match the new definition in the dap
+//
+// Revision 1.2  1999/05/09 04:14:51  jimg
+// String --> string
+//
+// Revision 1.1  1999/04/20 00:21:02  jimg
+// First version
+//
 
 #endif
 

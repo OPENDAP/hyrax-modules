@@ -1,8 +1,14 @@
 
 // -*- C++ -*-
 
-#ifndef __www_output_h
-#define __www_output_h
+// (c) COPYRIGHT URI/MIT 1999
+// Please read the full copyright statement in the file COPYRIGHT.
+//
+// Authors:
+//      jhrg,jimg       James Gallagher (jgallagher@gso.uri.edu)
+
+#ifndef _www_output_h
+#define _www_output_h
 
 #include <string>
 #include <iostream>
@@ -97,5 +103,10 @@ void write_simple_variable(ostream &os, const string &name,
     @param v The variable.
     @return A string describing the variable's type. */
 string fancy_typename(BaseType *v);
+
+// $Log: WWWOutput.h,v $
+// Revision 1.2  2000/10/03 20:07:21  jimg
+// Moved Logs to the end of each file.
+//
 
 #endif // __www_output_h

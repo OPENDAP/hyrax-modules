@@ -8,32 +8,9 @@
 /** 
     @author: jhrg */
 
-// $Log: www_int.cc,v $
-// Revision 1.6  2000/10/03 18:41:44  jimg
-// Added exception handler to main().
-//
-// Revision 1.5  2000/10/02 22:42:06  jimg
-// Replaced DVR constant from config_dap.h with the dap_version function
-//
-// Revision 1.4  1999/11/05 00:12:23  jimg
-// Result of merge with 3-1-2
-//
-// Revision 1.3.2.1  1999/08/17 22:22:06  jimg
-// Final changes for the 3.1 build
-//
-// Revision 1.3  1999/06/22 17:14:19  jimg
-// Added links for help location.
-//
-// Revision 1.2  1999/05/09 04:14:52  jimg
-// String --> string
-//
-// Revision 1.1  1999/04/20 00:21:06  jimg
-// First version
-//
+#include "config_www_int.h"
 
-#include "config_dap.h"
-
-static char rcsid[] not_used = {"$Id: www_int.cc,v 1.6 2000/10/03 18:41:44 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: www_int.cc,v 1.7 2000/10/03 20:07:21 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -49,10 +26,9 @@ static char rcsid[] not_used = {"$Id: www_int.cc,v 1.6 2000/10/03 18:41:44 jimg 
 
 #include "BaseType.h"
 #include "Connect.h"
-#include "WWWOutput.h"
-
 #include "cgi_util.h"
 
+#include "WWWOutput.h"
 #include "javascript.h"		// Try to hide this stuff...
 
 const char *version = WWW_INT_VER;
@@ -371,3 +347,28 @@ main(int argc, char * argv[])
 
     return 0;
 }
+
+// $Log: www_int.cc,v $
+// Revision 1.7  2000/10/03 20:07:21  jimg
+// Moved Logs to the end of each file.
+//
+// Revision 1.6  2000/10/03 18:41:44  jimg
+// Added exception handler to main().
+//
+// Revision 1.5  2000/10/02 22:42:06  jimg
+// Replaced DVR constant from config_dap.h with the dap_version function
+//
+// Revision 1.4  1999/11/05 00:12:23  jimg
+// Result of merge with 3-1-2
+//
+// Revision 1.3.2.1  1999/08/17 22:22:06  jimg
+// Final changes for the 3.1 build
+//
+// Revision 1.3  1999/06/22 17:14:19  jimg
+// Added links for help location.
+//
+// Revision 1.2  1999/05/09 04:14:52  jimg
+// String --> string
+//
+// Revision 1.1  1999/04/20 00:21:06  jimg
+// First version
