@@ -43,7 +43,7 @@
 #
 # Options: -T: use Perl's taint mode.
 #
-# $Id: nph-dods.in,v 1.6 2003/01/23 00:44:34 jimg Exp $
+# $Id: nph-dods.in,v 1.7 2004/01/22 17:29:37 jimg Exp $
 
 # Force PATH. This should work for most UNIXs. Forcing PATH means that -T
 # (taint) won't complain about running programs. Perl will consider any
@@ -71,14 +71,10 @@ this should work, please contact the ";
 
 # The DODS_Dispatch object reads information from environment variables
 # and builds up a command based on the format of a DODS URL. 
-$dispatch = new DODS_Dispatch("DAP/@DAP_VERSION@",
-			      "support\@unidata.ucar.edu",
-			      "./dods.rc", ("jg"));
+$dispatch = new DODS_Dispatch("DAP/@DAP_VERSION@", "./dods.rc");
 
-# If gzip or compress are used to compress files, cache_dir should point to a
-# place where uncompressed copies of those files can be stored. The cache
-# size is set at 50Mb, but that can be changed below.
-$dispatch->cache_dir("/usr/tmp");
+# Note that the statistics 'stuff' has its own configuration file. That's
+# because we're just evaluating this feature. 07/22/03 jhrg
 
 # Small change: if there's a file called DODS_STATISTICS in the CWD, then
 # stats are on. The installServers script will create this in response to
@@ -118,11 +114,16 @@ else {
     $dispatch->machine_names();	# PERL Regex of names for this machine
 }
 
+# DODSter is part of an experimental system which is loosely based on
+# Napster call MODSter. MODSter is 'Napster for MODIS data.' If you'd like
+# more information, go to the NASA ESIP Federation web site and search for
+# MODSter. 07/22/03 jhrg
+
 my $dodster = is_dodster($dispatch->filename());
 my $compressed = is_compressed($dispatch->filename());
 
 if ($dodster || $compressed) {
-    purge_cache($dispatch->cache_dir(), 50); # 50 = cache size of 50Mb
+    purge_cache($dispatch->cache_dir(), $dispatch->cache_size());
 
     my ($cache_entity, $error);
     if ($dodster) {
@@ -149,6 +150,12 @@ if ($command[0] ne "") {		# if no error...
 }
 
 # $Log: nph-dods.in,v $
+# Revision 1.7  2004/01/22 17:29:37  jimg
+# Merged with release-3-4.
+#
+# Revision 1.6.4.1  2003/07/24 00:14:04  jimg
+# Now uses the new dods.rc configuration file.
+#
 # Revision 1.6  2003/01/23 00:44:34  jimg
 # Updated the copyrights on various source files. OPeNDAP is adopting the
 # GNU Lesser GPL.

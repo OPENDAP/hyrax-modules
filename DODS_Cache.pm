@@ -217,8 +217,7 @@ sub transfer_remote_file {
     my $url = shift;
     my $cache_entity = shift;
 
-    my $curl = "curl";
-    $curl = "../bin/curl" if (-e "../bin/curl");
+    my $curl = "./curl";
 
     my $transfer = $curl . " --silent --user anonymous:root\@dods.org " . $url . " |";
     my $buf;
@@ -363,6 +362,15 @@ if ($test) {
 1;
 
 # $Log: DODS_Cache.pm,v $
+# Revision 1.9  2004/01/22 17:29:37  jimg
+# Merged with release-3-4.
+#
+# Revision 1.8.4.1  2003/06/19 18:58:24  jimg
+# Fixed the use of curl. It was expecting to find curl in the bin directory.
+# That broke sites that used the installServers script (which they all should
+# be doing!). Now this code expects to find curl in the same place as all the
+# other server executables.
+#
 # Revision 1.8  2003/01/23 00:44:34  jimg
 # Updated the copyrights on various source files. OPeNDAP is adopting the
 # GNU Lesser GPL.

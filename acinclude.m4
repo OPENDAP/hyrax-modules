@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.78 2003/05/02 21:04:20 jimg Exp $
+# $Id: acinclude.m4,v 1.79 2004/01/22 17:29:37 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -136,6 +136,8 @@ AC_DEFUN(DODS_WWW_LIB, [dnl
 	# INCS="`$dods_root/bin/curl-config --cflags` $INCS"
 	# AC_SUBST(INCS)		# 09/20/02 jhrg
         LIBS="`$dods_root/bin/curl-config --libs` $LIBS"
+        # 2003/06/13 ERD - added result message
+        AC_MSG_RESULT([yes])
     else
 	AC_MSG_ERROR([Could not find curl-config!])
     fi])
@@ -144,9 +146,26 @@ AC_DEFUN(DODS_XML_LIB, [dnl
     AC_REQUIRE([DODS_GET_DODS_ROOT])
     AC_REQUIRE([DODS_PACKAGES_SUPPORT])
     AC_MSG_CHECKING([for libxml2 and its headers])
-    if test -n "`which xml2-config`"
+    # 2003/06/13 ERD - chaged to handle libxml2 distrib w/ DODS
+    # libxml2 NOT part of DODS distribution
+    #if test -n "`which xml2-config`"
+    # libxml2 IS part of DODS distribution
+    if test -x $dods_root/bin/xml2-config
     then
-        LIBS="`xml2-config --libs` $LIBS"
+        # libxml2 NOT part of DODS distribution
+        #INCS="`xml2-config --cflags` $INCS"
+        #LIBS="`xml2-config --libs` $LIBS"
+        # libxml2 IS part of DODS distribution
+        # INCS="`$dods_root/bin/xml2-config --cflags` $INCS"
+	#
+	# Don't use xml2-config to build INCS. It includes an absolute path
+	# which makes its way into the Makefile. This, in turn, puts an
+	# absolute path in the dependencies (why I don't really know, -MM 
+	# should not make dependencies for <> includes). 07/25/03 jhrg
+        INCS="-I../../include/libxml2 $INCS"
+        LIBS="`$dods_root/bin/xml2-config --libs` $LIBS"
+        AC_MSG_RESULT([yes])
+
     else
 	AC_MSG_ERROR([Could not find xml2-config!])
     fi])
@@ -350,8 +369,16 @@ AC_DEFUN(DODS_MATLAB, [dnl
     fi
 
     dnl Find the lib directory (which is named according to machine type).
-    matlab_lib_dir=`find ${MATLAB_ROOT}/extern/lib -name 'libmat*' -print \
-		    | sed 's@\(.*\)/libmat.*@\1@'`
+    AC_MSG_CHECKING(for matlab library dir)
+    if test -z "$MATLAB_LIB"
+    then
+        matlab_lib_dir=${MATLAB_LIB}
+    else
+        matlab_lib_dir=`find ${MATLAB_ROOT}/extern/lib -name 'libmat*' -print | sed '1q'`
+        matlab_lib_dir=`echo $matlab_lib_dir | sed 's@\(.*\)/libmat.*@\1@'`
+    fi
+    AC_MSG_RESULT($matlab_lib_dir)
+
     if test "$matlab_lib_dir"
     then
 	LDFLAGS="$LDFLAGS -L$matlab_lib_dir"
@@ -424,7 +451,7 @@ AC_DEFUN(DODS_DSP_ROOT, [dnl
 	LDFLAGS="$LDFLAGS -L\$(DSP_ROOT)/lib -L\$(DSP_ROOT)/shlib"
 	AC_MSG_RESULT(Set DSP root directory to $DSP_ROOT) 
     else
-        AC_MSG_WARN(not found!)
+        AC_MSG_ERROR(not found! see configure --help)
     fi])
 
 # Find IDL. 9/23/99 jhrg
@@ -444,7 +471,7 @@ AC_DEFUN(DODS_IDL, [dnl
 	# I think that the following 'if' fixes the symbolic link problem. 
 	# 05/02/03 jhrg 
         idl_loc=`which idl`
-	if echo $idl_loc | grep '.*->.*'
+	if echo `ls -l $idl_loc` | grep '.*->.*' > /dev/null 2>&1
 	then
             idl_loc=`ls -l $idl_loc | sed 's/.*->[ ]*\(.*\)$/\1/'`
 	fi
@@ -463,7 +490,7 @@ AC_DEFUN(DODS_IDL, [dnl
     IDL_LIBS=`(cd $IDL_ROOT; find . -name 'libidl.so' -print)`
     # Strip off the leading `.' (it's there because we ran find in the CWD) 
     # and the name of the library used to find the directory.
-    IDL_LIBS=`echo $IDL_LIBS | sed 's/\.\(.*\)\/libidl.so/\1/'`
+    IDL_LIBS=`echo $IDL_LIBS | sed 's/\.\(.*\)\/libidl.so/\1/' | sed '1q'`
     IDL_LIBS=${IDL_ROOT}${IDL_LIBS}
     AC_MSG_RESULT($IDL_LIBS)
     AC_SUBST(IDL_LIBS)])

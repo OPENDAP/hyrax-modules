@@ -39,13 +39,17 @@ export SERVER_PORT=80
 
 #PATH_INFO="/data/"
 #PATH_INFO="/data/hdf/S3096277.HDF.Z.dds"
-PATH_INFO="/data/nc/fnoc1.nc.das"
+
+PATH_INFO="/data/nc/fnoc1.nc.ddx"
+
+#PATH_INFO="/data/nc/fnoc1.nc.dods"
+
 export PATH_INFO
 
-SCRIPT_NAME="/dods-trunk/nph-dods"
+SCRIPT_NAME="/dods-3.4/nph-dods"
 export SCRIPT_NAME
 
-QUERY_STRING=""
+QUERY_STRING="u"
 export QUERY_STRING
 
 PATH_TRANSLATED="/var/www/html${PATH_INFO}"

@@ -57,7 +57,7 @@ use read_config;
 use dods_logging;
 use DODS_Cache;
 
-my $debug = 1;
+my $debug = 0;
 my $test = 0;
 
 # Error message for bad extensions.
@@ -281,6 +281,7 @@ information. If you think this is a server problem please contanct the\n");
     if ($ENV{QUERY_STRING} ne "") {
 	$request .= "?" . $ENV{QUERY_STRING};
     }
+
     if ($self->{ext} eq "/") {
 	if ($request !~ m@^.*$ext$@) {
 	    $request .= $ext;
@@ -1135,6 +1136,12 @@ if ($test) {
 1;
 
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.41  2004/01/22 17:29:13  jimg
+# Merged with release-3-4.
+#
+# Revision 1.37.2.16  2004/01/12 20:06:49  jimg
+# Turned off debugging for release of 3.4.
+#
 # Revision 1.40  2003/12/20 07:31:33  jimg
 # Resolved conflicts with the merge of release-3-4.
 #
@@ -1145,7 +1152,8 @@ if ($test) {
 # Oops... Forgot to escape the '@' in a string.
 #
 # Revision 1.37.2.14  2003/11/21 20:12:05  jimg
-# Fixed the error message produced when there's no valid URL suffix. See bug 680.
+# Fixed the error message produced when there's no valid URL suffix. See bug
+# 680. 
 #
 # Revision 1.37.2.13  2003/11/21 19:43:47  jimg
 # Fixed the fix for the deflate bug (673). If the value of ACCEPT_ENCODING is
@@ -1172,9 +1180,9 @@ if ($test) {
 # Revision 1.37.2.8  2003/06/23 23:29:36  jimg
 # Fixed bug 625. When directory indexes were made using a URL that lacked a
 # trailing slash, the filtered HTML was missing the last component of the
-# pathname for filename links. Really odd. The initialize() function needs to be
-# broken out into separate functions and probably so does comment(). There are
-# too many places where initialize() depends on the value of a variable set
+# pathname for filename links. Really odd. The initialize() function needs to
+# be broken out into separate functions and probably so does comment(). There
+# are too many places where initialize() depends on the value of a variable set
 # twenty of more lines previously while computing some unrelated value.
 #
 # Revision 1.37.2.7  2003/06/18 20:11:43  jimg
@@ -1215,7 +1223,8 @@ if ($test) {
 #
 # Revision 1.37  2003/05/02 16:28:45  jimg
 # Switched to a DODS-specific log for the diagnostic messages. Also, boosted
-# the filtering of environment variables so that taint mode works with perl 5.8.
+# the filtering of environment variables so that taint mode works with perl
+# 5.8.
 #
 # Revision 1.36  2003/04/28 23:56:08  jimg
 # Fixes for Perl 5.8.0 taint mode. 5.8 seems to be stricter about tainted
