@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.8 1996/08/09 18:42:40 jimg Exp $
+# $Id: acinclude.m4,v 1.9 1996/08/15 20:39:07 jimg Exp $
 
 # Check for fill value usage.
 
@@ -254,3 +254,26 @@ AC_DEFUN(DODS_WWW_LIBRARY, [dnl
 	    LDFLAGS="$LDFLAGS -L${WWW_LIB}"
 	    AC_SUBST(LDFLAGS)
     fi])
+
+AC_DEFUN(DODS_SEM, [dnl
+
+    AC_CHECK_HEADERS(sys/sem.h, found=1, found=0)
+    if test $found -eq 1
+    then
+        AC_CHECKING(Looking at semaphore features in sem.h)
+        if grep 'extern int  *semctl(' /usr/include/sys/sem.h >/dev/null 2>&1
+        then
+            AC_DEFINE(HAVE_SEM_PROTO, 1)
+        else
+            AC_DEFINE(HAVE_SEM_PROTO, 0)
+        fi
+
+        if grep 'union semun  *{' /usr/include/sys/sem.h >/dev/null 2>&1
+        then
+           AC_DEFINE(HAVE_SEM_UNION, 1)
+        else
+           AC_DEFINE(HAVE_SEM_UNION, 0)
+        fi
+    fi])
+
+
