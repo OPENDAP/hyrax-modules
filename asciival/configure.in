@@ -1,7 +1,7 @@
 
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.in,v 1.7 1998/02/05 20:14:52 jimg Exp $)
+AC_REVISION($Id: configure.in,v 1.8 1998/02/19 20:16:46 jimg Exp $)
 AC_INIT(write_val.cc)
 AC_CONFIG_HEADER(config_writeval.h)
 AC_CONFIG_AUX_DIR(../../etc)
@@ -14,9 +14,8 @@ dnl subtree.
 fulldir=`pwd`
 dir=`basename ${fulldir}`
 AC_SUBST(dir)
-dods_root=`echo $fulldir | sed 's@\(.*\)/.*/.*@\1@'`
-AC_DEFINE_UNQUOTED(DODS_ROOT, "$dods_root")
-AC_SUBST(dods_root)
+
+DODS_GET_DODS_ROOT
 
 dnl `depend' is the command to use to generate dependencies for Makefiles.
 
