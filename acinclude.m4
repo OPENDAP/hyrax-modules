@@ -18,14 +18,19 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.67 2000/10/16 22:04:06 jimg Exp $
+# $Id: acinclude.m4,v 1.68 2000/10/16 22:07:38 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
 
 builtin(include, ud_aclocal.m4)
 
-# 2. Finding libraries
+# 2. Finding libraries 
+#
+# To use these in DODS software, in the Makefile.in use LIBS XTRALIBS for 
+# non-gui and LIBS GUILIBS XTRALIBS for the clients that link with the 
+# gui DAP++ library. These should be set by line like LIBS=@LIBS@, etc.
+# Then the group should be used on the link line. 10/16/2000 jhrg
 #--------------------------------------------------------------------------
 
 AC_DEFUN(DODS_PACKAGES_SUPPORT, [dnl
