@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.33 1997/10/04 00:47:03 jimg Exp $
+# $Id: acinclude.m4,v 1.34 1997/10/09 22:19:04 jimg Exp $
 
 # Check for fill value usage.
 
@@ -362,8 +362,8 @@ AC_DEFUN(DODS_MATLAB, [dnl
     fi
 
     dnl Find the lib directory (which is named according to machine type).
-    matlab_lib_dir=`find $MATLAB_ROOT -name 'libmat.a' -print \
-		    | sed 's@\(.*\)/libmat\.a\1@'`
+    matlab_lib_dir=`find $MATLAB_ROOT -name 'libmat*' -print \
+		    | sed 's@\(.*\)/libmat.*@\1@'`
     if test "$matlab_lib_dir"
     then
 	LDFLAGS="$LDFLAGS -L$matlab_lib_dir"

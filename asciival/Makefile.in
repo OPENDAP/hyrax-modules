@@ -1,9 +1,5 @@
 
-<<<<<<< Makefile.in
-# $Id: Makefile.in,v 1.20 1997/10/04 00:33:38 jimg Exp $
-=======
-# $Id: Makefile.in,v 1.20 1997/10/04 00:33:38 jimg Exp $
->>>>>>> 1.18.6.1
+# $Id: Makefile.in,v 1.21 1997/10/09 22:19:58 jimg Exp $
 
 @SET_MAKE@
 
