@@ -22,6 +22,16 @@
 #      	       	       	      - Root name of the filter (e.g., *nc*_dods)
 #
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.23  2000/01/27 17:54:03  jimg
+# Merged with release-3-1-4
+#
+# Revision 1.21.2.2  2000/01/11 19:09:34  jimg
+# Added code to check for a trailing / and bypass a bogus error message when
+# the directory name contained characters that are not allowed in the URL
+# extension used to identify a DODS object. This means that the directory
+# listing will work for directories whose names contain underscores, numbers,
+# etc.
+#
 # Revision 1.22  1999/11/04 23:59:57  jimg
 # Result of merge with 3-1-3
 #
@@ -193,7 +203,12 @@ sub initialize {
     $ext = $ENV{'PATH_INFO'};
     $ext =~ s@.*\.(.*)@$1@;
 
-    if ($ext =~ /[^A-Za-z\/]+/) {
+    # If the extension ($ext) ends in a slash, then we have a request for a
+    # directory listing. In this case make $ext == "/".
+    if ($ext =~ /.*\/$/) {
+  	$ext = "/";
+    } 
+    elsif ($ext =~ /[^A-Za-z\/]+/) {
 	print(STDERR "DODS_Dispatch.pm: ext: ", $ext, "\n") if $debug > 1;
 	send_error_object("Extension contains bad characters.");
 	exit(1);

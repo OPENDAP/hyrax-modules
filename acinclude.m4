@@ -18,11 +18,12 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-
-# $Id: acinclude.m4,v 1.60 2000/01/21 01:48:27 edavis Exp $
+# $Id: acinclude.m4,v 1.61 2000/01/27 17:54:03 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
+
+builtin(include, ud_aclocal.m4)
 
 # Check for fill value usage.
 
@@ -327,7 +328,7 @@ AC_DEFUN(DODS_PROG_LEX, [dnl
 	    then
 		AC_MSG_RESULT(Found flex version ${flex_ver1}.)
 	    else
-		AC_MSG_ERROR(Flex version: found ${flex_venr1} should be at least 2.5.2)
+		AC_MSG_WARN(Flex version: found ${flex_venr1} should be at least 2.5.2)
 	    fi
 	    ;;
 	*)
@@ -349,7 +350,7 @@ AC_DEFUN(DODS_PROG_BISON, [dnl
 	    then
 		AC_MSG_RESULT(Found bison version ${bison_ver1}.)
 	    else
-		AC_MSG_ERROR(Bison version: found ${bison_ver1} should be at least 1.25)
+		AC_MSG_WARN(Bison version: found ${bison_ver1} should be at least 1.25)
 	    fi
 	    ;;
 	*)
@@ -788,21 +789,21 @@ AC_DEFUN(DODS_CHECK_SIZES, [dnl
 	    AC_CHECK_SIZEOF(char)
 	    AC_CHECK_SIZEOF(double)
 	    AC_CHECK_SIZEOF(float)
-    fi
-
-    if test $ac_cv_sizeof_long -eq 4 
-    then
-	ARCHFLAG=ARCH_32BIT
-	AC_SUBST(ARCHFLAG)
-	CPPFLAGS="-DARCH_32BIT $CPPFLAGS"
-    elif test $ac_cv_sizeof_long -eq 8
-    then
-	ARCHFLAG=ARCH_64BIT
-	AC_SUBST(ARCHFLAG)
-	CPPFLAGS="-DARCH_64BIT $CPPFLAGS"
-    else
-	AC_MSG_ERROR(Could not determine architecture size - 32 or 64 bits)
     fi])
+	
+#     if test $ac_cv_sizeof_long -eq 4 
+#     then
+# 	ARCHFLAG=ARCH_32BIT
+# 	AC_SUBST(ARCHFLAG)
+# 	CPPFLAGS="-DARCH_32BIT $CPPFLAGS"
+#     elif test $ac_cv_sizeof_long -eq 8
+#     then
+# 	ARCHFLAG=ARCH_64BIT
+# 	AC_SUBST(ARCHFLAG)
+# 	CPPFLAGS="-DARCH_64BIT $CPPFLAGS"
+#     else
+# 	AC_MSG_ERROR(Could not determine architecture size - 32 or 64 bits)
+#     fi])
 
 # Added by Ethan, 1999/06/21
 # Look for perl.
@@ -851,7 +852,7 @@ AC_DEFUN(DODS_PROG_GTAR, [dnl
 	    then
 		AC_MSG_RESULT(Found Gnu tar version ${tar_ver}.)
 	    else
-		AC_MSG_ERROR(GNU tar is required.)
+		AC_MSG_WARN(GNU tar is required.)
 	    fi
 	    ;;
 	*)
