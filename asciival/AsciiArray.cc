@@ -10,6 +10,9 @@
 // 3/12/98 jhrg
 
 // $Log: AsciiArray.cc,v $
+// Revision 1.3  1999/07/28 23:00:53  jimg
+// Separated from the writeval directory, moved to tools
+//
 // Revision 1.2  1999/03/24 06:23:42  brent
 // convert String.h to std lib <string>, convert to packages regex -- B^2
 //
@@ -27,8 +30,6 @@
 
 #include <iostream.h>
 
-#include <Pix.h>
-#include <SLList.h>
 #include <string>
 
 #include "AsciiArray.h"

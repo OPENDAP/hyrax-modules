@@ -13,6 +13,9 @@
     @author: jhrg */
 
 // $Log: ascii_val.cc,v $
+// Revision 1.12  1999/07/28 23:00:54  jimg
+// Separated from the writeval directory, moved to tools
+//
 // Revision 1.11  1999/07/24 00:10:28  jimg
 // Merged the release-3-0-2 branch
 //
@@ -51,15 +54,13 @@
 
 #include "config_dap.h"
 
-static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.11 1999/07/24 00:10:28 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.12 1999/07/28 23:00:54 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
 #include <string>
 
 #include <GetOpt.h>
-#include <Pix.h>
-#include <SLList.h>
 
 #include "BaseType.h"
 #include "Connect.h"

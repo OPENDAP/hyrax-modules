@@ -1,9 +1,12 @@
 /* config.h.in.  Generated automatically from configure.in by autoheader.  */
-#ifndef _DODS_CONFIG_WV_H_
-#define _DODS_CONFIG_WV_H_
+#ifndef _DODS_CONFIG_AV_H_
+#define _DODS_CONFIG_AV_H_
 
 /* 
  * $Log: config_asciival.h.in,v $
+ * Revision 1.7  1999/07/28 23:00:54  jimg
+ * Separated from the writeval directory, moved to tools
+ *
  * Revision 1.6  1997/10/09 22:20:00  jimg
  * Resolved conflicts in merge of 2.14c to trunk.
  *
@@ -28,27 +31,49 @@
 
 #ifdef HAVE_CONFIG_H
 
-/* *** CHANGE THIS CONSTANT IN config_writeval.h.in !!! */
-#define MAX_QUEUE_LEN 8192
-
-/* Define this if building the server with Matlab 5 */
-#undef V4_COMPAT
-
-/* One of these must be defined! Enclose in #ifndef ... #endif since
-   some machines contain this define (in netinet/in.h). */
-#ifndef BIG_ENDIAN
-#undef BIG_ENDIAN
-#endif
-#ifndef LITTLE_ENDIAN
-#undef LITTLE_ENDIAN
-#endif
-
 #ifndef DODS_ROOT
 #undef DODS_ROOT
 #endif
 
+/* config.h.in.  Generated automatically from configure.in by autoheader.  */
+
+/* Define to empty if the keyword does not work.  */
+#undef const
+
+/* Define if you don't have vprintf but do have _doprnt.  */
+#undef HAVE_DOPRNT
+
+/* Define if you have the vprintf function.  */
+#undef HAVE_VPRINTF
+
+/* Define to `long' if <sys/types.h> doesn't define.  */
+#undef off_t
+
+/* Define if you need to in order for stat and other things to work.  */
+#undef _POSIX_SOURCE
+
+/* Define to `unsigned' if <sys/types.h> doesn't define.  */
+#undef size_t
+
+/* Define if you have the ANSI C header files.  */
+#undef STDC_HEADERS
+
+/* Define if you have the strerror function.  */
+#undef HAVE_STRERROR
+
+/* Define if you have the strtol function.  */
+#undef HAVE_STRTOL
+
+/* Define if you have the <fcntl.h> header file.  */
+#undef HAVE_FCNTL_H
+
+/* Define if you have the <limits.h> header file.  */
+#undef HAVE_LIMITS_H
+
+/* Define if you have the <unistd.h> header file.  */
+#undef HAVE_UNISTD_H
 #endif /* HAVE_CONFIG_H */
 
-#endif /* _DODS_CONFIG_H_ */
+#endif /* _DODS_CONFIG_AV_H_ */
 
 

@@ -1,7 +1,7 @@
 
 # Tcl/Expect code for the writeval test.
 # 
-# $Id: unix.exp,v 1.6 1999/05/25 23:28:08 ndp Exp $
+# $Id: unix.exp,v 1.7 1999/07/28 23:00:55 jimg Exp $
 
 # Compare $expected to the global $comp_output. Run `pass' if they match,
 # `fail' otherwise unless `xfailp' is true in which case run `xfail' if they
@@ -15,48 +15,13 @@
 
 if {[info exists env(DODS_ROOT)] && [file exists $env(DODS_ROOT)/etc/common_tests.exp]} {
     source $env(DODS_ROOT)/etc/common_tests.exp
-} elseif {[file exists ../../etc/common_tests.exp]} {
-    source ../../etc/common_tests.exp
+} elseif {[file exists ../../../etc/common_tests.exp]} {
+    source ../../../etc/common_tests.exp
 } else {
     send_user "Could not load common tests!"
     exit(1)
 }
 
-# Writeval test procedures
-# The four `required' procs are _start, _load, _exit and _version.
-
-proc writeval_start { {switches ""} {urls ""} {file ""}} {
-    global verbose
-    global comp_output
-    global spawn_id
-
-    if ![string compare $file ""] {
-	if {$verbose >= 1} {
-	    send_user "Testing writeval $switches -- $urls ...\n"
-	    exp_internal 1
-	}
-	catch "exec writeval $switches -- $urls" comp_output
-    } else {
-	if {$verbose >= 1} {
-	    send_user "Testing writeval $switches -- $urls >& $file ...\n"
-	    exp_internal 1
-	}
-	catch "exec writeval $switches -- $urls > $file" comp_output
-    }
-}
-
-proc writeval_load {} {
-}
-
-proc writeval_exit {} {
-    send -raw ""
-}
-
-proc writeval_version {} {
-    send_user "writeval test suite 1.0\n"
-}
-
-# Asciival test procedures
 # The four `required' procs are _start, _load, _exit and _version.
 
 proc asciival_start { {switches ""} {urls ""} {file ""}} {

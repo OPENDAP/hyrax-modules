@@ -1,4 +1,5 @@
-# $Id: Makefile.in,v 1.41 1999/07/24 00:10:28 jimg Exp $
+
+# $Id: Makefile.in,v 1.42 1999/07/28 23:00:54 jimg Exp $
 
 @SET_MAKE@
 
@@ -6,21 +7,17 @@
 # DEFS gets the `-D' defines that describe what a particular system has
 # or doesn't have.
 
-# The library libdap++.a contains the code for the generation of the DAS and
-# DDS structures plus the code for data transmission and the GNU libg++.a
-# classes Map, Stack, Plex and Vec.
-# geturl is a simple program that uses the dap++ library plus others to fetch
-# a url. In addition it can read and process DAS and DDS objects, displaying
-# the print representation on the screen.
+# Note: I believe that Makefile is a special pseudo-target and when it is
+# out of date with respect to Makefile.in is always rebuilt. Thus, it does
+# not need to be listed under GENERATED files. Since configure has its own
+# rule, it is also not listed. 7/28/99 jhrg
+GENERATED=config_asciival.h 
+PROG = $(GENERATED) asciival
 
-LOADDODS = loaddods.mex*
-PROG = writeval asciival urlqueue
-
-DODS_ROOT = ../..
-MATLAB_ROOT = @MATLAB_ROOT@
+DODS_ROOT = ../../..
 WWW_ROOT=@WWW_ROOT@
 
-INCS = -I. -I$(DODS_ROOT)/include -I$(MATLAB_ROOT)/extern/include @INCS@
+INCS = -I. -I$(DODS_ROOT)/include @INCS@
 DEFS = @DEFS@ -DDODS_VERSION=\"@VERSION@\" -DUSE_LIBGXX_INLINES
 CPPFLAGS = @CPPFLAGS@ $(DEFS) $(INCS)
 CFLAGS = @CFLAGS@
@@ -29,10 +26,8 @@ LDFLAGS = @LDFLAGS@ -L. -L$(DODS_ROOT)/lib
 LFLAGS = -8
 YFLAGS = -d
 LIBS = -ldap++ @LIBS@
-MAT_LIBS = -ldap++ @MATLIBS@ @LIBS@
 TAGS_FLAGS = --include=../dap/TAGS
 TEST_COV_FLAGS = -ftest-coverage -fprofile-arcs
-CMEXFLAGS = -g $(CPPFLAGS) @MAT_VERSION_FLAG@
 
 # Set the instalation directories; prefix can be set on the command line
 # during Makefile construction with `./configure --prefix /my/choice'
@@ -53,9 +48,9 @@ INSTALLMAN = man
 SHELL = /bin/sh
 srcdir = @srcdir@
 version = @VERSION@
-dir = writeval-@VERSION@
+dir = asciival-@VERSION@
 
-COMPONENT_NAME = DODS Matlab Command Line Client
+COMPONENT_NAME = DODS ASCII Client and Server Component
 
 # testsuite specifics
 RUNTEST = runtest
@@ -77,17 +72,6 @@ INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 STRIP = strip
-CMEX = $(MATLAB_ROOT)/bin/cmex
-
-CLIENTSRCS = ClientByte.cc ClientInt32.cc ClientFloat64.cc ClientStr.cc \
-	ClientUrl.cc ClientArray.cc ClientStructure.cc ClientList.cc \
-	ClientSequence.cc ClientGrid.cc ClientUInt32.cc \
-	ClientInt16.cc ClientUInt16.cc ClientFloat32.cc
-
-CLIENTOBJS = ClientByte.o ClientInt32.o ClientFloat64.o ClientStr.o \
-	ClientUrl.o ClientArray.o ClientStructure.o ClientList.o \
-	ClientSequence.o ClientGrid.o ClientUInt32.o \
-	ClientInt16.o ClientUInt16.o ClientFloat32.o
 
 ASCIISRCS = AsciiByte.cc AsciiInt32.cc AsciiFloat64.cc AsciiStr.cc \
 	AsciiUrl.cc AsciiArray.cc AsciiStructure.cc AsciiList.cc \
@@ -99,83 +83,39 @@ ASCIIOBJS = AsciiByte.o AsciiInt32.o AsciiFloat64.o AsciiStr.o \
 	AsciiSequence.o AsciiGrid.o AsciiUInt32.o \
 	AsciiInt16.o AsciiUInt16.o AsciiFloat32.o
 
-WV_SRCS = write_val.cc name_map.cc attributes.cc
-
-WV_OBJS = write_val.o name_map.o attributes.o
-
 AV_SRCS = ascii_val.cc name_map.cc
 
 AV_OBJS = ascii_val.o name_map.o
 
-LD_SRCS = loaddods.c variable.c queue.c extend.c error.c
+ALLSRCS = $(ASCIISRCS) $(AV_SRCS) 
 
-# Leave out loaddods.o; I pass loaddods.c to cmex so it'll know we're doing C
-# code and not complain. 5/27/99 jhrg
-LD_OBJS = loaddods.o variable.o queue.o extend.o error.o
-
-URLQ_SRCS = urlqueue.c queue.c
-
-URLQ_OBJS = urlqueue.o queue.o
-
-ALLSRCS = $(CLIENTSRCS) $(ASCIISRCS) $(WV_SRCS) $(AV_SRCS) 
-
-all: $(PROG) loaddods
-
-writeval: $(WV_OBJS) $(CLIENTOBJS)
-	$(CXX) $(LDFLAGS) -o writeval $(WV_OBJS) $(CLIENTOBJS) $(LIBS)
+all: $(PROG)
 
 asciival: $(AV_OBJS) $(ASCIIOBJS)
 	$(CXX) $(LDFLAGS) -o asciival $(AV_OBJS) $(ASCIIOBJS) $(LIBS)
-
-loaddods: $(LD_OBJS)
-	$(CMEX) $(CMEXFLAGS) $(LD_OBJS)
-
-#loaddods.o: loaddods.c
-#	$(CC) -c $(CMEXFLAGS) -o $@ $<
-
-urlqueue: $(URLQ_OBJS)
-	$(CC) $(LDFLAGS) -o urlqueue $(URLQ_OBJS)
-
-extend: 
-	$(CC) -DTEST $(CFLAGS) $(CPPFLAGS) -c extend.c
-	$(CMEX) $(CMEXFLAGS) -g extend.o
 
 # Standard targets with some customization for das-test and dds-test
 
 install: install-client
 
-install-client: urlqueue writeval asciival $(LOADDODS)
-	$(INSTALL_PROGRAM) urlqueue $(bindir)
-	$(INSTALL_PROGRAM) posturl.pl $(etcdir)
-	$(INSTALL_PROGRAM) -s writeval $(bindir)
+install-client: asciival
 	$(INSTALL_PROGRAM) -s asciival $(etcdir)
-	$(INSTALL_PROGRAM) loaddods.mex* $(bindir)
-	$(INSTALL_PROGRAM) loaddods.m $(bindir)
-	$(INSTALL_PROGRAM) whodods.m $(bindir)
-	$(INSTALL_DATA) INSTALL-matlab-client $(etcdir)
+
+configure: configure.in
+	autoconf --localdir=$(DODS_ROOT)/etc
+
+config.status: configure
+	${SHELL} ./configure
 
 Makefile: ${srcdir}/Makefile.in
 	${SHELL} ./config.status
 
-config_writeval.h: config_writeval.h.in
-	${SHELL} ./config.status
-
 # Tests
 
-check: asciival asciival-check writeval writeval-check 
-
-writeval-check: writeval
-	${RUNTEST} ${RUNTESTFLAGS} --tool writeval --srcdir testsuite
+check: asciival asciival-check
 
 asciival-check: asciival
 	${RUNTEST} ${RUNTESTFLAGS} --tool asciival --srcdir testsuite
-
-loaddods-check: writeval variable.o queue.o
-	$(CC)  -c -g $(CFLAGS) $(CPPFLAGS) -DTEST_LOADDODS loaddods.c
-	$(CC)  -c -g $(CFLAGS) $(CPPFLAGS) -DTEST_LOADDODS extend.c
-	$(CC) $(LDFLAGS) -g -o test-ldods loaddods.o variable.o queue.o \
-		extend.o -lefence -lmx
-	-rm loaddods.o extend.o
 
 test-coverage: clean
 	$(MAKE) $(MFLAGS) CXXFLAGS="$(CXXFLAGS) $(TEST_COV_FLAGS)" check
@@ -193,35 +133,24 @@ collect-coverage-data:
 	     gcov -l -o ../ $$f >> $$cov_dat; \
          done)
 
-PURIFY = purify $(CC) 
-
-loaddods-purify: writeval variable.o queue.o
-	$(CC)  -c -g $(CFLAGS) $(CPPFLAGS) -DTEST_LOADDODS loaddods.c
-	$(CC)  -c -g $(CFLAGS) $(CPPFLAGS) -DTEST_LOADDODS extend.c
-	$(PURIFY) $(LDFLAGS) -g -o test-ldods loaddods.o variable.o queue.o \
-		extend.o -lmx
-	-rm loaddods.o extend.o
-
 # these tests all fail when das-test is linked with -lnew_debug.
 
 clean:	
 	-rm -f *.o *.sum *.log *~ core
-	-rm -f $(PROG) $(LOADDODS)
+	-rm -f $(PROG)
 
 distclean: clean
 	-rm -f config.status config.log config.cache
 
 .PHONY: docs
 docs:
-	doc++ -d docs -f $(CLIENTSRCS) $(ASCIISRCS) $(WV_SRCS) $(AV_SRCS) \
-		$(LD_SRCS) $(URLQ_SRCS)
+	doc++ -d docs -f $(ASCIISRCS) $(AV_SRCS)
 
 .PHONY: depend
 depend: 
 	> dependencies
-	@depend@ -m dependencies \
-	-- $(CPPFLAGS) -I@GPP_INC@ -- \
-	$(CLIENTSRCS) $(WV_SRCS) $(LD_SRCS) $(URLQ_SRCS)
+	@depend@ -m dependencies -- $(CPPFLAGS) -I@GPP_INC@ -- $(ALLSRCS)
+
 
 # This is a special tar target because it builds not only the tar file for
 # the core software but also the lib, etc, and bin directories. It assumes
@@ -237,7 +166,7 @@ tar:
 .PHONY: update-version
 update-version: check-version
 	@echo "Version is: `cat version.h`"
-	mv ../writeval* ../writeval-$(version)
+	mv ../asciival* ../asciival-$(version)
 	touch $(DODS_ROOT)/VERSION; cat $(DODS_ROOT)/VERSION | \
 	  $(AWK) ' \
 	    BEGIN { found = 0 } \
@@ -265,13 +194,15 @@ check-version:
 tags:
 	$(TAGS) $(TAGS_FLAGS) *.cc *.h *.c
 
-.SUFFIXES:      .o .cc .c
+.SUFFIXES:      .o .cc .c .in
 
-.c.o:
+%.o: %.c
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
 
-.cc.o:
+%.o: %.cc
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) -o $@ $<
 
-include dependencies
+%.h: %.h.in
+	${SHELL} ./config.status
 
+include dependencies

@@ -10,6 +10,9 @@
 // 3/12/98 jhrg
 
 // $Log: AsciiInt16.cc,v $
+// Revision 1.3  1999/07/28 23:00:53  jimg
+// Separated from the writeval directory, moved to tools
+//
 // Revision 1.2  1999/04/30 17:06:54  jimg
 // Merged with no-gnu and release-2-24
 //
@@ -24,9 +27,10 @@
 #pragma implementation
 #endif
 
+#include "config_asciival.h"
+
 #include <assert.h>
 #include <iostream.h>
-
 #include <string>
 
 #include "AsciiInt16.h"

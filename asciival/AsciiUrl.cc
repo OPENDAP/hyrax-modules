@@ -10,6 +10,9 @@
 // 3/12/98 jhrg
 
 // $Log: AsciiUrl.cc,v $
+// Revision 1.3  1999/07/28 23:00:54  jimg
+// Separated from the writeval directory, moved to tools
+//
 // Revision 1.2  1999/03/24 06:23:42  brent
 // convert String.h to std lib <string>, convert to packages regex -- B^2
 //
@@ -20,6 +23,8 @@
 #ifdef __GNUG__
 #pragma implementation
 #endif
+
+#include "config_asciival.h"
 
 #include <string>
 
