@@ -1,5 +1,5 @@
 
- $Id: README,v 1.5 1996/10/24 00:13:57 jimg Exp $
+ $Id: README,v 1.6 1996/10/25 23:00:22 jimg Exp $
 
 There are four executables used in the DODS-Matlab interface:
 
@@ -15,6 +15,9 @@ Netscape and open the DODS locator main page,
 
 c) a URL prefixed by a `*' or `?' will be passed to netscape and used as an
 alternative data locator page, and
+
+NB: Since the URL builder is not yet complete these options have limited
+utility. 
 
 d) with no argument at all, loaddods waits for a URL to be sent via a WWW
 browser.
