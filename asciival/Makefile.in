@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.2 1996/10/07 16:52:29 jimg Exp $
+# $Id: Makefile.in,v 1.3 1996/10/07 21:07:15 jimg Exp $
 
 @SET_MAKE@
 
@@ -86,12 +86,12 @@ all: $(PROG)
 writeval: write_val.o $(CLIENTOBJS)
 	$(CXX) $(LDFLAGS) -o writeval write_val.o $(CLIENTOBJS) $(LIBS)
 
-loaddods: loaddods.o startchild.o
-	$(CMEX) $(CMEXFLAGS) loaddods.o startchild.o
+loaddods: loaddods.o startchild.o queue.o
+	$(CMEX) $(CMEXFLAGS) $+
 
 
-urlqueue: urlqueue.o
-	$(CC) $(LDFLAGS) -o urlqueue urlqueue.o 
+urlqueue: urlqueue.o queue.o
+	$(CC) $(LDFLAGS) -o urlqueue $+
 
 # Standard targets with some customization for das-test and dds-test
 
