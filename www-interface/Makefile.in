@@ -1,0 +1,168 @@
+# $Id: Makefile.in,v 1.1 1999/04/20 00:21:01 jimg Exp $
+
+@SET_MAKE@
+
+# Set makefile variables, some with values supplied by configure 
+# DEFS gets the `-D' defines that describe what a particular system has
+# or doesn't have.
+
+PROG = www_int
+
+DODS_ROOT = ../..
+WWW_ROOT=@WWW_ROOT@
+
+INCS = -I. -I$(DODS_ROOT)/include @INCS@
+DEFS = @DEFS@ -DWWW_INT_VER=\"@VERSION@\" -DUSE_LIBGXX_INLINES -DHAVE_CONFIG_H
+CPPFLAGS = @CPPFLAGS@ $(DEFS) $(INCS)
+CFLAGS = @CFLAGS@
+CXXFLAGS = @CXXFLAGS@
+LDFLAGS = @LDFLAGS@ -L. -L$(DODS_ROOT)/lib
+LFLAGS = -8
+YFLAGS = -d
+LIBS = -ldap++ @LIBS@
+TAGS_FLAGS = --include=../dap/TAGS
+
+# Set the instalation directories; prefix can be set on the command line
+# during Makefile construction with `./configure --prefix /my/choice'
+
+prefix = @prefix@
+exec_prefix = $(prefix)
+bindir = $(exec_prefix)/bin
+libdir = $(exec_prefix)/lib
+includedir = $(prefix)/include
+manext = 1
+mandir = $(prefix)/man/man$(manext)
+
+src = $(DODS_ROOT)/src
+etcdir = $(DODS_ROOT)/etc
+
+INSTALLMAN = man
+
+SHELL = /bin/sh
+srcdir = @srcdir@
+version = @VERSION@
+dir = url-builder-@VERSION@
+
+# testsuite specifics
+RUNTEST = runtest
+RUNTESTFLAGS = #--all --verbose
+
+# names of key programs
+
+LN_S = @LN_S@
+CP = cp
+AWK = @AWK@
+CC = @CC@
+CXX = @CXX@
+YACC = @YACC@
+LEX = @LEX@
+AR = ar
+TAGS = etags
+RANLIB = @RANLIB@
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+STRIP = strip
+
+CLIENTSRCS = WWWByte.cc WWWInt32.cc WWWFloat64.cc WWWStr.cc \
+	WWWUrl.cc WWWArray.cc WWWStructure.cc WWWList.cc \
+	WWWSequence.cc WWWFunction.cc WWWGrid.cc WWWUInt32.cc \
+	WWWInt16.cc WWWUInt16.cc WWWFloat32.cc WWWOutput.cc
+
+CLIENTOBJS = WWWByte.o WWWInt32.o WWWFloat64.o WWWStr.o \
+	WWWUrl.o WWWArray.o WWWStructure.o WWWList.o \
+	WWWSequence.o WWWFunction.o WWWGrid.o WWWUInt32.o \
+	WWWInt16.o WWWUInt16.o WWWFloat32.o WWWOutput.o
+
+WWW_INT_SRCS = www_int.cc
+WWW_INT_OBJS = www_int.o
+
+all: $(PROG)
+
+www_int: $(WWW_INT_OBJS) $(CLIENTOBJS)
+	$(CXX) $(LDFLAGS) -o www_int $(WWW_INT_OBJS) $(CLIENTOBJS) $(LIBS)
+
+# Standard targets with some customization for das-test and dds-test
+
+install: install-client
+
+install-client: www_int
+	$(INSTALL_PROGRAM) -s www_int $(etcdir)
+	$(INSTALL_PROGRAM)  dods_form $(etcdir)
+	$(INSTALL_PROGRAM)  dods_dir $(etcdir)
+	$(INSTALL_PROGRAM)  FilterDirHTML.pm $(etcdir)
+
+Makefile: ${srcdir}/Makefile.in
+	${SHELL} ./config.status
+
+# Tests
+
+check: 
+
+# these tests all fail when das-test is linked with -lnew_debug.
+
+clean:	
+	-rm -f *.o *.sum *.log *~ core
+	-rm -f $(PROG)
+
+distclean: clean
+	-rm -f config.status config.log config.cache
+
+.PHONY: docs
+docs:
+	doc++ -d docs -f $(CLIENTSRCS) $(WWW_INT_SRCS)
+
+.PHONY: depend
+depend: 
+	> dependencies
+	@depend@ -m dependencies \
+	-- $(CPPFLAGS) -I@GPP_INC@ -- \
+	$(CLIENTSRCS) $(WWW_INT_SRCS)
+
+
+.PHONY: update-version
+update-version: check-version
+	@echo "Version is: `cat version.h`"
+	if [ ! -d ../$(dir) ]; then \
+	    mv ../dap* ../$(dir);\
+	fi
+
+# Compare the version encoded in this Makefile (set by configure) with the
+# version in version.h. The version make variable is set up near the top of
+# the Makefile.
+.PHONY: check-version
+check-version:
+	@echo "Checking for version.h and Makefile version match-up"
+	@if [ "$(version)" != "`cat version.h`" ]; \
+	then \
+		echo "You must manually re-run configure!"; \
+		exit 1; \
+	else \
+		echo "Yes, they match."; \
+	fi
+
+# This is a special tar target because it builds not only the tar file for
+# the core software but also the lib, etc, and bin directories. It assumes
+# that the root directory for DODS is called `DODS' (no version number).
+.PHONY: tar
+tar:
+	-rm -r config.cache config.log config.status
+	cd $(DODS_ROOT)/.. && \
+	tar --exclude '*/old' --exclude '*/.#*' --exclude '*/CVS' \
+	    --gzip --create --dereference --file DODS-$(dir).tar.gz \
+	    DODS/src/$(dir)
+
+.PHONY: tags
+tags:
+	$(TAGS) $(TAGS_FLAGS) *.cc *.h *.c
+
+.SUFFIXES:      .o .cc .c
+
+.c.o:
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
+
+.cc.o:
+	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) -o $@ $<
+
+include dependencies
+

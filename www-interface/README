@@ -1,0 +1,38 @@
+
+$Id: README,v 1.1 1999/04/20 00:21:02 jimg Exp $
+
+The www_int program is a simple WWW form-type interface for DODS datasets.
+It can be run as a CGI using the dods_form script (which in turn runs the
+www_int program). 
+
+Here are some sample URLs:
+
+http://www.dods.org/test/dods_form?url=http://www.dods.org/test/nph-nc/data/nc/fnoc1.nc
+http://www.dods.org/test/dods_form?url=http://www.dods.org/test/nph-nc/data/nc/coads_climatology.nc
+http://www.dods.org/test/dods_form?url=http://www.dods.org/etc/nph-ff/data/ff/test1.dat
+http://www.dods.org/test/dods_form?url=http://www.dods.org/etc/nph-hdf/data/hdf/S2000415.HDF 
+
+To make dods_form work you must give it the dataset URL as a parameter. So,
+to look at other datasets you should be able to substitute that dataset's URL
+for the `url' parameter in the above URLS.
+
+However, the www_int program can only work with files - datasets that are
+referred to using a single URL. To look at multi-file datasets, use the CGI
+dods_dir. This CGI emulates the browse directory page interface where to
+enter a subdirectory users click on the subdirectory's name to enter. To use
+dods_dir you must give it both the data's URL (which does not contain the
+DODS server but rather just points to the place n the web server where the
+data files live) *and* the URL of that data's server. Even though both URLs
+contain the machine name the data and it server must be on the machine (i.e.,
+there is some redundancy here).
+
+Here are some sample URLs for the dods_dir CGI:
+
+http://www.dods.org/test/dods_dir?url=http://dods.gso.uri.edu/avhrr/&server=http://dods.gso.uri.edu/cgi-bin/nph-dsp/
+
+To run this with other multi-file datasets, plug in the data and server URLS.
+Note that the server URL is `http://<machine>/<cgi-bin>/<script>' (NB: I use
+<cgi-bin> == `etc' for the release servers and ... == `test' for the
+development servers, most places use `cgi-bin'). The `url' parameter is the
+URL to the *data*. This is the top of the data's tree under the web server's
+document root directory.
