@@ -39,7 +39,7 @@
 //#include "config_dap.h"
 #include "config_asciival.h"
 
-static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.17 2003/05/08 21:08:33 pwest Exp $"};
+static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.18 2004/01/26 17:38:05 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -63,7 +63,6 @@ using std::endl ;
 #include "AsciiFloat64.h"
 #include "AsciiStr.h"
 #include "AsciiUrl.h"
-#include "AsciiList.h"
 #include "AsciiArray.h"
 #include "AsciiStructure.h"
 #include "AsciiSequence.h"
@@ -253,6 +252,9 @@ main(int argc, char * argv[])
 }
 
 // $Log: ascii_val.cc,v $
+// Revision 1.18  2004/01/26 17:38:05  jimg
+// Removed List from the DAP
+//
 // Revision 1.17  2003/05/08 21:08:33  pwest
 // added include for iostream and using statements to compile
 //
