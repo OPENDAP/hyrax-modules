@@ -1,0 +1,18 @@
+/* config.h.in.  Generated automatically from configure.in by autoheader.  */
+#ifndef _DODS_CONFIG_WV_H_
+#define _DODS_CONFIG_WV_H_
+
+/* $Log: config_asciival.h.in,v $
+/* Revision 1.1  1996/10/25 23:21:27  jimg
+/* Added.
+/* */
+
+#ifdef HAVE_CONFIG_H
+
+#define MAX_QUEUE_LEN 2048
+
+#endif /* HAVE_CONFIG_H */
+
+#endif /* _DODS_CONFIG_H_ */
+
+
