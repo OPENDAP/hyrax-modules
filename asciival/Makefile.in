@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.30 1998/06/09 02:49:40 jimg Exp $
+# $Id: Makefile.in,v 1.31 1998/08/03 16:38:35 jimg Exp $
 
 @SET_MAKE@
 
@@ -13,7 +13,8 @@
 # a url. In addition it can read and process DAS and DDS objects, displaying
 # the print representation on the screen.
 
-PROG= writeval asciival loaddods urlqueue
+LOADDODS = loaddods.mex*
+PROG = writeval asciival $(LOADDODS) urlqueue
 
 DODS_ROOT = ../..
 MATLAB_ROOT = @MATLAB_ROOT@
@@ -27,8 +28,8 @@ CXXFLAGS = @CXXFLAGS@ -fno-rtti
 LDFLAGS = @LDFLAGS@ -L. -L$(DODS_ROOT)/lib
 LFLAGS = -8
 YFLAGS = -d
-LIBS = -ldap++ @LIBS@
-MAT_LIBS = -ldap++ @MATLIBS@ @LIBS@
+LIBS = -ldap++ -lrx @LIBS@
+MAT_LIBS = -ldap++ -lrx @MATLIBS@ @LIBS@
 TAGS_FLAGS = -b
 CMEXFLAGS = -g @MAT_VERSION_FLAG@
 
@@ -115,7 +116,7 @@ writeval: $(WV_OBJS) $(CLIENTOBJS)
 asciival: $(AV_OBJS) $(ASCIIOBJS)
 	$(CXX) $(LDFLAGS) -o asciival $(AV_OBJS) $(ASCIIOBJS) $(LIBS)
 
-loaddods: $(LD_OBJS)
+$(LOADDODS): $(LD_OBJS)
 	$(CMEX) $(CMEXFLAGS) $(LD_OBJS)
 
 urlqueue: $(URLQ_OBJS)
@@ -129,7 +130,7 @@ extend:
 
 install: install-client
 
-install-client: urlqueue writeval asciival loaddods
+install-client: urlqueue writeval asciival $(LOADDODS)
 	$(INSTALL_PROGRAM) urlqueue $(bindir)
 	$(INSTALL_PROGRAM) posturl.pl $(etcdir)
 	$(INSTALL_PROGRAM) -s writeval $(bindir)
