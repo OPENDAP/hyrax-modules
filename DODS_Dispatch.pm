@@ -1,5 +1,5 @@
 
-# (c) COPYRIGHT URI/MIT 1997
+# (c) COPYRIGHT URI/MIT 1997,1998
 # Please read the full copyright statement in the file COPYRIGH.  
 #
 # Authors:
@@ -22,6 +22,10 @@
 #      	       	       	      - Root name of the filter (e.g., *nc*_dods)
 #
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.6  1998/03/17 17:20:54  jimg
+# Added patch for the new ASCII filter. Use either the suffix .ascii or .asc
+# to get data back in ASCII form from a DODS server.
+#
 # Revision 1.5  1998/02/11 22:05:59  jimg
 # Added tests and an accessor function for the Accept-Encoding header (which
 # CGI 1.1 passes to the cgi program using the environment variable
@@ -233,7 +237,7 @@ sub command {
 	$full_script = $cgi_dir . $script;
 	$command = $server_pgm . " " . $filename . " " . $full_script;
     } elsif ($ext eq "ver" || $ext eq "/version") {
-	$script_rev = '$Revision: 1.5 $ ';
+	$script_rev = '$Revision: 1.6 $ ';
 	$script_rev =~ s@\$([A-z]*): (.*) \$@$2@;
 	$server_pgm = $cgi_dir . $script . "_dods";
 	$command = $server_pgm . " -v " . $script_rev . " " . $filename;
@@ -260,6 +264,16 @@ sub command {
 	if ($self->encoding() =~ m/deflate/) {
 	    $command .= " -c";
 	}
+    } elsif ($ext eq "ascii" || $ext eq "asc") {
+	my $query = $self->query();
+	$server_pgm = $cgi_dir . $script . "_dods";
+	$command = $server_pgm . " " . $filename;
+	if ($query ne "") {
+	    $command .= " -e " . "\"" . $query . "\"";
+	}
+	# Never compress ASCII.
+	local($ascii_srvr) = $cgi_dir . "asciival";
+	$command .= " | " . $ascii_srvr . " -m -- -";
     } else {
 	$self->print_error_message($self->caller_revision(), 
 				   $self->maintainer());
