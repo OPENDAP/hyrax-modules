@@ -9,7 +9,7 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: www_int.cc,v 1.9 2001/01/26 19:17:36 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: www_int.cc,v 1.10 2001/09/28 23:51:32 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -26,6 +26,7 @@ static char rcsid[] not_used = {"$Id: www_int.cc,v 1.9 2001/01/26 19:17:36 jimg 
 #include "BaseType.h"
 #include "Connect.h"
 #include "cgi_util.h"
+#include "debug.h"
 
 #include "WWWOutput.h"
 #include "javascript.h"		// Try to hide this stuff...
@@ -366,6 +367,12 @@ main(int argc, char * argv[])
 }
 
 // $Log: www_int.cc,v $
+// Revision 1.10  2001/09/28 23:51:32  jimg
+// Merged with 3.2.4.
+//
+// Revision 1.8.2.3  2001/09/27 05:41:31  jimg
+// Added debug.h.
+//
 // Revision 1.9  2001/01/26 19:17:36  jimg
 // Merged with release-3-2.
 //

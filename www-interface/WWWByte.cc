@@ -15,7 +15,7 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: WWWByte.cc,v 1.4 2000/10/03 20:07:20 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: WWWByte.cc,v 1.5 2001/09/28 23:51:32 jimg Exp $"};
 
 // The NewByte `helper function' creates a pointer to an WWWByte and
 // returns that pointer. It takes the same arguments as the class's ctor. If
@@ -70,10 +70,21 @@ WWWByte::read(const string &)
 void 
 WWWByte::print_val(ostream &os, string, bool print_decl_p)
 {
-    write_simple_variable(os, (string)name().c_str(), fancy_typename(this));
+    write_simple_variable(os, name(), fancy_typename(this));
 }
 
 // $Log: WWWByte.cc,v $
+// Revision 1.5  2001/09/28 23:51:32  jimg
+// Merged with 3.2.4.
+//
+// Revision 1.4.2.1  2001/09/10 19:32:28  jimg
+// Fixed two problems: 1) Variable names in the JavaScript code sometimes
+// contained spaces since they were made using the dataset's variable name.
+// The names are now filtered through id2www and esc2underscore. 2) The CE
+// sometimes contained spaces, again, because dataset variable names were
+// used to build the CE. I filtered the names with id2www_ce before passing
+// them to the JavaScript code.
+//
 // Revision 1.4  2000/10/03 20:07:20  jimg
 // Moved Logs to the end of each file.
 //

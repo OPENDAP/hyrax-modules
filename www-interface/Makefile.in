@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.10 2001/06/16 00:00:05 jimg Exp $
+# $Id: Makefile.in,v 1.11 2001/09/28 23:51:32 jimg Exp $
 
 @SET_MAKE@
 
@@ -131,7 +131,7 @@ distclean: clean
 docs:
 	doc++ -d docs -f $(ALLSRCS)
 
-configure: configure.in
+configure: configure.in $(DODS_ROOT)etc/aclocal.m4
 	autoconf --localdir=$(DODS_ROOT)etc
 
 Makefile: Makefile.in

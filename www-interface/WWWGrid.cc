@@ -15,7 +15,7 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: WWWGrid.cc,v 1.5 2001/01/26 19:17:36 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: WWWGrid.cc,v 1.6 2001/09/28 23:51:32 jimg Exp $"};
 
 #include <assert.h>
 #include <iostream>
@@ -26,6 +26,7 @@ static char rcsid[] not_used = {"$Id: WWWGrid.cc,v 1.5 2001/01/26 19:17:36 jimg 
 #include <string>
 
 #include "Array.h"
+#include "escaping.h"
 #include "InternalErr.h"
 
 #include "WWWGrid.h"
@@ -62,7 +63,8 @@ WWWGrid::print_val(ostream &os, string space, bool print_decl_p)
 {
     os << "<script type=\"text/javascript\">\n"
        << "<!--\n"
-       << name_for_js_code(name()) << " = new dods_var(\"" << name() 
+       << name_for_js_code(name()) << " = new dods_var(\"" 
+       << id2www_ce(name()) 
        << "\", \"" << name_for_js_code(name()) << "\", 1);\n"
        << "DODS_URL.add_dods_var(" << name_for_js_code(name()) << ");\n"
        << "// -->\n"
@@ -100,6 +102,17 @@ WWWGrid::print_val(ostream &os, string space, bool print_decl_p)
 }
 
 // $Log: WWWGrid.cc,v $
+// Revision 1.6  2001/09/28 23:51:32  jimg
+// Merged with 3.2.4.
+//
+// Revision 1.4.2.2  2001/09/10 19:32:28  jimg
+// Fixed two problems: 1) Variable names in the JavaScript code sometimes
+// contained spaces since they were made using the dataset's variable name.
+// The names are now filtered through id2www and esc2underscore. 2) The CE
+// sometimes contained spaces, again, because dataset variable names were
+// used to build the CE. I filtered the names with id2www_ce before passing
+// them to the JavaScript code.
+//
 // Revision 1.5  2001/01/26 19:17:36  jimg
 // Merged with release-3-2.
 //

@@ -11,7 +11,7 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.8 2001/08/27 17:53:07 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.9 2001/09/28 23:51:32 jimg Exp $"};
 
 #include <string>
 #include <iostream>
@@ -27,12 +27,15 @@ static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.8 2001/08/27 17:53:07 jim
 #include "DAS.h"
 #include "DDS.h"
 #include "InternalErr.h"
+#include "escaping.h"
 #include "util.h"
 
 #include "WWWOutput.h"
 
 static bool name_is_global(string &name);
 static bool name_in_kill_file(const string &name);
+
+const string allowable = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
 
 // This function adds some text to the variable name so that conflicts with
 // JavaScript's reserved words and other conflicts are avoided (or
@@ -42,8 +45,14 @@ name_for_js_code(const string &dods_name)
 {
     pid_t pid = getpid();
     ostrstream oss;
-    oss << "org_dods_dcz" << pid << dods_name << ends;
-    return string(oss.str());
+    // Calling id2www with a different set of allowable chars gets an
+    // identifier with chars allowable for JavaScript. Then turn the `%' sign
+    // into an underscore.
+    oss << "org_dods_dcz" << pid 
+	<< esc2underscore(id2www(dods_name, allowable)) << ends;
+    string ret_val = oss.str();
+    oss.freeze(0);
+    return ret_val;
 }
 
 WWWOutput::WWWOutput(ostream &os, int rows, int cols):
@@ -74,7 +83,6 @@ WWWOutput::write_disposition(string url)
 <td align=\"right\"><h3><a href=\"dods_form_help.html#disposition\" valign=\"bottom\">Action:</a></h3>
 <td><input type=\"button\" value=\"Get ASCII\" onclick=\"ascii_button()\">
 <input type=\"button\" value=\"Get Binary\" onclick=\"binary_button()\">
-<input type=\"button\" value=\"Send to Program\" onclick=\"program_button()\">
 <input type=\"button\" value=\"Show Help\" onclick=\"help_button()\">
 
 <tr>
@@ -83,6 +91,11 @@ WWWOutput::write_disposition(string url)
 <td><input name=\"url\" type=\"text\" size=" << _attr_cols << " value=\"" 
 << url << "\">"; 
 }
+
+#if 0
+//I cut the following from the above.
+//<input type=\"button\" value=\"Send to Program\" onclick=\"program_button()\">
+#endif
 
 void
 WWWOutput::write_attributes(AttrTable *attr)
@@ -252,7 +265,8 @@ write_simple_variable(ostream &os, const string &name, const string &type)
 {
     os << "<script type=\"text/javascript\">\n"
        << "<!--\n"
-       << name_for_js_code(name) <<" = new dods_var(\"" << name << "\", \"" 
+       << name_for_js_code(name) <<" = new dods_var(\"" << id2www_ce(name) 
+       << "\", \"" 
        << name_for_js_code(name) << "\", 0);\n"
        << "DODS_URL.add_dods_var(" << name_for_js_code(name) << ");\n"
        << "// -->\n"
@@ -288,6 +302,20 @@ write_simple_variable(ostream &os, const string &name, const string &type)
 }
 
 // $Log: WWWOutput.cc,v $
+// Revision 1.9  2001/09/28 23:51:32  jimg
+// Merged with 3.2.4.
+//
+// Revision 1.6.2.4  2001/09/10 21:48:07  jimg
+// Removed the `Send to Program' button and its help text.
+//
+// Revision 1.6.2.3  2001/09/10 19:32:28  jimg
+// Fixed two problems: 1) Variable names in the JavaScript code sometimes
+// contained spaces since they were made using the dataset's variable name.
+// The names are now filtered through id2www and esc2underscore. 2) The CE
+// sometimes contained spaces, again, because dataset variable names were
+// used to build the CE. I filtered the names with id2www_ce before passing
+// them to the JavaScript code.
+//
 // Revision 1.8  2001/08/27 17:53:07  jimg
 // Merged with release-3-2-3.
 //

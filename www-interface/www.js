@@ -1,5 +1,7 @@
 
-// $Id: www.js,v 1.2 2001/01/26 19:17:36 jimg Exp $
+// $Id: www.js,v 1.3 2001/09/28 23:51:32 jimg Exp $
+
+// $Id: www.js,v 1.3 2001/09/28 23:51:32 jimg Exp $
 
 // (c) COPYRIGHT URI/MIT 1999
 // Please read the full copyright statement in the file COPYRIGHT.
@@ -95,13 +97,13 @@ function write_help_contents() {
 "that appears in the text boxes below the variable. " +
 "<li>To get ASCII or binary values for the variables you've selected, " +
 "click on the <em>Get ASCII</em> or <em>Get Binary</em> buttons. " +
-"<li>To use the <em>Send to Program</em> feature you must install a web " +
-"helper application that can route the DODS URL built by this form to a " +
-"client. Look on the <a " +
-"href=\"http://unidata.ucar.edu/packages/dods/\" target=\"DODS\"> " +
-"DODS home page (http://unidata.ucar.edu/packages/dods/)</a> " +
-"for a suitable client. " +
-"</ul>" +
+//  "<li>To use the <em>Send to Program</em> feature you must install a web " +
+//  "helper application that can route the DODS URL built by this form to a " +
+//  "client. Look on the <a " +
+//  "href=\"http://unidata.ucar.edu/packages/dods/\" target=\"DODS\"> " +
+//  "DODS home page (http://unidata.ucar.edu/packages/dods/)</a> " +
+//  "for a suitable client. " +
+//  "</ul>" +
 "Note that the URL displayed in the <em>DataURL</em> field is updated " +
 "as you select and/or constrain variables. The URL in this field can be " +
 "cut and pasted in various DODS clients such as the Matlab and IDL " +
@@ -279,14 +281,14 @@ function handle_projection_change(check_box) {
 function get_projection() {
     var p = "";
     if (this.is_array == 1) {
-        p = this.name;
+        p = this.name;		// ***
         for (var i = 0; i < this.num_dims; ++i) {
 	    var text_widget = "document.forms[0]." + this.js_var_name + "_" + i.toString();
 	    p += "[" + eval(text_widget).value + "]";
 	}
     }
     else {
-	p = this.name;
+	p = this.name;		// ***
     }
 
     return p;
@@ -311,7 +313,7 @@ function get_selection() {
             if (operator == "-")
                 s = eval(text_widget).value;
             else
-	        s = this.name + operator + eval(text_widget).value;
+	        s = this.name + operator + eval(text_widget).value; // ***
         }
     }
 
@@ -319,6 +321,20 @@ function get_selection() {
 }    
 
 // $Log: www.js,v $
+// Revision 1.3  2001/09/28 23:51:32  jimg
+// Merged with 3.2.4.
+//
+// Revision 1.1.2.3  2001/09/10 21:48:07  jimg
+// Removed the `Send to Program' button and its help text.
+//
+// Revision 1.1.2.2  2001/09/10 19:32:28  jimg
+// Fixed two problems: 1) Variable names in the JavaScript code sometimes
+// contained spaces since they were made using the dataset's variable name.
+// The names are now filtered through id2www and esc2underscore. 2) The CE
+// sometimes contained spaces, again, because dataset variable names were
+// used to build the CE. I filtered the names with id2www_ce before passing
+// them to the JavaScript code.
+//
 // Revision 1.2  2001/01/26 19:17:36  jimg
 // Merged with release-3-2.
 //
