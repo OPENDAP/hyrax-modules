@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.12 1997/03/08 19:16:32 jimg Exp $
+# $Id: Makefile.in,v 1.13 1997/03/14 18:02:48 jimg Exp $
 
 @SET_MAKE@
 
@@ -141,7 +141,7 @@ tags:
 depend: 
 	> dependencies
 	@depend@ -m dependencies \
-	-- $(CPPFLAGS) -I/usr/local/lib/g++-include -- \
+	-- $(CPPFLAGS) @GPP_INC@ -- \
 	$(CLIENTSRCS) write_val.cc name_map.cc queue.c variable.c loaddods.c
 
 .SUFFIXES:      .o .cc .c
