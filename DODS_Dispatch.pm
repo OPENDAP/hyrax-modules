@@ -220,13 +220,26 @@ sub initialize {
     print(STDERR "Second PATH_INFO access: ", $ENV{PATH_INFO}, "\n") if
 	$debug > 1;
     # Sanitize.
-    # I removed a '\.' in the patern below to get this to work with
-    # directories. The original pattern was @(.*)\.$ext@ 10/22/02 jhrg
-    $path_info =~ m@(.*)\.$ext@;
-    $path_info = $1;
-    $self->{path_info} = $path_info;
+    if ($ext eq "/") {
+	# I removed a '\.' in the patern below to get this to work with
+	# directories. The original pattern was @(.*)\.$ext@ 10/22/02 jhrg
+	# However, *that* doesn't work with other accesses and we *have* to
+	# use pattern match and assignment to sanitze path_info. 01/28/03 jhrg
+	$path_info =~ m@(.*)$ext@;
+	$path_info = $1;
+	print(STDERR "path_info fraction (re)assigned to the variable: ", $1,
+	      "\n") if $debug > 1;	
+	$self->{path_info} = $path_info;
+    }
+    else {
+	$path_info =~ m@(.*)\.$ext@;
+	$path_info = $1;
+	print(STDERR "path_info fraction (re)assigned to the variable: ", $1,
+	      "\n") if $debug > 1;	
+	$self->{path_info} = $path_info;
+    }
 
-    print(STDERR "path_info: ", $path_info, "\n") if $debug > 1;
+    print(STDERR "path_info: ", $self->{path_info}, "\n") if $debug > 1;
 
     # Figure out which type of handler to use when processing this request.
     # The config_file field is set in new(). Note that we only use the
@@ -984,6 +997,10 @@ if ($test) {
 1;
 
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.34  2003/01/28 21:25:14  jimg
+# Moved a fix from release-3-2 *by hand* here. The variable path_info was not
+# being sanitized correctly. It's such a simple fix...
+#
 # Revision 1.33  2003/01/23 00:44:34  jimg
 # Updated the copyrights on various source files. OPeNDAP is adopting the
 # GNU Lesser GPL.
