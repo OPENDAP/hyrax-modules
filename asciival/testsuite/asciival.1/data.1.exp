@@ -14,7 +14,7 @@
 
 # Test single and multi URL access and variable renaming
 
-# $Id: data.1.exp,v 1.1 1999/05/25 15:46:33 jimg Exp $
+# $Id: data.1.exp,v 1.2 1999/05/25 21:37:46 jimg Exp $
 
 global comp_output		# contains output from das-test_start
 global verbose			# this and srcdir are set by runtest.exp
@@ -27,7 +27,6 @@ set test_name "data: "
 
 set state $verbose
 set verbose 0
-
 # The `1' in compare_stdout means call xfail if the test fails.
 
 

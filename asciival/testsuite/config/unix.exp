@@ -1,19 +1,64 @@
 
 # Tcl/Expect code for the writeval test.
 # 
-# $Id: unix.exp,v 1.4 1999/05/25 16:37:52 jimg Exp $
+# $Id: unix.exp,v 1.5 1999/05/25 21:37:48 jimg Exp $
 
-# Read the common code for tests.
+# Compare $expected to the global $comp_output. Run `pass' if they match,
+# `fail' otherwise unless `xfailp' is true in which case run `xfail' if they
+# do not match. $msg is the name of the test to print when calling pass, fail
+# or xfail.
+# 
+# NB: $expected may be either a string or a file name. If it is the latter,
+# read the file and compare its contents to $comp_output.
 
-if {[info exists env(DODS_ROOT)] && [file exists $env(DODS_ROOT)/etc/common_tests.exp]} {
-    source $env(DODS_ROOT)/etc/common_tests.exp
-} elseif {[file exists ../../etc/common_tests.exp]} {
-    source ../../etc/common_tests.exp
-} else {
-    send_user "Could not load common tests!"
-    exit(1)
+proc compare_stdout {expected msg {xfailp 0} {str_test compare}} {
+    global comp_output
+    global verbose
+
+    # If $expected is the name of a file, read that file's contents and store
+    # in $expected, then procede to compare $expected to $comp_output.
+
+    if {[file exists $expected] && [file isfile $expected]} {
+	if {$verbose >= 1} {
+	    send_user "PWD: [pwd]\n"
+	    send_user "Reading file: $expected\n"
+	}
+	set fd [open $expected r]
+	# Trim is used here to remove trailing `\n's from files of data.
+	set expected [read $fd]
+	close $fd
+    }
+
+    set expected [string trim $expected]
+    set comp_output [string trim $comp_output]
+
+    set result [string $str_test $expected $comp_output]
+
+    if {$verbose >= 1} {
+	send_user "Result of $str_test: $result\n"
+    }
+
+    if {$str_test == "compare"} {
+	set result !$result
+    }
+
+    if $result {
+	pass "$msg"
+	send_user "PASS: $msg\n"
+    } elseif {$xfailp == 1} {
+	xfail "$msg"
+	send_user "XFAIL: $msg\n"
+    } else {
+	fail "$msg"
+    }
+
+    if {$verbose >= 1} {
+	send_user "Comp output:$comp_output\n"
+	send_user "Expected output:$expected\n"
+    }
 }
 
+# Writeval test procedures
 # The four `required' procs are _start, _load, _exit and _version.
 
 proc writeval_start { {switches ""} {urls ""} {file ""}} {
@@ -80,3 +125,4 @@ proc asciival_exit {} {
 proc asciival_version {} {
     send_user "asciival test suite 0.00\n"
 }
+
