@@ -35,13 +35,20 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.14 2004/01/28 16:47:49 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.15 2004/07/08 22:32:19 jimg Exp $"};
 
 #include <string>
 #include <iostream>
 #include <sstream>
 
+#ifndef WIN32
 #include <unistd.h>
+#endif
+
+#ifdef WIN32
+#include <process.h>
+#include <io.h>
+#endif
 
 #include "Regex.h"
 
@@ -60,6 +67,26 @@ using namespace std;
 static bool name_is_global(string &name);
 static bool name_in_kill_file(const string &name);
 
+#ifdef WIN32
+#define getpid _getpid
+#define access _access
+#define X_OK 00  //  Simple existance
+
+char *asciival = "./asciival.exe";
+char* dods2ncdf = "./dods2ncdf.exe";
+char* dods2hdf4 = "./dods2hdf4.exe";
+char* dods2hdf5 = "./dods2hdf5.exe";
+char* dods2mat = "./dods2mat.exe";
+char* dods2idl = "./dods2idl.exe";
+#else
+char* asciival = "./asciival";
+char* dods2ncdf = "./dods2ncdf";
+char* dods2hdf4 = "./dods2hdf4";
+char* dods2hdf5 = "./dods2hdf5";
+char* dods2mat = "./dods2mat";
+char* dods2idl = "./dods2idl";
+#endif
+
 const string allowable = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
 
 // This function adds some text to the variable name so that conflicts with
@@ -68,7 +95,8 @@ const string allowable = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01
 string
 name_for_js_code(const string &dods_name)
 {
-    pid_t pid = getpid();
+    int pid = getpid();
+
     ostringstream oss;
     // Calling id2www with a different set of allowable chars gets an
     // identifier with chars allowable for JavaScript. Then turn the `%' sign
@@ -105,22 +133,22 @@ WWWOutput::write_disposition(string url)
 <td align=\"right\"><h3><a href=\"dods_form_help.html#disposition\" valign=\"bottom\">Action:</a></h3>\n";
     _os << "<td>";
 
-    if (access("./asciival", X_OK) == 0)
+    if (access(asciival, X_OK) == 0)
 	_os << "<input type=\"button\" value=\"Get ASCII\" onclick=\"ascii_button()\">\n";
 
-    if (access("./dods2ncdf", X_OK) == 0)
+    if (access(dods2ncdf, X_OK) == 0)
 	_os << "<input type=\"button\" value=\"Get netCDF\" onclick=\"binary_button('netcdf')\">\n";
 
-    if (access("./dods2hdf4", X_OK) == 0)
+    if (access(dods2hdf4, X_OK) == 0)
 	_os << "<input type=\"button\" value=\"Get HDF 4\" onclick=\"binary_button('hdf4')\">\n";
 
-    if (access("./dods2hdf5", X_OK) == 0)
+    if (access(dods2hdf5, X_OK) == 0)
 	_os << "<input type=\"button\" value=\"Get HDF 5\" onclick=\"binary_button('hdf5')\">\n";
 
-    if (access("./dods2mat", X_OK) == 0)
+    if (access(dods2mat, X_OK) == 0)
 	_os << "<input type=\"button\" value=\"Get MatLAB\" onclick=\"binary_button('mat')\">\n";
 
-    if (access("./dods2idl", X_OK) == 0)
+    if (access(dods2idl, X_OK) == 0)
 	_os << "<input type=\"button\" value=\"Get IDL\" onclick=\"binary_button('idl')\">\n";
 
     _os << "<input type=\"button\" value=\"Get DODS Data Object \" onclick=\"binary_button('dods')\">\n\
@@ -346,6 +374,15 @@ write_simple_variable(ostream &os, const string &name, const string &type)
 }
 
 // $Log: WWWOutput.cc,v $
+// Revision 1.15  2004/07/08 22:32:19  jimg
+// Merged with relese-3-4-3FCS
+//
+// Revision 1.10.4.3  2004/07/06 02:29:45  rmorris
+// Make the javascript interface work correctly when served from win32.
+//
+// Revision 1.10.4.2  2004/06/28 12:12:41  rmorris
+// Porting for for www_int under win32.
+//
 // Revision 1.14  2004/01/28 16:47:49  jimg
 // Removed case for dods_list_c since List has been removed from the DAP.
 // Fixed a missed conflict fromthe last merge.

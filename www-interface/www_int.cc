@@ -33,7 +33,7 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: www_int.cc,v 1.14 2003/12/08 18:08:02 edavis Exp $"};
+static char rcsid[] not_used = {"$Id: www_int.cc,v 1.15 2004/07/08 22:32:19 jimg Exp $"};
 
 #include <stdio.h>
 
@@ -43,6 +43,11 @@ static char rcsid[] not_used = {"$Id: www_int.cc,v 1.14 2003/12/08 18:08:02 edav
 #include <GetOpt.h>
 #include <Pix.h>
 #include <string>
+
+#ifdef WIN32
+#include <io.h>
+#include <fcntl.h>
+#endif
 
 #include "BaseType.h"
 #include "Connect.h"
@@ -111,6 +116,10 @@ main(int argc, char * argv[])
     string admin_name = "";
     char *tcode = NULL;
     int topts = 0;
+
+#ifdef WIN32
+    _setmode(_fileno(stdout), _O_BINARY);
+#endif
 
     putenv("_POSIX_OPTION_ORDER=1"); // Suppress GetOpt's argv[] permutation.
 
@@ -187,7 +196,7 @@ main(int argc, char * argv[])
 	wo.write_variable_entries(global_das, dds);
 	cout << "</table></form>\n\n"
 	     << "<hr>\n"
-	     << "<font size=-1>Tested on Netscape 4.61, Internet Explorer 5.0, 6.0, Mozilla 1.2.1, Galeon 1.2.7 and Konqueror 3.1-13.</font>\n"
+	     << "<font size=-1>Tested on Netscape 4.61, 7.1, Internet Explorer 5.0, Mozilla 1.2.1, 1.4, 1.6, Galeon 1.2.7 and Konqueror 3.1-13. Users have reported problems getting the DODS object using IE 6.0 and NS 7.02. However, the other features work fine on those browsers. </font>\n"
 	     << "<hr>\n\n";
 	if (admin_name != "") {
 	    cout << "<address>Send questions or comments to: <a href=\"mailto:"
@@ -221,6 +230,18 @@ main(int argc, char * argv[])
 }
 
 // $Log: www_int.cc,v $
+// Revision 1.15  2004/07/08 22:32:19  jimg
+// Merged with relese-3-4-3FCS
+//
+// Revision 1.13.2.6  2004/07/05 07:47:34  rmorris
+// For the last output 'mode' fix, a couple of includes are required.  Added.
+//
+// Revision 1.13.2.5  2004/07/05 07:27:55  rmorris
+// Use binary mode to output under win32.
+//
+// Revision 1.13.2.4  2004/06/25 21:20:36  jimg
+// Added to compatibility note: See bug 652.
+//
 // Revision 1.14  2003/12/08 18:08:02  edavis
 // Merge release-3-4 into trunk
 //
