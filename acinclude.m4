@@ -7,7 +7,10 @@
 #
 # jhrg 3/27/95
 #
-# $Id: acinclude.m4,v 1.3 1995/11/17 17:36:42 jimg Exp $
+# Added some of my own macros (don't blame Unidata for them!) starting with
+# DODS_PROG_LEX and down in the file. jhrg 2/11/96
+#
+# $Id: acinclude.m4,v 1.4 1996/02/12 19:54:03 jimg Exp $
 
 # Check for fill value usage.
 
@@ -82,11 +85,13 @@ AC_DEFUN(DODS_DEFAULT, [$1=${$1-"$2"}; AC_SUBST([$1])])
 # connects only stdout to stdin. Thus for portability, stderr must be
 # connected to stdout manually (This is true for IRIX-5.2).
 
+# NB: had to use [[ for [ due to m4's quoting. 11/17/95.
+
 AC_DEFUN(DODS_PROG_LEX, [dnl
     AC_PROG_LEX
     case "$LEX" in
 	flex)
-	    flex_ver1=`flex -V 2>&1 | sed 's/[^0-9]*\(.*\)/\1/'`
+	    flex_ver1=`flex -V 2>&1 | sed 's/[[^0-9]]*\(.*\)/\1/'`
 	    flex_ver2=`echo $flex_ver1 | sed 's/\.//g'`
 	    if test $flex_ver2 -lt 252
 	    then
@@ -106,7 +111,7 @@ AC_DEFUN(DODS_PROG_BISON, [dnl
     AC_CHECK_PROG(YACC,bison,bison)
     case "$YACC" in
 	bison)
-	    bison_ver1=`bison -V 2>&1 | sed 's/[^0-9]*\(.*\)/\1/'`
+	    bison_ver1=`bison -V 2>&1 | sed 's/[[^0-9]]*\(.*\)/\1/'`
 	    bison_ver2=`echo $bison_ver1 | sed 's/\.//g'`
 	    if test $bison_ver2 -lt 122
 	    then
