@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.52 1999/07/23 22:57:57 jimg Exp $
+# $Id: acinclude.m4,v 1.53 1999/07/30 20:01:50 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -684,7 +684,7 @@ AC_DEFUN(DODS_OS, [dnl
     # to also be hard to detect. jhrg 3/23/97
     #  if test -z "$OS"; then
     #  fi 
-    OS=`uname -s | tr '[A-Z]' '[a-z]' | sed 's;/;;g'`
+    OS=`uname -s | tr '[[A-Z]]' '[[a-z]]' | sed 's;/;;g'`
     if test -z "$OS"; then
         AC_MSG_WARN(OS unknown!)
     fi
@@ -692,7 +692,7 @@ AC_DEFUN(DODS_OS, [dnl
         aix)
             ;;
         hp-ux)
-            OS=hpux`uname -r | sed 's/[A-Z.0]*\([0-9]*\).*/\1/'`
+            OS=hpux`uname -r | sed 's/[[A-Z.0]]*\([[0-9]]*\).*/\1/'`
             ;;
         irix)
             OS=${OS}`uname -r | sed 's/\..*//'`
@@ -750,7 +750,7 @@ AC_DEFUN(DODS_MACHINE, [dnl
     AC_MSG_CHECKING(type of machine)
 
     if test -z "$MACHINE"; then
-    MACHINE=`uname -m | tr '[A-Z]' '[a-z]'`
+    MACHINE=`uname -m | tr '[[A-Z]]' '[[a-z]]'`
     case $OS in
         aix*)
             MACHINE=rs6000
@@ -835,8 +835,9 @@ AC_DEFUN(DODS_PROG_PERL, [dnl
     case "$PERL" in
 	perl)
 	    perl_ver=`$PERL -v 2>&1 | awk '/This is perl/ {print}'`
-	    perl_ver=`echo $perl_ver | sed 's/.* version \([[0-9]]*\).*/\1/'`
-	    if test -n "$perl_ver" && test $perl_ver -ge 5
+	    perl_ver=`echo $perl_ver | sed 's/This is perl, version \([[0-9._]]*\).*/\1/'`
+            perl_ver_main=`echo $perl_ver | sed 's/\([[0-9]]*\).*/\1/'`
+	    if test -n "$perl_ver" && test $perl_ver_main -ge 5
 	    then
 		AC_MSG_RESULT(Found perl version ${perl_ver}.)
 	    else
@@ -852,17 +853,23 @@ AC_DEFUN(DODS_PROG_PERL, [dnl
 
 # Added by Ethan, 1999/06/21
 # Look for GNU tar.
+# 
+# I modified the regexp below but it still does not work exactly correctly; 
+# the variable tar_ver should have only the version number in it. However,
+# my version (1.12) spits out a multi-line thing. The regexp below gets the
+# version number from the first line but does not remove the subsequent lines
+# of garbage. 7/15/99 jhrg
+# Added awk line to handle multiline output. 1999/07/22 erd
 
 AC_DEFUN(DODS_PROG_GTAR, [dnl
     AC_CHECK_PROGS(TAR,gtar tar,tar)
     case "$TAR" in
 	*tar)
-	    tar_ver=`$TAR --version 2>&1 | awk '/.*GNU tar/ {print}'`
-	    tar_ver=`echo $tar_ver | sed 's/.*GNU tar[[^0-9._]]*\([[0-9._]]*\).*/\1/'`
-
+	    tar_ver=`$TAR --version 2>&1 | awk '/G[[Nn]][[Uu]] tar/ {print}'`
+	    tar_ver=`echo $tar_ver | sed 's/.*GNU tar[[^0-9.]]*\([[0-9._]]*\)/\1/'`
 	    if test -n "$tar_ver"
 	    then
-		AC_MSG_RESULT(Found version ${tar_ver}.)
+		AC_MSG_RESULT(Found Gnu tar version ${tar_ver}.)
 	    else
 		AC_MSG_ERROR(GNU tar is required.)
 	    fi
