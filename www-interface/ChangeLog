@@ -1,3 +1,27 @@
+2001-01-26  James Gallagher  <jimg@dcz.dods.org>
+
+	* Merged with release-3-2. Tagged release-3-2-1. The next merge
+	should use -j release-3-2-1 -j release-3-2.
+
+	* Removed javascript.h from CVS since it is a generated file.
+
+	* Fixed a bug in the JavaScript code. Now the name of the JS
+	variables are prefixed by `dods_'. This means that DODS variables
+	whose names are also reserved words in JS work break the JS code.
+
+	* Add DODS_XTRALIBS.
+
+	* Moved Logs to the end of each file.
+
+	* Changed the JavaScript template processing.
+
+	* Fixes for exception-based error reporting.
+
+	* Merged changes from release-3-1. There was a goof and a bunch of the
+	changes never made it to the branch. I merged the entire branch.
+	There maybe problems still...
+
+	* Added COPYRIGHT statements.
 
 2000-10-03  James Gallagher  <jimg@dcz.dods.org>
 
