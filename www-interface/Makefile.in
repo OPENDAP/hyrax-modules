@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.5 1999/11/05 00:12:22 jimg Exp $
+# $Id: Makefile.in,v 1.6 2000/10/02 22:08:05 jimg Exp $
 
 
 @SET_MAKE@
@@ -13,7 +13,7 @@ DODS_ROOT = ../../..
 WWW_ROOT=@WWW_ROOT@
 
 INCS = -I. -I$(DODS_ROOT)/include @INCS@
-DEFS = @DEFS@ -DWWW_INT_VER=\"@VERSION@\" -DUSE_LIBGXX_INLINES -DHAVE_CONFIG_H
+DEFS = @DEFS@ -DWWW_INT_VER=\"@VERSION@\"
 CPPFLAGS = @CPPFLAGS@ $(DEFS) $(INCS)
 CFLAGS = @CFLAGS@
 CXXFLAGS = @CXXFLAGS@
