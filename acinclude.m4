@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.71 2001/01/26 19:18:14 jimg Exp $
+# $Id: acinclude.m4,v 1.72 2001/06/15 23:38:36 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -71,11 +71,19 @@ AC_DEFUN(DODS_GET_DODS_ROOT, [dnl
     fullpath=`pwd`
     dir=`basename ${fullpath}`
     dods_root=`echo $fullpath | sed 's@\(.*DODS[[-.0-9a-z]]*\).*@\1@'`
-    AC_MSG_RESULT($dods_root)
+    # three steps to get the `../../' style relative path to the dods root. 
+    # 5/14/2001 jhrg 
+    fullpath=$fullpath/
+    dods_relative=`echo $fullpath | sed 's@.*DODS[[-.0-9a-z]]*/\(.*\)@\1@'`
+    dods_relative=`echo $dods_relative | sed 's@\([[^/]]*\)/@../@g'`
+    AC_MSG_RESULT($dods_root [($dods_relative)])
     AC_DEFINE_UNQUOTED(DODS_ROOT, "$dods_root")
+    AC_SUBST(dods_root)
+    AC_DEFINE_UNQUOTED(DODS_RELATIVE, "$dods_relative")
+    AC_SUBST(dods_relative)
     AC_SUBST(dir)
-    AC_SUBST(fullpath)
-    AC_SUBST(dods_root)])
+    AC_SUBST(fullpath)])
+
 
 # Sets: `DODS_PACKAGES_DIR' to the full pathname of the directory which
 #	contains the third-party packages software. 
@@ -86,14 +94,14 @@ AC_DEFUN(DODS_FIND_PACKAGES_DIR, [dnl
     AC_MSG_CHECKING("for the packages directory")
     # Where does DODS live?
     AC_REQUIRE([DODS_GET_DODS_ROOT])
-    DODS_PACKAGES_DIR=`ls -1d $dods_root/src/packages* 2> /dev/null`
+    DODS_PACKAGES_DIR=`ls -1d ${dods_relative}src/packages* 2> /dev/null`
     if test -z "$DODS_PACKAGES_DIR"
     then
 	AC_MSG_ERROR("Could not find the third-party packages!")
     fi
     AC_MSG_RESULT($DODS_PACKAGES_DIR)
-    LDFLAGS="$LDFLAGS -L${dods_root}/lib"
-    INCS="$INCS -I${dods_root}/include"
+    LDFLAGS="$LDFLAGS -L${dods_relative}lib"
+    INCS="$INCS -I${dods_relative}include"
     AC_SUBST(DODS_PACKAGES_DIR)])
 
 # Because the www library is now included in the DODS_ROOT/packages-*/ 
@@ -109,9 +117,9 @@ AC_DEFUN(DODS_FIND_WWW_ROOT, [dnl
 
     AC_ARG_WITH(www,
 	[  --with-www=DIR          Directory containing the W3C header files],
-	WWW_ROOT=${withval}, WWW_ROOT=$dods_root/include/w3c-libwww)
-    AC_SUBST(WWW_ROOT)
-    INCS="$INCS -I\$(WWW_ROOT)"
+	WWW_ROOT=${withval}, WWW_ROOT=${dods_relative}include/w3c-libwww)
+    dnl AC_SUBST(WWW_ROOT)
+    INCS="$INCS -I$WWW_ROOT"
     AC_SUBST(INCS)
     AC_MSG_RESULT($WWW_ROOT)])
 
@@ -154,7 +162,7 @@ AC_DEFUN(DODS_GUILIBS, [dnl
     AC_REQUIRE([DODS_TK_LIB])
     AC_REQUIRE([DODS_TCL_LIB])
 
-    . ${dods_root}/lib/tkConfig.sh
+    . ${dods_relative}lib/tkConfig.sh
     GUILIBS="$GUILIBS $TK_LIBS"
     AC_SUBST(GUILIBS)])
 
@@ -412,7 +420,7 @@ AC_DEFUN(DODS_MATLAB, [dnl
 
 	if test -z "$MATLAB_ROOT"
 	then
-	    AC_MSG_ERROR(Matlab not found! Run configure using -with-matlab option)
+	    AC_MSG_ERROR(Matlab not found! Run configure --help)
         else
 	    AC_SUBST(MATLAB_ROOT)
 	    AC_MSG_RESULT($MATLAB_ROOT)
@@ -712,20 +720,23 @@ AC_DEFUN(DODS_CHECK_SIZES, [dnl
     else
 	AC_MSG_ERROR(How do I get a 32 bit integer on this machine?)
     fi
-    AC_SUBST(DODS_INT32)
-    AC_SUBST(DODS_UINT32)
-    AC_SUBST(XDR_INT32)
-    AC_SUBST(XDR_UINT32)
+    # I'm using the three arg form of AC_DEFINE_UNQUOTED because autoheader
+    # needs the third argument (although I don't quite get the specifics... 
+    # 2/15/2001 jhrg
+    AC_DEFINE_UNQUOTED(DINT32, $DODS_INT32, [int32])
+    AC_DEFINE_UNQUOTED(DUINT32, $DODS_UINT32, [uint32])
+    AC_DEFINE_UNQUOTED(XDR_INT32, $XDR_INT32, [xdr int32])
+    AC_DEFINE_UNQUOTED(XDR_UINT32, $XDR_UINT32, [xdr uint32])
 
     # Assume nobody's hosed the 16-bit types...
     DODS_INT16=short
     DODS_UINT16="unsigned short"
     XDR_INT16=xdr_short
     XDR_UINT16=xdr_u_short
-    AC_SUBST(DODS_INT16)
-    AC_SUBST(DODS_UINT16)
-    AC_SUBST(XDR_INT16)
-    AC_SUBST(XDR_UINT16)
+    AC_DEFINE_UNQUOTED(DINT16, $DODS_INT16, [dint16])
+    AC_DEFINE_UNQUOTED(DUINT16, $DODS_UINT16, [uint16])
+    AC_DEFINE_UNQUOTED(XDR_INT16, $XDR_INT16, [xdr int16])
+    AC_DEFINE_UNQUOTED(XDR_UINT16, $XDR_UINT16, [xdr uint16])
 
     if test $ac_cv_sizeof_char -eq 1
     then
@@ -733,7 +744,7 @@ AC_DEFUN(DODS_CHECK_SIZES, [dnl
     else
 	AC_MSG_ERROR(How do I get an 8 bit unsigned integer on this machine?)
     fi
-    AC_SUBST(DODS_BYTE)
+    AC_DEFINE_UNQUOTED(DBYTE, $DODS_BYTE, [dbyte])
 
     if test $ac_cv_sizeof_double -eq 8
     then
@@ -744,7 +755,9 @@ AC_DEFUN(DODS_CHECK_SIZES, [dnl
     else
 	AC_MSG_ERROR(How do I get floating point types on this machine?)
     fi
-    AC_SUBST(DODS_FLOAT64)
-    AC_SUBST(DODS_FLOAT32)
-    AC_SUBST(XDR_FLOAT64)
-    AC_SUBST(XDR_FLOAT32)])
+    AC_DEFINE_UNQUOTED(DFLOAT64, $DODS_FLOAT64, [dfloat64])
+    AC_DEFINE_UNQUOTED(DFLOAT32, $DODS_FLOAT32, [dfloat32])
+    AC_DEFINE_UNQUOTED(XDR_FLOAT64, $XDR_FLOAT64, [xdr float64])
+    AC_DEFINE_UNQUOTED(XDR_FLOAT32, $XDR_FLOAT32, [xdr float32])])
+
+

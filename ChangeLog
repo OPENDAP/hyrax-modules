@@ -1,7 +1,17 @@
+
+2001-06-14  James Gallagher  <jimg@dcz.dods.org>
+
+	* The directory feature now works with an valid directory name; it
+	does not have to end with a slash (/).
+
 2001-01-26  James Gallagher  <jimg@dcz.dods.org>
 
 	* Merged with release-3-2-3. The next merge should use -j
 	release-3-2-3 -j release-3-2.
+
+	* Tagged release-3-2-3 to match the top level directory.
+
+2001-01-26  James Gallagher  <jimg@dcz.dods.org>
 
 	* Tagged release-3-2-3 to match the top level directory.
 

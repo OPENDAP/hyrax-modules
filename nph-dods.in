@@ -1,11 +1,14 @@
 #!@PERL@ -T
+# -*- Perl -*-
 
-# Replace the line witn #!/path/to/your/perl to avoid the overhead of first
-# running the shell and then starting perl.
+# Make sure that the path after the `#!' at the start of this file is the
+# path to Perl on your system. If there are several versions of perl, make
+# sure this points to a perl that is at least version 5.004.
 
-# Dispatch the URL to one of the filter programs that makes up the DODS
-# server. The filter program is executed by this script using exec. If the 
-# filter program cannot be run, return an error message. 
+# This script handles the dispatch of the URL to one of the filter programs
+# that makes up the DODS server. The filter program is executed by this
+# script using exec. If the filter program cannot be run, an error message
+# will be returned.
 #
 # See the DODS_Dispatch.pm class for information about how environment
 # variables are used.
@@ -13,12 +16,12 @@
 # NB: This script assumes that all data is rooted in the http document
 # directory subtree. If you want to access files outside that subtree, use a
 # symbolic link and make sure that your server is set to follow symbolic
-# links. To configure your server to follow symbolic links, add
-# FollowSymLinks to the Options in the access.conf file. 
+# links. To configure an Apache server to follow symbolic links, add
+# FollowSymLinks to the Options in the httpd.conf file. 
 #
-# Options: -T: use Perl's taint mode. -S search for the script using PATH.
+# Options: -T: use Perl's taint mode.
 #
-# $Id: nph-dods.in,v 1.2 2001/01/26 19:18:14 jimg Exp $
+# $Id: nph-dods.in,v 1.3 2001/06/15 23:38:36 jimg Exp $
 
 # Force PATH. This should work for most UNIXs. Forcing PATH means that -T
 # (taint) won't complain about running programs. Perl will consider any
@@ -26,19 +29,29 @@
 # adding, for example, /usr/local/bin here might break other operations
 # (places where we use exec or system in DODS_Dispatch or DODS_Cache). 
 $ENV{PATH} = '/bin:/usr/bin:/sbin:/usr/sbin';
-$ENV{IFS} = "" if $ENV{IFS} ne ""; # For the truely paranoid...
+$ENV{IFS} = "" if $ENV{IFS} ne ""; # For the truly paranoid...
 
-$ENV{BASH_ENV} = '';		# Needed for Perl 5.6.0 on Linux 12/11/2000
-				# jhrg 
+# Needed for Perl 5.6.0 on Linux 12/11/2000 jhrg
+$ENV{BASH_ENV} = '';
+
+# These environment variables are used by the JGOFS server when there's no
+# JGOFS user on the host system. 5/31/2001 jhrg
+$ENV{"JGOFS_OBJECT"} = "@dods_root@/etc/";
+$ENV{"JGOFS_METHOD"} = "@dods_root@/etc/";
 
 use lib (".");			# Look for modules in the cwd.
 use DODS_Dispatch;
 use DODS_Cache;
 
-# The DODS_Dispatch object reads information from the environment variables
+my $bad_command = "The DODS server dispatch software could not figure out how
+to handle this request. Please check that the URL is correct. If you're sure
+this should work, please contact the ";
+
+# The DODS_Dispatch object reads information from environment variables
 # and builds up a command based on the format of a DODS URL. 
-$dispatch = new DODS_Dispatch("dods/@VERSION@", "support\@unidata.ucar.edu",
-			      "./dods.ini");
+$dispatch = new DODS_Dispatch("DAP/@DAP_VERSION@",
+			      "support\@unidata.ucar.edu",
+			      "./dods.ini", ("jg"));
 
 $dispatch->cache_dir("/usr/tmp");
 
@@ -55,10 +68,30 @@ if (is_compressed($dispatch->filename())) {
 if ($command[0] ne "") {		# if no error...
     exec(@command);
 } else {
-    $dispatch->print_error_msg();
+    $dispatch->print_error_msg($bad_command, 1);
 }
 
 # $Log: nph-dods.in,v $
+# Revision 1.3  2001/06/15 23:38:36  jimg
+# Merged with release-3-2-4.
+#
+# Revision 1.1.4.4  2001/06/08 23:51:52  jimg
+# Changed the error message returned when @command is trashed.
+# Changed the version info passed into DODS_Dispatch.pm; it matches the new
+# version stuff.
+#
+# Revision 1.1.4.3  2001/06/01 00:54:46  jimg
+# Added JGOFS environment variables along with a little comment explaining why
+# they are here.
+#
+# Revision 1.1.4.2  2001/05/09 23:10:00  jimg
+# For the directory service, files routed through the HTML form generator
+# are now chosen based on the regexes listed in dods.ini. It's possible to
+# configure a given nph-dods to not use some of the expressions in the
+# dods.ini file, so regexes like .* won't do odd things like route all files
+# through the form interface. This is a partial fix, really, since the
+# regexes still might include files that will cause the server to gag.
+#
 # Revision 1.2  2001/01/26 19:18:14  jimg
 # Merged with release-3-2.
 #

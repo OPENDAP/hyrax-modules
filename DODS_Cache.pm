@@ -1,6 +1,6 @@
 
 # (c) COPYRIGHT URI/MIT 1997
-# Please read the full copyright statement in the file COPYRIGH.  
+# Please read the full copyright statement in the file COPYRIGHT.
 #
 # Authors:
 #      jhrg,jimg       James Gallagher (jgallagher@gso.uri.edu)
@@ -114,6 +114,7 @@ sub decompress_and_cache {
     # already been decompressed and cached.
     if ((! -e $cache_entity) && (-e $pathname)) { 
 	my $uncomp = "gzip -c -d " . $pathname . " > " .  $cache_entity;
+	# Using system opens a potential hole. 5/31/2001 jhrg
 	system($uncomp); # uncompress and put output to cache
     }
 
@@ -188,6 +189,12 @@ if ($test) {
 1;
 
 # $Log: DODS_Cache.pm,v $
+# Revision 1.5  2001/06/15 23:38:36  jimg
+# Merged with release-3-2-4.
+#
+# Revision 1.4.2.1  2001/06/15 17:20:03  jimg
+# Added comment about a potential security hole.
+#
 # Revision 1.4  2000/10/19 17:17:10  jimg
 # Added functions to complete the caching system. It is still pretty basic...
 #

@@ -7,13 +7,14 @@
 #
 # SERVER_SOFTWARE
 #      NCSA/1.5.2 
-# SERVER_NAME
+export SERVER_NAME=dcz.dods.org
+
 #      dcz.cvo.oneworld.com 
 # GATEWAY_INTERFACE
 #      CGI/1.1 
 # SERVER_PROTOCOL
 #      HTTP/1.0 
-# SERVER_PORT
+export SERVER_PORT=80
 #      80 
 # REQUEST_METHOD
 #      GET 
@@ -36,17 +37,20 @@
 
 #PATH_INFO="/version"
 
-PATH_INFO="/data/nc/fnoc1.nc.dods"
+#PATH_INFO="/data/"
+#PATH_INFO="/data/hdf/S3096277.HDF.Z.dds"
+PATH_INFO="/data/nc/fnoc1.bc.dds"
 export PATH_INFO
 
-SCRIPT_NAME="/test/nph-dods"
+SCRIPT_NAME="/test-3.2/nph-dods"
 export SCRIPT_NAME
 
-QUERY_STRING="u"
+QUERY_STRING=""
 export QUERY_STRING
 
-PATH_TRANSLATED="/home/httpd/html/htdocs${PATH_INFO}"
+PATH_TRANSLATED="/home/httpd/html${PATH_INFO}"
 export PATH_TRANSLATED
 
 HTTP_XDODS_ACCEPT_TYPES=All
 export HTTP_XDODS_ACCEPT_TYPES
+

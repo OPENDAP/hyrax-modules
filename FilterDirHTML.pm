@@ -6,68 +6,54 @@
 
 # Fixed link to parent directory. 8/12/98 jhrg
 
-# $Log: FilterDirHTML.pm,v $
-# Revision 1.7  1999/11/04 23:59:58  jimg
-# Result of merge with 3-1-3
-#
-# Revision 1.6.2.1  1999/09/20 20:18:56  jimg
-# Changed map to grep in the code the evaluates the `pass_through_patterns'.
-# This fixes a bug that showed up on Linux in Perl 5.004*.
-# Added to the pass_through_patterns so that .das, .dds and .ovr* files don't
-# get .html appended.
-#
-# Revision 1.6  1999/06/22 17:08:10  jimg
-# Added comments to describe what the overloads do.
-# Reduced the number of parameters given to the ctor.
-# Modified so that README, .html and directory sorting URLs are not routed to
-# the html form filter.
-# This code is now called from DODS_Dispatch.pm.
-#
-# Revision 1.5  1999/06/10 23:52:49  jimg
-# Fixed the `parent directory' link.
-#
-# Revision 1.4  1998/11/19 03:32:35  jimg
-# Changed from `Dataurl' to `url' to match the query_form.pl code.
-#
-# Revision 1.3  1998/09/29 22:58:29  jimg
-# Fixed a bug where the protocol and machine part of a dataset URL were
-# repeated (meaning that they appeared twice in the same URL).
-#
-# Revision 1.2  1998/08/12 18:20:31  jimg
-# Added the `server' param to those that are passed to sub query_dir.pl
-# calls. This fixes a bug where going into nested directories caused dataset
-# URLs to be built without server information.
-#
-# Revision 1.1  1998/08/12 18:11:13  jimg
-# Initial revision.
-#
-
 # Set this to 1, 2 to get varius levels of instrumentation sent to stderr.
 my $debug = 0;
 
 # Add here patterns that describe files that should *not* be treated as data
 # files (and thus should not be routed through the DODS HTML form generator).
 # 6/15/99 jhrg
-my @pass_through_patterns = ('README', '.*\.html', '.*\.d[da]s', 
-			     '.*\.ovr.*', '.*\?[A-Z]=[A-Z]');
+#
+# These are not needed anymore unless we let a `.*' regex into the
+# dataset_regexes passed in to the ctor. The code which builds up this list
+# can exclude certain regexes (like the JGOFS ones) that cause problems
+# becuase they flag as datasets just about anything. 5/9/2001 jhrg
+my @pass_through_patterns = ('.*\?[A-Z]=[A-Z]');
+
+# old value. From when pass_through_patterns was used differently. 5/9/2001
+# jhrg 
+# ('README', '.*\.html', '.*\.d[da]s', '.*\.ovr.*', '.*\?[A-Z]=[A-Z]');
 
 package FilterDirHTML;
 require HTML::Filter;
 @ISA=qw(HTML::Filter);
 
+# The ctor takes three arguments, the server's URL, the directory's URL (both
+# scalars) and a list of regexs that define that types of files this server
+# recognizes as datasets (or comprising datasets). The later is probably
+# derived from the dods.ini file. Note that the directory URL is used to
+# build references to files found in the data directories that should not be
+# routed through the DODS server. For example, it's an error to run a regulat
+# html file through a DODS server. 5/9/2001 jhrg
+
 sub new {
     my $this = shift;
-    my ($ext, $server) = @_;
+    my ($server, $directory, @dataset_regexes) = @_;
     my $class = ref($this) || $this;
     my $self = {};
     bless $self, $class;
 
-    # $ext holds a regex used to choose which files in a directory are *data*
-    # files and should be routed to the query_form.pl CGI.
-    $self->{ext} = $ext;
+    print STDERR "dataset_regexes: @dataset_regexes\n" if $debug > 1;
 
-    # URL fragment that names the server for the given extension.
+    # $dataset_regexes holds a list of regexes used to choose which files in
+    # a directory are *data* files and should be routed to the HTML form
+    # interface.
+    $self->{dataset_regexes} = \@dataset_regexes;
+
+    # URL fragment that names the server.
     $self->{server} = $server;
+
+    # URL that names the directory page being processed.
+    $self->{directory} = $directory;
 
     # True (1) when the first anchor has been processed. The first anchor is
     # a link to the CWD's parent. We need to do special processing to get
@@ -104,10 +90,10 @@ sub start {
 	$self->SUPER::start(@_);
 	return;
     }
-	
+
     my($tag, $attr, $attrseq, $origtext) = @_;
 
-    print "tag: " . $tag . "\n" if $debug > 0;
+    print STDERR "tag: " . $tag . "\n" if $debug > 0;
 
     if ($tag eq "title") {
 	$self->{title_seen} = 1;
@@ -119,7 +105,7 @@ sub start {
 	$self->{h1_seen} = 1;
     }
     elsif ($tag eq "a") {
-	print "Found and anchor! $attr->{href}\n" if $debug > 0;
+	print STDERR "Found and anchor! $attr->{href}\n" if $debug > 0;
 	$self->{anchor_seen} = 1;
 	$self->{anchor_href} = $attr->{href};
     }
@@ -141,7 +127,7 @@ sub end {
 
     my ($tag, $origtext) = @_;
 
-    print "tag: $tag \n" if $debug > 0;
+    print STDERR "tag: $tag \n" if $debug > 0;
 
     $self->SUPER::end(@_);
     if ($tag eq "title") {
@@ -200,6 +186,10 @@ sub text {
 
 sub output {
     my $self = shift;
+    my $dataset_regexes = $self->{dataset_regexes};
+
+    print STDERR "self->{anchor_ref}: $self->{anchor_ref}\n" if $debug > 2;
+    print STDERR "self->{server}: $self->{server}\n" if $debug > 2;
 
     # If this is not an index then do nothing.
     if (!$self->{is_index}) {
@@ -229,23 +219,24 @@ sub output {
 		              . $self->{anchor_href} . ">"; 
 	    }
 	}
-	# Test special case files which will pass the extension test is the
-	# extension is `.*'
+	# These are anchors that are not datasets but still should be passed
+	# through the DODS server when dereferenced. 5/9/2001 jhrg
 	elsif (grep { $self->{anchor_href} =~ $_ } @pass_through_patterns) {
  	    $new_anchor = "<A HREF=" . $self->{anchor_href} . ">"; 
-	    print "Anchor matches a pass through pattern: $self->{anchor_href}\n" if $debug > 0;
+	    print STDERR "Anchor matches a pass through pattern: $self->{anchor_href}\n" if $debug > 0;
 	}
 	# Is the href a data file? If so append .html to the file name after
 	# building a full URL.
-	elsif ($self->{anchor_href} =~ /.*$self->{ext}$/) {
+	elsif (grep {$self->{anchor_href} =~ $_} @$dataset_regexes) {
 	    $new_anchor = "<A HREF=" . $self->{server} . $self->{anchor_href}
 	                  . ".html>"; 
-	    print "Anchor matches extension pattern ($self->{ext}): $self->{anchor_href}\n" if $debug > 0;
+	    print STDERR "Anchor matches extension pattern ($self->{dataset_regexes}): $self->{anchor_href}\n" if $debug > 0;
 	}
 	# Is it a regular file?
 	else {
- 	    $new_anchor = "<A HREF=" . $self->{anchor_href} . ">"; 
-	    print "Anchor is a regular file: $self->{anchor_href}\n" if $debug > 0;
+ 	    $new_anchor = "<A HREF=" . $self->{directory} 
+	                  . $self->{anchor_href} . ">"; 
+	    print STDERR "Anchor is a regular file: $self->{directory}$self->{anchor_href}\n" if $debug > 0;
 	}
 
 	$self->SUPER::output($new_anchor);
@@ -254,3 +245,51 @@ sub output {
 	$self->SUPER::output(@_);
     }
 }
+
+1;
+
+# $Log: FilterDirHTML.pm,v $
+# Revision 1.8  2001/06/15 23:38:36  jimg
+# Merged with release-3-2-4.
+#
+# Revision 1.7.6.1  2001/05/09 23:10:00  jimg
+# For the directory service, files routed through the HTML form generator
+# are now chosen based on the regexes listed in dods.ini. It's possible to
+# configure a given nph-dods to not use some of the expressions in the
+# dods.ini file, so regexes like .* won't do odd things like route all files
+# through the form interface. This is a partial fix, really, since the
+# regexes still might include files that will cause the server to gag.
+#
+# Revision 1.7  1999/11/04 23:59:58  jimg
+# Result of merge with 3-1-3
+#
+# Revision 1.6.2.1  1999/09/20 20:18:56  jimg
+# Changed map to grep in the code the evaluates the `pass_through_patterns'.
+# This fixes a bug that showed up on Linux in Perl 5.004*.
+# Added to the pass_through_patterns so that .das, .dds and .ovr* files don't
+# get .html appended.
+#
+# Revision 1.6  1999/06/22 17:08:10  jimg
+# Added comments to describe what the overloads do.
+# Reduced the number of parameters given to the ctor.
+# Modified so that README, .html and directory sorting URLs are not routed to
+# the html form filter.
+# This code is now called from DODS_Dispatch.pm.
+#
+# Revision 1.5  1999/06/10 23:52:49  jimg
+# Fixed the `parent directory' link.
+#
+# Revision 1.4  1998/11/19 03:32:35  jimg
+# Changed from `Dataurl' to `url' to match the query_form.pl code.
+#
+# Revision 1.3  1998/09/29 22:58:29  jimg
+# Fixed a bug where the protocol and machine part of a dataset URL were
+# repeated (meaning that they appeared twice in the same URL).
+#
+# Revision 1.2  1998/08/12 18:20:31  jimg
+# Added the `server' param to those that are passed to sub query_dir.pl
+# calls. This fixes a bug where going into nested directories caused dataset
+# URLs to be built without server information.
+#
+# Revision 1.1  1998/08/12 18:11:13  jimg
+# Initial revision.
