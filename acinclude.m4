@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.29 1997/02/10 06:19:54 jimg Exp $
+# $Id: acinclude.m4,v 1.30 1997/03/27 18:37:41 jimg Exp $
 
 # Check for fill value usage.
 
@@ -157,39 +157,32 @@ AC_DEFUN(DODS_FIND_GPP_INC, [dnl
     AC_MSG_RESULT($GPP_INC)
     AC_SUBST(GPP_INC)])
 
-dnl look for expect 5.21, 5.20 *or* 5.19. NB: 5.19 has a bug that DODS
-dnl exercises but there are patched version of the library out so many will
-dnl work even though the official release won't.
-
 AC_DEFUN(DODS_FIND_EXPECT, [dnl
     HAVE_EXPECT=0
 
+    AC_ARG_WITH(expect,
+        [  --with-expect=ARG       What is the Tcl and Expect prefix directory],
+        EXPECT_PATH=${withval};HAVE_EXPECT=1, EXPECT_PATH="")
+
+    if test "$EXPECT_PATH"
+    then
+      INCS="$INCS -I${EXCEPT_PATH}/include"
+      LDFLAGS="$LDFLAGS -L${EXCEPT_PATH}/lib"
+      AC_MSG_RESULT("Set the Tcl and Expect root directory to $EXPECT_PATH")
+    fi
+
+    dnl Now check for sunos or sysv type names.
+
     AC_CHECK_LIB(expect521, main, HAVE_EXPECT=1;expect=expect521;tcl=tcl76;\
-	LIBS="$LIBS -l${expect} -l${tcl}", , -ltcl76)
+	  LIBS="$LIBS -l${expect} -l${tcl}", , -ltcl76)
 
-    if test $HAVE_EXPECT -eq 0; then
+    if test $HAVE_EXPECT -eq 0
+    then
         AC_CHECK_LIB(expect5.21, main, \
-		HAVE_EXPECT=1;expect=expect5.21;tcl=tcl7.6;\
-		LIBS="$LIBS -l${expect} -l${tcl}", , -ltcl7.6)
+		  HAVE_EXPECT=1;expect=expect5.21;tcl=tcl7.6;\
+		  LIBS="$LIBS -l${expect} -l${tcl}", , -ltcl7.6)
     fi
 
-    if test $HAVE_EXPECT -eq 0; then
-        AC_CHECK_LIB(expect520, main, \
-		HAVE_EXPECT=1;expect=expect520;tcl=tcl75;\
-		LIBS="$LIBS -l${expect} -l${tcl}", , -ltcl75)
-    fi
-
-    if test $HAVE_EXPECT -eq 0; then
-        AC_CHECK_LIB(expect5.20, main, \
-		HAVE_EXPECT=1;expect=expect5.20;tcl=tcl7.5;\
-		LIBS="$LIBS -l${expect} -l${tcl}", , -ltcl7.5)
-    fi
-
-    if test $HAVE_EXPECT -eq 0; then
-        AC_CHECK_LIB(expect, main, \
-		HAVE_EXPECT=1;expect=expect;tcl=tcl7.4;\
-		LIBS="$LIBS -l${expect} -l${tcl}", , -ltcl7.4)
-    fi
 
     dnl Part two: Once we have found expect (and tcl), locate the tcl include
     dnl directory. Assume that all the tcl includes live where tclRegexp.h
@@ -198,27 +191,25 @@ AC_DEFUN(DODS_FIND_EXPECT, [dnl
     AC_CHECK_HEADER(tclRegexp.h, found=1, found=0)
 
     dnl Look some other places if not in the standard ones.
-   
-    tcl_include_paths="$DODS_ROOT/third_party/tcl7.6/generic \
-			/usr/local/src/tcl7.5/generic \
-			/usr/local/src/tcl7.6/generic \
-			/usr/local/src/tcl7.4/"
+
+    tcl_include_paths="/usr/local/src/tcl7.6/generic \
+		       $EXCEPT_PATH/src/tcl7.6/generic"
 
     if test $found -eq 0
     then
-        AC_MSG_CHECKING(for tclRegex.h in some more places)
+	AC_MSG_CHECKING(for tclRegex.h in some more places)
 
 	for d in $tcl_include_paths
 	do
 	    if test -f ${d}/tclRegexp.h
 	    then
 		INCS="$INCS -I${d}"
-		AC_SUBST(INCS)
 		AC_MSG_RESULT($d)
 		found=1
-	        break
+		break
 	    fi
-        done
+	done
+
 	if test $found -eq 0 
 	then
 	    AC_MSG_WARN(not found)
@@ -286,10 +277,10 @@ AC_DEFUN(DODS_WWW_ROOT, [dnl
 	[  --with-www=DIR          Directory containing the W3C software],
 	WWW_ROOT=${withval}, WWW_ROOT=)
 
-    AC_MSG_CHECKING(for the WWW library root directory)
-
     if test -z "$WWW_ROOT"
     then
+        AC_MSG_CHECKING(for the WWW library root directory)
+
 	for p in /usr/local/src/WWW /usr/local/WWW \
 		 /usr/local/src/w3c-libwww /usr/local/w3c-libwww \
 		 /usr/contrib/src/w3c-libwww /usr/contrib/w3c-libwww \
@@ -347,22 +338,36 @@ AC_DEFUN(DODS_SEM, [dnl
 # Find the matlab root directory
 
 AC_DEFUN(DODS_MATLAB, [dnl
-    AC_MSG_CHECKING(for matlab root)
+    AC_ARG_WITH(matlab,
+        [  --with-matlab=ARG       Where is the Matlab root directory],
+        MATLAB_ROOT=${withval}, MATLAB_ROOT="")
 
-    MATLAB_ROOT=`cmex -v 2>&1 | awk '/MATLAB *= / {print}'`
-    MATLAB_ROOT=`echo $MATLAB_ROOT | sed 's@[[^/]]*\(/.*\)@\1@'`
-    
-    AC_SUBST(MATLAB_ROOT)
-    
+    if test -z "$MATLAB_ROOT"
+    then
+        AC_MSG_CHECKING(for matlab root)
+
+	MATLAB_ROOT=`cmex -v 2>&1 | awk '/MATLAB *= / {print}'`
+	MATLAB_ROOT=`echo $MATLAB_ROOT | sed 's@[[^/]]*\(/.*\)@\1@'`
+
+	if test -z "$MATLAB_ROOT"
+	then
+	    AC_MSG_ERROR(Matlab not found! Run configure using -with-matlab option)
+        else
+	    AC_SUBST(MATLAB_ROOT)
+	    AC_MSG_RESULT($MATLAB_ROOT)
+        fi
+    else
+        AC_SUBST(MATLAB_ROOT)
+        AC_MSG_RESULT("Set Matlab root to $MATLAB_ROOT")
+    fi
+
     dnl Find the lib directory (which is named according to machine type).
-    matlab_lib_dir=`find $MATLAB_ROOT -name libmat.a \
-		| sed 's@\(.*\)/libmat.a@\1@'`
+    matlab_lib_dir=`find $MATLAB_ROOT -name libmat.a -print \
+		    | sed 's@\(.*\)/libmat.a@\1@'`
     if test "$matlab_lib_dir"
     then
 	LDFLAGS="$LDFLAGS -L$matlab_lib_dir"
-    fi
-
-    AC_MSG_RESULT($MATLAB_ROOT)])
+    fi])
 
 # Find the root directory of the current rev of gcc
 
@@ -378,11 +383,14 @@ AC_DEFUN(DODS_GCC, [dnl
 
 AC_DEFUN(DODS_OS, [dnl
     AC_MSG_CHECKING(type of operating system)
+dnl I have removed the following test because some systems (e.g., SGI)
+dnl define OS in a way that breaks this code but that is close enough
+dnl to also be hard to detect. jhrg 3/2397
+dnl    if test -z "$OS"; then
+dnl    fi 
+    OS=`uname -s | tr '[A-Z]' '[a-z]' | sed 's;/;;g'`
     if test -z "$OS"; then
-      OS=`uname -s | tr '[A-Z]' '[a-z]' | sed 's;/;;g'`
-      if test -z "$OS"; then
         AC_MSG_WARN(OS unknown!)
-      fi
     fi
     case $OS in
         aix)
