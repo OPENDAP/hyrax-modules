@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.9 1997/01/29 20:53:58 jimg Exp $
+# $Id: Makefile.in,v 1.10 1997/02/06 19:46:36 jimg Exp $
 
 @SET_MAKE@
 
@@ -88,8 +88,8 @@ writeval: write_val.o name_map.o $(CLIENTOBJS)
 	$(CXX) $(LDFLAGS) -o writeval write_val.o name_map.o \
 		$(CLIENTOBJS) $(LIBS)
 
-loaddods: loaddods.o variable.o startchild.o queue.o
-	$(CMEX) $(CMEXFLAGS) loaddods.o variable.o startchild.o queue.o
+loaddods: loaddods.o variable.o queue.o
+	$(CMEX) $(CMEXFLAGS) loaddods.o variable.o queue.o
 
 
 urlqueue: urlqueue.o queue.o
@@ -106,6 +106,9 @@ install-client: urlqueue writeval loaddods
 	$(INSTALL_PROGRAM) loaddods.mex* $(bindir)
 
 Makefile: ${srcdir}/Makefile.in
+	${SHELL} ./config.status
+
+config_writeval.h: config_writeval.h.in
 	${SHELL} ./config.status
 
 # Tests
@@ -133,9 +136,10 @@ tags:
 
 .PHONY: depend
 depend: 
+	> dependencies
 	@depend@ -m dependencies \
 	-- $(CPPFLAGS) -I/usr/local/lib/g++-include -- \
-	$(CLIENTSRCS) write_val.cc name_map.cc
+	$(CLIENTSRCS) write_val.cc name_map.cc queue.c variable.c loaddods.c
 
 .SUFFIXES:      .o .cc .c
 
