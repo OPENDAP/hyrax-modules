@@ -10,6 +10,9 @@
 // 3/12/98 jhrg
 
 // $Log: AsciiByte.cc,v $
+// Revision 1.2  1998/03/16 19:47:36  jimg
+// Fixed lame comments.
+//
 // Revision 1.1  1998/03/13 21:25:15  jimg
 // Added
 //
@@ -18,7 +21,7 @@
 #pragma implementation
 #endif
 
-// The NewByte `helper function' creates a pointer to the a AsciiByte and
+// The NewByte `helper function' creates a pointer to an AsciiByte and
 // returns that pointer. It takes the same arguments as the class's ctor. If
 // any of the variable classes are subclassed (e.g., to make a new Byte like
 // HDFByte) then the corresponding function here, and in the other class
