@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.32 1998/09/16 17:04:28 jimg Exp $
+# $Id: Makefile.in,v 1.33 1998/09/16 23:05:20 jimg Exp $
 
 @SET_MAKE@
 
@@ -24,13 +24,13 @@ INCS = -I. -I$(DODS_ROOT)/include -I$(MATLAB_ROOT)/extern/include @INCS@
 DEFS = @DEFS@ -DUSE_LIBGXX_INLINES
 CPPFLAGS = @CPPFLAGS@ $(DEFS) $(INCS)
 CFLAGS = @CFLAGS@
-CXXFLAGS = @CXXFLAGS@ -fno-rtti
+CXXFLAGS = @CXXFLAGS@
 LDFLAGS = @LDFLAGS@ -L. -L$(DODS_ROOT)/lib
 LFLAGS = -8
 YFLAGS = -d
-LIBS = -ldap++ -lrx @LIBS@
+LIBS = -ldap++ @LIBS@
 MAT_LIBS = -ldap++ @MATLIBS@ @LIBS@
-TAGS_FLAGS = -b
+TAGS_FLAGS = --include=../dap*/TAGS
 CMEXFLAGS = -g @MAT_VERSION_FLAG@
 
 # Set the instalation directories; prefix can be set on the command line
@@ -163,7 +163,7 @@ loaddods-check: writeval
 
 clean:	
 	-rm -f *.o *.sum *.log *~ core
-	-rm -f $(PROG) loaddods.mex* extend.mex*
+	-rm -f $(PROG)
 
 distclean: clean
 	-rm -f config.status config.log config.cache
@@ -213,7 +213,7 @@ check-version:
 
 .PHONY: tags
 tags:
-	$(TAGS) $(TAGS_FLAGS) *.cc *.h *.lex *.y
+	$(TAGS) $(TAGS_FLAGS) *.cc *.h *.c
 
 .SUFFIXES:      .o .cc .c
 
