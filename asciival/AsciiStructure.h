@@ -12,6 +12,9 @@
 // 3/12/98 jhrg
 
 // $Log: AsciiStructure.h,v $
+// Revision 1.2  1998/09/16 23:31:29  jimg
+// Added print_all_vals().
+//
 // Revision 1.1  1998/03/13 21:25:25  jimg
 // Added
 //
@@ -40,6 +43,9 @@ public:
 
     virtual void print_val(ostream &os, String space = "", 
 			   bool print_decl_p = true);
+
+    virtual void print_all_vals(ostream &os, XDR *src, DDS *dds, 
+				String space = "", bool print_decl_p = true);
 };
 
 #endif

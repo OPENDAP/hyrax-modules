@@ -10,6 +10,9 @@
 // 3/12/98 jhrg
 
 // $Log: AsciiStructure.cc,v $
+// Revision 1.2  1998/09/16 23:31:53  jimg
+// Added print_all_vals().
+//
 // Revision 1.1  1998/03/13 21:25:19  jimg
 // Added
 //
@@ -26,6 +29,7 @@
 #include <String.h>
 
 #include "AsciiStructure.h"
+#include "AsciiSequence.h"
 #include "name_map.h"
 
 extern bool translate;
@@ -109,3 +113,35 @@ AsciiStructure::print_val(ostream &os, String space, bool print_decls)
     for (Pix p = first_var(); p; next_var(p), (void)(p && os << separator))
 	var(p)->print_val(os, "", print_decls);
 }
+
+void
+AsciiStructure::print_all_vals(ostream &os, XDR *src, DDS *dds, String, bool)
+{
+    bool sequence_found = false;
+
+    for (Pix p = first_var(); p; next_var(p)) {
+	assert(var(p));
+
+	switch (var(p)->type()) {
+	  case dods_sequence_c:
+	    (dynamic_cast<AsciiSequence *>
+	     (var(p)))->print_all_vals(os, src, dds, "", false);
+	    sequence_found = true;
+	    break;
+	  
+	  case dods_structure_c:
+	    (dynamic_cast<AsciiStructure *>
+	     (var(p)))->print_all_vals(os, src, dds, "", false);
+	    break;
+	  
+	  default:
+	    // If a sequence was found, we still need to deserialize()
+	    // remaining vars.
+	    if(sequence_found)
+		var(p)->deserialize(src, dds);
+	    var(p)->print_val(os, "", false);
+	    break;
+	}
+    }
+}
+
