@@ -7,6 +7,9 @@
 # Fixed link to parent directory. 8/12/98 jhrg
 
 # $Log: FilterDirHTML.pm,v $
+# Revision 1.4  1998/11/19 03:32:35  jimg
+# Changed from `Dataurl' to `url' to match the query_form.pl code.
+#
 # Revision 1.3  1998/09/29 22:58:29  jimg
 # Fixed a bug where the protocol and machine part of a dataset URL were
 # repeated (meaning that they appeared twice in the same URL).
@@ -51,7 +54,7 @@ sub new {
 
 
     # URL of the query form CGI. Route URLs for datasets through this.
-    $self->{query_cgi} = $query_cgi . "?Dataurl=";
+    $self->{query_cgi} = $query_cgi . "?url=";
 
     # True (1) when the first anchor has been processed. The first anchor is
     # a link to the CWD's parent. We need to do special processing to get
@@ -190,8 +193,6 @@ sub output {
 	# two parts of the data file URL and splice in the DODS server name.
 	elsif ($self->{anchor_href} =~ /.*$self->{ext}$/) {
 	    my ($machine, $path) = $self->{base_url} =~ /(http:\/\/[^\/]*\/)(.*\/)*/;
-#  	    my $data_url = $machine . $self->{server} . $path .
-#  		$self->{anchor_href} ;
 	    my $data_url = $self->{server} . $path . $self->{anchor_href} ;
 
 	    $new_anchor = "<A HREF=" . $self->{query_cgi} . $data_url . ">"; 
