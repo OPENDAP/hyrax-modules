@@ -13,6 +13,10 @@
     @author: jhrg */
 
 // $Log: ascii_val.cc,v $
+// Revision 1.4  1998/07/30 19:05:54  jimg
+// Fixed the call to usage; passing a char * invoked cgi-util.cc:usage which was
+// not what we wanted. Also added help about the -m option.
+//
 // Revision 1.3  1998/03/19 23:26:03  jimg
 // Added code to write out error messages read from the server.
 //
@@ -25,7 +29,7 @@
 
 #include "config_dap.h"
 
-static char rcsid[] __unused__ = {"$Id: ascii_val.cc,v 1.3 1998/03/19 23:26:03 jimg Exp $"};
+static char rcsid[] __unused__ = {"$Id: ascii_val.cc,v 1.4 1998/07/30 19:05:54 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -62,7 +66,8 @@ static void
 usage(String name)
 {
     cerr << "Usage: " << name 
-	 << " [ngvVt] -- [<url> [-r <var>:<newvar> ...] ...]" << endl
+	 << " [mngvVt] -- [<url> [-r <var>:<newvar> ...] ...]" << endl
+	 << "       m: Output a MIME header." << endl
 	 << "       n: Turn on name canonicalization." << endl
 	 << "       g: Use the GUI to show progress" << endl
 	 << "       v: Verbose output." << endl
@@ -208,7 +213,7 @@ main(int argc, char * argv[])
 	  case 'h':
 	  case '?':
 	  default:
-	    usage(argv[0]); exit(1); break;
+	    usage((String)argv[0]); exit(1); break;
 	}
 
     Connect *url = 0;
