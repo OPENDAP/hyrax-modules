@@ -1,12 +1,12 @@
 
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.in,v 1.4 1997/03/14 19:29:55 jimg Exp $)
+AC_REVISION($Id: configure.in,v 1.5 1997/04/18 22:47:59 jimg Exp $)
 AC_INIT(write_val.cc)
 AC_CONFIG_HEADER(config_writeval.h)
 AC_CONFIG_AUX_DIR(../../etc)
 
-AC_PREFIX_DEFAULT("$(DODS_ROOT)")
+AC_PREFIX_DEFAULT("\$(DODS_ROOT)")
 
 dnl DODS_ROOT is the fully qualified pathname to the root of the DODS
 dnl subtree. 
