@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.50 1999/07/22 22:00:17 jimg Exp $
+# $Id: acinclude.m4,v 1.51 1999/07/22 22:06:56 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -852,18 +852,14 @@ AC_DEFUN(DODS_PROG_PERL, [dnl
 
 # Added by Ethan, 1999/06/21
 # Look for GNU tar.
-# 
-# I modified the regexp below but it still does not work exactly correctly; 
-# the variable tar_ver should have only the version number in it. However,
-# my version (1.12) spits out a multi-line thing. The regexp below gets the
-# version number from the first line but does not remove the subsequent lines
-# of garbage. 7/15/99 jhrg
 
 AC_DEFUN(DODS_PROG_GTAR, [dnl
     AC_CHECK_PROGS(TAR,gtar tar,tar)
     case "$TAR" in
 	*tar)
-	    tar_ver=`$TAR --version 2>&1 | sed 's/.*GNU tar[[^0-9._]]*\([[0-9._]]*\)/\1/'`
+	    tar_ver=`$TAR --version 2>&1 | awk '/.*GNU tar/ {print}'`
+	    tar_ver=`echo $tar_ver | sed 's/.*GNU tar[[^0-9._]]*\([[0-9._]]*\).*/\1/'`
+
 	    if test -n "$tar_ver"
 	    then
 		AC_MSG_RESULT(Found version ${tar_ver}.)
