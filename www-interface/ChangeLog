@@ -1,3 +1,22 @@
+2001-09-28  James Gallagher  <jimg@dcz.dods.org>
+
+	* Merged with 3.2.4. The next merge should use release-3-2-4 -j
+	release-3-2. 
+
+2001-09-26  James Gallagher  <jimg@dcz.dods.org>
+
+	* Removed the `Send to Program' button and its help text. This
+	fixes the `bug' that confuses users; they see this but it's too
+	hard to set up the programs and hack netscape to get it to work.
+
+	* Fixed two problems: 1) Variable names in the JavaScript code
+	sometimes contained spaces since they were made using the
+	dataset's variable name. The names are now filtered through id2www
+	and esc2underscore. 2) The CE sometimes contained spaces, again,
+	because dataset variable names were used to build the CE. I
+	filtered the names with id2www_ce before passing them to the
+	JavaScript code. 
+
 2001-08-27  James Gallagher  <jimg@dcz.dods.org>
 
 	* Merged with release-3-2-3. The next merge should use -j
