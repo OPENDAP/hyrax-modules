@@ -22,6 +22,11 @@
 #      	       	       	      - Root name of the filter (e.g., *nc*_dods)
 #
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.3  1997/08/27 00:47:48  jimg
+# Modified to accommodate the new DODSFilter class; added `-e' for the
+# constraint expression. Hack the nph-* script to add -d and -f to $command
+# to specify various weird filename/directory locations for ancillary files.
+#
 # Revision 1.2  1997/06/05 23:17:39  jimg
 # Added to the accesser functions so that they can be used to set the field
 # values in addition to reading values from the `object'.
@@ -177,10 +182,10 @@ sub command {
 	# then select that filter and send the cgi directory and API prefix
 	# as the second argument (which is passed using $query).
 	$server_pgm = $cgi_dir . "usage";
-	$query = $cgi_dir . $script;
-	$command = $server_pgm . " " . $filename . " " . "\"" . $query . "\"";
+	$full_script = $cgi_dir . $script;
+	$command = $server_pgm . " " . $filename . " " . $full_script;
     } elsif ($ext eq "ver" || $ext eq "/version") {
-	$script_rev = '$Revision: 1.2 $ ';
+	$script_rev = '$Revision: 1.3 $ ';
 	$script_rev =~ s@\$([A-z]*): (.*) \$@$2@;
 	$server_pgm = $cgi_dir . $script . "_dods";
 	$command = $server_pgm . " -v " . $script_rev . " " . $filename;
@@ -189,7 +194,7 @@ sub command {
 	# Otherwise, form the name of the filter program to run by catenating
 	# the script name, underscore and the ext.
 	$server_pgm = $cgi_dir . $script . "_" . $ext;
-	$command = $server_pgm . " " . $filename . " " . "\"" . $query . "\"";
+	$command = $server_pgm . " " . $filename . "-e " . "\"" . $query . "\"";
     } else {
 	$command = "";
     }
