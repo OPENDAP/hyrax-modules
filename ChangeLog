@@ -1,5 +1,10 @@
 1998-10-28  James Gallagher  <jimg@dcz.cvo.oneworld.com>
 
+	* Added defines that suppress the creation of config.cache files.
+	Those files speed up running configure, but they make building the
+	sources more complex because those cache files sometimes get into
+	the distributions.
+
 	* Updated the config.guess and config.sub files using those found
 	in automake-1.3.
 
