@@ -1,3 +1,10 @@
+2000-08-29  James Gallagher  <jimg@dcz.dods.org>
+
+	* Merged with 3.1.9. The next merge should use -j release-3-1-9 -j
+	release-3-1. I think the 2000-08-02 log entry is wrong. I don't
+	see any 3-1-8 tag in this code. For this merge I used the 3-1-7
+	tag assuming that the prior versions were merged OK.
+
 2000-08-02  James Gallagher  <jimg@dcz.dods.org>
 
 	* Merged with 3.1.8. The next merge should use -j release-3-18 -j
