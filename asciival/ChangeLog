@@ -1,3 +1,17 @@
+2001-09-28  James Gallagher  <jimg@dcz.dods.org>
+
+	* Merged with 3.2.3. The next merge should use release-3-2-3 -j
+	release-3-2. 
+
+2001-09-18  James Gallagher  <jimg@dcz.dods.org>
+
+	* Modified the output sections so that they can handle many more
+	datatypes, esp. ctor types and so that they will produce output
+	according to the DAP 2.0 (draft) specification.
+
+	* Modified to use the new methods for Sequences in the C++ DAP
+	library. 
+
 2001-08-27  James Gallagher  <jimg@dcz.dods.org>
 
 	* Release 3.2.1 contained some fixes to the test suite.
