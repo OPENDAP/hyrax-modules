@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.53 1999/07/30 20:01:50 jimg Exp $
+# $Id: acinclude.m4,v 1.54 1999/08/03 20:47:13 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -155,9 +155,17 @@ AC_DEFUN(DODS_FIND_PACKAGES_DIR, [dnl
     AC_MSG_CHECKING("for the packages directory")
     # Where does DODS live?
     AC_REQUIRE([DODS_GET_DODS_ROOT])
-    DODS_PACKAGES_DIR=`ls -1d $dods_root/packages-*`
+    DODS_PACKAGES_DIR=`ls -1d $dods_root/packages*`
     AC_MSG_RESULT("found it at $DODS_PACKAGES_DIR")
     AC_SUBST(DODS_PACKAGES_DIR)])
+
+# Compute the current working directory. 8/3/99 jhrg
+AC_DEFUN(DODS_FIND_CWD, [dnl
+    AC_MSG_CHECKING("the current working directory")
+    DODS_CWD=`pwd`
+    DODS_CWD=`basename $DODS_CWD`
+    AC_MSG_RESULT("set it to $DODS_CWD")
+    AC_SUBST(DODS_CWD)])
 
 AC_DEFUN(DODS_PACKAGES_SUPPORT, [dnl
     # Where does DODS live?
