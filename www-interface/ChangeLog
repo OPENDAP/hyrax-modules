@@ -1,3 +1,12 @@
+2003-01-27    <jimg@dcz.dods.org>
+
+	* Merged with release-3-2-7.
+
+	* The code builds with libcurl and the DAP changes.
+
+	* Patrick West removed the last vestiges of the GNU List template
+	classes (SLLits and DLList).
+
 2001-10-13  James Gallagher  <jimg@dcz.dods.org>
 
 	* Merged with release-3-2-5.
