@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.27 1998/03/13 21:36:53 jimg Exp $
+# $Id: Makefile.in,v 1.28 1998/03/16 19:43:38 jimg Exp $
 
 @SET_MAKE@
 
@@ -28,7 +28,8 @@ CXXFLAGS = @CXXFLAGS@ -fno-rtti
 LDFLAGS = @LDFLAGS@ -L. -L$(DODS_ROOT)/lib
 LFLAGS = -8
 YFLAGS = -d
-LIBS = -ldap++ @MATLIBS@ @LIBS@
+LIBS = -ldap++ @LIBS@
+MAT_LIBS = -ldap++ @MATLIBS@ @LIBS@
 TAGS_FLAGS = -b
 CMEXFLAGS = -g @MAT_VERSION_FLAG@
 
@@ -133,7 +134,7 @@ install-client: urlqueue writeval asciival loaddods
 	$(INSTALL_PROGRAM) urlqueue $(bindir)
 	$(INSTALL_PROGRAM) posturl.pl $(etcdir)
 	$(INSTALL_PROGRAM) -s writeval $(bindir)
-	$(INSTALL_PROGRAM) -s asciival $(bindir)
+	$(INSTALL_PROGRAM) -s asciival $(etcdir)
 	$(INSTALL_PROGRAM) loaddods.mex* $(bindir)
 	$(INSTALL_PROGRAM) loaddods.m $(bindir)
 	$(INSTALL_PROGRAM) whodods.m $(bindir)
