@@ -1,5 +1,5 @@
 
- $Id: README,v 1.6 1996/10/25 23:00:22 jimg Exp $
+ $Id: README,v 1.7 1996/10/30 00:10:23 jimg Exp $
 
 There are four executables used in the DODS-Matlab interface:
 
@@ -55,23 +55,21 @@ dimension sizes on one line and the data on the next line.
 
 <data request> :: <variable>*
 
-<simple variable> :: <variable name> '\n' <data values>
+<simple variable> :: <variable name> '\n'
 
 <array variable> :: <variable type> <variable name> <number of dims> 
-		    <dim size>+
+		    <dim size>+ 
 
 <list variable> :: <variable type> <variable name> <list size>
 
-<struct variables> :: <variable name> <num of elements> '\n' (<variable> '\n'
-		      <data>)+
+<struct variables> :: <variable name> <num of elements> '\n' 
+		      (<variable> '\n' <data> '\n')+
 
-<sequence variables> :: <variable name> <num of elements> '\n' (<variable> '\n'
-		        <data>)+
+<sequence variables> :: <variable name> <num of elements> '\n' 
+			(<variable> '\n' <data> '\n')+
 
-<function variables> :: << note yet done >>
-
-<grid variables> :: <variable name> '\n' 'array: \n' <array variable> <data>
-	      'map: \n' <array variable>+ <data>+
+<grid variables> :: <variable name> '\n' 'array 1\n' <array variable>
+		    'map <num of arrays>\n' (<array variable>)+ 
 
 <variable> :: Byte ' ' <simple variable> '\n' <data> '\n'
 	   :: Int32 ' ' <simple variable> '\n' <data> '\n'
@@ -82,9 +80,9 @@ dimension sizes on one line and the data on the next line.
 	   :: Array ' ' <array variable> '\n' <data> '\n'
 	   :: List ' ' <list variable> '\n' <data> '\n'
 
-	   :: Structure ' ' <struct variables> '\n'
-	   :: Sequence ' ' <sequence variables> '\n'
-	   :: Function ' ' <function variables> '\n'
-	   :: Grid ' ' <grid variables> '\n'
+	   :: Structure ' ' <struct variables>
+	   :: Sequence ' ' <sequence variables>
+	   :: Function ' ' <function variables>
+	   :: Grid ' ' <grid variables>
 
 James Gallagher 10/4/96
