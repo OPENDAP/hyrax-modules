@@ -13,6 +13,9 @@
     @author: jhrg */
 
 // $Log: ascii_val.cc,v $
+// Revision 1.7  1999/03/24 06:23:43  brent
+// convert String.h to std lib <string>, convert to packages regex -- B^2
+//
 // Revision 1.6  1998/09/16 23:30:26  jimg
 // Change process_data() so that it calls print_all_vals() for Structure.
 //
@@ -36,15 +39,15 @@
 
 #include "config_dap.h"
 
-static char rcsid[] __unused__ = {"$Id: ascii_val.cc,v 1.6 1998/09/16 23:30:26 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.7 1999/03/24 06:23:43 brent Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
+#include <string>
 
 #include <GetOpt.h>
 #include <Pix.h>
 #include <SLList.h>
-#include <String.h>
 
 #include "BaseType.h"
 #include "Connect.h"
@@ -70,7 +73,7 @@ bool translate = false;
 const char *VERSION = "DODS asciival version: 1.0";
 
 static void
-usage(String name)
+usage(string name)
 {
     cerr << "Usage: " << name 
 	 << " [mngvVt] -- [<url> [-r <var>:<newvar> ...] ...]" << endl
@@ -88,15 +91,15 @@ usage(String name)
 	 << endl;
 }
 
-static String
-name_from_url(String url)
+static string
+name_from_url(string url)
 {
     // find the last part of the URL (after the last `/') and then strip off
     // the trailing extension (anything following the `.')
-    int start = url.index("/", -1) + 1;
-    int end = url.index(".", -1);
+    int start = url.rfind("/") + 1;
+    int end = url.rfind(".");
     
-    String name = url.at(start, end-start);
+    string name = url.substr(start, end-start);
 
     return name;
 }
@@ -208,7 +211,7 @@ main(int argc, char * argv[])
     bool translate = false;
     bool gui = false;
     bool mime_header = false;
-    String expr = "";
+    string expr = "";
     char *tcode = NULL;
     int topts = 0;
 
@@ -234,7 +237,7 @@ main(int argc, char * argv[])
 	  case 'h':
 	  case '?':
 	  default:
-	    usage((String)argv[0]); exit(1); break;
+	    usage((string)argv[0]); exit(1); break;
 	}
 
     Connect *url = 0;
@@ -252,7 +255,7 @@ main(int argc, char * argv[])
 	     << endl);
 
 	if (verbose) {
-	    String source_name;
+	    string source_name;
 	    if (url->is_local() && (strcmp(argv[i], "-") == 0))
 		source_name = "standard input";
 	    else if (url->is_local())

@@ -10,6 +10,9 @@
 // 3/12/98 jhrg
 
 // $Log: AsciiByte.cc,v $
+// Revision 1.3  1999/03/24 06:23:42  brent
+// convert String.h to std lib <string>, convert to packages regex -- B^2
+//
 // Revision 1.2  1998/03/16 19:47:36  jimg
 // Fixed lame comments.
 //
@@ -42,7 +45,7 @@
 #include <iostream.h>
 #include <Pix.h>
 #include <SLList.h>
-#include <String.h>
+#include <string>
 
 #include "AsciiByte.h"
 #include "name_map.h"
@@ -51,12 +54,12 @@ extern bool translate;
 extern name_map names;
 
 Byte *
-NewByte(const String &n)
+NewByte(const string &n)
 {
     return new AsciiByte(n);
 }
 
-AsciiByte::AsciiByte(const String &n) : Byte(n)
+AsciiByte::AsciiByte(const string &n) : Byte(n)
 {
 }
 
@@ -67,14 +70,14 @@ AsciiByte::ptr_duplicate()
 }
 
 bool
-AsciiByte::read(const String &, int &)
+AsciiByte::read(const string &, int &)
 {
     assert(false);
     return false;
 }
 
 void 
-AsciiByte::print_val(ostream &os, String, bool print_decl_p)
+AsciiByte::print_val(ostream &os, string, bool print_decl_p)
 {
     if (print_decl_p)
 	os << names.lookup(name(), translate) << ", ";

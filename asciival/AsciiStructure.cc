@@ -10,6 +10,9 @@
 // 3/12/98 jhrg
 
 // $Log: AsciiStructure.cc,v $
+// Revision 1.3  1999/03/24 06:23:42  brent
+// convert String.h to std lib <string>, convert to packages regex -- B^2
+//
 // Revision 1.2  1998/09/16 23:31:53  jimg
 // Added print_all_vals().
 //
@@ -26,7 +29,7 @@
 
 #include <Pix.h>
 #include <SLList.h>
-#include <String.h>
+#include <string>
 
 #include "AsciiStructure.h"
 #include "AsciiSequence.h"
@@ -36,7 +39,7 @@ extern bool translate;
 extern name_map names;
 
 Structure *
-NewStructure(const String &n)
+NewStructure(const string &n)
 {
     return new AsciiStructure(n);
 }
@@ -47,7 +50,7 @@ AsciiStructure::ptr_duplicate()
     return new AsciiStructure(*this);
 }
 
-AsciiStructure::AsciiStructure(const String &n) : Structure(n)
+AsciiStructure::AsciiStructure(const string &n) : Structure(n)
 {
 }
 
@@ -59,7 +62,7 @@ AsciiStructure::~AsciiStructure()
 // comprise the structure. 
 
 bool
-AsciiStructure::read(const String &, int &)
+AsciiStructure::read(const string &, int &)
 {
     assert(false);
     return false;
@@ -102,9 +105,9 @@ AsciiStructure::print_header(ostream &os)
 // a sequence. 
 
 void 
-AsciiStructure::print_val(ostream &os, String space, bool print_decls)
+AsciiStructure::print_val(ostream &os, string space, bool print_decls)
 {
-    String separator;
+    string separator;
     if (print_decls)
 	separator = "\n";
     else
@@ -115,7 +118,7 @@ AsciiStructure::print_val(ostream &os, String space, bool print_decls)
 }
 
 void
-AsciiStructure::print_all_vals(ostream &os, XDR *src, DDS *dds, String, bool)
+AsciiStructure::print_all_vals(ostream &os, XDR *src, DDS *dds, string, bool)
 {
     bool sequence_found = false;
 

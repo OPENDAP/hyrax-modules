@@ -10,6 +10,9 @@
 // 3/12/98 jhrg
 
 // $Log: AsciiSequence.cc,v $
+// Revision 1.2  1999/03/24 06:23:42  brent
+// convert String.h to std lib <string>, convert to packages regex -- B^2
+//
 // Revision 1.1  1998/03/13 21:25:18  jimg
 // Added
 //
@@ -23,7 +26,7 @@
 #include <iostream.h>
 #include <Pix.h>
 #include <SLList.h>
-#include <String.h>
+#include <string>
 
 #include "debug.h"
 #include "AsciiSequence.h"
@@ -33,7 +36,7 @@ extern bool translate;
 extern name_map names;
 
 Sequence *
-NewSequence(const String &n)
+NewSequence(const string &n)
 {
     return new AsciiSequence(n);
 }
@@ -44,7 +47,7 @@ AsciiSequence::ptr_duplicate()
     return new AsciiSequence(*this);
 }
 
-AsciiSequence::AsciiSequence(const String &n) : Sequence(n)
+AsciiSequence::AsciiSequence(const string &n) : Sequence(n)
 {
 }
 
@@ -53,7 +56,7 @@ AsciiSequence::~AsciiSequence()
 }
 
 bool 
-AsciiSequence::read(const String &, int &)
+AsciiSequence::read(const string &, int &)
 {
     assert(false);
     return false;
@@ -99,9 +102,9 @@ AsciiSequence::print_header(ostream &os)
 // a sequence. 
 
 void 
-AsciiSequence::print_val(ostream &os, String space, bool print_decls)
+AsciiSequence::print_val(ostream &os, string space, bool print_decls)
 {
-    String separator;
+    string separator;
     if (print_decls)
 	separator = "\n";
     else
@@ -112,7 +115,7 @@ AsciiSequence::print_val(ostream &os, String space, bool print_decls)
 }
 
 void
-AsciiSequence::print_all_vals(ostream &os, XDR *src, DDS *dds, String, bool)
+AsciiSequence::print_all_vals(ostream &os, XDR *src, DDS *dds, string, bool)
 {
     bool print_decls;
 

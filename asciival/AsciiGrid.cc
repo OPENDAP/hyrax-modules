@@ -10,6 +10,9 @@
 // 3/12/98 jhrg
 
 // $Log: AsciiGrid.cc,v $
+// Revision 1.2  1999/03/24 06:23:42  brent
+// convert String.h to std lib <string>, convert to packages regex -- B^2
+//
 // Revision 1.1  1998/03/13 21:25:16  jimg
 // Added
 //
@@ -22,7 +25,7 @@
 #include <iostream.h>
 #include <Pix.h>
 #include <SLList.h>
-#include <String.h>
+#include <string>
 
 #include "AsciiGrid.h"
 #include "name_map.h"
@@ -31,7 +34,7 @@ extern bool translate;
 extern name_map names;
 
 Grid *
-NewGrid(const String &n)
+NewGrid(const string &n)
 {
     return new AsciiGrid(n);
 }
@@ -42,7 +45,7 @@ AsciiGrid::ptr_duplicate()
     return new AsciiGrid(*this);
 }
 
-AsciiGrid::AsciiGrid(const String &n) : Grid(n)
+AsciiGrid::AsciiGrid(const string &n) : Grid(n)
 {
 }
 
@@ -51,14 +54,14 @@ AsciiGrid::~AsciiGrid()
 }
 
 bool
-AsciiGrid::read(const String &, int &)
+AsciiGrid::read(const string &, int &)
 {
     assert(false);
     return false;
 }
 
 void
-AsciiGrid::print_val(ostream &os, String space, bool print_decl_p)
+AsciiGrid::print_val(ostream &os, string space, bool print_decl_p)
 {
     array_var()->print_val(os, space, print_decl_p);
 

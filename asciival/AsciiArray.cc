@@ -10,6 +10,9 @@
 // 3/12/98 jhrg
 
 // $Log: AsciiArray.cc,v $
+// Revision 1.2  1999/03/24 06:23:42  brent
+// convert String.h to std lib <string>, convert to packages regex -- B^2
+//
 // Revision 1.1  1998/03/13 21:25:14  jimg
 // Added
 //
@@ -26,7 +29,7 @@
 
 #include <Pix.h>
 #include <SLList.h>
-#include <String.h>
+#include <string>
 
 #include "AsciiArray.h"
 #include "name_map.h"
@@ -39,7 +42,7 @@ extern name_map names;
 #endif
 
 Array *
-NewArray(const String &n, BaseType *v)
+NewArray(const string &n, BaseType *v)
 {
     return new AsciiArray(n, v);
 }
@@ -50,7 +53,7 @@ AsciiArray::ptr_duplicate()
     return new AsciiArray(*this);
 }
 
-AsciiArray::AsciiArray(const String &n, BaseType *v) : Array(n, v)
+AsciiArray::AsciiArray(const string &n, BaseType *v) : Array(n, v)
 {
 }
 
@@ -59,7 +62,7 @@ AsciiArray::~AsciiArray()
 }
 
 bool
-AsciiArray::read(const String &, int &)
+AsciiArray::read(const string &, int &)
 {
     assert(false);
     return false;
@@ -78,7 +81,7 @@ AsciiArray::print_vector(ostream &os, int index, int number)
 }
 
 void 
-AsciiArray::print_val(ostream &os, String, bool print_decl_p)
+AsciiArray::print_val(ostream &os, string, bool print_decl_p)
 {
     // Print the name and size of the variable. Note that I print the size
     // information while initializing the vector #shape#. 3/9/98 jhrg

@@ -10,6 +10,9 @@
 // 3/12/98 jhrg
 
 // $Log: AsciiInt32.cc,v $
+// Revision 1.2  1999/03/24 06:23:42  brent
+// convert String.h to std lib <string>, convert to packages regex -- B^2
+//
 // Revision 1.1  1998/03/13 21:25:17  jimg
 // Added
 //
@@ -23,7 +26,7 @@
 
 #include <Pix.h>
 #include <SLList.h>
-#include <String.h>
+#include <string>
 
 #include "AsciiInt32.h"
 #include "name_map.h"
@@ -32,12 +35,12 @@ extern bool translate;
 extern name_map names;
 
 Int32 *
-NewInt32(const String &n)
+NewInt32(const string &n)
 {
     return new AsciiInt32(n);
 }
 
-AsciiInt32::AsciiInt32(const String &n) : Int32(n)
+AsciiInt32::AsciiInt32(const string &n) : Int32(n)
 {
 }
 
@@ -48,14 +51,14 @@ AsciiInt32::ptr_duplicate()
 }
 
 bool
-AsciiInt32::read(const String &, int &)
+AsciiInt32::read(const string &, int &)
 {
     assert(false);
     return false;
 }
 
 void 
-AsciiInt32::print_val(ostream &os, String, bool print_decl_p)
+AsciiInt32::print_val(ostream &os, string, bool print_decl_p)
 {
     if (print_decl_p)
 	os << names.lookup(name(), translate) << ", ";
