@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.49 2003/01/27 19:38:23 jimg Exp $
+# $Id: Makefile.in,v 1.50 2003/05/02 16:30:30 jimg Exp $
 
 @SET_MAKE@
 
@@ -131,8 +131,8 @@ unit-check: $(UNIT_TEST_PROGS)
 	./AsciiOutputTest
 
 clean:	
-	-rm -f *.o *.sum *.log *~ core w3chttp.out
-	-rm -f $(PROG) unit_tests 
+	-rm -f *.o *.sum *.log *~ core 
+	-rm -f $(PROG) $(UNIT_TEST_PROGS)
 
 distclean: clean
 	-rm -f config_asciival.h config.status config.log config.cache

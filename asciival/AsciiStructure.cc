@@ -91,9 +91,10 @@ AsciiStructure::print_header(ostream &os)
 	else if (var(p)->type() == dods_structure_c)
 	    dynamic_cast<AsciiStructure*>(var(p))->print_header(os);
     // May need a case here for Sequence 2/18/2002 jhrg
+    // Yes, we do, and for Grid as well. 04/04/03 jhrg
 	else
 	    throw InternalErr(__FILE__, __LINE__,
-"This method should only be called by instances for which `is_simple_structure' returns true.");
+			      "Support for ASCII output of datasets with structures which contain Sequences or Grids has not been completed.");
 }
 
 void
@@ -120,6 +121,9 @@ AsciiStructure::print_ascii(ostream &os, bool print_name) throw(InternalErr)
 }
 
 // $Log: AsciiStructure.cc,v $
+// Revision 1.8  2003/05/02 16:30:30  jimg
+// Fixes for the builds
+//
 // Revision 1.7  2003/01/27 19:38:23  jimg
 // Updated the copyright information.
 // Merged with release-3-2-6.
