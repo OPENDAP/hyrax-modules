@@ -9,6 +9,9 @@
     @author: jhrg */
 
 // $Log: www_int.cc,v $
+// Revision 1.6  2000/10/03 18:41:44  jimg
+// Added exception handler to main().
+//
 // Revision 1.5  2000/10/02 22:42:06  jimg
 // Replaced DVR constant from config_dap.h with the dap_version function
 //
@@ -30,7 +33,7 @@
 
 #include "config_dap.h"
 
-static char rcsid[] not_used = {"$Id: www_int.cc,v 1.5 2000/10/02 22:42:06 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: www_int.cc,v 1.6 2000/10/03 18:41:44 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -291,35 +294,35 @@ main(int argc, char * argv[])
     // print a warning. Maybe in the future this will be able to do something
     // sensible (build a combined document?) for multiple URLs. 4/7/99 jhrg
     for (int i = getopt.optind; i < argc; ++i) {
-	DBG(cerr << "argv[" << i << "] (of " << argc << "): " << argv[i] \
-	     << endl);
+      DBG(cerr << "argv[" << i << "] (of " << argc << "): " << argv[i] \
+	  << endl);
 
-	if (i > getopt.optind) {
-	    cerr << "Warning: URL `" << argv[i] << "' ignored" << endl;
-	    continue;
-	}
+      if (i > getopt.optind) {
+	cerr << "Warning: URL `" << argv[i] << "' ignored" << endl;
+	continue;
+      }
 	    
-	if (url)
-	    delete url;
+      if (url)
+	delete url;
 	
+      try {
 	url = new Connect(argv[i], trace);
 
 	if (url->is_local()) {
-	    cerr << "Error: URL `" << argv[i] << "' is local." << endl;
-	    continue;
+	  cerr << "Error: URL `" << argv[i] << "' is local." << endl;
+	  continue;
 	}
 
 	if (!url->request_das() || !url->request_dds()) {
-	    cerr << "Error: URL `" << argv[i] << "' could not be accessed."
-		 << endl;
-	    continue;
+	  cerr << "Error: URL `" << argv[i] << "' could not be accessed."
+	       << endl;
+	  continue;
 	}
-	
 	global_das = url->das();
 	DDS dds = url->dds();
 
 	if (regular_header || nph_header)
-	    wo.write_html_header(nph_header);
+	  wo.write_html_header(nph_header);
 
 	cout << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n"
 	     << "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n"
@@ -327,7 +330,7 @@ main(int argc, char * argv[])
 	     << "<base href=\"" << HELP_LOCATION << "\">\n"
 	     << "<script type=\"text/javascript\">\n"
 	     << "<!--\n"
-	    // Javascript code here
+	     // Javascript code here
 	     << java_code << "\n"
 	     << "DODS_URL = new dods_url(\"" << argv[i] << "\");\n"
 	     << "// -->\n"
@@ -347,7 +350,21 @@ main(int argc, char * argv[])
 	     << "<hr>\n\n"
 	     << "<address>Send questions or comments to: <a href=\"mailto:support@unidata.ucar.edu\">support@unidata.ucar.edu</a></address>"
 	     << "</body></html>\n";
-    }
+      }
+      catch (Error &e) {
+	string error_msg = e.get_error_message();
+	cout << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n"
+	     << "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n"
+	     << "<html><head><title>DODS Error</title>\n"
+	     << "<base href=\"" << HELP_LOCATION << "\">\n"
+	     << "</head>\n" 
+	     << "<body>\n"
+	     << "<h3>Error building the DODS dataset query form</h3>:\n"
+	     << error_msg
+	     << "<hr>\n";
+	     
+      }
+    } // End of the for loop.
 
     cout.flush();
     cerr.flush();
