@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.27 1997/01/24 01:15:59 jimg Exp $
+# $Id: acinclude.m4,v 1.28 1997/02/06 19:41:07 jimg Exp $
 
 # Check for fill value usage.
 
@@ -48,8 +48,10 @@ AC_DEFUN(DODS_SWAP, [dnl
 	esac])
     if test -z "$SWAP"
     then
+	AC_DEFINE(BIG_ENDIAN)
 	AC_MSG_RESULT(big endian)
     else
+	AC_DEFINE(LITTLE_ENDIAN)
 	AC_MSG_RESULT(little endian)
     fi
     AC_SUBST(SWAP)])
