@@ -1,0 +1,143 @@
+
+// -*- mode: c++; c-basic-offset:4 -*-
+
+// This file is part of libdap, A C++ implmentation of the OPeNDAP Data
+// Access Protocol.
+
+// Copyright (c) 2003 OPeNDAP, Inc.
+// Author: James Gallagher <jgallagher@opendap.org>
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+// 
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
+ 
+/** ais_tool is a simple proxy device for DODS URLs. Given a URL, ais_tool
+    dereferences it and merges in any AIS resources that the current ais
+    database returns for the URL.
+
+    @author: jhrg */
+
+#include "config_ais_tool.h"
+
+static char rcsid[] not_used = {"$Id: ais_tool.cc,v 1.1 2003/03/13 23:37:32 jimg Exp $"};
+
+#include <stdio.h>
+
+#include <iostream>
+#include <string>
+
+#include <GetOpt.h>
+
+#define DODS_DEBUG
+
+#include "AISConnect.h"
+#include "AISDODSFilter.h"
+#include "DAS.h"
+#include "DDS.h"
+#include "DataDDS.h"
+#include "ObjectType.h"
+#include "cgi_util.h"
+#include "debug.h"
+
+static void
+usage(string name)
+{
+    cerr << "Usage: " << name 
+	 << " [madDV] -- <url>" << endl
+	 << "       m: Output a MIME header." << endl
+	 << "       a: Get a DAS object from the URL." << endl
+	 << "       s: Get a DDS object from the URL." << endl
+	 << "       D: Get a DataDDS object from the URL." << endl
+	 << "       B: Use this XML as the ais dataBase." << endl
+	 << "       V: Print the version number and exit" << endl
+	 << endl;
+}
+
+int
+main(int argc, char * argv[])
+{
+    DBG(cerr << "Entering main... " << endl);
+#if 0
+    putenv("_POSIX_OPTION_ORDER=1"); // Suppress GetOpt's argv[] permutation.
+#endif
+
+    // Put all the options for DODSFilter *and* this tool here, that way
+    // DODSFilter's options won't get flagged as errors. It's OK to process
+    // the options twice (once here and once in DODSFilter's ctor).
+    AISDODSFilter df(argc, argv);
+
+    try {
+	if (df.get_ais_db() == "")
+	    throw Error("The AIS database was not specified.\n\
+The AIS proxy server has not been configured correctly.\n\
+In the DODS server script (nph-ais), set the name of the AIS database.");
+
+	string url_name = df.get_dataset_name();
+	AISConnect *url = new AISConnect(url_name, df.get_ais_db());
+	
+	cerr << "url: " << hex << url << dec << endl;
+	cerr << "url_name from Connect: " << url->URL() << endl;
+	cerr << "is cache enabled: " << url->is_cache_enabled() << endl;
+
+	url->set_cache_enabled(false);
+
+	DBG(cerr << "Built AISConnect instance; url: " << url_name
+	    << ", AIS: " << df.get_ais_db() << endl);
+
+	switch(df.get_object()) {
+	  case dods_das: {
+	    DAS das;
+	    DBG(cerr << "About to get the DAS object." << endl);
+	    url->request_das(das);
+	    DBG(cerr << "Get das instance from server." << endl);
+	    df.send_das(stdout, das);
+	    break;
+	  }
+
+	  case dods_dds: {
+	    DDS dds;
+	    url->request_dds(dds);
+	    df.send_dds(stdout, dds);
+	    break;
+	  }
+
+	  case dods_data: {
+	    DataDDS dds;
+	    url->request_data(dds);
+	    df.send_data(dds, stdout);
+	    break;
+	  }
+
+	  default:
+	    throw Error("The AIS proxy server only knows how to process simple OPeNDAP objects.");
+	}
+    }
+    catch (Error &e) {
+	DBG(cerr << "Caught and Error object: " << e.get_error_message() 
+	    << endl);
+	set_mime_text(cout, dods_error, df.get_cgi_version());
+	e.print(stdout);
+	return 1;
+    }
+
+    DBG(cerr << "exiting." << endl);
+
+    return 0;
+}
+
+// $Log: ais_tool.cc,v $
+// Revision 1.1  2003/03/13 23:37:32  jimg
+// Added.
+//
