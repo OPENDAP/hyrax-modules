@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.54 1999/08/03 20:47:13 jimg Exp $
+# $Id: acinclude.m4,v 1.55 1999/08/09 18:35:37 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -202,13 +202,19 @@ AC_DEFUN(DODS_RX_LIB, [dnl
 # Look for the web library. Then look for the include files. If the library
 # cannot be found, then build the version in packages. jhrg 2/3/98
 
+# AC_DEFUN(DODS_WWW_LIB, [dnl
+#     AC_REQUIRE([DODS_PACKAGES_SUPPORT])
+#     DODS_FIND_WWW_ROOT
+#     AC_CHECK_LIB(www, HTLibInit,
+# 		 HAVE_WWW=1; LIBS="-lwww $LIBS",
+# 		 packages="$packages libwww"; HAVE_WWW=1; LIBS="-lwww $LIBS")
+#     AC_SUBST(packages)])
+
 AC_DEFUN(DODS_WWW_LIB, [dnl
     AC_REQUIRE([DODS_PACKAGES_SUPPORT])
     DODS_FIND_WWW_ROOT
-    AC_CHECK_LIB(www, HTLibInit,
-		 HAVE_WWW=1; LIBS="-lwww $LIBS",
-		 packages="$packages libwww"; HAVE_WWW=1; LIBS="-lwww $LIBS")
-    AC_SUBST(packages)])
+    HAVE_WWW=1; LIBS="-lwwwcore -lwwwinit -lwwwstream $LIBS"
+    AC_DEFINE_UNQUOTED(HAVE_WWW, $HAVE_WWW)])
 
 # Because the www library is now included in the DODS_ROOT/packages-*/ 
 # directory, look there for the include files. Users can specify a 
@@ -222,12 +228,73 @@ AC_DEFUN(DODS_FIND_WWW_ROOT, [dnl
 
     AC_ARG_WITH(www,
 	[  --with-www=DIR          Directory containing the W3C header files],
-	WWW_ROOT=${withval}, WWW_ROOT=$DODS_PACKAGES_DIR/include/w3c)
+	WWW_ROOT=${withval}, WWW_ROOT=$DODS_PACKAGES_DIR/include/w3c-libwww)
 
     AC_SUBST(WWW_ROOT)
     INCS="$INCS -I\$(WWW_ROOT)"
     AC_SUBST(INCS)
     AC_MSG_RESULT(Set the WWW header directory to $WWW_ROOT)])
+
+# Check for the Tcl and Tk libraries. These are required. 8/3/99 jhrg
+
+# AC_DEFUN(DODS_TCL_LIB, [dnl
+#     AC_REQUIRE([DODS_PACKAGES_SUPPORT])
+
+#     # Use the path supplied using --with if given.
+#     AC_ARG_WITH(tcl,
+#         [  --with-tcl=ARG       What is the tcl prefix directory],
+#         TCL_PATH=${withval}, TCL_PATH="")
+
+#     if test ! -z "$TCL_PATH"
+#     then
+#       	INCS="$INCS -I${TCL_PATH}/include"
+#       	LDFLAGS="$LDFLAGS -L${TCL_PATH}/lib"
+# 	HAVE_TCL=1
+#       	AC_MSG_RESULT("Set the Tcl root directory to $TCL_PATH")
+#     else
+#         AC_CHECK_LIB(tcl8.1, TtyInit, HAVE_TCL=1; tcl=tcl8.1, HAVE_TCL=0)
+#     fi 
+
+#     if test $HAVE_TCL -eq 1; then
+# 	LIBS="$LIBS -l${tcl}"
+#     fi
+
+#     AC_DEFINE_UNQUOTED(HAVE_TCL, $HAVE_TCL)])
+    
+# AC_DEFUN(DODS_TK_LIB, [dnl
+#     AC_REQUIRE([DODS_PACKAGES_SUPPORT])
+
+#     # Use the path supplied using --with if given.
+#     AC_ARG_WITH(tk,
+#         [  --with-tk=ARG       What is the tk prefix directory],
+#         TK_PATH=${withval}, TK_PATH="")
+
+#     if test ! -z "$TK_PATH"
+#     then
+#       	INCS="$INCS -I${TK_PATH}/include"
+#       	LDFLAGS="$LDFLAGS -L${TK_PATH}/lib"
+# 	HAVE_TK=1
+#       	AC_MSG_RESULT("Set the Tk root directory to $TK_PATH")
+#     else
+#         AC_CHECK_LIB(tk8.1, Tk_Init, HAVE_TK=1; tk=tk8.1, HAVE_TK=0, -ltcl8.1)
+#     fi 
+
+#     if test $HAVE_TK -eq 1; then
+# 	LIBS="$LIBS -l${tk}"
+#     fi
+
+#     AC_DEFINE_UNQUOTED(HAVE_TK, $HAVE_TK)])
+
+AC_DEFUN(DODS_TCL_LIB, [dnl
+    AC_REQUIRE([DODS_PACKAGES_SUPPORT])
+    LIBS="$LIBS -ltcl8.1"
+    AC_DEFINE_UNQUOTED(HAVE_TCL, $HAVE_TCL)])
+     
+AC_DEFUN(DODS_TK_LIB, [dnl
+    AC_REQUIRE([DODS_PACKAGES_SUPPORT])
+    LIBS="$LIBS -ltk8.1"
+    AC_DEFINE_UNQUOTED(HAVE_TK, $HAVE_TK)])
+     
 
 # Note that this macro looks for Tcl in addition to Expect since expect 
 # requires tcl. 2/3/98 jhrg

@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.42 1999/07/28 23:00:54 jimg Exp $
+# $Id: Makefile.in,v 1.43 1999/08/09 18:28:57 jimg Exp $
 
 @SET_MAKE@
 
@@ -101,15 +101,6 @@ install: install-client
 install-client: asciival
 	$(INSTALL_PROGRAM) -s asciival $(etcdir)
 
-configure: configure.in
-	autoconf --localdir=$(DODS_ROOT)/etc
-
-config.status: configure
-	${SHELL} ./configure
-
-Makefile: ${srcdir}/Makefile.in
-	${SHELL} ./config.status
-
 # Tests
 
 check: asciival asciival-check
@@ -145,6 +136,9 @@ distclean: clean
 .PHONY: docs
 docs:
 	doc++ -d docs -f $(ASCIISRCS) $(AV_SRCS)
+
+# This defines rules for configure, config.status, Makefile.
+include $(DODS_ROOT)/etc/Makefile.common
 
 .PHONY: depend
 depend: 
