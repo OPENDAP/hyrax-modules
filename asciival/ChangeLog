@@ -1,3 +1,29 @@
+Mon Apr 21 09:47:03 1997  James Gallagher  <jimg@dcz.cvo.oneworld.com>
+
+	* Change: loaddods now looks along the user's PATH and in
+	DODS_ROOT/etc for writeval. 
+
+	* Change: writeval is now installed in DODS_ROOT/etc (it is a
+	`helper' program). 
+
+	* Added include of <sys/msg.h> for lunix.
+
+	* Fixed a bug where fseek() failed to advance beyond a newline
+	character when the data transfer size was an integral power of
+	two. I fixed the bug by removing all calls to fseek() and using
+	fgets() instead. I also removed all calls to fscanf() and replaced
+	them with calls to fgets() followed by sscanf() since that made
+	looking at the text information read by loaddods simpler.
+
+	* Modified the output stream of writeval so that it is simpler for
+	loaddods to parse. This was done during the coarse of
+	finding/fixing a particularly nasty bug in loaddods - I've left
+	the changes in place because they don't slow the system down and
+	will simplify finding problems in the future.
+
+	* Added fix to helper program `writeval' so that error messages
+	returned from servers do not result in core dumps.
+
 Sun Mar 23 16:58:43 1997  James Gallagher  <jimg@dcz.cvo.oneworld.com>
 
 	* Added option switch so users can use the fullnames option.
