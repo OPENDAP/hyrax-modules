@@ -1,3 +1,12 @@
+2003-01-22    <jimg@dcz.dods.org>
+
+	* Renamed the dods.ini file to dods.rc. Note that this file is
+	used to configure servers and is not the same as the .dodsrc file
+	used to control client-side use of HTTP and the client-side cache.
+
+	* I changed the source files so that they are clearly covered by
+	the GNU Lesser GPL.
+
 2002-12-31    <jimg@dcz.dods.org>
 
 	* Merged with release-3-2-10.
