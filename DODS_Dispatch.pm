@@ -22,6 +22,18 @@
 #      	       	       	      - Root name of the filter (e.g., *nc*_dods)
 #
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.18  1999/06/12 00:00:26  jimg
+# Added server_name and request_uri procedure/fields.
+# Added code that translates the extension .html into a call to the www_int
+# filter. This uses the new server_name and request_uri information to run the
+# filter with a complete url, which might be wasteful but is quick and keeps
+# the server programs modular.
+# Fixed the call to asciival so that security features are no longer
+# circumvented. I used the same call-with-url technique that I used with
+# www_int.
+# Some of the help text was updated to include mention of the new .html
+# feature.
+#
 # Revision 1.17  1999/05/27 21:27:59  jimg
 # Moved the code that escapes the query into the section for asciival. Since
 # the security fixes only asciival needs special characters escaped (since it
@@ -149,6 +161,8 @@ sub initialize {
 
     $self->{'cgi_dir'} = "./";
 
+    $self->{'server_name'} = $ENV{'SERVER_NAME'};
+
     $query = $ENV{'QUERY_STRING'};
     $query =~ tr/+/ /;		# Undo escaping by client.
 
@@ -167,6 +181,10 @@ sub initialize {
     }
 
     $self->{'ext'} = $ext;
+
+    my $request = $ENV{'REQUEST_URI'};
+    $request =~ s@(.*)\.$ext@$1@;
+    $self->{'request_uri'} = $request;
 
     # Strip the `nph-' off of the front of the dispatch program's name. Also 
     # remove the extraneous partial-pathname that HTTPD glues on to the
@@ -243,6 +261,16 @@ sub new {
 sub caller_revision {
     my $self = shift;
     return $self->{'caller_revision'};
+}
+
+sub server_name {
+    my $self = shift;
+    return $self->{'server_name'};
+}
+
+sub request_uri {
+    my $self = shift;
+    return $self->{'request_uri'};
 }
 
 sub maintainer {
@@ -389,38 +417,13 @@ sub command {
 	    @command = (@command, "-t", $accept_types);
 	}
     } elsif ($ext eq "ascii" || $ext eq "asc") {
-	# Circumvent some of the security changes; build up a command that is
-	# run by the shell. Note that the trick of passing exec() a list and
-	# making that list a shell, -c and string is what bypasses the Perl
-	# taint security stuff. I've left the old code here (commented out)
-	# in case this patch has security problems. A better solution might
-	# be to open asciival using the open("|", ...) feature of Perl and
-	# pipe it the output of nc_dods. 5/21/99 jhrg
-	my $query = $self->query();
-	my $server_pgm = $self->cgi_dir() . $self->script() . "_dods";
-	my $str = $server_pgm . " -v " . $self->{'caller_revision'}
-	           . " " . $self->filename();
-	if ($query ne "") {
-	    # Escape $query because we're running command using the shell
-	    # which will interpret the ()" characters. 5/27/99 jhrg
-	    $query =~ s@\(@\\\(@g;	# escape left parentheses
-	    $query =~ s@\)@\\\)@g;	# escape right parentheses
-	    $query =~ s@\"@\\\"@g;	# escape quotes
-	    $str .= " -e \"" .  $query . "\"";
-	}
-	# Never compress ASCII.
-	local($ascii_srvr) = $self->cgi_dir() . "asciival";
-	$str .= " | " . $ascii_srvr . " -m -- -";
-	@command = ("sh", '-c', $str);
-
-#  	@command = ($server_pgm, "-v", $self->{'caller_revision'}, 
-#  		    $self->filename());
-#  	if ($query ne "") {
-#  	    @command = (@command, "-e", $query);
-#  	}
-#  	# Never compress ASCII.
-#  	local($ascii_srvr) = $self->cgi_dir() . "asciival";
-#  	@command = (@command, "|", $ascii_srvr, " -m -- -");
+	my $dods_url = ("http://" . $self->{'server_name'} 
+			. $self->{'request_uri'});
+	@command=("./asciival",  "--", $dods_url);
+    } elsif ($ext eq "html") {
+	my $dods_url = ("http://" . $self->{'server_name'} 
+			. $self->{'request_uri'});
+	@command=("./www_int",  "--", $dods_url);
     } else {
 	$self->print_error_message();
 	exit(1);
@@ -445,6 +448,7 @@ one of the following a five suffixes to a URL: .das, .dds, .dods., .info,
 <dt> dds  <dd> data type object
 <dt> dods <dd> data object
 <dt> info <dd> info object (attributes, types and other information)
+<dt> html <dd> html form for this dataset
 <dt> ver  <dd> return the version number of the server
 <dt> help <dd> help information (this text)</dl>
 </dl>
@@ -462,7 +466,10 @@ filename. For example: http://dods.gso.uri.edu/cgi-bin/nph-nc/version will
 return the version number for the netCDF server used in the first example. 
 
 <p><b>Suggestion</b>: If you're typing this URL into a WWW browser and
-would like information about the dataset, use the `.info' extension\n";
+would like information about the dataset, use the `.info' extension.
+
+If you'd like to see a data values, use the `.html' extension and submit a
+query using the customized form.\n";
 
 # This method takes three arguments; the object, a string which names the
 # script's version number and an address for mailing bug reports. If the last
