@@ -1,0 +1,57 @@
+#!@PERL@ -T
+
+# Replace the line witn #!/path/to/your/perl to avoid the overhead of first
+# running the shell and then starting perl.
+
+# Dispatch the URL to one of the filter programs that makes up the DODS
+# server. The filter program is executed by this script using exec. If the 
+# filter program cannot be run, return an error message. 
+#
+# See the DODS_Dispatch.pm class for information about how environment
+# variables are used.
+#
+# NB: This script assumes that all data is rooted in the http document
+# directory subtree. If you want to access files outside that subtree, use a
+# symbolic link and make sure that your server is set to follow symbolic
+# links. To configure your server to follow symbolic links, add
+# FollowSymLinks to the Options in the access.conf file. 
+#
+# Options: -T: use Perl's taint mode. -S search for the script using PATH.
+#
+# $Id: nph-dods.in,v 1.1 2000/10/19 23:52:19 jimg Exp $
+
+# Force PATH. This should work for most UNIXs. Forcing PATH means that -T
+# (taint) won't complain about running programs.
+$ENV{'PATH'} = '/bin:/usr/bin:/sbin:/usr/sbin';
+
+use lib (".");			# Look for modules in the cwd.
+use DODS_Dispatch;
+use DODS_Cache;
+
+# The DODS_Dispatch object reads information from the environment variables
+# and builds up a command based on the format of a DODS URL. 
+$dispatch = new DODS_Dispatch("dods/@VERSION@", "support\@unidata.ucar.edu",
+			      "./dods.ini");
+
+$dispatch->cache_dir("/usr/tmp");
+
+if (is_compressed($dispatch->filename())) {
+    purge_cache($dispatch->cache_dir(), 50);
+
+    my $cache_entity = decompress_and_cache($dispatch->filename(), 
+					    $dispatch->cache_dir());
+    $dispatch->filename($cache_entity);
+}
+
+@command = $dispatch->command();
+
+if ($command[0] ne "") {		# if no error...
+    exec(@command);
+} else {
+    $dispatch->print_error_msg();
+}
+
+# $Log: nph-dods.in,v $
+# Revision 1.1  2000/10/19 23:52:19  jimg
+# Added.
+#
