@@ -18,110 +18,130 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.66 2000/08/29 21:06:49 jimg Exp $
+# $Id: acinclude.m4,v 1.67 2000/10/16 22:04:06 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
 
 builtin(include, ud_aclocal.m4)
 
-# Check for fill value usage.
-
-AC_DEFUN(DODS_FILLVALUES, [dnl
-    AC_MSG_CHECKING(for fill value usage)
-    if test "${OLD_FILLVALUES-}" = "yes"
-    then
-        OLD_FILLVALUES=1
-	AC_DEFINE(OLD_FILLVALUES)
-	AC_MSG_RESULT(using old fill values)
-    else
-	OLD_FILLVALUES=0
-	AC_MSG_RESULT(not using old fill values)
-    fi
-    AC_SUBST(OLD_FILLVALUES)])
-
-# Check endianness. This program returns true on a little endian machine,
-# false otherwise.
-
-ENDIAN_CHECK_PRG="main() {
-    long i = 0;
-    unsigned char *ip = (unsigned char *)&i;
-    *ip	= 0xff;
-    /* i == 0xff if little endian or if sizeof(long)==sizeof(char) */
-    exit(i == 0xff ? 0: 1);
-}"
-
-AC_DEFUN(DODS_SWAP, [dnl
-    AC_REQUIRE([AC_CANONICAL_HOST])
-    AC_MSG_CHECKING(endianess)
-    AC_TRY_RUN([${ENDIAN_CHECK_PRG}], [SWAP=-DSWAP], [SWAP=""], [dnl
-	case "$host" in
-	    i386* | dec*) SWAP=-DSWAP;;
-	    *) SWAP="";;
-	esac])
-
-    dnl Look for the endian.h header. If it is present, *don't* define 
-    dnl BIG_ENDIAN or LITTLE_ENDIAN since one of those will be defined there.
-    dnl 5/13/99 jhrg
-    AC_CHECK_HEADER(endian.h, found=1, found=0)
-    if test $found -eq 0
-    then
-	if test -z "$SWAP"
-	then
-	    AC_DEFINE(BIG_ENDIAN)
-	    AC_MSG_RESULT(big endian)
-	else
-	    AC_DEFINE(LITTLE_ENDIAN)
-	    AC_MSG_RESULT(little endian)
-	fi
-    fi
-    AC_SUBST(SWAP)])
-
-# Check type of 32-bit `network long' integer.
-
-NETLONG_CHECK_PGM="main() {exit(sizeof(long) == 4 ? 0: 1);}"
-
-AC_DEFUN(DODS_NETLONG, [dnl
-    AC_REQUIRE([AC_CANONICAL_HOST])
-    AC_MSG_CHECKING(net long type)
-    AC_TRY_RUN([${NETLONG_CHECK_PGM}], [NETLONG=""], 
-	       [NETLONG='-DNETLONG=int'], [dnl
-	case "$host" in
-            *alpha*) NETLONG='-DNETLONG=int';;
-	    *) NETLONG="";;
-        esac])
-   if test -z "$NETLONG"
-   then
-	AC_MSG_RESULT(long)
-   else
-	AC_MSG_RESULT(int)
-   fi
-   AC_SUBST(NETLONG)])
-
-# Set the value of a variable.  Use the environment if possible; otherwise
-# set it to a default value.  Call the substitute routine.
-
-AC_DEFUN(DODS_DEFAULT, [$1=${$1-"$2"}; AC_SUBST([$1])])
-
 # 2. Finding libraries
 #--------------------------------------------------------------------------
 
+AC_DEFUN(DODS_PACKAGES_SUPPORT, [dnl
+    # Where does DODS live?
+    AC_REQUIRE([DODS_GET_DODS_ROOT])
+    # Find a good C compiler (hopefully gcc).
+    AC_REQUIRE([AC_PROG_CC])
+    # Find out about -lns and -lsocket
+    # I removed the following line because DODS_LIBS includes libraries that 
+    # TK also uses. Since We can get those libraries from the TK Script
+    # (which should be run in configure) there's no need to look for the
+    # libraries here, too. 1/10/2000 jhrg
+    # AC_REQUIRE([DODS_LIBS])
+    # Find the full name of the packages directory
+    AC_REQUIRE([DODS_FIND_PACKAGES_DIR])
+    # Assume that we always search the packages/lib directory for libraries.
+    LDFLAGS="$LDFLAGS -L$DODS_PACKAGES_DIR/lib"
+    # Assume that we can always search packages/include directory for include 
+    # files. 
+    INCS="$INCS -I$DODS_PACKAGES_DIR/include"
+    # Initialize $packages to null.
+    packages=""
+    AC_SUBST(packages)])
+
 # This macro does things that the other library-finding macros rely on. 
 # It must be run before the other library macros. jhrg 2/2/98
-
-# Define the C preprocessor symbol `DODS_ROOT' to be the full path to the
-# top of the DODS tree (e.g., /usr/local/DODS-2.15). Also substitute that 
-# string for @dods_root@ and set it to the shell variable $dods_root. Thus
+#
+# Define the C preprocessor symbol `DODS_ROOT' to be the full path to the top
+# of the DODS tree (e.g., /usr/local/DODS-2.15). Also substitute that string
+# for @dods_root@ and @dir@ and set it to the shell variable $dods_root. Thus
 # Makefile.in files can use the path as can configure.in files.
 
 AC_DEFUN(DODS_GET_DODS_ROOT, [dnl
+    AC_MSG_CHECKING([for the DODS root pathanme])
     fullpath=`pwd`
     dir=`basename ${fullpath}`
-    AC_SUBST(dir)
     dods_root=`echo $fullpath | sed 's@\(.*DODS[[-.0-9a-z]]*\).*@\1@'`
-    echo "dods root: $dods_root"
+    AC_MSG_RESULT($dods_root)
     AC_DEFINE_UNQUOTED(DODS_ROOT, "$dods_root")
+    AC_SUBST(dir)
     AC_SUBST(dods_root)])
+
+AC_DEFUN(DODS_FIND_PACKAGES_DIR, [dnl
+    AC_MSG_CHECKING("for the packages directory")
+    # Where does DODS live?
+    AC_REQUIRE([DODS_GET_DODS_ROOT])
+    DODS_PACKAGES_DIR=`ls -1d $dods_root/packages* 2> /dev/null`
+    if test -z "$DODS_PACKAGES_DIR"
+    then
+	AC_MSG_ERROR("Could not find the third-party packages!")
+    fi
+    AC_MSG_RESULT($DODS_PACKAGES_DIR)
+    AC_SUBST(DODS_PACKAGES_DIR)])
+
+# Because the www library is now included in the DODS_ROOT/packages-*/ 
+# directory, look there for the include files. Users can specify a 
+# different directory using --with-www. jhrg 2/4/98
+#
+# This used to be DODS_WWW_ROOT, but it is no longer called directly in
+# configure.in files. Instead use DODS_WWW_LIB. jhrg 2/3/98
+
+AC_DEFUN(DODS_FIND_WWW_ROOT, [dnl
+    AC_MSG_CHECKING([for the libwww root])
+    AC_REQUIRE([DODS_PACKAGES_SUPPORT])
+
+    AC_ARG_WITH(www,
+	[  --with-www=DIR          Directory containing the W3C header files],
+	WWW_ROOT=${withval}, WWW_ROOT=$DODS_PACKAGES_DIR/include/w3c-libwww)
+
+    AC_SUBST(WWW_ROOT)
+    INCS="$INCS -I\$(WWW_ROOT)"
+    AC_SUBST(INCS)
+    AC_MSG_RESULT($WWW_ROOT)])
+
+AC_DEFUN(DODS_COMPRESSION_LIB, [dnl
+    AC_REQUIRE([DODS_PACKAGES_SUPPORT])
+    AC_CHECK_LIB(z, zlibVersion,
+		 HAVE_Z=1; LIBS="$LIBS -lz",
+		 packages="$packages libz"; HAVE_Z=1; LIBS="$LIBS -lz")
+    AC_SUBST(packages)])
+
+AC_DEFUN(DODS_RX_LIB, [dnl
+    AC_REQUIRE([DODS_PACKAGES_SUPPORT])
+    AC_CHECK_LIB(rx, rx_version_string,
+		 HAVE_RX=1; LIBS="$LIBS -lrx",
+		 packages="$packages libz"; HAVE_RX=1; LIBS="$LIBS -lrx")
+    AC_SUBST(packages)])
+
+# Look for the web library.
+AC_DEFUN(DODS_WWW_LIB, [dnl
+    AC_REQUIRE([DODS_PACKAGES_SUPPORT])
+    AC_REQUIRE([DODS_FIND_WWW_ROOT])
+    HAVE_WWW=1; LIBS="-lwww $LIBS"
+    AC_DEFINE_UNQUOTED(HAVE_WWW, $HAVE_WWW)])
+
+# Check for the Tcl and Tk libraries. These are required. 8/3/99 jhrg
+# These are required for the progress indicator, only. 3/17/2000 jhrg
+
+AC_DEFUN(DODS_TCL_LIB, [dnl
+    AC_REQUIRE([DODS_PACKAGES_SUPPORT])
+    GUILIBS="$GUILIBS -ltcl8.1"
+    AC_DEFINE_UNQUOTED(HAVE_TCL, $HAVE_TCL)])
+     
+AC_DEFUN(DODS_TK_LIB, [dnl
+    AC_REQUIRE([DODS_PACKAGES_SUPPORT])
+    GUILIBS="$GUILIBS -ltk8.1"
+    AC_DEFINE_UNQUOTED(HAVE_TK, $HAVE_TK)])
+
+AC_DEFUN(DODS_GUILIBS, [dnl
+    AC_REQUIRE([DODS_FIND_PACKAGES_DIR])
+    AC_REQUIRE([DODS_TK_LIB])
+    AC_REQUIRE([DODS_TCL_LIB])
+
+    . ${DODS_PACKAGES_DIR}/lib/tkConfig.sh
+    GUILIBS="$GUILIBS $TK_LIBS"
+    AC_SUBST(GUILIBS)])
 
 # Check for the existence of the -lsocket and -lnsl libraries.
 # The order here is important, so that they end up in the right
@@ -155,111 +175,6 @@ AC_DEFUN(DODS_XTRALIBS, [dnl
     AC_CHECK_FUNC(gethostbyname, , AC_CHECK_LIB(nsl, main, 
 		  [XTRALIBS="$XTRALIBS -lnsl"]))
     AC_SUBST(XTRALIBS)])
-
-AC_DEFUN(DODS_FIND_PACKAGES_DIR, [dnl
-    AC_MSG_CHECKING("for the packages directory")
-    # Where does DODS live?
-    AC_REQUIRE([DODS_GET_DODS_ROOT])
-    DODS_PACKAGES_DIR=`ls -1d $dods_root/packages* 2> /dev/null`
-    if test -z "$DODS_PACKAGES_DIR"
-    then
-	AC_MSG_ERROR("Could not find the third-party packages!")
-    fi
-    AC_MSG_RESULT("found it at $DODS_PACKAGES_DIR")
-    AC_SUBST(DODS_PACKAGES_DIR)])
-
-# Compute the current working directory. 8/3/99 jhrg
-AC_DEFUN(DODS_FIND_CWD, [dnl
-    AC_MSG_CHECKING("the current working directory")
-    DODS_CWD=`pwd`
-    DODS_CWD=`basename $DODS_CWD`
-    AC_MSG_RESULT("set it to $DODS_CWD")
-    AC_SUBST(DODS_CWD)])
-
-AC_DEFUN(DODS_PACKAGES_SUPPORT, [dnl
-    # Where does DODS live?
-    AC_REQUIRE([DODS_GET_DODS_ROOT])
-    # Find a good C compiler (hopefully gcc).
-    AC_REQUIRE([AC_PROG_CC])
-    # Find out about -lns and -lsocket
-    # I removed the following line because DODS_LIBS includes libraries that 
-    # TK also uses. Since We can get those libraries from the TK Script
-    # (which should be run in configure) there's no need to look for the
-    # libraries here, too. 1/10/2000 jhrg
-    # AC_REQUIRE([DODS_LIBS])
-    # Find the full name of the packages directory
-    AC_REQUIRE([DODS_FIND_PACKAGES_DIR])
-    # Assume that we always search the packages/lib directory for libraries.
-    LDFLAGS="$LDFLAGS -L$DODS_PACKAGES_DIR/lib"
-    # Assume that we can always search packages/include directory for include 
-    # files. 
-    INCS="$INCS -I$DODS_PACKAGES_DIR/include"
-    # Initialize $packages to null.
-    packages=""
-    AC_SUBST(packages)])
-
-AC_DEFUN(DODS_COMPRESSION_LIB, [dnl
-    AC_REQUIRE([DODS_PACKAGES_SUPPORT])
-    AC_CHECK_LIB(z, zlibVersion,
-		 HAVE_Z=1; LIBS="$LIBS -lz",
-		 packages="$packages libz"; HAVE_Z=1; LIBS="$LIBS -lz")
-    AC_SUBST(packages)])
-
-AC_DEFUN(DODS_RX_LIB, [dnl
-    AC_REQUIRE([DODS_PACKAGES_SUPPORT])
-    AC_CHECK_LIB(rx, rx_version_string,
-		 HAVE_RX=1; LIBS="$LIBS -lrx",
-		 packages="$packages libz"; HAVE_RX=1; LIBS="$LIBS -lrx")
-    AC_SUBST(packages)])
-
-# Look for the web library. Then look for the include files. If the library
-# cannot be found, then build the version in packages. jhrg 2/3/98
-
-AC_DEFUN(DODS_WWW_LIB, [dnl
-    AC_REQUIRE([DODS_PACKAGES_SUPPORT])
-    DODS_FIND_WWW_ROOT
-    HAVE_WWW=1; LIBS="-lwww $LIBS"
-    AC_DEFINE_UNQUOTED(HAVE_WWW, $HAVE_WWW)])
-
-# Because the www library is now included in the DODS_ROOT/packages-*/ 
-# directory, look there for the include files. Users can specify a 
-# different directory using --with-www. jhrg 2/4/98
-
-# This used to be DODS_WWW_ROOT, but it is no longer called directly in
-# configure.in files. Instead use DODS_WWW_LIB. jhrg 2/3/98
-
-AC_DEFUN(DODS_FIND_WWW_ROOT, [dnl
-    AC_REQUIRE([DODS_PACKAGES_SUPPORT])
-
-    AC_ARG_WITH(www,
-	[  --with-www=DIR          Directory containing the W3C header files],
-	WWW_ROOT=${withval}, WWW_ROOT=$DODS_PACKAGES_DIR/include/w3c-libwww)
-
-    AC_SUBST(WWW_ROOT)
-    INCS="$INCS -I\$(WWW_ROOT)"
-    AC_SUBST(INCS)
-    AC_MSG_RESULT(Set the WWW header directory to $WWW_ROOT)])
-
-# Check for the Tcl and Tk libraries. These are required. 8/3/99 jhrg
-# These are required for the progress indicator, only. 3/17/2000 jhrg
-
-AC_DEFUN(DODS_TCL_LIB, [dnl
-    AC_REQUIRE([DODS_PACKAGES_SUPPORT])
-    GUILIBS="$GUILIBS -ltcl8.1"
-    AC_DEFINE_UNQUOTED(HAVE_TCL, $HAVE_TCL)])
-     
-AC_DEFUN(DODS_TK_LIB, [dnl
-    AC_REQUIRE([DODS_PACKAGES_SUPPORT])
-    GUILIBS="$GUILIBS -ltk8.1"
-    AC_DEFINE_UNQUOTED(HAVE_TK, $HAVE_TK)])
-
-AC_DEFUN(DODS_GUILIBS, [dnl
-    AC_REQUIRE([DODS_TK_LIB])
-    AC_REQUIRE([DODS_TCL_LIB])
-    AC_REQUIRE([DODS_FIND_PACKAGES_DIR])
-    . ${DODS_PACKAGES_DIR}/lib/tkConfig.sh
-    GUILIBS="$GUILIBS $TK_LIBS"
-    AC_SUBST(GUILIBS)])
 
 # Electric fence and dbnew are used to debug malloc/new and free/delete.
 # I assume that if you use these switches you know enough to build the 
@@ -373,46 +288,6 @@ AC_DEFUN(DODS_PROG_BISON, [dnl
 
 NULL_PROGRAM="mail() {}"
 
-AC_DEFUN(DODS_CHECK_GCC_DEBUG, [dnl
-    AC_MSG_CHECKING(for gcc debugging support)
-    msgs=`gcc -gstabs /dev/null 2>&1`
-    if echo $msgs | egrep "\`-gstabs' option not supported"
-    then		
-	CFLAGS=`echo $CFLAGS | sed 's/-gstabs//'`;
-	CXXFLAGS=`echo $CXXFLAGS | sed 's/-gstabs//'`;
-	dnl I think -gstabs should NOT ever be sent to ld since it is likely
-	dnl many pplaces won't use Gnu ld even with g++. However, this line
-	dnl is pretty innocuous since it only removes -gstabs. 11/3/99 jhrg
-	LDFLAGS=`echo $LDFLAGS | sed 's/-gstabs//'`;
-	AC_MSG_RESULT(not supported)
-    else
-	AC_MSG_RESULT(supported)
-    fi])
-
-# Look for the location of the g++ include directory
-
-AC_DEFUN(DODS_FIND_GPP_INC, [dnl
-    AC_MSG_CHECKING(for the g++ include directories)
-    AC_REQUIRE([DODS_GCC_VERSION])
-
-    GPP_INC=""
-    case $GCC_VER in
-	2.[0-9]*) specs=`gcc -v 2>&1`;
-           dir=`echo $specs | sed 's@Reading specs from \(.*\)lib\/gcc-lib.*@\1@'`;
-           GPP_INC="${dir}include/g++";;
-	2.*) specs=`gcc -v 2>&1`;
-           dir=`echo $specs | sed 's@Reading specs from \(.*\)lib\/gcc-lib.*@\1@'`;
-           GPP_INC="${dir}include/g++";;
-    esac
-
-    if test -z "$GPP_INC"
-    then
-	AC_MSG_WARN(not found)
-    else
-        AC_MSG_RESULT($GPP_INC);
-        AC_SUBST(GPP_INC)
-    fi])
-
 # Find the root directory of the current rev of gcc
 
 AC_DEFUN(DODS_GCC, [dnl
@@ -439,36 +314,65 @@ AC_DEFUN(DODS_GCC_VERSION, [dnl
         *)      AC_MSG_ERROR(must be at least version 2.7.x) ;;
     esac])
 
-dnl Check for exceptions handling support. From Todd.
-
-# Check for exceptions handling support
-AC_DEFUN(DODS_CHECK_EXCEPTIONS, [dnl
-    AC_LANG_CPLUSPLUS
-    AC_MSG_CHECKING("for exception handling support in C++ compiler")
-    OLDCXXFLAGS="$CXXFLAGS"
-    if test "$CXX" = "g++"; then
-       CXXFLAGS="$OLDCXXFLAGS -fhandle-exceptions"
-    fi
-    EXCEPTION_CHECK_PRG="int foo(void) {
-                              throw int();
-                         }
-                         main() {
-                              try { foo(); }
-                              catch(int) { exit(0); }
-                              exit(1);
-                         }"
-
-    AC_TRY_RUN([${EXCEPTION_CHECK_PRG}],
-        AC_MSG_RESULT(yes),
-	[dnl
-        AC_MSG_RESULT(no)
-        AC_MSG_WARN("Compiling without exception handling.  See README.")
-        CXXFLAGS=$OLDCXXFLAGS
-        CPPFLAGS="$CPPFLAGS -DNO_EXCEPTIONS"
-        ],true)])
-
 # 4. Macros to locate various programs/systems used by parts of DODS
 #---------------------------------------------------------------------------
+
+# Added by Ethan, 1999/06/21
+# Look for perl.
+# 
+# I modified the regexp below to remove any text that follows the version
+# number. This extra text was hosing the test. 7/15/99 jhrg
+
+AC_DEFUN(DODS_PROG_PERL, [dnl
+    AC_CHECK_PROG(PERL, perl, `which perl`)
+    case "$PERL" in
+	*perl*)
+	    perl_ver=`$PERL -v 2>&1 | awk '/This is perl/ {print}'`
+	    perl_ver=`echo $perl_ver | sed 's/This is perl,[[^0-9]]*\([[0-9._]]*\).*/\1/'`
+            perl_ver_main=`echo $perl_ver | sed 's/\([[0-9]]*\).*/\1/'`
+	    if test -n "$perl_ver" && test $perl_ver_main -ge 5
+	    then
+		AC_MSG_RESULT(Found perl version ${perl_ver}.)
+	    else
+		AC_MSG_ERROR(perl version: found ${perl_ver} should be at least 5.000.)
+	    fi
+	    ;;
+	*)
+	    AC_MSG_WARN(perl is required.)
+	    ;;
+    esac
+
+    AC_SUBST(PERL)])
+
+# Added by Ethan, 1999/06/21
+# Look for GNU tar.
+# 
+# I modified the regexp below but it still does not work exactly correctly; 
+# the variable tar_ver should have only the version number in it. However,
+# my version (1.12) spits out a multi-line thing. The regexp below gets the
+# version number from the first line but does not remove the subsequent lines
+# of garbage. 7/15/99 jhrg
+# Added awk line to handle multiline output. 1999/07/22 erd
+
+AC_DEFUN(DODS_PROG_GTAR, [dnl
+    AC_CHECK_PROGS(TAR,gtar tar,tar)
+    case "$TAR" in
+	*tar)
+	    tar_ver=`$TAR --version 2>&1 | awk '/G[[Nn]][[Uu]] tar/ {print}'`
+	    tar_ver=`echo $tar_ver | sed 's/.*GNU tar[[^0-9.]]*\([[0-9._]]*\)/\1/'`
+	    if test -n "$tar_ver"
+	    then
+		AC_MSG_RESULT(Found Gnu tar version ${tar_ver}.)
+	    else
+		AC_MSG_WARN(GNU tar is required for some Makefile targets.)
+	    fi
+	    ;;
+	*)
+	    AC_MSG_WARN(GNU tar is required for some Makefile targets.)
+	    ;;
+    esac
+
+    AC_SUBST(TAR)])
 
 # Find the matlab root directory
 # cross-compile problem with test option -d
@@ -642,27 +546,6 @@ AC_DEFUN(DODS_DEBUG_OPTION, [dnl
       ;;
     esac])
 
-AC_DEFUN(DODS_SEM, [dnl
-    found=0
-    AC_CHECK_HEADERS(sys/sem.h, found=1, found=0)
-    if test $found -eq 1
-    then
-        AC_CHECKING(semaphore features in sem.h)
-        if grep 'int *semctl.*(' /usr/include/sys/sem.h >/dev/null 2>&1
-        then
-            AC_DEFINE(HAVE_SEM_PROTO, 1)
-        else
-            AC_DEFINE(HAVE_SEM_PROTO, 0)
-        fi
-
-        if grep 'union *semun *{' /usr/include/sys/sem.h >/dev/null 2>&1
-        then
-           AC_DEFINE(HAVE_SEM_UNION, 1)
-        else
-           AC_DEFINE(HAVE_SEM_UNION, 0)
-        fi
-    fi])
-
 AC_DEFUN(DODS_OS, [dnl
     AC_MSG_CHECKING(type of operating system)
     # I have removed the following test because some systems (e.g., SGI)
@@ -782,34 +665,11 @@ AC_DEFUN(DODS_CHECK_SIZES, [dnl
 
     AC_REQUIRE([AC_PROG_CC])
 
-    # When do we ever cross compile? Remove this and send a note to Dan and 
-    # Ethan. 8/2/2000 jhrg
-    # if test "$cross_compiling" = "yes"
-    # then
-	# case "$host" in
-	# *alpha*) ac_cv_sizeof_long=8
-	   #  AC_DEFINE(SIZEOF_CHAR, 1)
-	   #  AC_DEFINE(SIZEOF_DOUBLE, 8)
-	   #  AC_DEFINE(SIZEOF_FLOAT, 4)
-	   #  AC_DEFINE(SIZEOF_INT, 4)
-	   #  AC_DEFINE(SIZEOF_LONG, 8)
-	   #  ;;
-	# *) AC_MSG_WARN(Assuming that your target is a 32bit machine)
-	   #  ac_cv_sizeof_long=4
-	   #  AC_DEFINE(SIZEOF_CHAR, 1)
-	   #  AC_DEFINE(SIZEOF_DOUBLE, 8)
-	   #  AC_DEFINE(SIZEOF_FLOAT, 4)
-	   #  AC_DEFINE(SIZEOF_INT, 4)
-	   #  AC_DEFINE(SIZEOF_LONG, 4)
-	   #  ;;
-	# esac
-    # else
-	    AC_CHECK_SIZEOF(int)
-	    AC_CHECK_SIZEOF(long)
-	    AC_CHECK_SIZEOF(char)
-	    AC_CHECK_SIZEOF(double)
-	    AC_CHECK_SIZEOF(float)
-    # fi
+    AC_CHECK_SIZEOF(int)
+    AC_CHECK_SIZEOF(long)
+    AC_CHECK_SIZEOF(char)
+    AC_CHECK_SIZEOF(double)
+    AC_CHECK_SIZEOF(float)
 
     # Now generate symbols that define the dods_int32, ..., types
     # based on this machine's notion of an int, etc. See dods-datatypes.h.in.
@@ -871,60 +731,3 @@ AC_DEFUN(DODS_CHECK_SIZES, [dnl
     AC_SUBST(DODS_FLOAT32)
     AC_SUBST(XDR_FLOAT64)
     AC_SUBST(XDR_FLOAT32)])
-	
-# Added by Ethan, 1999/06/21
-# Look for perl.
-# 
-# I modified the regexp below to remove any text that follows the version
-# number. This extra text was hosing the test. 7/15/99 jhrg
-
-AC_DEFUN(DODS_PROG_PERL, [dnl
-    AC_CHECK_PROG(PERL, perl, `which perl`)
-    case "$PERL" in
-	*perl*)
-	    perl_ver=`$PERL -v 2>&1 | awk '/This is perl/ {print}'`
-	    perl_ver=`echo $perl_ver | sed 's/This is perl,[[^0-9]]*\([[0-9._]]*\).*/\1/'`
-            perl_ver_main=`echo $perl_ver | sed 's/\([[0-9]]*\).*/\1/'`
-	    if test -n "$perl_ver" && test $perl_ver_main -ge 5
-	    then
-		AC_MSG_RESULT(Found perl version ${perl_ver}.)
-	    else
-		AC_MSG_ERROR(perl version: found ${perl_ver} should be at least 5.000.)
-	    fi
-	    ;;
-	*)
-	    AC_MSG_WARN(perl is required.)
-	    ;;
-    esac
-
-    AC_SUBST(PERL)])
-
-# Added by Ethan, 1999/06/21
-# Look for GNU tar.
-# 
-# I modified the regexp below but it still does not work exactly correctly; 
-# the variable tar_ver should have only the version number in it. However,
-# my version (1.12) spits out a multi-line thing. The regexp below gets the
-# version number from the first line but does not remove the subsequent lines
-# of garbage. 7/15/99 jhrg
-# Added awk line to handle multiline output. 1999/07/22 erd
-
-AC_DEFUN(DODS_PROG_GTAR, [dnl
-    AC_CHECK_PROGS(TAR,gtar tar,tar)
-    case "$TAR" in
-	*tar)
-	    tar_ver=`$TAR --version 2>&1 | awk '/G[[Nn]][[Uu]] tar/ {print}'`
-	    tar_ver=`echo $tar_ver | sed 's/.*GNU tar[[^0-9.]]*\([[0-9._]]*\)/\1/'`
-	    if test -n "$tar_ver"
-	    then
-		AC_MSG_RESULT(Found Gnu tar version ${tar_ver}.)
-	    else
-		AC_MSG_WARN(GNU tar is required for some Makefile targets.)
-	    fi
-	    ;;
-	*)
-	    AC_MSG_WARN(GNU tar is required for some Makefile targets.)
-	    ;;
-    esac
-
-    AC_SUBST(TAR)])
