@@ -1,5 +1,5 @@
 
- $Id: README,v 1.18 2001/09/28 23:46:06 jimg Exp $
+ $Id: README,v 1.19 2001/10/14 01:52:17 jimg Exp $
 
 The following provides background technical information on the design of
 asciival. For installation information, see the file INSTALL
@@ -8,9 +8,11 @@ ASCIIVAL: The program asciival is a filter that can function as both a client
 and a server filter program. The asciival program can read data from a URL, a
 local filename or from standard input. The program prints to standard output
 an ASCII version of the data where columns are separated by commas and rows
-separated by newlines. Users can request data from serves in ASCII form using
-the suffix .ascii or .asc in a DODS URL. To see how the asciival program is
-used on the server side, look at the DODS_Dispatch.pm Perl module.
+separated by newlines. 
+
+Clients can request data from servers in ASCII form using the suffix .ascii
+or .asc in a DODS URL. To see how the asciival program is used on the server
+side, look at the DODS_Dispatch.pm Perl module.
 
 James Gallagher 10/4/96
 
@@ -19,3 +21,13 @@ the draft DAP specification (see the DODS Project web site). The program can
 now process many more datasets than before.
 
 9/18/2001 jhrg
+
+Note that you should build this only after first building the core parts of
+the DODS system, specifically the third-party software packages and the core
+C++ class library. See the general documentation files for DODS and/or the
+README and INSTALL files in $(DODS_ROOT)/packages and $(DODS_ROOT)/src/dap
+for information on building those parts of the system.
+
+
+
+

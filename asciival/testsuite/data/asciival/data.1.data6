@@ -1,9 +1,5 @@
-
-0, 0, 0, 0, 0, 0
-
--75, -74.5, -74, -73.5, -73, -72.5
-
-0, 0, 0, 0, 0, 0
-
--75, -74.5, -74, -73.5, -73, -72.5
-
+Dataset: S3096277.HDF
+NSCAT Rev 30.Avg_Wind_Speed.row, -75, -74.5, -74, -73.5, -73, -72.5
+NSCAT Rev 30.Avg_Wind_Speed.Avg_Wind_Speed, 0, 0, 0, 0, 0, 0
+NSCAT Rev 30.RMS_Wind_Speed.row, -75, -74.5, -74, -73.5, -73, -72.5
+NSCAT Rev 30.RMS_Wind_Speed.RMS_Wind_Speed, 0, 0, 0, 0, 0, 0

@@ -1,5 +1,5 @@
 
-# $Id: urls.tcl,v 1.2 1999/05/25 21:37:47 jimg Exp $
+# $Id: urls.tcl,v 1.3 2001/10/14 01:52:17 jimg Exp $
 
 # Datasets and their expected output (the information that asciival sends to
 # stdout - not the stuff that should be going into the file).
@@ -124,17 +124,9 @@ set dsp_2_dds "Dataset {
     Byte dsp_band_1\[line = 512\]\[pixel = 512\];
 } east;"
 
-# URI/MatLab:
-set nscat_s2 "http://dods.gso.uri.edu/cgi-bin/nph-dsp/data/NSCAT_S2.mat"
-set nscat_s2_dds "Dataset {
-    Float64 NSCAT_S2\[NSCAT_S2_row = 153\]\[NSCAT_S2_column = 843\];
-} NSCAT_S2;"
-
-# JPL/NSCAT:  (I will get valid filenames from Todd soon)
-		
-#		http://dods.jpl.nasa.gov/cgi-bin/hdf/data/nscat/???
-
 # JGOFS:
+set jg_test "http://dcz.dods.org/dods-3.2/nph-dods/test"
+
 set jg_diatoms "http://dods.gso.uri.edu/cgi-bin/nph-jg/diatoms"
 set jg_diatoms_dds "Dataset {
     Sequence {
@@ -200,7 +192,7 @@ set jg_bot_dds "Dataset {
 
 set jg_ctd_ce "sta,time"
 
-set hdf_winds  "http://dods.jpl.nasa.gov/dods-bin/nph-hdf/pub/ocean_wind/nscat/data/L30/S2/S3096259.HDF.Z"
+set hdf_winds  "http://dcz.dods.org/dods-3.2/nph-dods/data/hdf/S3096277.HDF.Z"
 set hdf_winds_ce "Avg_Wind_Speed\\\[0:5\\\],RMS_Wind_Speed\\\[0:5\\\]"
 
 set stdin_test_data  "testsuite/asciival.1/stdin_test"

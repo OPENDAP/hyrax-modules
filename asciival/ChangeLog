@@ -1,3 +1,10 @@
+2001-10-13  James Gallagher  <jimg@dcz.dods.org>
+
+	* Merged with release-3-2-4.
+
+	* New configure script plus a fix to ascii_val.cc's
+	instrumentation. 
+
 2001-09-28  James Gallagher  <jimg@dcz.dods.org>
 
 	* Merged with 3.2.3. The next merge should use release-3-2-3 -j

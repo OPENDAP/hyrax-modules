@@ -14,7 +14,7 @@
 # Test the `-m' option. See other options.?.exp files for test for the other
 # options. 
 
-# $Id: option.m.exp,v 1.3 1999/05/25 23:12:48 ndp Exp $
+# $Id: option.m.exp,v 1.4 2001/10/14 01:52:17 jimg Exp $
 
 global comp_output		# contains output from das-test_start
 global verbose			# this and srcdir are set by runtest.exp
@@ -26,9 +26,6 @@ source "testsuite/asciival.1/urls.tcl"
 
 set test_name "option: -m"
 
-set state $verbose
-set verbose 0
-
 # This tests a Grid of Float64.
 
 asciival_start "-m" "${coads}?${coads_sst_ce}"
@@ -36,12 +33,19 @@ compare_stdout "testsuite/data/asciival/coads.option.m.data" "$test_name: coads"
 
 # Test Grid of Bytes.
 
-asciival_start "-m" "${dsp_1}?${dsp_1_ce}"
-compare_stdout "testsuite/data/asciival/dsp_1.option.m.data" "$test_name: dsp 1" 0 "match"
+# asciival_start "-m" "${dsp_1}?${dsp_1_ce}"
+# compare_stdout "testsuite/data/asciival/dsp_1.option.m.data" "$test_name: dsp 1" 0 "match"
 
 # Test Array of Bytes.
 
 asciival_start "-m" "${dsp_2}?${dsp_2_ce}"
 compare_stdout "testsuite/data/asciival/dsp_2.option.m.data" "$test_name: dsp 2" 0 "match"
 
-set verbose $state
+
+
+
+
+
+
+
+

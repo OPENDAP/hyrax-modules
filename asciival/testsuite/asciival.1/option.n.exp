@@ -14,7 +14,7 @@
 # Test the `-n' option. See other options.?.exp files for test for the other
 # options. 
 
-# $Id: option.n.exp,v 1.2 1999/05/25 21:37:46 jimg Exp $
+# $Id: option.n.exp,v 1.3 2001/10/14 01:52:17 jimg Exp $
 
 global comp_output		# contains output from das-test_start
 global verbose			# this and srcdir are set by runtest.exp
@@ -33,8 +33,8 @@ compare_stdout "testsuite/data/asciival/coads.option.n.data" "$test_name: coads"
 
 # Test Grid of Bytes.
 
-asciival_start "-n" "${dsp_1}?${dsp_1_ce}"
-compare_stdout "testsuite/data/asciival/dsp_1.option.n.data" "$test_name: dsp 1"
+# asciival_start "-n" "${dsp_1}?${dsp_1_ce}"
+# compare_stdout "testsuite/data/asciival/dsp_1.option.n.data" "$test_name: dsp 1"
 
 # Test Array of Bytes.
 
