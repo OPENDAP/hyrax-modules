@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.44 1999/11/04 23:49:44 jimg Exp $
+# $Id: Makefile.in,v 1.45 2000/10/02 17:50:14 jimg Exp $
 
 @SET_MAKE@
 
@@ -7,12 +7,7 @@
 # DEFS gets the `-D' defines that describe what a particular system has
 # or doesn't have.
 
-# Note: I believe that Makefile is a special pseudo-target and when it is
-# out of date with respect to Makefile.in is always rebuilt. Thus, it does
-# not need to be listed under GENERATED files. Since configure has its own
-# rule, it is also not listed. 7/28/99 jhrg
-GENERATED=config_asciival.h 
-PROG = $(GENERATED) asciival
+PROG = asciival
 
 DODS_ROOT = ../../..
 WWW_ROOT=@WWW_ROOT@
@@ -132,7 +127,7 @@ clean:
 	-rm -f $(PROG)
 
 distclean: clean
-	-rm -f config.status config.log config.cache
+	-rm -f config_asciival.h config.status config.log config.cache
 
 .PHONY: docs
 docs:
@@ -205,57 +200,71 @@ tags:
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) -o $@ $<
 
 # DO NOT DELETE; depend depends on this line.
-AsciiByte.o: AsciiByte.cc config_asciival.h AsciiByte.h \
- ../../../include/Byte.h ../../../include/BaseType.h \
- ../../../include/config_dap.h name_map.h
-AsciiInt32.o: AsciiInt32.cc config_asciival.h AsciiInt32.h \
- ../../../include/Int32.h ../../../include/BaseType.h \
- ../../../include/config_dap.h name_map.h
-AsciiFloat64.o: AsciiFloat64.cc config_asciival.h AsciiFloat64.h \
- ../../../include/Float64.h ../../../include/BaseType.h \
- ../../../include/config_dap.h name_map.h
-AsciiStr.o: AsciiStr.cc config_asciival.h AsciiStr.h \
+AsciiByte.o: AsciiByte.cc config_asciival.h \
+ ../../../include/InternalErr.h ../../../include/Error.h AsciiByte.h \
+ ../../../include/Byte.h ../../../include/dods-datatypes.h \
+ ../../../include/BaseType.h name_map.h
+AsciiInt32.o: AsciiInt32.cc config_asciival.h \
+ ../../../include/InternalErr.h ../../../include/Error.h AsciiInt32.h \
+ ../../../include/Int32.h ../../../include/dods-datatypes.h \
+ ../../../include/BaseType.h name_map.h
+AsciiFloat64.o: AsciiFloat64.cc config_asciival.h \
+ ../../../include/InternalErr.h ../../../include/Error.h \
+ AsciiFloat64.h ../../../include/Float64.h \
+ ../../../include/dods-datatypes.h ../../../include/BaseType.h \
+ name_map.h
+AsciiStr.o: AsciiStr.cc config_asciival.h \
+ ../../../include/InternalErr.h ../../../include/Error.h AsciiStr.h \
  ../../../include/dods-limits.h ../../../include/Str.h \
- ../../../include/BaseType.h ../../../include/config_dap.h name_map.h
+ ../../../include/BaseType.h name_map.h
 AsciiUrl.o: AsciiUrl.cc config_asciival.h AsciiUrl.h AsciiStr.h \
  ../../../include/dods-limits.h ../../../include/Str.h \
- ../../../include/BaseType.h ../../../include/config_dap.h
-AsciiArray.o: AsciiArray.cc ../../../include/config_dap.h AsciiArray.h \
+ ../../../include/BaseType.h
+AsciiArray.o: AsciiArray.cc ../../../include/config_dap.h \
+ ../../../include/InternalErr.h ../../../include/Error.h AsciiArray.h \
  ../../../include/Array.h ../../../include/dods-limits.h \
  ../../../include/Vector.h ../../../include/BaseType.h \
  ../../../include/DDS.h ../../../include/Clause.h \
  ../../../include/expr.h ../../../include/RValue.h \
  ../../../include/debug.h name_map.h
-AsciiStructure.o: AsciiStructure.cc config_asciival.h AsciiStructure.h \
- ../../../include/Structure.h ../../../include/BaseType.h \
- ../../../include/config_dap.h ../../../include/DDS.h \
+AsciiStructure.o: AsciiStructure.cc config_asciival.h \
+ ../../../include/InternalErr.h ../../../include/Error.h \
+ AsciiStructure.h ../../../include/Structure.h \
+ ../../../include/BaseType.h ../../../include/DDS.h \
  ../../../include/Clause.h ../../../include/expr.h \
  ../../../include/RValue.h ../../../include/debug.h AsciiSequence.h \
  ../../../include/Sequence.h name_map.h
-AsciiList.o: AsciiList.cc config_asciival.h AsciiList.h \
+AsciiList.o: AsciiList.cc config_asciival.h \
+ ../../../include/InternalErr.h ../../../include/Error.h AsciiList.h \
  ../../../include/List.h ../../../include/dods-limits.h \
  ../../../include/Vector.h ../../../include/BaseType.h \
- ../../../include/config_dap.h ../../../include/DDS.h \
- ../../../include/Clause.h ../../../include/expr.h \
- ../../../include/RValue.h ../../../include/debug.h name_map.h
-AsciiSequence.o: AsciiSequence.cc config_asciival.h AsciiSequence.h \
- ../../../include/Sequence.h ../../../include/BaseType.h \
- ../../../include/config_dap.h name_map.h
-AsciiGrid.o: AsciiGrid.cc config_asciival.h AsciiGrid.h \
- ../../../include/Grid.h ../../../include/BaseType.h \
- ../../../include/config_dap.h name_map.h
-AsciiUInt32.o: AsciiUInt32.cc config_asciival.h AsciiUInt32.h \
- ../../../include/UInt32.h ../../../include/BaseType.h \
- ../../../include/config_dap.h name_map.h
-AsciiInt16.o: AsciiInt16.cc config_asciival.h AsciiInt16.h \
- ../../../include/Int16.h ../../../include/BaseType.h \
- ../../../include/config_dap.h name_map.h
-AsciiUInt16.o: AsciiUInt16.cc config_asciival.h AsciiUInt16.h \
- ../../../include/UInt16.h ../../../include/BaseType.h \
- ../../../include/config_dap.h name_map.h
-AsciiFloat32.o: AsciiFloat32.cc config_asciival.h AsciiFloat32.h \
- ../../../include/Float32.h ../../../include/BaseType.h \
- ../../../include/config_dap.h name_map.h
+ ../../../include/DDS.h ../../../include/Clause.h \
+ ../../../include/expr.h ../../../include/RValue.h \
+ ../../../include/debug.h name_map.h
+AsciiSequence.o: AsciiSequence.cc config_asciival.h \
+ ../../../include/InternalErr.h ../../../include/Error.h \
+ AsciiSequence.h ../../../include/Sequence.h \
+ ../../../include/BaseType.h name_map.h
+AsciiGrid.o: AsciiGrid.cc config_asciival.h \
+ ../../../include/InternalErr.h ../../../include/Error.h AsciiGrid.h \
+ ../../../include/Grid.h ../../../include/BaseType.h name_map.h
+AsciiUInt32.o: AsciiUInt32.cc config_asciival.h \
+ ../../../include/InternalErr.h ../../../include/Error.h AsciiUInt32.h \
+ ../../../include/UInt32.h ../../../include/dods-datatypes.h \
+ ../../../include/BaseType.h name_map.h
+AsciiInt16.o: AsciiInt16.cc config_asciival.h \
+ ../../../include/InternalErr.h ../../../include/Error.h AsciiInt16.h \
+ ../../../include/Int16.h ../../../include/dods-datatypes.h \
+ ../../../include/BaseType.h name_map.h
+AsciiUInt16.o: AsciiUInt16.cc config_asciival.h \
+ ../../../include/InternalErr.h ../../../include/Error.h AsciiUInt16.h \
+ ../../../include/UInt16.h ../../../include/dods-datatypes.h \
+ ../../../include/BaseType.h name_map.h
+AsciiFloat32.o: AsciiFloat32.cc config_asciival.h \
+ ../../../include/InternalErr.h ../../../include/Error.h \
+ AsciiFloat32.h ../../../include/Float32.h \
+ ../../../include/dods-datatypes.h ../../../include/BaseType.h \
+ name_map.h
 ascii_val.o: ascii_val.cc ../../../include/config_dap.h \
  ../../../include/BaseType.h ../../../include/Connect.h \
  ../../../include/DAS.h ../../../include/AttrTable.h \
@@ -263,16 +272,16 @@ ascii_val.o: ascii_val.cc ../../../include/config_dap.h \
  ../../../include/expr.h ../../../include/RValue.h \
  ../../../include/debug.h ../../../include/Error.h \
  ../../../include/util.h ../../../include/Byte.h \
- ../../../include/Int16.h ../../../include/UInt16.h \
- ../../../include/Int32.h ../../../include/UInt32.h \
- ../../../include/Float32.h ../../../include/Float64.h \
- ../../../include/Str.h ../../../include/dods-limits.h \
- ../../../include/Url.h ../../../include/Array.h \
- ../../../include/Vector.h ../../../include/List.h \
- ../../../include/Structure.h ../../../include/Sequence.h \
- ../../../include/Grid.h AsciiByte.h AsciiInt32.h AsciiUInt32.h \
- AsciiFloat64.h AsciiStr.h AsciiUrl.h AsciiList.h AsciiArray.h \
- AsciiStructure.h AsciiSequence.h AsciiGrid.h name_map.h \
- ../../../include/cgi_util.h
+ ../../../include/dods-datatypes.h ../../../include/Int16.h \
+ ../../../include/UInt16.h ../../../include/Int32.h \
+ ../../../include/UInt32.h ../../../include/Float32.h \
+ ../../../include/Float64.h ../../../include/Str.h \
+ ../../../include/dods-limits.h ../../../include/Url.h \
+ ../../../include/Array.h ../../../include/Vector.h \
+ ../../../include/List.h ../../../include/Structure.h \
+ ../../../include/Sequence.h ../../../include/Grid.h AsciiByte.h \
+ AsciiInt32.h AsciiUInt32.h AsciiFloat64.h AsciiStr.h AsciiUrl.h \
+ AsciiList.h AsciiArray.h AsciiStructure.h AsciiSequence.h AsciiGrid.h \
+ name_map.h ../../../include/cgi_util.h
 name_map.o: name_map.cc ../../../include/config_dap.h \
  ../../../include/escaping.h name_map.h
