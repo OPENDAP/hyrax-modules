@@ -35,28 +35,18 @@
 #      Mozilla/3.01 (X11; I; SunOS 4.1.3 sun4c) 
 
 #PATH_INFO="/version"
-<<<<<<< test-dispatch.sh
-PATH_INFO="/cat_avhrr.dds"
-=======
-PATH_INFO="/data/penny.mat.das"
->>>>>>> 1.2
+
+PATH_INFO="/pathfinder.dds"
 export PATH_INFO
 
-<<<<<<< test-dispatch.sh
+
 SCRIPT_NAME="/etc/nph-jg"
-=======
-SCRIPT_NAME="/etc/nph-mat"
->>>>>>> 1.2
 export SCRIPT_NAME
 
 QUERY_STRING=
 export QUERY_STRING
 
 #PATH_TRANSLATED="/usr/local/spool/http/version"
-<<<<<<< test-dispatch.sh
-PATH_TRANSLATED="/usr/local/spool/http/cat_avhrr.dds"
-=======
-PATH_TRANSLATED="/usr/local/spool/http/data/penny.mat.das"
->>>>>>> 1.2
+PATH_TRANSLATED="/usr/local/spool/http/pathfinder.dds"
 export PATH_TRANSLATED
 
