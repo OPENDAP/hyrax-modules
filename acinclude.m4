@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.75 2003/02/28 00:56:15 jimg Exp $
+# $Id: acinclude.m4,v 1.76 2003/04/23 23:26:06 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -137,7 +137,18 @@ AC_DEFUN(DODS_WWW_LIB, [dnl
 	# AC_SUBST(INCS)		# 09/20/02 jhrg
         LIBS="`$dods_root/bin/curl-config --libs` $LIBS"
     else
-	AC_MSG_ERROR([Could not file curl-config!])
+	AC_MSG_ERROR([Could not find curl-config!])
+    fi])
+
+AC_DEFUN(DODS_XML_LIB, [dnl
+    AC_REQUIRE([DODS_GET_DODS_ROOT])
+    AC_REQUIRE([DODS_PACKAGES_SUPPORT])
+    AC_MSG_CHECKING([for libxml2 and its headers])
+    if test -n "`which xml2-config`"
+    then
+        LIBS="`xml2-config --libs` $LIBS"
+    else
+	AC_MSG_ERROR([Could not find xml2-config!])
     fi])
 
 # Electric fence and dbnew are used to debug malloc/new and free/delete.
@@ -196,7 +207,7 @@ dnl None of this works with HDF 4.1 r1. jhrg 8/2/97
     AC_CHECK_LIB(z, deflate, LIBS="-lz $LIBS", nohdf=1)
     AC_CHECK_LIB(jpeg, jpeg_start_compress, LIBS="-ljpeg $LIBS", nohdf=1)
     AC_CHECK_LIB(df, Hopen, LIBS="-ldf $LIBS" , nohdf=1)
-    AC_CHECK_LIB(mfhdf, SDstart, LIBS="-lmfhdf $LIBS" , nohdf=1, $XTRALIBS)])
+    AC_CHECK_LIB(mfhdf, SDstart, LIBS="-lmfhdf $LIBS" , nohdf=1)])
 
 # 3. Compiler test macros
 #--------------------------------------------------------------------------
@@ -231,9 +242,13 @@ AC_DEFUN(DODS_GCC_VERSION, [dnl
     AC_MSG_CHECKING(for gcc/g++ 2.8 or greater)
 
     GCC_VER=`gcc -v 2>&1 | awk '/version/ {print}'`
+
     dnl We need the gcc version number as a number, without `.'s and limited
-    dnl to three digits
-    GCC_VER=`echo $GCC_VER | sed 's@[[a-z ]]*\([[0-9.]]\)@\1@'`
+    dnl to three digits. The old version below was replaced by Andy Jacobson's 
+    dnl patch which works with gcc 3, including the pre-release versions.
+
+    dnl GCC_VER=`echo $GCC_VER | sed 's@[[a-z ]]*\([[0-9.]]\)@\1@'`
+    GCC_VER=`echo $GCC_VER | sed 's@.*gcc version \([[0-9\.]]*\).*@\1@'`
 
     case $GCC_VER in
         *egcs*) AC_MSG_RESULT(Found egcs version ${GCC_VER}.) ;;
