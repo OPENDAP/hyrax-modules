@@ -1,3 +1,15 @@
+2000-10-03  James Gallagher  <jimg@dcz.dods.org>
+
+	* Added a config_www_int.h(.in) header. config_dap.h is no longer
+	used anywhere.
+
+	* CVS Logs are now at the end of files.
+
+	* www_int now catches exceptions thrown by the dap++ library.
+
+	* Changed the read() member function to match the new definition
+	in the dap.
+
 1999-11-04  James Gallagher  <jimg@dcz.dods.org>
 
 	* Merged: cvs update -j release-3-1-1 -j release-3-1, the next
