@@ -8,6 +8,9 @@
 //	jhrg,jimg	James Gallagher (jgallagher@gso.uri.edu)
 
 // $Log: name_map.h,v $
+// Revision 1.6  1999/03/24 06:40:48  brent
+// convert String.h to std lib <string>, convert to packages regex -- B^2
+//
 // Revision 1.5  1998/03/13 21:24:26  jimg
 // Fixed up comments
 //
@@ -50,12 +53,14 @@
 class name_map {
 private:
     struct name_equiv {
-	String from;
-	String to;
+    	int colon;
+	string from;
+	string to;
 	name_equiv(char *raw_equiv) {
-	    String t = raw_equiv;
-	    from = t.before(":");
-	    to = t.after(":");
+	    string t = raw_equiv;
+	    colon = t.find(":");
+	    from = t.substr(0,colon);
+	    to = t.substr(colon+1, t.size());
 	}
 	name_equiv() {
 	}
@@ -88,7 +93,7 @@ public:
 
 	@return The string #name#, its equivalent or its canonicalized
 	equivalent. */
-    String lookup(String name, const bool canonical_names = false);
+    string lookup(string name, const bool canonical_names = false);
 
     /** Delete all the entries from the thesaurus. */
     void delete_all();
