@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.3 1996/10/07 21:07:15 jimg Exp $
+# $Id: Makefile.in,v 1.4 1996/10/25 23:16:51 jimg Exp $
 
 @SET_MAKE@
 
@@ -20,8 +20,8 @@ DODS_ROOT = ../..
 INCS = -I. -I$(DODS_ROOT)/include -I$(MATLAB_ROOT)/extern/include @INCS@
 DEFS = @DEFS@ -DUSE_LIBGXX_INLINES
 CPPFLAGS = @CPPFLAGS@ $(DEFS) $(INCS)
-CFLAGS = @CFLAGS@ -Wall
-CXXFLAGS = @CXXFLAGS@ -Wall
+CFLAGS = @CFLAGS@
+CXXFLAGS = @CXXFLAGS@
 LDFLAGS = @LDFLAGS@ -L. -L$(DODS_ROOT)/lib
 LFLAGS = -8
 YFLAGS = -d
@@ -86,7 +86,7 @@ all: $(PROG)
 writeval: write_val.o $(CLIENTOBJS)
 	$(CXX) $(LDFLAGS) -o writeval write_val.o $(CLIENTOBJS) $(LIBS)
 
-loaddods: loaddods.o startchild.o queue.o
+loaddods: loaddods.o variable.o startchild.o queue.o
 	$(CMEX) $(CMEXFLAGS) $+
 
 
