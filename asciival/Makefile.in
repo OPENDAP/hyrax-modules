@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.31 1998/08/03 16:38:35 jimg Exp $
+# $Id: Makefile.in,v 1.32 1998/09/16 17:04:28 jimg Exp $
 
 @SET_MAKE@
 
@@ -29,7 +29,7 @@ LDFLAGS = @LDFLAGS@ -L. -L$(DODS_ROOT)/lib
 LFLAGS = -8
 YFLAGS = -d
 LIBS = -ldap++ -lrx @LIBS@
-MAT_LIBS = -ldap++ -lrx @MATLIBS@ @LIBS@
+MAT_LIBS = -ldap++ @MATLIBS@ @LIBS@
 TAGS_FLAGS = -b
 CMEXFLAGS = -g @MAT_VERSION_FLAG@
 
