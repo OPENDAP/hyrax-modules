@@ -1,6 +1,6 @@
 
-# (c) COPYRIGHT URI/MIT 1997,1998
-# Please read the full copyright statement in the file COPYRIGH.  
+# (c) COPYRIGHT URI/MIT 1997,1998,1999
+# Please read the full copyright statement in the file COPYRIGHT.
 #
 # Authors:
 #      jhrg,jimg       James Gallagher (jgallagher@gso.uri.edu)
@@ -22,6 +22,13 @@
 #      	       	       	      - Root name of the filter (e.g., *nc*_dods)
 #
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.13  1999/05/19 23:33:15  jimg
+# Fixes for security holes. The CWD module is no longer used; this makes it
+# simpler to run perl using the -T (taint) mode.
+# Variables passed to executables are scanned for nasty things (shell meta
+# characters).
+# The commands are run straight from perl, not using an intermediate shell.
+#
 # Revision 1.12  1999/05/18 20:01:58  jimg
 # Fixed version feature and help feature so that they work with nph-*/version,
 # nph-*/version/, and nph-*/ (the latter for help).
@@ -86,12 +93,38 @@
 
 package DODS_Dispatch;
 
-use Cwd;
+sub send_error_object {
+    my $msg = shift;
+    my $error_obj = "\
+Error {
+    code = 0;
+    message = \"DODS Server: $msg\";
+};";
+    
+    # Return an error to the client.
+    print(STDOUT $error_obj, "\n");
+    # Print a message to the http server's error log.
+    my $date = localtime;
+    print(STDERR "[$date] DODS Server error: ", $msg, "\n");
+}
+
+# Security issues: All the environment variables used to get information that
+# is passed to programs as arguments should be screened for hidden shell
+# commands such as `cat /etc/passwd', `rm -r *', ... unless we can be
+# otherwise sure that embedded shell commands will never be run. The
+# environment variables used are: 
+#
+# QUERY_STRING: Contains the DODS CE
+# PATH_INFO: Used to extract the extension from the filename which is used to
+# choose the server's filter program (.das --> nc_das, etc.)
+# SCRIPT_NAME: Used to build the `basename' part of the server's fileter
+# program (nc --> nc_das, etc.).
+# PATH_TRANSLATED: Used to get the file/dataset name.
 
 sub initialize {
     my $self = shift;
 
-    $self->{'cgi_dir'} = cwd . "/";
+    $self->{'cgi_dir'} = "./";
 
     $query = $ENV{'QUERY_STRING'};
     $query =~ tr/+/ /;		# Undo escaping by client.
@@ -107,7 +140,13 @@ sub initialize {
     # object).
     $ext = $ENV{'PATH_INFO'};
     $ext =~ s@.*\.(.*)@$1@;
-		
+
+    if ($ext =~ /[^A-Za-z\/]+/) {
+	print(STDERR "DODS_Dispatch.pm: ext: ", $ext, "\n") if $debug >= 2;
+	send_error_object("Extension contains bad characters.");
+	exit(1);
+    }
+
     $self->{'ext'} = $ext;
 
     # Strip the `nph-' off of the front of the dispatch program's name. Also 
@@ -123,6 +162,12 @@ sub initialize {
 	$script =~ s@(.*)\..*@$1@;	# Remove any ext if present
     }
 
+    if ($script =~ /[^A-Za-z0-9]+/) {
+	print(STDERR "DODS_Dispatch.pm: script: ", $script, "\n") 
+	    if $debug >= 2;
+  	send_error_object("Script name contains bad characters.");
+  	exit(1);
+    }
     $self->{'script'} = $script;
 
     # Look for the Accept-Encoding header. Does it exist? If so, store the
@@ -133,7 +178,15 @@ sub initialize {
     $self->{'accept_types'} = $ENV{'HTTP_XDODS_ACCEPT_TYPES'};
 
     $filename = $ENV{'PATH_TRANSLATED'};
-    $filename =~ s@(.*)\.$ext@$1@;
+
+    # This odd regexp excludes shell metacharacters, spaces and %-escapes
+    # (e.g., %3B) from $filename which plugs a security hole that provided a
+    # way to cat any file on the server's machine. E.G.:geturl
+    # http://.../nph-nc/a.ver%3Bcat%20/etc/passwd%20.ver would return the
+    # contents of /etc/passwd. 5/18/99 jhrg
+
+    $filename =~ s@([^ !%&()*+?<>]*)\.$ext(.*)@$1@;
+    printf(STDERR "filename: %s\n", $filename) if $debug == 2;
 
     $self->{'filename'} = $filename;
 }
@@ -257,76 +310,76 @@ sub accept_types {
 sub command {
     my $self = shift;
 
-    my $ext = $self->extension();
-    my $cgi_dir = $self->cgi_dir();
-    my $cache_dir = $self->cache_dir();
-    my $script = $self->script();
-    my $filename = $self->filename();
-    my $accept_types = $self->accept_types();
-
     # If the user wants to see info, version of help information, provide
     # that. Otherwise, form the name of the filter program to run by
     # catenating the script name, underscore and the ext.
     if ($ext eq "info") {
-	$server_pgm = $cgi_dir . "usage";
-	$server_pgm .= " -v " . $self->{'caller_revision'} . " ";
-	$full_script = $cgi_dir . $script;
-	$command = $server_pgm . " " . $filename . " " . $full_script;
+	$server_pgm = $self->cgi_dir() . "usage";
+	# usage does not support the version flag like the other filter
+	# programs. 5/19/99 jhrg
+	# $server_pgm .= " -v " . $self->{'caller_revision'} . " ";
+	$full_script = $self->cgi_dir() . $self->script();
+	@command = ($server_pgm, $self->filename(), $full_script);
     } elsif ($ext eq "ver" || $ext eq "/version" || $ext eq "/version/") {
-	$server_pgm = $cgi_dir . $script . "_dods";
-	$server_pgm .= " -v " . $self->{'caller_revision'} . " ";
-	$command = $server_pgm . " -V " . $filename;
+	$server_pgm = $self->cgi_dir() . $self->script() . "_dods";
+	@command = ($server_pgm, "-v", $self->caller_revision(), "-V",
+	            $self->filename());
     } elsif ($ext eq "help" || $ext eq "/help" || $ext eq "" || $ext eq "/") {
 	$self->print_help_message();
 	exit(0);
     } elsif ($ext eq "das" || $ext eq "dds") {
 	my $query = $self->query();
-	$server_pgm = $cgi_dir . $script . "_" . $ext;
-	$server_pgm .= " -v " . $self->{'caller_revision'} . " ";
-	$command = $server_pgm . " " . $filename;
+	my $cache_dir = $self->cache_dir();
+	my $accept_types = $self->accept_types();
+	$server_pgm = $self->cgi_dir() . $self->script() . "_" . $ext;
+	@command = ($server_pgm, "-v", $self->{'caller_revision'}, 
+		    $self->filename());
 	if ($query ne "") {
-	    $command .= " -e " . "\"" . $query . "\"";
+	    @command = (@command, "-e", "\"" . $query . "\"");
 	}
 	if ($cache_dir ne "") {
-	    $command .= " -r " . "\"" . $cache_dir . "\"";
+	    @command = (@command, "-r", "\"" . $cache_dir . "\"");
 	}
 	if ($accept_types ne "") {
-	    $command .= " -t " . "\"" . $accept_types . "\"";
+	    @command = (@command, "-t", "\"" . $accept_types . "\"");
 	}
     } elsif ($ext eq "dods") {
 	my $query = $self->query();
-	$server_pgm = $cgi_dir . $script . "_" . $ext;
-	$server_pgm .= " -v " . $self->{'caller_revision'} . " ";
-	$command = $server_pgm . " " . $filename;
+	my $cache_dir = $self->cache_dir();
+	my $accept_types = $self->accept_types();
+	$server_pgm = $self->cgi_dir() . $self->script() . "_" . $ext;
+	@command = ($server_pgm, "-v", $self->{'caller_revision'}, 
+		    $self->filename());
 	if ($query ne "") {
-	    $command .= " -e " . "\"" . $query . "\"";
+	    @command = (@command, "-e", "\"" . $query . "\"");
 	}
 	if ($cache_dir ne "") {
-	    $command .= " -r " . "\"" . $cache_dir . "\"";
+	    @command = (@command, "-r", "\"" . $cache_dir . "\"");
 	}
-	if ($self->encoding() =~ m/deflate/) {
-	    $command .= " -c";
+	if ($self->encoding() =~ /deflate/) {
+	    @command = (@command, "-c");
 	}
 	if ($accept_types ne "") {
-	    $command .= " -t " . "\"" . $accept_types . "\"";
+	    @command = (@command, "-t", "\"" . $accept_types . "\"");
 	}
     } elsif ($ext eq "ascii" || $ext eq "asc") {
 	my $query = $self->query();
-	$server_pgm = $cgi_dir . $script . "_dods";
-	$server_pgm .= " -v " . $self->{'caller_revision'} . " ";
-	$command = $server_pgm . " " . $filename;
+	$server_pgm = $self->cgi_dir() . $self->script() . "_dods";
+	@command = ($server_pgm, "-v", $self->{'caller_revision'}, 
+		    $self->filename());
 	if ($query ne "") {
-	    $command .= " -e " . "\"" . $query . "\"";
+	    @command = (@command, "-e", "\"" . $query . "\"");
 	}
 	# Never compress ASCII.
 	local($ascii_srvr) = $cgi_dir . "asciival";
-	$command .= " | " . $ascii_srvr . " -m -- -";
+	@command = (@command, "|", $ascii_srvr, " -m -- -");
     } else {
 	$self->print_error_message();
 	exit(1);
     }
 
-    return $command;
+    print(STDERR "DODS server command: ", @command, "\n") if $debug;
+    return @command;
 }
 
 my $DODS_Para1 = "The URL extension did not match any that are known by this
