@@ -1,3 +1,8 @@
+2004-01-22  James Gallagher  <jimg@dcz.dods.org>
+
+	* Merged with release-3-4. The next merge should use update -j
+	release-3-4FCS -j release-3-4.
+
 2003-04-21  James Gallagher  <jimg@dcz.dods.org>
 
 	* Merged with release-3-3-1.
