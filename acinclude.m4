@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.31 1997/07/15 19:56:07 jimg Exp $
+# $Id: acinclude.m4,v 1.32 1997/10/04 00:00:19 jimg Exp $
 
 # Check for fill value usage.
 
@@ -362,12 +362,27 @@ AC_DEFUN(DODS_MATLAB, [dnl
     fi
 
     dnl Find the lib directory (which is named according to machine type).
-    matlab_lib_dir=`find $MATLAB_ROOT -name libmat.a -print \
-		    | sed 's@\(.*\)/libmat.a@\1@'`
+
+    matlab_lib_dir=`find $MATLAB_ROOT -name 'libmat*' -print \
+		    | sed 's@\(.*\)/libmat.*@\1@'`
     if test "$matlab_lib_dir"
     then
 	LDFLAGS="$LDFLAGS -L$matlab_lib_dir"
-    fi])
+	dnl This is used by the nph script to set LD_LIBRARY_PATH
+	AC_SUBST(matlab_lib_dir)
+    fi
+    
+    dnl sleazy test for version 5; look for the version 4 compat flag
+
+    if grep V4_COMPAT ${MATLAB_ROOT}/extern/include/mat.h > /dev/null 2>&1
+    then
+       MATLIBS="-lmat -lmi -lmx -lut"
+    else
+       MATLIBS="-lmat"
+    fi
+
+    AC_CHECK_LIB(ots, _OtsDivide64Unsigned, MATLIBS="$MATLIBS -lots", )
+    AC_SUBST(MATLIBS)])
 
 # Find the root directory of the current rev of gcc
 
@@ -401,6 +416,12 @@ dnl    fi
         irix)
             OS=${OS}`uname -r | sed 's/\..*//'`
             ;;
+dnl I added the following case because the `tr' command above *seems* to fail
+dnl on Irix 5. I can get it to run just fine from the shell, but not in the 
+dnl configure script built using this macro. jhrg 8/27/97
+        IRIX)
+            OS=irix`uname -r | sed 's/\..*//'`
+	    ;;
         osf*)
             ;;
         sn*)

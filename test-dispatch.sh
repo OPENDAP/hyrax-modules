@@ -35,16 +35,16 @@
 #      Mozilla/3.01 (X11; I; SunOS 4.1.3 sun4c) 
 
 #PATH_INFO="/version"
-PATH_INFO="/data/fnoc1.nc.ver"
+PATH_INFO="/data/penny.mat.das"
 export PATH_INFO
 
-SCRIPT_NAME="/etc/nph-nc"
+SCRIPT_NAME="/etc/nph-mat"
 export SCRIPT_NAME
 
 QUERY_STRING=
 export QUERY_STRING
 
 #PATH_TRANSLATED="/usr/local/spool/http/version"
-PATH_TRANSLATED="/usr/local/spool/http/data/fnoc1.nc.ver"
+PATH_TRANSLATED="/usr/local/spool/http/data/penny.mat.das"
 export PATH_TRANSLATED
 
