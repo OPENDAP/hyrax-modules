@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.39 1999/05/25 16:58:40 jimg Exp $
+# $Id: Makefile.in,v 1.40 1999/05/27 19:21:48 jimg Exp $
 
 @SET_MAKE@
 
@@ -14,7 +14,7 @@
 # the print representation on the screen.
 
 LOADDODS = loaddods.mex*
-PROG = writeval asciival $(LOADDODS) urlqueue
+PROG = writeval asciival urlqueue
 
 DODS_ROOT = ../..
 MATLAB_ROOT = @MATLAB_ROOT@
@@ -32,7 +32,7 @@ LIBS = -ldap++ @LIBS@
 MAT_LIBS = -ldap++ @MATLIBS@ @LIBS@
 TAGS_FLAGS = --include=../dap/TAGS
 TEST_COV_FLAGS = -ftest-coverage -fprofile-arcs
-CMEXFLAGS = -g @MAT_VERSION_FLAG@
+CMEXFLAGS = -g $(CFLAGS) $(CPPFLAGS) @MAT_VERSION_FLAG@
 
 # Set the instalation directories; prefix can be set on the command line
 # during Makefile construction with `./configure --prefix /my/choice'
@@ -56,7 +56,6 @@ version = @VERSION@
 dir = writeval-@VERSION@
 
 COMPONENT_NAME = DODS Matlab Command Line Client
-AWK = @AWK@
 
 # testsuite specifics
 RUNTEST = runtest
@@ -110,7 +109,9 @@ AV_OBJS = ascii_val.o name_map.o
 
 LD_SRCS = loaddods.c variable.c queue.c extend.c error.c
 
-LD_OBJS = loaddods.o variable.o queue.o extend.o error.o
+# Leave out loaddods.o; I pass loaddods.c to cmex so it'll know we're doing C
+# code and not complain. 5/27/99 jhrg
+LD_OBJS = variable.o queue.o extend.o error.o
 
 URLQ_SRCS = urlqueue.c queue.c
 
@@ -118,7 +119,7 @@ URLQ_OBJS = urlqueue.o queue.o
 
 ALLSRCS = $(CLIENTSRCS) $(ASCIISRCS) $(WV_SRCS) $(AV_SRCS) 
 
-all: $(PROG)
+all: $(PROG) loaddods
 
 writeval: $(WV_OBJS) $(CLIENTOBJS)
 	$(CXX) $(LDFLAGS) -o writeval $(WV_OBJS) $(CLIENTOBJS) $(LIBS)
@@ -126,8 +127,8 @@ writeval: $(WV_OBJS) $(CLIENTOBJS)
 asciival: $(AV_OBJS) $(ASCIIOBJS)
 	$(CXX) $(LDFLAGS) -o asciival $(AV_OBJS) $(ASCIIOBJS) $(LIBS)
 
-$(LOADDODS): $(LD_OBJS)
-	$(CMEX) $(CMEXFLAGS) $(LD_OBJS)
+loaddods: $(LD_OBJS)
+	$(CMEX) $(CMEXFLAGS) loaddods.c $(LD_OBJS)
 
 urlqueue: $(URLQ_OBJS)
 	$(CC) $(LDFLAGS) -o urlqueue $(URLQ_OBJS)
@@ -202,7 +203,7 @@ loaddods-purify: writeval variable.o queue.o
 
 clean:	
 	-rm -f *.o *.sum *.log *~ core
-	-rm -f $(PROG)
+	-rm -f $(PROG) $(LOADDODS)
 
 distclean: clean
 	-rm -f config.status config.log config.cache
@@ -238,9 +239,9 @@ update-version: check-version
 	  $(AWK) ' \
 	    BEGIN { found = 0 } \
 	    { if ( $$0 ~ /^$(COMPONENT_NAME):/) \
-	        { print "$(COMPONENT_NAME):", $(version); found = 1 } \
+	        { print "$(COMPONENT_NAME): $(version)"; found = 1 } \
 	      else { print $$0 } } \
-	    END { if ( ! found) { print "$(COMPONENT_NAME):", $(version) } \
+	    END { if ( ! found) { print "$(COMPONENT_NAME): $(version)" } \
 	        }' > $(DODS_ROOT)/VERSION
 
 # Compare the version encoded in this Makefile (set by configure) with the
