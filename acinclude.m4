@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.12 1996/09/17 21:35:45 jimg Exp $
+# $Id: acinclude.m4,v 1.13 1996/09/20 22:55:14 jimg Exp $
 
 # Check for fill value usage.
 
@@ -177,14 +177,22 @@ AC_DEFUN(DODS_FIND_EXPECT, [dnl
 
     if test $found -eq 0
     then
+        AC_MSG_CHECKING(for tclRegex.h in some more places)
+
 	for d in $tcl_include_paths
 	do
 	    if test -f ${d}/tclRegexp.h
 	    then
-		INCS="$INCS $d"
+		INCS="$INCS -I${d}"
+		AC_MSG_RESULT($d)
+		found=1
 	        break
 	    fi
         done
+	if test $found -eq 0 
+	then
+	    AC_MSG_WARN(not found)
+	fi
     fi
 
     AC_DEFINE_UNQUOTED(HAVE_EXPECT, $HAVE_EXPECT)])
