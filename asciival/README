@@ -1,0 +1,14 @@
+
+ $Id: README,v 1.1 1996/10/04 19:32:51 jimg Exp $
+
+There are four executables used in the DODS-Matlab interface. The loaddods
+program is a mex program run by Matlab. It in turn calls writeval which
+dereferences a DODS URL and returns a binary stream of data. The programs
+urlqueue and posturl are part of the Netscape GUI which makes up the
+interface for choosing variables and placing constraints on those variables.
+urlqueue is a `helper application' which should be listed in either the
+system of user's mailcap or .mailcap file. The executable itself can reside
+anywhere but we suggest putting it in $(DODS_ROOT)/etc or a directory users
+include in their PATH environment variable.
+
+James Gallagher 10/4/96
