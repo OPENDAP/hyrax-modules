@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.44 1999/01/19 17:46:19 jimg Exp $
+# $Id: acinclude.m4,v 1.45 1999/03/29 21:42:24 edavis Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -422,10 +422,9 @@ AC_DEFUN(DODS_FIND_GPP_INC, [dnl
 
     GPP_INC=""
     case $GCC_VER in
-	2.8*) if test -d /usr/local/include/g++; 
-	      then 
-		  GPP_INC=/usr/local/include/g++
-	      fi;;
+	2.8*) specs=`gcc -v 2>&1`;
+           dir=`echo $specs | sed 's@Reading specs from \(.*\)lib\/gcc-lib.*@\1@'`;
+           GPP_INC="${dir}include/g++";;
 	*) specs=`gcc -v 2>&1`;
            dir=`echo $specs | sed 's@Reading specs from \(.*\)gcc-lib.*@\1@'`;
            GPP_INC="${dir}g++include";;
