@@ -19,10 +19,10 @@
 #endif
 
 #include "Structure.h"
+#include "AsciiOutput.h"
 
-class AsciiStructure: public Structure {
+class AsciiStructure: public Structure, public AsciiOutput {
 private:
-    bool is_simple_structure();
     void print_header(ostream &os);
 
 public:
@@ -32,15 +32,18 @@ public:
     virtual BaseType *ptr_duplicate();
 
     virtual bool read(const string &dataset);
-
-    virtual void print_val(ostream &os, string space = "", 
-			   bool print_decl_p = true);
-
-    virtual void print_all_vals(ostream &os, XDR *src, DDS *dds, 
-				string space = "", bool print_decl_p = true);
+    virtual void print_ascii(ostream &os, bool print_name = true) 
+	throw(InternalErr);
 };
 
 // $Log: AsciiStructure.h,v $
+// Revision 1.5  2001/09/28 23:46:06  jimg
+// merged with 3.2.3.
+//
+// Revision 1.4.4.1  2001/09/18 23:29:26  jimg
+// Massive changes to use the new AsciiOutput class. Output more or less
+// conforms to the DAP Spec. draft.
+//
 // Revision 1.4  2000/10/02 20:09:52  jimg
 // Moved Log entries to the end of the files
 //

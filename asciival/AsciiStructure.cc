@@ -15,8 +15,7 @@
 
 #include "config_asciival.h"
 
-#include <assert.h>
-#include <iostream.h>
+#include <iostream>
 #include <string>
 
 #include "InternalErr.h"
@@ -56,87 +55,51 @@ AsciiStructure::read(const string &)
   throw InternalErr(__FILE__, __LINE__, "Called unimplemented read method");
 }
 
-// Is this a simple AsciiStructure? Simple AsciiStructures are composed of
-// only simple type elements *or* other structures which are simple.
-
-bool
-AsciiStructure::is_simple_structure()
-{
-    for (Pix p = first_var(); p; next_var(p)) {
-	if (var(p)->type() == dods_structure_c) {
-	    if (!((AsciiStructure *)var(p))->is_simple_structure())
-		return false;
-	}
-	else {
-	    if (!var(p)->is_simple_type())
-		return false;
-	}
-    }
-
-    return true;
-}
-
-// Assume that this mfunc is called only for simple sequences. Do not print
-// table style headers for complex sequences. 
-
+// This must only be called for simple structures!
 void
 AsciiStructure::print_header(ostream &os)
 {
     for (Pix p = first_var(); p; next_var(p), (void)(p && os << ", "))
 	if (var(p)->is_simple_type())
-	    os << names.lookup(var(p)->name(), translate);
+	    os << names.lookup(dynamic_cast<AsciiOutput*>(var(p))->get_full_name(), translate);
 	else if (var(p)->type() == dods_structure_c)
-	    ((AsciiStructure *)var(p))->print_header(os);
-}
-
-// As is the case with geturl, use print_all_vals to print all the values of
-// a sequence. 
-
-void 
-AsciiStructure::print_val(ostream &os, string space, bool print_decls)
-{
-    string separator;
-    if (print_decls)
-	separator = "\n";
-    else
-	separator = ", ";
-
-    for (Pix p = first_var(); p; next_var(p), (void)(p && os << separator))
-	var(p)->print_val(os, "", print_decls);
+	    dynamic_cast<AsciiStructure*>(var(p))->print_header(os);
+	else
+	    throw InternalErr(__FILE__, __LINE__,
+"This method should only be called by instances for which `is_simple_structure' returns true.");
 }
 
 void
-AsciiStructure::print_all_vals(ostream &os, XDR *src, DDS *dds, string, bool)
+AsciiStructure::print_ascii(ostream &os, bool print_name) throw(InternalErr)
 {
-    bool sequence_found = false;
-
-    for (Pix p = first_var(); p; next_var(p)) {
-	assert(var(p));
-
-	switch (var(p)->type()) {
-	  case dods_sequence_c:
-	    (dynamic_cast<AsciiSequence *>
-	     (var(p)))->print_all_vals(os, src, dds, "", false);
-	    sequence_found = true;
-	    break;
-	  
-	  case dods_structure_c:
-	    (dynamic_cast<AsciiStructure *>
-	     (var(p)))->print_all_vals(os, src, dds, "", false);
-	    break;
-	  
-	  default:
-	    // If a sequence was found, we still need to deserialize()
-	    // remaining vars.
-	    if(sequence_found)
-		var(p)->deserialize(src, dds);
-	    var(p)->print_val(os, "", false);
-	    break;
+    if (is_linear()) {
+	if (print_name) {
+	    print_header(os);
+	    os << endl;
+	}
+	
+	for (Pix p = first_var(); p; next_var(p), (void)(p && os << ", "))
+	    dynamic_cast<AsciiOutput*>(var(p))->print_ascii(os, false);
+    }
+    else {
+	for (Pix p = first_var(); p; next_var(p)) {
+	    dynamic_cast<AsciiOutput*>(var(p))->print_ascii(os, true);
+	    // This line outputs an extra endl when print_ascii is called for
+	    // nested structures because an endl is written for each member
+	    // and then once for the structure itself. 9/14/2001 jhrg
+	    os << endl;
 	}
     }
 }
 
 // $Log: AsciiStructure.cc,v $
+// Revision 1.6  2001/09/28 23:46:06  jimg
+// merged with 3.2.3.
+//
+// Revision 1.5.4.1  2001/09/18 23:29:26  jimg
+// Massive changes to use the new AsciiOutput class. Output more or less
+// conforms to the DAP Spec. draft.
+//
 // Revision 1.5  2000/10/02 20:09:52  jimg
 // Moved Log entries to the end of the files
 //

@@ -19,11 +19,13 @@
 #endif
 
 #include "Array.h"
+#include "AsciiOutput.h"
 
-class AsciiArray: public Array {
+class AsciiArray: public Array, public AsciiOutput {
 private:
-    /// Helper function used by this class' overload of print_val().
-    int print_vector(ostream &os, int index, int number);
+    void print_vector(ostream &os, bool print_name);
+    void print_array(ostream &os, bool print_name);
+    void print_complex_array(ostream &os, bool print_name);
 
 public:
     AsciiArray(const string &n = (char *)0, BaseType *v = 0);
@@ -33,12 +35,34 @@ public:
 
     virtual bool read(const string &dataset);
 
-    /// Overload of BaseType mfunc. This prints arrays using commas and CRs.
-    virtual void print_val(ostream &os, string space = "", 
-			   bool print_decl_p = true);
+    int print_row(ostream &os, int index, int number);
+
+    int get_index(vector<int> indices) throw(InternalErr);
+
+    /** Get the size of dimension #n#. 
+	@param n Return the size of the n^{th} dimension.
+	@return The size of the n^{th} dimension.
+	@exception InternalErr. */
+    int get_nth_dim_size(size_t n) throw(InternalErr);
+
+    /** Get the sizes of the first N dimensions of this array. This
+	`shape vector' may be used in all sorts of output formatters.
+	@return A vector describing the shape of the array. Each value
+	contains the highest index value. To get the size, add one. */
+    vector<int> get_shape_vector(size_t n) throw(InternalErr);
+
+    virtual void AsciiArray::print_ascii(ostream &os, bool print_name = true) 
+	throw(InternalErr);
 };
 
 // $Log: AsciiArray.h,v $
+// Revision 1.4  2001/09/28 23:46:06  jimg
+// merged with 3.2.3.
+//
+// Revision 1.3.4.1  2001/09/18 23:29:26  jimg
+// Massive changes to use the new AsciiOutput class. Output more or less
+// conforms to the DAP Spec. draft.
+//
 // Revision 1.3  2000/10/02 20:09:52  jimg
 // Moved Log entries to the end of the files
 //

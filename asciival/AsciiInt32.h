@@ -19,8 +19,9 @@
 #endif
 
 #include "Int32.h"
+#include "AsciiOutput.h"
 
-class AsciiInt32: public Int32 {
+class AsciiInt32: public Int32, public AsciiOutput {
 public:
     AsciiInt32(const string &n = (char *)0);
     virtual ~AsciiInt32() {}
@@ -28,12 +29,16 @@ public:
     virtual BaseType *ptr_duplicate();
     
     virtual bool read(const string &dataset);
-    
-    virtual void print_val(ostream &os, string space = "", 
-			   bool print_decl_p = true);
 };
 
 // $Log: AsciiInt32.h,v $
+// Revision 1.4  2001/09/28 23:46:06  jimg
+// merged with 3.2.3.
+//
+// Revision 1.3.4.1  2001/09/18 23:29:26  jimg
+// Massive changes to use the new AsciiOutput class. Output more or less
+// conforms to the DAP Spec. draft.
+//
 // Revision 1.3  2000/10/02 20:09:52  jimg
 // Moved Log entries to the end of the files
 //

@@ -14,7 +14,7 @@
 
 #include "config_dap.h"
 
-static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.13 2000/10/02 20:09:52 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.14 2001/09/28 23:46:06 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -39,6 +39,7 @@ static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.13 2000/10/02 20:09:52 ji
 
 #include "name_map.h"
 #include "cgi_util.h"
+#include "debug.h"
 
 name_map names;
 bool translate = false;
@@ -125,25 +126,10 @@ process_trace_options(char *tcode)
 static void
 process_data(XDR *src, DDS *dds)
 {
+    cout << "Dataset: " << dds->get_dataset_name() << endl;
+
     for (Pix q = dds->first_var(); q; dds->next_var(q)) {
-	switch(dds->var(q)->type()) {
-	  case dods_sequence_c:
-	    (dynamic_cast<AsciiSequence *>
-	     (dds->var(q)))->deserialize(src, dds);
-	    (dynamic_cast<AsciiSequence *>
-	     (dds->var(q)))->print_all_vals(cout, src, dds);
-	    break;
-
-	  case dods_structure_c:
-	    (dynamic_cast<AsciiStructure *>
-	     (dds->var(q)))->print_all_vals(cout, src, dds);
-	    break;
-		
-	  default:
-	    dds->var(q)->print_val(cout);
-	    break;
-	}
-
+	dynamic_cast<AsciiOutput *>(dds->var(q))->print_ascii(cout);
 	cout << endl;
     }
 }
@@ -207,62 +193,65 @@ main(int argc, char * argv[])
     Connect *url = 0;
 
     for (int i = getopt.optind; i < argc; ++i) {
-      try {
-	if (url)
-	    delete url;
+	try {
+	    if (url)
+		delete url;
 	
-	if (strcmp(argv[i], "-") == 0){
-	    url = new Connect("stdin", trace, false);
-	    DBG(cerr << "Instantiated Connect object using stdin." << endl);
+	    if (strcmp(argv[i], "-") == 0){
+		url = new Connect("stdin", trace, false);
+		DBG(cerr << "Instantiated Connect object using stdin." \
+		    << endl);
 
-	}
-	else{
-	    url = new Connect(argv[i], trace);
-	    DBG(cerr << endl << "Instantiated Connect object using " \
-		<< argv[i] << endl << endl);
-	}
-	DBG2(cerr << "argv[" << i << "] (of " << argc << "): " << argv[i] \
-	     << endl);
+	    }
+	    else{
+		url = new Connect(argv[i], trace);
+		DBG(cerr << endl << "Instantiated Connect object using " \
+		    << argv[i] << endl << endl);
+	    }
 
-	if (verbose) {
-	    string source_name;
+	    DBG2(cerr << "argv[" << i << "] (of " << argc << "): " 
+		 << argv[i] << endl);
+
+	    if (verbose) {
+		string source_name;
 
 		DBG(cerr << "URL->is_local(): " << url->is_local() << endl);
-		DBG(cerr << "argv[" << i << "]: \"" << argv[i] << "\"" << endl);
+		DBG(cerr << "argv[" << i << "]: \"" << argv[i] << "\"" 
+		    << endl);
+
+		if (url->is_local() && (strcmp(argv[i], "-") == 0))
+		    source_name = "standard input";
+		else if (url->is_local())
+		    source_name = argv[i];
+		else
+		    source_name = url->URL(false);
+
+		cerr << endl << "Reading: " << source_name << endl;
+	    }
+
+	    process_per_url_options(i, argc, argv, verbose);
+
+	    DDS *dds;
 
 	    if (url->is_local() && (strcmp(argv[i], "-") == 0))
-		source_name = "standard input";
+		dds = url->read_data(stdin, gui, false);
 	    else if (url->is_local())
-		source_name = argv[i];
+		dds = url->read_data(fopen(argv[i], "r"), gui, false);
 	    else
-		source_name = url->URL(false);
+		dds = url->request_data(expr, gui, false);
 
-	    cerr << endl << "Reading: " << source_name << endl;
+	    if (dds) {
+		if (mime_header)
+		    set_mime_text(cout, dods_data);
+		process_data(url->source(), dds);
+	    }
+	    else {
+		output_error_object(url->error());
+	    }
 	}
-
-	process_per_url_options(i, argc, argv, verbose);
-
-	DDS *dds;
-
-	if (url->is_local() && (strcmp(argv[i], "-") == 0))
-	    dds = url->read_data(stdin, gui, false);
-	else if (url->is_local())
-	    dds = url->read_data(fopen(argv[i], "r"), gui, false);
-	else
-	    dds = url->request_data(expr, gui, false);
-
-	if (dds) {
-	    if (mime_header)
-		set_mime_text(cout, dods_data);
-	    process_data(url->source(), dds);
+	catch (Error &e) {
+	    output_error_object(e);
 	}
-	else {
-	    output_error_object(url->error());
-	}
-      }
-      catch (Error &e) {
-	output_error_object(e);
-      }
     }
 
     cout.flush();
@@ -272,6 +261,16 @@ main(int argc, char * argv[])
 }
 
 // $Log: ascii_val.cc,v $
+// Revision 1.14  2001/09/28 23:46:06  jimg
+// merged with 3.2.3.
+//
+// Revision 1.13.4.2  2001/09/27 03:10:36  jimg
+// Minor fix to a DBG call.
+//
+// Revision 1.13.4.1  2001/09/18 23:29:26  jimg
+// Massive changes to use the new AsciiOutput class. Output more or less
+// conforms to the DAP Spec. draft.
+//
 // Revision 1.13  2000/10/02 20:09:52  jimg
 // Moved Log entries to the end of the files
 //

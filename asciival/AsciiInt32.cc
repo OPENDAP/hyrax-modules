@@ -15,16 +15,10 @@
 
 #include "config_asciival.h"
 
-#include <assert.h>
-#include <iostream.h>
 #include <string>
 
 #include "InternalErr.h"
 #include "AsciiInt32.h"
-#include "name_map.h"
-
-extern bool translate;
-extern name_map names;
 
 Int32 *
 NewInt32(const string &n)
@@ -48,15 +42,14 @@ AsciiInt32::read(const string &)
   throw InternalErr(__FILE__, __LINE__, "Called unimplemented read method");
 }
 
-void 
-AsciiInt32::print_val(ostream &os, string, bool print_decl_p)
-{
-    if (print_decl_p)
-	os << names.lookup(name(), translate) << ", ";
-    Int32::print_val(os, "", false);
-}
-
 // $Log: AsciiInt32.cc,v $
+// Revision 1.5  2001/09/28 23:46:06  jimg
+// merged with 3.2.3.
+//
+// Revision 1.4.4.1  2001/09/18 23:29:26  jimg
+// Massive changes to use the new AsciiOutput class. Output more or less
+// conforms to the DAP Spec. draft.
+//
 // Revision 1.4  2000/10/02 20:09:52  jimg
 // Moved Log entries to the end of the files
 //

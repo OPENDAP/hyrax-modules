@@ -15,8 +15,7 @@
 
 #include "config_asciival.h"
 
-#include <assert.h>
-#include <iostream.h>
+#include <iostream>
 #include <string>
 
 #include "InternalErr.h"
@@ -58,21 +57,65 @@ AsciiSequence::length()
     return -1;
 }
 
-bool
-AsciiSequence::is_simple_sequence()
+// case 1: Simple, Seq - handled
+// Case 2: Seq, Simple
+void
+AsciiSequence::print_ascii_row(ostream &os, int row, BaseTypeRow outer_vars)
 {
-    for (Pix p = first_var(); p; next_var(p)) {
-	if (var(p)->type() == dods_sequence_c) {
-	    if (!((AsciiSequence *)var(p))->is_simple_sequence())
-		return false;
+    // Print the values from this sequence.
+    int elements = element_count() - 1;
+    int j = 0;
+    bool done = false;
+    do {
+	BaseType *bt_ptr = var_value(row, j++);
+	if (bt_ptr) {		// Check for data.
+	    if (bt_ptr->type() == dods_sequence_c) {
+		dynamic_cast<AsciiSequence*>(bt_ptr)->print_ascii_rows
+		    (os, outer_vars);
+	    }
+	    else {
+		outer_vars.push_back(bt_ptr);
+		dynamic_cast<AsciiOutput*>(bt_ptr)->print_ascii(os, false);
+	    }
 	}
-	else {
-	    if (!var(p)->is_simple_type())
-		return false;
-	}
-    }
 
-    return true;
+	// When we're finally done, set the flag and omit the comma.
+	if (j > elements)
+	    done = true;
+	else {
+	    os << ", ";
+	}
+    } while (!done);
+}
+
+void
+AsciiSequence::print_leading_vars(ostream &os, BaseTypeRow &outer_vars)
+{
+    BaseTypeRow::iterator BTR_iter = outer_vars.begin();
+    for (BTR_iter = outer_vars.begin(); BTR_iter != outer_vars.end(); 
+	 BTR_iter++) {
+	dynamic_cast<AsciiOutput*>(*BTR_iter)->print_ascii(os, false);
+	os << ", ";
+    }
+}
+
+void
+AsciiSequence::print_ascii_rows(ostream &os, BaseTypeRow outer_vars)
+{
+    int rows = number_of_rows() - 1;
+    int i = 0;
+    bool done = false;
+    do {
+	if (i > 0 && !outer_vars.empty())
+	    print_leading_vars(os, outer_vars);
+
+	print_ascii_row(os, i++, outer_vars);
+
+	if (i > rows)
+	    done = true;
+	else
+	    os << endl;
+    } while (!done);
 }
 
 // Assume that this mfunc is called only for simple sequences. Do not print
@@ -83,49 +126,64 @@ AsciiSequence::print_header(ostream &os)
 {
     for (Pix p = first_var(); p; next_var(p), (void)(p && os << ", "))
 	if (var(p)->is_simple_type())
-	    os << names.lookup(var(p)->name(), translate);
+	    os << names.lookup(dynamic_cast<AsciiOutput*>(var(p))->get_full_name(), translate);
 	else if (var(p)->type() == dods_sequence_c)
-	    ((AsciiSequence *)var(p))->print_header(os);
-}
-
-// As is the case with geturl, use print_all_vals to print all the values of
-// a sequence. 
-
-void 
-AsciiSequence::print_val(ostream &os, string space, bool print_decls)
-{
-    string separator;
-    if (print_decls)
-	separator = "\n";
-    else
-	separator = ", ";
-
-    for (Pix p = first_var(); p; next_var(p), (void)(p && os << separator))
-	var(p)->print_val(os, "", print_decls);
+	    dynamic_cast<AsciiSequence *>(var(p))->print_header(os);
+	else
+	    throw InternalErr(__FILE__, __LINE__,
+"This method should only be called by instances for which `is_simple_sequence' returns true.");
 }
 
 void
-AsciiSequence::print_all_vals(ostream &os, XDR *src, DDS *dds, string, bool)
+AsciiSequence::print_ascii(ostream &os, bool print_name) throw(InternalErr)
 {
-    bool print_decls;
-
-    if (is_simple_sequence()) {
-	print_header(os);
-	os << endl;
-	print_decls = false;
+    if (is_linear()) {
+	if (print_name) {
+	    print_header(os);
+	    os << endl;
+	}
+	
+	BaseTypeRow outer_vars(0);
+	print_ascii_rows(os, outer_vars);
     }
     else {
-	print_decls = true;
-    }
-	
-    print_val(os, "", print_decls);
-    while (deserialize(src, dds)) {
-	os << endl;
-	print_val(os, "", print_decls);
+	int rows = number_of_rows() - 1;
+	int elements = element_count() - 1;
+
+	// For each row of the Sequence...
+	bool rows_done = false;
+	int i = 0;
+	do { 
+	    // For each variable of the row...
+	    bool vars_done = false;
+	    int j = 0;
+	    do {
+		BaseType *bt_ptr = var_value(i, j++);
+		dynamic_cast<AsciiOutput*>(bt_ptr)->print_ascii(os, true);
+
+		if (j > elements)
+		    vars_done = true;
+		else
+		    os << endl;
+	    } while (!vars_done);
+	    
+	    i++;
+	    if (i > rows)
+		rows_done = true;
+	    else
+		os << endl;
+	} while (!rows_done);
     }
 }
 
 // $Log: AsciiSequence.cc,v $
+// Revision 1.5  2001/09/28 23:46:06  jimg
+// merged with 3.2.3.
+//
+// Revision 1.4.4.1  2001/09/18 23:29:26  jimg
+// Massive changes to use the new AsciiOutput class. Output more or less
+// conforms to the DAP Spec. draft.
+//
 // Revision 1.4  2000/10/02 20:09:52  jimg
 // Moved Log entries to the end of the files
 //

@@ -19,10 +19,10 @@
 #endif
 
 #include "Sequence.h"
+#include "AsciiOutput.h"
 
-class AsciiSequence: public Sequence {
+class AsciiSequence: public Sequence, public AsciiOutput {
 private:
-    bool is_simple_sequence();
     void print_header(ostream &os);
 
 public:
@@ -35,14 +35,21 @@ public:
 
     virtual int length();
 
-    virtual void print_val(ostream &os, string space = "", 
-			   bool print_decl_p = true);
+    virtual void print_ascii(ostream &os, bool print_name) throw(InternalErr);
 
-    virtual void print_all_vals(ostream &os, XDR *src, DDS *dds, 
-				string space = "", bool print_decl_p = true);
+    virtual void print_leading_vars(ostream &os, BaseTypeRow &outer_vars);
+    virtual void print_ascii_row(ostream &os, int row, BaseTypeRow out_vars);
+    virtual void print_ascii_rows(ostream &os, BaseTypeRow out_vars);
 };
 
 // $Log: AsciiSequence.h,v $
+// Revision 1.4  2001/09/28 23:46:06  jimg
+// merged with 3.2.3.
+//
+// Revision 1.3.4.1  2001/09/18 23:29:26  jimg
+// Massive changes to use the new AsciiOutput class. Output more or less
+// conforms to the DAP Spec. draft.
+//
 // Revision 1.3  2000/10/02 20:09:52  jimg
 // Moved Log entries to the end of the files
 //

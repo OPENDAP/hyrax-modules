@@ -11,7 +11,7 @@
 
 #include "config_dap.h"
 
-static char rcsid[] not_used = {"$Id: name_map.cc,v 1.7 2000/10/02 20:09:52 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: name_map.cc,v 1.8 2001/09/28 23:46:06 jimg Exp $"};
 
 using namespace std;
 
@@ -49,7 +49,8 @@ munge(string name)
 string
 name_map::lookup(string name, const bool canonical_names = false) 
 {
-    // NEItor is the name_eqiv const interator. 7/23/99 jhrg
+    // NEItor is the name_eqiv interator. 7/23/99 jhrg
+    // Could use find_if here. 9/12/2001 jhrg
     for (NEItor p = _names.begin(); p != _names.end(); ++p)
 	if (name == p->from) {
 	    if (!canonical_names) {
@@ -78,6 +79,13 @@ name_map::delete_all()
 }
 
 // $Log: name_map.cc,v $
+// Revision 1.8  2001/09/28 23:46:06  jimg
+// merged with 3.2.3.
+//
+// Revision 1.7.4.1  2001/09/18 23:29:26  jimg
+// Massive changes to use the new AsciiOutput class. Output more or less
+// conforms to the DAP Spec. draft.
+//
 // Revision 1.7  2000/10/02 20:09:52  jimg
 // Moved Log entries to the end of the files
 //

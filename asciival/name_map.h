@@ -15,12 +15,13 @@
 #endif
 
 #include <vector>
+#include <string>
 
-/** This class can be used to build up a simple thesaurus which maps names from
-    one string to another. The thesaurus is built by calling the #add# mfunc
-    with a string of the form <source>:<dest> where <source> and <dest> are
-    string literals. Once the thesaurus is built, the #lookup# mfunc can be
-    used to get the equivalent of any string in the thesaurus. 
+/** This class can be used to build up a simple thesaurus which maps names
+    from one string to another. The thesaurus is built by calling the #add#
+    mfunc with a string of the form <source>:<dest> where <source> and <dest>
+    are string literals. Once the thesaurus is built, the #lookup# mfunc can
+    be used to get the equivalent of any string in the thesaurus.
 
     As an additional feature, this class can canonicalize an identifier
     (remove non-alphanumeric characters) when performing the lookup
@@ -51,7 +52,7 @@ private:
     };
 
     vector<name_equiv> _names;
-    typedef vector<name_equiv>::const_iterator NEItor;
+    typedef vector<name_equiv>::iterator NEItor;
 
 public:
     /** Create a new instance of the thesaurus and add the first equivalence
@@ -83,6 +84,13 @@ public:
 };
 
 // $Log: name_map.h,v $
+// Revision 1.10  2001/09/28 23:46:06  jimg
+// merged with 3.2.3.
+//
+// Revision 1.9.4.1  2001/09/18 23:29:26  jimg
+// Massive changes to use the new AsciiOutput class. Output more or less
+// conforms to the DAP Spec. draft.
+//
 // Revision 1.9  2000/10/02 20:09:52  jimg
 // Moved Log entries to the end of the files
 //

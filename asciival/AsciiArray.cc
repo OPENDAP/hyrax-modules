@@ -15,14 +15,13 @@
 
 #include "config_dap.h"
 
-#include <assert.h>
-
-#include <iostream.h>
-
+#include <iostream>
 #include <string>
+#include <algorithm>
 
-#include "InternalErr.h"
+#include "util.h"
 #include "AsciiArray.h"
+#include "InternalErr.h"
 #include "name_map.h"
 
 extern bool translate;
@@ -58,76 +57,221 @@ AsciiArray::read(const string &)
   throw InternalErr(__FILE__, __LINE__, "Called unimplemented read method");
 }
 
-int
-AsciiArray::print_vector(ostream &os, int index, int number)
+void
+AsciiArray::print_ascii(ostream &os, bool print_name) throw(InternalErr)
 {
-    for (unsigned i = 0; i < number-1; ++i) {
-	var(index++)->print_val(os, "", false);
+    // This works for simple types only. 9/12/2001 jhrg
+    if (var()->is_simple_type()) {
+	if (dimensions(true) > 1)
+	    print_array(os, print_name);
+	else
+	    print_vector(os, print_name);
+    }
+    else {
+	print_complex_array(os, print_name);
+    }
+}
+
+// Print out a values for a vector (one dimensional array) of simple types.
+void
+AsciiArray::print_vector(ostream &os, bool print_name)
+{
+    if (print_name)
+	os << names.lookup(dynamic_cast<AsciiOutput*>(this)->get_full_name(), translate) << ", ";
+
+    int end = dimension_size(first_dim(), true) - 1; // only one dimension
+    for (int i = 0; i < end; ++i) {
+	dynamic_cast<AsciiOutput *>(var(i))->print_ascii(os, false);
 	os << ", ";
     }
-    var(index++)->print_val(os, "", false);
+    dynamic_cast<AsciiOutput *>(var(end))->print_ascii(os, false);
+}
+
+/** Print a single row of values for a N-dimensional array. Since we store
+    N-dim arrays in vectors, #index# gives the starting point in that vector
+    for this row and #number# is the number of values to print. The counter
+    #index# is returned. 
+
+    @param os Write to stream os.
+    @param index Print values starting from this point.
+    @param number Print this many values.
+    @return One past the last value printed (i.e., the index of the next
+    row's first value).
+    @see print\_array */
+int
+AsciiArray::print_row(ostream &os, int index, int number)
+{
+    for (unsigned i = 0; i < number; ++i) {
+	dynamic_cast<AsciiOutput *>(var(index++))->print_ascii(os, false);
+	os << ", ";
+    }
+    dynamic_cast<AsciiOutput *>(var(index++))->print_ascii(os, false);
 
     return index;
 }
 
-void 
-AsciiArray::print_val(ostream &os, string, bool print_decl_p)
-{
-    // Print the name and size of the variable. Note that I print the size
-    // information while initializing the vector #shape#. 3/9/98 jhrg
-    if (print_decl_p)
-	os << names.lookup(name(), translate) << ", ";
-    
-    // Set up the shape and state vectors. Shape holds the shape of this
-    // array, state holds the index of the current vector to print.
-    int dims = dimensions(true);
-    int *shape = new int[dims];
-    int state_dims = dims - 1;
-    int *state = new int[state_dims];
+// Given a vector of indices, return the cooresponding index.
 
-    Pix p = first_dim();
-    for (int i = 0; p; ++i, next_dim(p)) {
-	shape[i] = dimension_size(p, true);
-	if (print_decl_p)
-	    os << "[" << shape[i] << "]"; // Print the variable's shape
+int
+AsciiArray::get_index(vector<int> indices) throw(InternalErr)
+{
+    if (indices.size() != dimensions(true)) {
+	throw InternalErr(__FILE__, __LINE__, 
+			  "Index vector is the wrong size!");
+    }
+
+    // suppose shape is [3][4][5][6] for x,y,z,t. The index is
+    // t + z(6) + y(5 * 6) + x(4 * 5 *6).
+    // Assume that indices[0] holds x, indices[1] holds y, ... 
+
+    // It's hard to work with Pixes
+    vector<int> shape = get_shape_vector(indices.size());
+
+    // We want to work from the rightmost index to the left
+    reverse(indices.begin(), indices.end());
+    reverse(shape.begin(), shape.end());
+
+    vector<int>::iterator indices_iter = indices.begin();
+    vector<int>::iterator shape_iter = shape.begin();
+
+    int index = *indices_iter++; // in the ex. above, this adds `t'
+    int multiplier = 1;
+    while (indices_iter != indices.end()) {
+	multiplier *= *shape_iter++;
+	index += multiplier * *indices_iter++;
     }
     
-    os << endl;			// End name/shape output.
+    return index;
+}
 
-    // Initialize the state vector. Used to keep track of printing.
-    for (int i = 0; i < state_dims; ++i)
-	state[i] = 0;
+// get_shape_vector and get_nth_dim_size are public because that are called
+// from Grid. 9/14/2001 jhrg
 
-    int j;
+vector<int>
+AsciiArray::get_shape_vector(size_t n) throw(InternalErr)
+{
+    if (n < 1 || n > dimensions(true)) {
+	string msg = "Attempt to get ";
+	msg += long_to_string(n) + " dimensions from " + name() 
+	    + " which has only " + long_to_string(dimensions(true))
+	    + "dimensions.";
+    
+	throw InternalErr(__FILE__, __LINE__, msg); 
+    }
+
+    vector<int> shape(n);
+    vector<int>::iterator shape_iter = shape.begin();
+    Pix p = first_dim();    
+    for (int i = 0; i < n; i++) {
+	*shape_iter++ = dimension_size(p, true);
+	next_dim(p);
+    }
+
+    return shape;
+}    
+
+int
+AsciiArray::get_nth_dim_size(size_t n) throw(InternalErr)
+{
+    if (n < 1 || n > dimensions(true)) {
+	string msg = "Attempt to get dimension N from `";
+	msg += name() + "' which has " 
+	    + long_to_string(dimensions(true)) + " dimension(s).";
+	throw InternalErr(__FILE__, __LINE__, msg);
+    }
+
+    Pix p = first_dim();    
+    for (int i = 0; i < n; i++) {
+	next_dim(p);
+    }
+
+    return dimension_size(p, true);
+}
+
+void 
+AsciiArray::print_array(ostream &os, bool print_name)
+{
+    int dims = dimensions(true);
+    if (dims <= 1)
+	throw InternalErr(__FILE__, __LINE__, 
+	  "Dimension count is <= 1 while printing multidimensional array.");
+
+    // shape holds the maximum index value of all but the last dimension of
+    // the array (not the size; each value is one less that the size).
+    vector<int> shape = get_shape_vector(dims - 1);
+    int rightmost_dim_size = get_nth_dim_size(dims - 1);
+
+    // state holds the indeces of the current row being printed. For an N-dim
+    // array, there are N-1 dims that are iterated over when printing (the
+    // Nth dim is not printed explicitly. Instead it's the number of values
+    // on the row.
+    vector<int> state(dims - 1, 0);
+
+    bool more_indices;
     int index = 0;
     do {
-	// Print indices for all dimensions except the last one. For vectors
-	// simply print a list of values.
-	if (state_dims >= 1) {
-	    for (int i = 0; i < state_dims; ++i) {
-		os << "[" << state[i] << "]";
-	    }
-	    os << ", ";
+	// Print indices for all dimensions except the last one.
+	os << names.lookup(dynamic_cast<AsciiOutput*>(this)->get_full_name(), translate);
+	for (int i = 0; i < dims - 1; ++i) {
+	    os << "[" << state[i] << "]";
 	}
+	os << ", ";
 
-	// Print the row vector.
-	index = print_vector(os, index, shape[dims-1]);
+	index = print_row(os, index, rightmost_dim_size - 1);
+	more_indices = increment_state(&state, shape);
+	if (more_indices)
+	    os << endl;
+
+    } while (more_indices);
+}
+
+void 
+AsciiArray::print_complex_array(ostream &os, bool print_name)
+{
+    int dims = dimensions(true);
+    if (dims < 1)
+	throw InternalErr(__FILE__, __LINE__, 
+	  "Dimension count is <= 1 while printing multidimensional array.");
+
+    // shape holds the maximum index value of all but the last dimension of
+    // the array (not the size; each value is one less that the size).
+    vector<int> shape = get_shape_vector(dims);
+
+    vector<int> state(dims, 0);
+
+    bool more_indices;
+    do {
+	// Print indices for all dimensions except the last one.
+	os << names.lookup(dynamic_cast<AsciiOutput*>(this)->get_full_name(), translate);
+	for (int i = 0; i < dims; ++i) {
+	    os << "[" << state[i] << "]";
+	}
 	os << endl;
 
-	// Increment state.
-	for (j = state_dims-1; j >= 0; --j) {
-	    if (state[j] == shape[j]-1)
-		state[j] = 0;
-	    else {
-		state[j]++;
-		break;
-	    }
-	}
+	dynamic_cast<AsciiOutput*>(var(get_index(state)))
+	    ->print_ascii(os, true);
+	
+	more_indices = increment_state(&state, shape);
+	if (more_indices)
+	    os << endl;
 
-    } while (!(j == -1 && (state_dims == 0 || state[0] == 0)));
+    } while (more_indices);
 }
 
 // $Log: AsciiArray.cc,v $
+// Revision 1.5  2001/09/28 23:46:06  jimg
+// merged with 3.2.3.
+//
+// Revision 1.4.4.3  2001/09/25 22:38:32  jimg
+// Fixed an off-by-one error in get_nth_dim_size.
+//
+// Revision 1.4.4.2  2001/09/25 22:00:50  jimg
+// Fixed an off-by-one error in print_row; i<number-1 --> i<number.
+//
+// Revision 1.4.4.1  2001/09/18 23:29:26  jimg
+// Massive changes to use the new AsciiOutput class. Output more or less
+// conforms to the DAP Spec. draft.
+//
 // Revision 1.4  2000/10/02 20:09:52  jimg
 // Moved Log entries to the end of the files
 //
