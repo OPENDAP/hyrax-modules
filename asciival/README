@@ -1,5 +1,5 @@
 
- $Id: README,v 1.12 1997/08/18 23:53:47 jimg Exp $
+ $Id: README,v 1.13 1997/10/31 22:55:44 jimg Exp $
 
 The following provides background technical information on the design of
 loaddods/writeval. For installation information, see the file
@@ -90,7 +90,12 @@ newline.
 While this means sending out some extra charaters it makes the output of
 writeval very simple to parse.
 
+10/31/97 jhrg: Changed string data format; strings are individually
+terminated by a newline. A second newline follows the last string.
+
 <data request> :: <variable>*
+
+<string data> :: <string 0> '\n' <string 1> '\n' ... <string n> '\n'
 
 <simple variable> :: <variable name> '\n'
 
@@ -111,7 +116,7 @@ writeval very simple to parse.
 <variable> :: Byte '\n' <simple variable> '\n' <data> '\n'
 	   :: Int32 '\n' <simple variable> '\n' <data> '\n'
 	   :: Float64 '\n' <simple variable> '\n'  <data> '\n'
-	   :: String '\n' <simple variable> '\n' <data> '\n'
+	   :: String '\n' <simple variable> '\n' <string data> '\n'
 	   :: Url '\n' <simple variable> '\n' <data> '\n'
 
 	   :: Array '\n' <array variable> '\n' <data> '\n'
@@ -123,3 +128,4 @@ writeval very simple to parse.
 	   :: Grid '\n' <grid variables>
 
 James Gallagher 10/4/96
+
