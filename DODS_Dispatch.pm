@@ -278,10 +278,6 @@ information. If you think this is a server problem please contanct the\n");
     # Note that we must differentiate between URLs for directories and those
     # for DODS responses. 05/07/03 jhrg
     my $request = $ENV{SCRIPT_NAME} . $ENV{PATH_INFO};
-<<<<<<< DODS_Dispatch.pm
-    $request =~ m@(.*)\.$self->{ext}@;
-    $self->{request_uri} = $1;
-=======
     if ($ENV{QUERY_STRING} ne "") {
 	$request .= "?" . $ENV{QUERY_STRING};
     }
@@ -298,7 +294,6 @@ information. If you think this is a server problem please contanct the\n");
 	$self->{request_uri} = $1
     }
     print(DBG_LOG "Request URI: $self->{request_uri}\n") if $debug > 1;
->>>>>>> 1.37.2.15
 
     # Now we can set the full_uri.
     $self->{full_uri} = "http://" . $self->server_name() . $self->port()
@@ -794,15 +789,10 @@ sub command {
 		if $debug > 1;
 	    $server_url .= "/";
 	}
-<<<<<<< DODS_Dispatch.pm
-
-	my $excludes = $self->{exclude}; # it's an array reference.
-=======
 	if ($self->query() ne "") {
 	    ($server_url) = ($server_url =~ m@(.*)\?.*@);
 	}
 	my $excludes = $self->exclude();
->>>>>>> 1.37.2.15
 	my $filtered_dir_html 
 	    = new FilterDirHTML($server_url, $url,
 				dataset_regexes("./dods.rc", @$excludes)); 
@@ -832,23 +822,13 @@ sub command {
   	    @command = (@command, "-t", $self->timeout());
   	}
     } elsif ($self->ext() eq "ascii" || $self->ext() eq "asc") {
-<<<<<<< DODS_Dispatch.pm
-	@command = ("./asciival", "-m", "--", 
-		    $self->full_uri() . "?" . $self->query());
-=======
 	my $dods_url = "http://" . $self->server_name() . $self->port()
                      . $self->request_uri() . "?" . $self->query();
 	@command = ("./asciival", "-m", "--", $dods_url);
->>>>>>> 1.37.2.15
     } elsif ($self->ext() eq "netcdf") {
-<<<<<<< DODS_Dispatch.pm
-	@command = ("./dods2ncdf", "-m", "-p", "--",
-		    $self->full_uri() . "?" . $self->query());
-=======
 	my $dods_url = "http://" . $self->server_name() . $self->port()
                      . $self->request_uri() . "?" . $self->query();
 	@command = ("./dods2ncdf", "-m", "-p", "--", $dods_url);
->>>>>>> 1.37.2.15
     } elsif ($self->ext() eq "html") {
 	@command = ("./www_int", "-m", "-n", "--",
 		    $self->full_uri() . "?" . $self->query());
@@ -1155,14 +1135,12 @@ if ($test) {
 1;
 
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.40  2003/12/20 07:31:33  jimg
+# Resolved conflicts with the merge of release-3-4.
+#
 # Revision 1.39  2003/12/08 18:04:06  edavis
 # Merge release-3-4 into trunk
 #
-<<<<<<< DODS_Dispatch.pm
-# Revision 1.38  2003/05/27 21:39:02  jimg
-# Added test for 'ddx' extension.
-#
-=======
 # Revision 1.37.2.15  2003/11/25 18:57:41  jimg
 # Oops... Forgot to escape the '@' in a string.
 #
@@ -1226,13 +1204,15 @@ if ($test) {
 # but were not called with $self->xxx() form. Also corrected some method
 # calls in test section, i.e., changed extension() to ext().
 #
+# Revision 1.38  2003/05/27 21:39:02  jimg
+# Added test for 'ddx' extension.
+#
 # Revision 1.37.2.2  2003/05/08 01:36:06  jimg
 # Turned off debugging...
 #
 # Revision 1.37.2.1  2003/05/07 23:34:09  jimg
 # Fixes for curl and dids_dir/html/ascii responses.
 #
->>>>>>> 1.37.2.15
 # Revision 1.37  2003/05/02 16:28:45  jimg
 # Switched to a DODS-specific log for the diagnostic messages. Also, boosted
 # the filtering of environment variables so that taint mode works with perl 5.8.
