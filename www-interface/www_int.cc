@@ -9,6 +9,9 @@
     @author: jhrg */
 
 // $Log: www_int.cc,v $
+// Revision 1.3  1999/06/22 17:14:19  jimg
+// Added links for help location.
+//
 // Revision 1.2  1999/05/09 04:14:52  jimg
 // String --> string
 //
@@ -18,7 +21,7 @@
 
 #include "config_dap.h"
 
-static char rcsid[] not_used = {"$Id: www_int.cc,v 1.2 1999/05/09 04:14:52 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: www_int.cc,v 1.3 1999/06/22 17:14:19 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -41,6 +44,9 @@ static char rcsid[] not_used = {"$Id: www_int.cc,v 1.2 1999/05/09 04:14:52 jimg 
 #include "javascript.h"		// Try to hide this stuff...
 
 const char *VERSION = WWW_INT_VER;
+#ifndef HELP_LOCATION
+const char *HELP_LOCATION = "http://dcz.dods.org/dods/";
+#endif
 DAS global_das;
 WWWOutput wo(cout);
 
@@ -306,6 +312,7 @@ main(int argc, char * argv[])
 	cout << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n"
 	     << "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n"
 	     << "<html><head><title>DODS Dataset Query Form</title>\n"
+	     << "<base href=\"" << HELP_LOCATION << "\">\n"
 	     << "<script type=\"text/javascript\">\n"
 	     << "<!--\n"
 	    // Javascript code here
