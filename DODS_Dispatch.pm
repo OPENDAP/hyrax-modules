@@ -56,7 +56,7 @@ use handler_name;
 use dods_logging;
 use DODS_Cache;
 
-my $debug = 0; 
+my $debug = 2;
 my $test = 0;
 
 # Error message for bad extensions.
@@ -225,17 +225,21 @@ sub initialize {
 	# directories. The original pattern was @(.*)\.$ext@ 10/22/02 jhrg
 	# However, *that* doesn't work with other accesses and we *have* to
 	# use pattern match and assignment to sanitze path_info. 01/28/03 jhrg
+	if ($path_info !~ m@^.*$ext$@) {
+	    $path_info .= $ext;
+	    print(STDERR "Hacked ext: ", $path_info, "\n") if $debug > 1;
+	}
 	$path_info =~ m@(.*)$ext@;
 	$path_info = $1;
-	print(STDERR "path_info fraction (re)assigned to the variable: ", $1,
-	      "\n") if $debug > 1;	
+	print(STDERR "path_info fraction (re)assigned to the variable: ",
+	      $path_info, "\n") if $debug > 1;	
 	$self->{path_info} = $path_info;
     }
     else {
 	$path_info =~ m@(.*)\.$ext@;
 	$path_info = $1;
-	print(STDERR "path_info fraction (re)assigned to the variable: ", $1,
-	      "\n") if $debug > 1;	
+	print(STDERR "path_info fraction (re)assigned to the variable: ",
+	      $path_info, "\n") if $debug > 1;	
 	$self->{path_info} = $path_info;
     }
 
@@ -669,9 +673,6 @@ sub command {
 	if ($self->cache_dir() ne "") {
 	    @command = (@command, "-r", $self->cache_dir());
 	}
-	if ($self->accept_types() ne "") {
-	    @command = (@command, "-t", $self->accept_types());
-	}
 	if ($self->if_modified_since() != -1) {
 	    @command = (@command, "-l", $self->if_modified_since());
 	}
@@ -687,9 +688,6 @@ sub command {
 	}
 	if ($self->cache_dir() ne "") {
 	    @command = (@command, "-r", $self->cache_dir());
-	}
-	if ($self->accept_types() ne "") {
-	    @command = (@command, "-t", $self->accept_types());
 	}
 	if ($self->if_modified_since() == -1) {
 	    @command = (@command, "-l", $self->if_modified_since());
@@ -714,7 +712,7 @@ sub command {
 	exit(1);
     }
 
-    print(STDERR "DODS server command: @command.\n") if $debug;
+    print(STDERR "DODS server command: @command\n") if $debug;
     return @command;
 }
 
@@ -997,6 +995,16 @@ if ($test) {
 1;
 
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.35  2003/04/23 23:26:27  jimg
+# Merged with 3.3.1.
+#
+# Revision 1.34.2.2  2003/04/09 21:36:16  jimg
+# Turned off debugging.
+#
+# Revision 1.34.2.1  2003/03/07 02:45:30  jimg
+# Fixed a bug where URLs to a directory which do not end with a slash
+# failed.
+#
 # Revision 1.34  2003/01/28 21:25:14  jimg
 # Moved a fix from release-3-2 *by hand* here. The variable path_info was not
 # being sanitized correctly. It's such a simple fix...
