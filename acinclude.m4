@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.61 2000/01/27 17:54:03 jimg Exp $
+# $Id: acinclude.m4,v 1.62 2000/03/28 17:09:14 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -141,19 +141,20 @@ AC_DEFUN(DODS_GET_DODS_ROOT, [dnl
 #
 # From Tcl7.6 configure.in. jhrg 11/18/96
 
-AC_DEFUN(DODS_LIBS, [dnl
+AC_DEFUN(DODS_XTRALIBS, [dnl
     checkBoth=0
     AC_CHECK_FUNC(connect, checkSocket=0, checkSocket=1)
     if test "$checkSocket" = 1; then
-	AC_CHECK_LIB(socket, main, LIBS="$LIBS -lsocket", checkBoth=1)
+	AC_CHECK_LIB(socket, main, XTRALIBS="$XTRALIBS -lsocket", checkBoth=1)
     fi
     if test "$checkBoth" = 1; then
-	oldLibs=$LIBS
-	LIBS="$LIBS -lsocket -lnsl"
-	AC_CHECK_FUNC(accept, checkNsl=0, [LIBS=$oldLibs])
+	oldLibs=$XTRALIBS
+	XTRALIBS="$XTRALIBS -lsocket -lnsl"
+	AC_CHECK_FUNC(accept, checkNsl=0, [XTRALIBS=$oldLibs])
     fi
     AC_CHECK_FUNC(gethostbyname, , AC_CHECK_LIB(nsl, main, 
-		  [LIBS="$LIBS -lnsl"]))])
+		  [XTRALIBS="$XTRALIBS -lnsl"]))
+    AC_SUBST(XTRALIBS)])
 
 AC_DEFUN(DODS_FIND_PACKAGES_DIR, [dnl
     AC_MSG_CHECKING("for the packages directory")
@@ -240,16 +241,25 @@ AC_DEFUN(DODS_FIND_WWW_ROOT, [dnl
     AC_MSG_RESULT(Set the WWW header directory to $WWW_ROOT)])
 
 # Check for the Tcl and Tk libraries. These are required. 8/3/99 jhrg
+# These are required for the progress indicator, only. 3/17/2000 jhrg
 
 AC_DEFUN(DODS_TCL_LIB, [dnl
     AC_REQUIRE([DODS_PACKAGES_SUPPORT])
-    LIBS="$LIBS -ltcl8.1"
+    GUILIBS="$GUILIBS -ltcl8.1"
     AC_DEFINE_UNQUOTED(HAVE_TCL, $HAVE_TCL)])
      
 AC_DEFUN(DODS_TK_LIB, [dnl
     AC_REQUIRE([DODS_PACKAGES_SUPPORT])
-    LIBS="$LIBS -ltk8.1"
+    GUILIBS="$GUILIBS -ltk8.1"
     AC_DEFINE_UNQUOTED(HAVE_TK, $HAVE_TK)])
+
+AC_DEFUN(DODS_GUILIBS, [dnl
+    AC_REQUIRE([DODS_TK_LIB])
+    AC_REQUIRE([DODS_TCL_LIB])
+    AC_REQUIRE([DODS_FIND_PACKAGES_DIR])
+    . ${DODS_PACKAGES_DIR}/lib/tkConfig.sh
+    GUILIBS="$GUILIBS $TK_XLIBSW -lm"
+    AC_SUBST(GUILIBS)])
 
 # Electric fence and dbnew are used to debug malloc/new and free/delete.
 # I assume that if you use these switches you know enough to build the 
@@ -812,7 +822,7 @@ AC_DEFUN(DODS_CHECK_SIZES, [dnl
 # number. This extra text was hosing the text. 7/15/99 jhrg
 
 AC_DEFUN(DODS_PROG_PERL, [dnl
-    AC_CHECK_PROG(PERL,perl,perl)
+    AC_CHECK_PROG(PERL, perl, `which perl`)
     case "$PERL" in
 	perl)
 	    perl_ver=`$PERL -v 2>&1 | awk '/This is perl/ {print}'`
