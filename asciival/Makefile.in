@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.11 1997/03/07 04:47:28 jimg Exp $
+# $Id: Makefile.in,v 1.12 1997/03/08 19:16:32 jimg Exp $
 
 @SET_MAKE@
 
@@ -125,7 +125,7 @@ writeval-check: writeval
 
 clean:	
 	-rm -f *.o *.sum *.log *~ core
-	-rm -f $(PROG) loaddods.mex*
+	-rm -f $(PROG) loaddods.mex* extend.mex*
 
 distclean: clean
 	-rm -f config.status config.log config.cache
