@@ -35,7 +35,7 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.10 2003/01/27 23:53:54 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.11 2003/05/08 00:38:20 jimg Exp $"};
 
 #include <string>
 #include <iostream>
@@ -55,6 +55,8 @@ static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.10 2003/01/27 23:53:54 ji
 #include "util.h"
 
 #include "WWWOutput.h"
+
+using namespace std;
 
 static bool name_is_global(string &name);
 static bool name_in_kill_file(const string &name);
@@ -102,7 +104,7 @@ WWWOutput::write_disposition(string url)
     // use some JavaScript code to generate the HTML. C++ --> JS --> HTML.
     // 4/8/99 jhrg
 
-    _os << "<tr>
+    _os << "<tr>\n\
 <td align=\"right\"><h3><a href=\"dods_form_help.html#disposition\" valign=\"bottom\">Action:</a></h3>\n";
     _os << "<td>";
 
@@ -124,12 +126,12 @@ WWWOutput::write_disposition(string url)
     if (access("./dods2idl", X_OK) == 0)
 	_os << "<input type=\"button\" value=\"Get IDL\" onclick=\"binary_button('idl')\">\n";
 
-    _os << "<input type=\"button\" value=\"Get DODS Data Object \" onclick=\"binary_button('dods')\">\n
-<input type=\"button\" value=\"Show Help\" onclick=\"help_button()\">
-
-<tr>
-<td align=\"right\"><h3><a href=\"dods_form_help.html#data_url\" valign=\"bottom\">Data URL:</a>
-</h3>
+    _os << "<input type=\"button\" value=\"Get DODS Data Object \" onclick=\"binary_button('dods')\">\n\
+<input type=\"button\" value=\"Show Help\" onclick=\"help_button()\">\n\
+\n\
+<tr>\n\
+<td align=\"right\"><h3><a href=\"dods_form_help.html#data_url\" valign=\"bottom\">Data URL:</a>\n\
+</h3>\n\
 <td><input name=\"url\" type=\"text\" size=" << _attr_cols << " value=\"" 
 << url << "\">"; 
 }
@@ -167,10 +169,9 @@ void
 WWWOutput::write_global_attributes(DAS &das)
 {
     _os << \
-"
-<tr>
-<td align=\"right\" valign=\"top\"><h3>
-<a href=\"dods_form_help.html#global_attr\">Global Attributes:</a></h3>
+"<tr>\n\
+<td align=\"right\" valign=\"top\"><h3>\n\
+<a href=\"dods_form_help.html#global_attr\">Global Attributes:</a></h3>\n\
 <td><textarea name=\"global_attr\" rows=" << _attr_rows << " cols=" 
 << _attr_cols << ">\n";
 
@@ -192,7 +193,7 @@ void
 WWWOutput::write_variable_list(DDS &dds)
 {
     _os << \
-       "<a href=\"dods_form_help.html#dataset_variables\"><h4>Dataset Variables</a>:</h4>
+"<a href=\"dods_form_help.html#dataset_variables\"><h4>Dataset Variables</a>:</h4>\n\
 <select name=\"variables\" multiple size=5 onChange=\"variables_obj.var_selection()\">" << endl;
 
     for (Pix p = dds.first_var(); p; dds.next_var(p)) {
@@ -209,10 +210,9 @@ WWWOutput::write_variable_entries(DAS &das, DDS &dds)
     // This writes the text `Variables:' and then sets up the table so that
     // the first variable's section is written into column two.
     _os << \
-"
-<tr>
-<td align=\"right\" valign=\"top\">
-<h3><a href=\"dods_form_help.html#dataset_variables\">Variables:</a></h3>
+"<tr>\n\
+<td align=\"right\" valign=\"top\">\n\
+<h3><a href=\"dods_form_help.html#dataset_variables\">Variables:</a></h3>\n\
 <td>";
     
     for (Pix p = dds.first_var(); p; dds.next_var(p)) {
@@ -352,6 +352,9 @@ write_simple_variable(ostream &os, const string &name, const string &type)
 }
 
 // $Log: WWWOutput.cc,v $
+// Revision 1.11  2003/05/08 00:38:20  jimg
+// Fixed multi-line string literals.
+//
 // Revision 1.10  2003/01/27 23:53:54  jimg
 // Merged with release-3-2-7.
 //
