@@ -1,3 +1,28 @@
+2003-04-21  James Gallagher  <jimg@dcz.dods.org>
+
+	* Merged with release-3-3-1.
+
+	* An example use of DODS_CONF was added to the
+	nightly_dods_build.conf.example. The build script itself was
+	modified to send a more useful message. More importantly, A number
+	of changed to the build script have been merged into this version.
+	The script is now used with just one directory, so multiple builds
+	on one host will require multiple copies of the script and its
+	configuration file. This is pretty simple to set up in practice.
+
+	* DODS_Cache.pm: now correctly installed.
+
+	* JGOFS server fixes in installServers.
+
+	* Added test for gcc 3 to the DODS_GCC macro (in aclocal.m4).
+
+	* Fixed a bug where URLs that didn't end in a slash but which did
+	point to a directory were hosed.
+
+2003-01-23    <jimg@dcz.dods.org>
+
+	* Made release 3.3.0. Not merged.
+
 2003-01-22    <jimg@dcz.dods.org>
 
 	* Renamed the dods.ini file to dods.rc. Note that this file is
