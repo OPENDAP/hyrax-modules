@@ -2,7 +2,7 @@
 # Please read the full copyright statement in the file COPYRIGHT.
 #
 # Authors:
-#      jhrg,jimg       James Gallagher (jgallagher@gso.uri.edu)
+#      jhrg,jimg       James Gallagher <jgallagher@gso.uri.edu>
 #
 # Do dispatch for DODS servers. Use the `MIME type extension' of the URL to
 # select the correct DODS server program. This dispatch cgi assumes that the
@@ -68,8 +68,7 @@ sub is_file {
 sub rfc822_to_time {
     use Time::Local;
     my $time_string = shift;
-    my ($dummy, $mday, $mon_name, $year, $hour, $min, $sec) 
-	= split /[:, ]+/, $time_string;
+    my ($dummy, $mday, $mon_name, $year, $hour, $min, $sec); 
     my %mon = (Jan => 0, Feb => 1, Mar => 2, Apr => 3, May => 4, Jun => 5,
 	       Jul => 6, Aug => 7, Sep => 8, Oct => 9, Nov => 10, Dec => 11);
     
@@ -99,7 +98,7 @@ sub rfc822_to_time {
 # otherwise sure that embedded shell commands will never be run. The
 # environment variables used are: 
 #
-# SERVER_NAME
+# HTTP_HOST, SERVER_NAME
 # SERVER_ADMIN
 # QUERY_STRING: Contains the DODS CE
 # PATH_INFO: Used to extract the extension from the filename which is used to
@@ -116,7 +115,11 @@ sub rfc822_to_time {
 sub initialize {
     my $self = shift;
     
-    print(STDERR "DODS Server debug log: ", scalar localtime, "\n") if $debug >= 1;
+    if ($debug >= 1) {
+	print(STDERR "------------------------------------------------\n");
+	print(STDERR "DODS Server debug log: ", scalar localtime, "\n");
+    }
+
     $self->{cgi_dir} = "./";
 
     $self->{server_port} = $ENV{SERVER_PORT};
@@ -168,9 +171,6 @@ sub initialize {
     }
     elsif ($ext =~ /^.*\.(.*)$/) {
 	$ext = $1;
-    }
-    elsif ($ext =~ /\// || is_directory($ext)) {
-	$ext = "/";
     }
     else {
 	print(STDERR "DODS_Dispatch.pm: ext: ", $ext, "\n") if $debug > 1;
@@ -264,15 +264,7 @@ sub initialize {
 	$filename = $ENV{PATH_TRANSLATED};
     }
 
-    # This odd regexp excludes shell metacharacters, spaces and %-escapes
-    # (e.g., %3B) from $filename which plugs a security hole that provided a
-    # way to cat any file on the server's machine. E.G.:geturl
-    # http://.../nph-nc/a.ver%3Bcat%20/etc/passwd%20.ver would return the
-    # contents of /etc/passwd. 5/18/99 jhrg
-
-    # $filename =~ s@[^ !%&()\/\.\-*+?<>a-zA-Z]*\.$ext(.*)@@g; 
-
-    print STDERR "filename: $filename\n" if $debug > 1;
+    print STDERR "filename(1): $filename\n" if $debug > 1;
 
     # Simpler regex. 12/11/2000 jhrg
     if ($ext eq "help" || $ext eq "version" || $ext eq "stats") {
@@ -294,7 +286,7 @@ sub initialize {
 	exit(1);
     }
 
-    printf(STDERR "filename: %s\n", $filename) if $debug > 1;
+    printf(STDERR "filename(2): %s\n", $filename) if $debug > 1;
 
     if ($debug || $test) {
 	is_tainted($ext)
@@ -612,6 +604,12 @@ sub command {
 	# Build URL with CGI in it but remove ?M=A type query expression.
 	my $server_url = "http://" . $self->server_name() . $self->port()
                        . $self->request_uri();
+	# Make sure server_url ends in a slash. 10/12/2001 jhrg
+	if ($self->request_uri() !~ m@^.*/$@) {
+	    print(STDERR "In ext == `/', adding trailing slash(2).\n")
+		if $debug > 1;
+	    $server_url .= "/";
+	}
 	if ($self->{query} ne "") {
 	    ($server_url) = ($server_url =~ m@(.*)\?.*@);
 	}
@@ -665,10 +663,14 @@ sub command {
 	my $dods_url = "http://" . $self->server_name() . $self->port()
                      . $self->request_uri();
 	@command = ("./asciival", "-m", "--", $dods_url);
+    } elsif ($ext eq "netcdf") {
+	my $dods_url = "http://" . $self->server_name() . $self->port()
+                     . $self->request_uri();
+	@command = ("./dods2ncdf", "-m", "-p", "--", $dods_url);
     } elsif ($ext eq "html") {
 	my $dods_url = "http://" . $self->server_name() . $self->port()
                      . $self->request_uri();
-	@command = ("./www_int", "--", $dods_url);
+	@command = ("./www_int", "-m", "-n", "--", $dods_url);
     } else {
 	$self->print_error_message($unknown_ext, 1);
 	exit(1);
@@ -860,12 +862,15 @@ if ($test) {
     $ENV{HTTP_XDODS_ACCEPT_TYPES} = "!Sequence";
     $ENV{PATH_TRANSLATED} = "/home/httpd/html/htdocs/data/x.nc.dods";
 
+    print "Simple file access\n";
     my $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.ini");
     $dd->extension() eq "dods" || die;
     $dd->script() eq "nc" || die;
 
+    print "Files with extra dots on their names\n";
     # Test files which have more than one dot in their names.
     $ENV{PATH_INFO} = "/data/tmp.x.nc.dods";
+    $ENV{PATH_TRANSLATED} = "/home/httpd/html/htdocs/data/tmp.x.nc.dods";
     $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.ini");
     $dd->extension() eq "dods" || die;
     $dd->script() eq "nc" || die;
@@ -916,6 +921,15 @@ if ($test) {
     print "Time: $t, Time from converter: $t2\n";
     $t == $t2 || die;
 
+    my $tt_str = POSIX::strftime("%a %b %d %H:%M:%S %Y %z", $sec, $min,
+				$hour, $mday, $mon, $year, $wday, $yday, 
+				$isdst);
+    print "Time string in is: $tt_str\n";
+    my $tt2 = rfc822_to_time($tt_str);
+    print "Time: $t, Time from converter: $tt2\n";
+    $t == $tt2 || die;
+
+    print "Test is_directory()\n";
     # is_directory and is_file (just to be sure).
     is_directory(".") || die;
     is_directory("..") || die;
@@ -924,6 +938,7 @@ if ($test) {
     is_directory("/etc/") || die;
     !is_directory("/etc/passwd") || die;
     
+    print "Test is_file()\n";
     !is_file(".") || die;
     !is_file("..") || die;
     !is_file("/") || die;
@@ -944,6 +959,9 @@ if ($test) {
 1;
 
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.31  2003/01/22 00:12:05  jimg
+# Added/Updated from release-3-2 branch.
+#
 # Revision 1.30  2002/12/31 22:28:45  jimg
 # Merged with release 3.2.10.
 #
@@ -1060,6 +1078,10 @@ if ($test) {
 # is_directory() was moved before the the line that uses a regex to separate
 # the file's basename from its extension.
 #
+# Revision 1.25.2.14  2001/07/11 05:09:42  jimg
+# Moved the (commented out) code that scanned pathnames for shell meta
+# characters to DODS_Cache.pm. It is actually used there.
+#
 # Revision 1.28  2001/06/15 23:38:36  jimg
 # Merged with release-3-2-4.
 #
@@ -1119,12 +1141,6 @@ if ($test) {
 # Revision 1.25.2.4  2001/03/27 01:45:53  jimg
 # Added code to special case the help and version fake dataset_ids. These now
 # work but it's a kludge.
-#
-# Revision 1.27  2001/02/12 18:04:21  tom
-# edited incorrect error message
-#
-# Revision 1.26  2001/01/26 19:18:14  jimg
-# Merged with release-3-2.
 #
 # Revision 1.25.2.3  2001/01/05 18:26:04  jimg
 # Consolidated the regexps that sanitize $ext and $filename.

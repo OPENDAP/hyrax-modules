@@ -24,14 +24,6 @@ my $debug = 0;
 # This regex is used to recognize files that are compressed.
 my $compressed_regex = "(\.gz|\.Z)";
 
-sub reverse_by_times {
-    ($times{$a} <=> $times{$b}) * -1;
-}
-
-sub by_times {
-    $times{$a} <=> $times{$b};
-}
-
 use strict;
 
 # Manage the cache directory. Given the pathname to the cache directory and
@@ -54,9 +46,9 @@ sub purge_cache {
     my $cache_size = 0;
     
     # Read the cache directory contents.
-    opendir(CACHE, $cache) || die "Could not open the cache directory!\n";
+    opendir CACHE, $cache or die "Could not open the cache directory!\n";
     my(@files) = grep(/$cached_names_regex/, readdir(CACHE));
-    closedir(CACHE);
+    closedir CACHE;
 
     my(%links, %sizes, %times, $nlink, $size, $atime, $file, $d);
     foreach $file (@files) {
@@ -73,9 +65,14 @@ sub purge_cache {
     print STDERR "Spool max size: $cache_max_size\n" if $debug;
 
     # Remove oldest files first. Continue removing files until cache size
-    # falls below max size. 
-    my(@files_sorted_by_times) = sort(by_times keys(%times));
+    # falls below max size. Note that for sort ``... the normal calling code
+    # for subroutines is bypassed... .'' Look in Wall's ``Programming PERL'',
+    # p.218. 7/10/2001 jhrg
+    my(@files_sorted_by_times) 
+	= sort({$times{$a} <=> $times{$b}} keys(%times));
     
+    print STDERR "files sorted by times: @files_sorted_by_times\n" if $debug;
+
     my $sorted_file;
     foreach $sorted_file (@files_sorted_by_times) {
 	# If enough files have been removed, stop flushing the cache.
@@ -145,7 +142,7 @@ sub decompress_and_cache {
 	close DEST;
     }
 
-    return $cache_entity;
+    return ($cache_entity, "");
 }
 
 # Private. Build up the cache filename.
@@ -342,6 +339,9 @@ if ($test) {
 1;
 
 # $Log: DODS_Cache.pm,v $
+# Revision 1.7  2003/01/22 00:12:05  jimg
+# Added/Updated from release-3-2 branch.
+#
 # Revision 1.6  2002/12/31 22:28:45  jimg
 # Merged with release 3.2.10.
 #
