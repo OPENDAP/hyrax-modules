@@ -22,6 +22,9 @@
 #      	       	       	      - Root name of the filter (e.g., *nc*_dods)
 #
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.10  1999/05/04 19:47:21  jimg
+# Fixed copyright statements. Removed more of the GNU classes.
+#
 # Revision 1.9  1999/04/29 02:37:12  jimg
 # Fix the secure server stuff.
 #
@@ -116,7 +119,6 @@ sub initialize {
     # Look for the XDODS-Accept-Types header. If it exists, store its value.
     $self->{'accept_types'} = $ENV{'HTTP_XDODS_ACCEPT_TYPES'};
 
-    # Get the name of the filter to run from the data set's `ext'.
     $filename = $ENV{'PATH_TRANSLATED'};
     $filename =~ s@(.*)\.$ext@$1@;
 
@@ -257,10 +259,10 @@ sub command {
 	$full_script = $cgi_dir . $script;
 	$command = $server_pgm . " " . $filename . " " . $full_script;
     } elsif ($ext eq "ver" || $ext eq "/version") {
-	$script_rev = '$Revision: 1.9 $ ';
-	$script_rev =~ s@\$([A-z]*): (.*) \$@$2@;
+#  	$script_rev = '$Revision: 1.10 $ ';
+#  	$script_rev =~ s@\$([A-z]*): (.*) \$@$2@;
 	$server_pgm = $cgi_dir . $script . "_dods";
-	$command = $server_pgm . " -v " . $script_rev . " " . $filename;
+	$command = $server_pgm . " -v " . $self->{'caller_revision'} . " " . $filename;
     } elsif ($ext eq "help" || $ext eq "/help") {
 	$self->print_help_message();
 	exit(0);
