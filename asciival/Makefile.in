@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.51 2004/01/22 18:11:08 jimg Exp $
+# $Id: Makefile.in,v 1.52 2004/01/26 23:30:36 jimg Exp $
 
 @SET_MAKE@
 
@@ -260,15 +260,6 @@ AsciiStructure.o: AsciiStructure.cc config_asciival.h \
   ../../../include/DAS.h ../../../include/Clause.h \
   ../../../include/expr.h ../../../include/RValue.h AsciiOutput.h \
   AsciiSequence.h ../../../include/Sequence.h name_map.h
-AsciiList.o: AsciiList.cc config_asciival.h \
-  ../../../include/InternalErr.h ../../../include/Error.h AsciiList.h \
-  ../../../include/List.h ../../../include/dods-limits.h \
-  ../../../include/Vector.h ../../../include/BaseType.h \
-  ../../../include/AttrTable.h ../../../include/Pix.h \
-  ../../../include/IteratorAdapter.h ../../../include/dods-datatypes.h \
-  ../../../include/DDS.h ../../../include/DAS.h ../../../include/Clause.h \
-  ../../../include/expr.h ../../../include/RValue.h AsciiOutput.h \
-  name_map.h
 AsciiSequence.o: AsciiSequence.cc config_asciival.h \
   ../../../include/InternalErr.h ../../../include/Error.h AsciiSequence.h \
   ../../../include/Sequence.h ../../../include/Pix.h \
@@ -339,8 +330,7 @@ ascii_val.o: ascii_val.cc config_asciival.h ../../../include/GetOpt.h \
   ../../../include/HTTPResponse.h ../../../include/Response.h \
   ../../../include/debug.h name_map.h ../../../include/cgi_util.h \
   ../../../include/EncodingType.h AsciiByte.h AsciiOutput.h AsciiInt32.h \
-  AsciiUInt32.h AsciiFloat64.h AsciiStr.h AsciiUrl.h AsciiList.h \
-  ../../../include/List.h AsciiArray.h AsciiStructure.h AsciiSequence.h \
-  AsciiGrid.h
+  AsciiUInt32.h AsciiFloat64.h AsciiStr.h AsciiUrl.h AsciiArray.h \
+  AsciiStructure.h AsciiSequence.h AsciiGrid.h
 name_map.o: name_map.cc ../../../include/config_dap.h \
   ../../../include/Regex.h ../../../include/escaping.h name_map.h

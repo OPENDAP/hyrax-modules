@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.15 2004/01/22 18:11:10 jimg Exp $
+# $Id: Makefile.in,v 1.16 2004/01/26 23:30:36 jimg Exp $
 
 @SET_MAKE@
 
@@ -249,14 +249,6 @@ WWWStructure.o: WWWStructure.cc config_www_int.h ../../../include/Pix.h \
   ../../../include/DDS.h ../../../include/Clause.h \
   ../../../include/expr.h ../../../include/RValue.h WWWSequence.h \
   ../../../include/Sequence.h WWWOutput.h
-WWWList.o: WWWList.cc config_www_int.h ../../../include/Pix.h \
-  ../../../include/IteratorAdapter.h ../../../include/InternalErr.h \
-  ../../../include/Error.h WWWList.h ../../../include/List.h \
-  ../../../include/dods-limits.h ../../../include/Vector.h \
-  ../../../include/BaseType.h ../../../include/AttrTable.h \
-  ../../../include/dods-datatypes.h ../../../include/DDS.h \
-  ../../../include/DAS.h ../../../include/Clause.h \
-  ../../../include/expr.h ../../../include/RValue.h
 WWWSequence.o: WWWSequence.cc config_www_int.h ../../../include/Pix.h \
   ../../../include/IteratorAdapter.h ../../../include/DAS.h \
   ../../../include/AttrTable.h ../../../include/Error.h \
@@ -311,14 +303,14 @@ WWWOutput.o: WWWOutput.cc config_www_int.h ../../../include/Regex.h \
   ../../../include/dods-limits.h ../../../include/Vector.h \
   ../../../include/DDS.h ../../../include/DAS.h ../../../include/Clause.h \
   ../../../include/expr.h ../../../include/RValue.h \
-  ../../../include/List.h ../../../include/escaping.h \
-  ../../../include/util.h ../../../include/Byte.h \
-  ../../../include/Int16.h ../../../include/UInt16.h \
-  ../../../include/Int32.h ../../../include/UInt32.h \
-  ../../../include/Float32.h ../../../include/Float64.h \
-  ../../../include/Str.h ../../../include/Url.h \
-  ../../../include/Structure.h ../../../include/Constructor.h \
-  ../../../include/Sequence.h ../../../include/Grid.h WWWOutput.h
+  ../../../include/escaping.h ../../../include/util.h \
+  ../../../include/Byte.h ../../../include/Int16.h \
+  ../../../include/UInt16.h ../../../include/Int32.h \
+  ../../../include/UInt32.h ../../../include/Float32.h \
+  ../../../include/Float64.h ../../../include/Str.h \
+  ../../../include/Url.h ../../../include/Structure.h \
+  ../../../include/Constructor.h ../../../include/Sequence.h \
+  ../../../include/Grid.h WWWOutput.h
 www_int.o: www_int.cc config_www_int.h ../../../include/GetOpt.h \
   ../../../include/Pix.h ../../../include/IteratorAdapter.h \
   ../../../include/BaseType.h ../../../include/AttrTable.h \
