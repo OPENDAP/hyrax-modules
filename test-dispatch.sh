@@ -39,7 +39,7 @@
 PATH_INFO="/data/nc/fnoc1.nc.dods"
 export PATH_INFO
 
-SCRIPT_NAME="/test/nph-nc"
+SCRIPT_NAME="/test-3.1/nph-nc"
 export SCRIPT_NAME
 
 QUERY_STRING="u"
