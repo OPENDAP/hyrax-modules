@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.37 1998/03/06 00:30:57 jimg Exp $
+# $Id: acinclude.m4,v 1.38 1998/03/31 19:53:30 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -106,7 +106,7 @@ AC_DEFUN(DODS_DEFAULT, [$1=${$1-"$2"}; AC_SUBST([$1])])
 
 AC_DEFUN(DODS_GET_DODS_ROOT, [dnl
     fullpath=`pwd`
-    dods_root=`echo $fullpath | sed 's@\(.*DODS[[-.0-9]]*\).*@\1@'`
+    dods_root=`echo $fullpath | sed 's@\(.*DODS[[-.0-9a-z]]*\).*@\1@'`
 echo "dods root: $dods_root"
     AC_DEFINE_UNQUOTED(DODS_ROOT, "$dods_root")
     AC_SUBST(dods_root)])
@@ -446,7 +446,7 @@ AC_DEFUN(DODS_GCC_VERSION, [dnl
     dnl supply it here.
     case $GCC_VER in
 	2.8*) 	AC_MSG_RESULT(Found gcc/g++ version ${GCC_VER} adding -lg++.)
-		LIBS="$LIBS -lg++" ;;
+		LIBS="$LIBS -lg++ -lstdc++" ;;
         2.7*)   AC_MSG_RESULT(Found gcc/g++ version ${GCC_VER}) ;;
 	*)      AC_MSG_ERROR(must be at least version 2.7.x) ;;
     esac])
