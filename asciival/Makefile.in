@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.38 1999/05/06 16:36:44 jimg Exp $
+# $Id: Makefile.in,v 1.39 1999/05/25 16:58:40 jimg Exp $
 
 @SET_MAKE@
 
@@ -116,6 +116,8 @@ URLQ_SRCS = urlqueue.c queue.c
 
 URLQ_OBJS = urlqueue.o queue.o
 
+ALLSRCS = $(CLIENTSRCS) $(ASCIISRCS) $(WV_SRCS) $(AV_SRCS) 
+
 all: $(PROG)
 
 writeval: $(WV_OBJS) $(CLIENTOBJS)
@@ -156,10 +158,13 @@ config_writeval.h: config_writeval.h.in
 
 # Tests
 
-check: writeval writeval-check 
+check: asciival asciival-check writeval writeval-check 
 
 writeval-check: writeval
 	${RUNTEST} ${RUNTESTFLAGS} --tool writeval --srcdir testsuite
+
+asciival-check: asciival
+	${RUNTEST} ${RUNTESTFLAGS} --tool asciival --srcdir testsuite
 
 loaddods-check: writeval variable.o queue.o
 	$(CC)  -c -g $(CFLAGS) $(CPPFLAGS) -DTEST_LOADDODS loaddods.c
