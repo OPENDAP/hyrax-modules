@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.7 1996/11/22 23:55:24 jimg Exp $
+# $Id: Makefile.in,v 1.8 1996/11/23 00:03:57 jimg Exp $
 
 @SET_MAKE@
 
@@ -128,8 +128,8 @@ tags:
 
 .PHONY: depend
 depend: 
-        @depend@ -m dependencies \
-        -- $(CPPFLAGS) -I/usr/local/lib/g++-include -- \
+	@depend@ -m dependencies \
+	-- $(CPPFLAGS) -I/usr/local/lib/g++-include -- \
 	$(CLIENTSRCS) write_val.cc name_map.cc
 
 .SUFFIXES:      .o .cc .c
