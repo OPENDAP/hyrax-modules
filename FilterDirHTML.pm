@@ -7,6 +7,13 @@
 # Fixed link to parent directory. 8/12/98 jhrg
 
 # $Log: FilterDirHTML.pm,v $
+# Revision 1.6  1999/06/22 17:08:10  jimg
+# Added comments to describe what the overloads do.
+# Reduced the number of parameters given to the ctor.
+# Modified so that README, .html and directory sorting URLs are not routed to
+# the html form filter.
+# This code is now called from DODS_Dispatch.pm.
+#
 # Revision 1.5  1999/06/10 23:52:49  jimg
 # Fixed the `parent directory' link.
 #
@@ -26,13 +33,21 @@
 # Initial revision.
 #
 
+# Set this to 1, 2 to get varius levels of instrumentation sent to stderr.
+my $debug = 0;
+
+# Add here patterns that describe files that should *not* be treated as data
+# files (and thus should not be routed through the DODS HTML form generator).
+# 6/15/99 jhrg
+my @pass_through_patterns = ('README', '.*\.html', '.*\?[A-Z]=[A-Z]');
+
 package FilterDirHTML;
 require HTML::Filter;
 @ISA=qw(HTML::Filter);
 
 sub new {
     my $this = shift;
-    my ($ext, $server, $base_url, $dir_cgi, $query_cgi) = @_;
+    my ($ext, $server) = @_;
     my $class = ref($this) || $this;
     my $self = {};
     bless $self, $class;
@@ -43,21 +58,6 @@ sub new {
 
     # URL fragment that names the server for the given extension.
     $self->{server} = $server;
-
-    # The base url of the current directory. Apache (et al.?) emits directory
-    # pages with relative URLS. Because we are routing those URLS through a
-    # processing script they need to be absolute. Note that this means that
-    # the FilterDirHTML instance must be started with the correct path.
-    $self->{base_url} = $base_url;
-
-    # URL of the directory CGI. Route URLs that reference directories through
-    # this. 
-    $self->{dir_cgi} = $dir_cgi . "?ext=" . $ext . "&server=" . $server .
-	"&url=";
-
-
-    # URL of the query form CGI. Route URLs for datasets through this.
-    $self->{query_cgi} = $query_cgi . "?url=";
 
     # True (1) when the first anchor has been processed. The first anchor is
     # a link to the CWD's parent. We need to do special processing to get
@@ -71,6 +71,21 @@ sub new {
     return $self;
 }
     
+#  This method is called when a complete start tag has been
+#  recognized. The first argument is the tag name (in lower
+#  case) and the second argument is a reference to a hash that
+#  contain all attributes found within the start tag. The
+#  attribute keys are converted to lower case. Entities found
+#  in the attribute values are already expanded. The third
+#  argument is a reference to an array with the lower case
+#  attribute keys in the original order. The fourth argument is
+#  the original HTML text.
+#
+# My version of this method and its companion (see end) check for the title,
+# body, h1 and a tags. When they are found the flag <tag>_seen is set (here)
+# and cleared (in end). This sets the stage for the real filtering operations
+# (see the text and output methods). 6/14/99 jhrg
+#
 sub start {
     my $self = shift;
 
@@ -82,7 +97,7 @@ sub start {
 	
     my($tag, $attr, $attrseq, $origtext) = @_;
 
-    # print "tag: " . $tag . "\n";
+    print "tag: " . $tag . "\n" if $debug > 0;
 
     if ($tag eq "title") {
 	$self->{title_seen} = 1;
@@ -94,7 +109,7 @@ sub start {
 	$self->{h1_seen} = 1;
     }
     elsif ($tag eq "a") {
-	# print "Found and anchor! $attr->{href}\n";
+	print "Found and anchor! $attr->{href}\n" if $debug > 0;
 	$self->{anchor_seen} = 1;
 	$self->{anchor_href} = $attr->{href};
     }
@@ -102,6 +117,9 @@ sub start {
     $self->SUPER::start(@_);
 }
 
+#  This method is called when an end tag has been recognized.
+#  The first argument is the lower case tag name, the second
+#  the original HTML text of the tag.
 sub end {
     my $self = shift;
 
@@ -113,7 +131,7 @@ sub end {
 
     my ($tag, $origtext) = @_;
 
-    # print "tag: " . $tag . "\n";
+    print "tag: " . $tag . "\n" if $debug > 0;
 
     $self->SUPER::end(@_);
     if ($tag eq "title") {
@@ -130,6 +148,17 @@ sub end {
     }
 }
 
+#  This method is called when plain text in the document is
+#  recognized. The text is passed on unmodified and might
+#  contain multiple lines. Note that for efficiency reasons
+#  entities in the text are not expanded. You should call
+#  HTML::Entities::decode($text) before you process the text
+#  any further.
+#
+# This method rewrites the `Index of...' title and text so that it says `DODS
+# Index of...'. Also not that this is place where we find out that the HTML
+#  we're parsing might not actually be an index. 6/14/99 jhrg
+#
 sub text {
     my $self = shift;
     
@@ -181,36 +210,30 @@ sub output {
 	    # taken into account or the script will `go above' the htdocs
 	    # root. 
 	    if (!$self->{first_anchor_processed}) {
-		my ($parent, $junk) = ($self->{base_url} =~ /(.*\/)*(.*\/)/);
-		$new_anchor = "<A HREF=" . $self->{dir_cgi} . $parent . ">";
+		my ($parent, $child) = ($self->{server} =~ m@(.*/)(.*/)$@);
+		$new_anchor = "<A HREF=" . $parent . ">";
+		$self->{first_anchor_processed} = 1;
 	    }
 	    else {
-		$new_anchor = "<A HREF=" . $self->{dir_cgi} . 
-		    $self->{base_url} . $self->{anchor_href} . ">"; 
+		$new_anchor = "<A HREF=" . $self->{server}
+		              . $self->{anchor_href} . ">"; 
 	    }
-
-	    $self->{first_anchor_processed} = 1;
 	}
-	# Is the href a data file? If so build the URL to the query form.
-	# This means that the URL to the dataset must be built from the URL
-	# to the data file - the dataset URL goes through a DODS server.
-	# Thus, the funny regex match for $machine and $path. I separate the
-	# two parts of the data file URL and splice in the DODS server name.
+	# Test special case files which will pass the extension test is the
+	# extension is `.*'
+	elsif (map { $self->{anchor_href} =~ $_ } @pass_through_patterns) {
+ 	    $new_anchor = "<A HREF=" . $self->{anchor_href} . ">"; 
+	}
+	# Is the href a data file? If so append .html to the file name after
+	# building a full URL.
 	elsif ($self->{anchor_href} =~ /.*$self->{ext}$/) {
-	    my ($machine, $path) = $self->{base_url} =~ /(http:\/\/[^\/]*\/)(.*\/)*/;
-	    my $data_url = $self->{server} . $path . $self->{anchor_href} ;
-
-	    $new_anchor = "<A HREF=" . $self->{query_cgi} . $data_url . ">"; 
+	    $new_anchor = "<A HREF=" . $self->{server} . $self->{anchor_href}
+	                  . ".html>"; 
 	}
 	# Is it a regular file?
 	else {
  	    $new_anchor = "<A HREF=" . $self->{anchor_href} . ">"; 
 	}
-
-# 	elsif ($self->{anchor_href} =~ /.*$/) {
-# 	    $new_anchor = "<A HREF=" . $self->{base_url} .
-# 		$self->{anchor_href} . ">"; 
-# 	}
 
 	$self->SUPER::output($new_anchor);
     }
