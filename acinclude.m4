@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.26 1996/12/06 21:08:43 jimg Exp $
+# $Id: acinclude.m4,v 1.27 1997/01/24 01:15:59 jimg Exp $
 
 # Check for fill value usage.
 
@@ -345,7 +345,10 @@ AC_DEFUN(DODS_MATLAB, [dnl
     dnl Find the lib directory (which is named according to machine type).
     matlab_lib_dir=`find $MATLAB_ROOT -name libmat.a \
 		| sed 's@\(.*\)/libmat.a@\1@'`
-    LDFLAGS="$LDFLAGS -L$matlab_lib_dir"
+    if test "$matlab_lib_dir"
+    then
+	LDFLAGS="$LDFLAGS -L$matlab_lib_dir"
+    fi
 
     AC_MSG_RESULT($MATLAB_ROOT)])
 
@@ -448,10 +451,6 @@ AC_DEFUN(DODS_MACHINE, [dnl
             esac
             ;;
     esac
-
-    if test -z "$MACHINE"; then
-      echo "MACHINE:machine hardware type:sun4" >> confdefs.missing
-    fi
     fi
 
     AC_SUBST(MACHINE)
@@ -516,19 +515,17 @@ AC_DEFUN(DODS_DSP_ROOT, [dnl
 		 /usr/contrib/src/dsp /usr/contrib/dsp \
 		 $DODS_ROOT/third-party/dsp /usr/dsp /data1/dsp
 	do
-	    if test "$DSP_ROOT"
+	    if test -z "$DSP_ROOT"
 	    then
-		break
+	    	for d in `ls -dr ${p}* 2>/dev/null`
+		do
+		    if test -f ${d}/inc/dsplib.h
+		    then
+		        DSP_ROOT=${d}
+		        break
+		    fi
+	        done
 	    fi
-	    dnl `ls -dr' lists dirs without descending and reverses ordering
-	    for d in `ls -dr ${p}[[-.0-9]]* 2>/dev/null`
-	    do
-		if test -f ${d}/inc/dsplib.h
-		then
-		    DSP_ROOT=${d}
-		    break
-		fi
-	    done
 	done
     fi
 
@@ -551,13 +548,15 @@ AC_DEFUN(DODS_CHECK_SIZES, [dnl
     if test "$cross_compiling" = yes
     then
 	    case "$host" in
-	    *alpha*) AC_DEFINE(SIZEOF_CHAR, 1)
+	    *alpha*) ac_cv_sizeof_long=8
+		     AC_DEFINE(SIZEOF_CHAR, 1)
 		     AC_DEFINE(SIZEOF_DOUBLE, 8)
 		     AC_DEFINE(SIZEOF_FLOAT, 4)
 		     AC_DEFINE(SIZEOF_INT, 4)
 		     AC_DEFINE(SIZEOF_LONG, 8)
 		     ;;
 	    *)	AC_MSG_WARN(Assuming that your target is a 32bit machine)
+		    ac_cv_sizeof_long=4
 		    AC_DEFINE(SIZEOF_CHAR, 1)
 		    AC_DEFINE(SIZEOF_DOUBLE, 8)
 		    AC_DEFINE(SIZEOF_FLOAT, 4)
@@ -571,6 +570,7 @@ AC_DEFUN(DODS_CHECK_SIZES, [dnl
 	    AC_CHECK_SIZEOF(char)
 	    AC_CHECK_SIZEOF(double)
 	    AC_CHECK_SIZEOF(float)
+    fi
 
     if test $ac_cv_sizeof_long -eq 4 
     then
@@ -584,8 +584,6 @@ AC_DEFUN(DODS_CHECK_SIZES, [dnl
 	DEFS="-DARCH_64BIT $DEFS"
     else
 	AC_MSG_ERROR(Could not determine architecture size - 32 or 64 bits)
-    fi
-
     fi])
 
 
