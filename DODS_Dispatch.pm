@@ -22,6 +22,10 @@
 #      	       	       	      - Root name of the filter (e.g., *nc*_dods)
 #
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.2  1997/06/05 23:17:39  jimg
+# Added to the accesser functions so that they can be used to set the field
+# values in addition to reading values from the `object'.
+#
 # Revision 1.1  1997/06/02 21:04:35  jimg
 # First version
 #
@@ -106,23 +110,67 @@ sub new {
 # Return the query string given with the URL.
 sub query {
     my $self = shift;
+    my $query = shift;		# The second arg is optional
 
-    return $self{'query'};
+    if ($query eq "") {
+	return $self->{'query'};
+    } else {
+	return $self->{'query'} = $query;
+    }
 }    
 
+# If the second argument is given, use it to set the filename member.
 sub filename {
     my $self = shift;
+    my $filename = shift;	# The second arg is optional
 
-    return $self->{'filename'};
+    if ($filename eq "") {
+	return $self->{'filename'};
+    } else {
+	return $self->{'filename'} = $filename;
+    }
 }
 
+sub extension {
+    my $self = shift;
+    my $extension = shift;	# The second arg is optional
+
+    if ($extension eq "") {
+	return $self->{'ext'};
+    } else {
+	return $self->{'ext'} = $extension;
+    }
+}
+
+sub cgi_dir {
+    my $self = shift;
+    my $cgi_dir = shift;	# The second arg is optional
+
+    if ($cgi_dir eq "") {
+	return $self->{'cgi_dir'};
+    } else {
+	return $self->{'cgi_dir'} = $cgi_dir;
+    }
+}
+
+sub script {
+    my $self = shift;
+    my $script = shift;		# The second arg is optional
+
+    if ($script eq "") {
+	return $self->{'script'};
+    } else {
+	return $self->{'script'} = $script;
+    }
+}
+    
 sub command {
     my $self = shift;
 
-    my $ext = $self->{'ext'};
-    my $cgi_dir = $self->{'cgi_dir'};
-    my $script = $self->{'script'};
-    my $filename = $self->{'filename'};
+    my $ext = $self->extension();
+    my $cgi_dir = $self->cgi_dir();
+    my $script = $self->script();
+    my $filename = $self->filename();
 
     if ($ext eq "info") {
 	# If the user wants to run the usage filter ($ext is `.html'),
@@ -132,12 +180,12 @@ sub command {
 	$query = $cgi_dir . $script;
 	$command = $server_pgm . " " . $filename . " " . "\"" . $query . "\"";
     } elsif ($ext eq "ver" || $ext eq "/version") {
-	$script_rev = '$Revision: 1.1 $ ';
+	$script_rev = '$Revision: 1.2 $ ';
 	$script_rev =~ s@\$([A-z]*): (.*) \$@$2@;
 	$server_pgm = $cgi_dir . $script . "_dods";
 	$command = $server_pgm . " -v " . $script_rev . " " . $filename;
     } elsif ($ext eq "das" || $ext eq "dds" || $ext eq "dods") {
-	my $query = $self->{'query'};
+	my $query = $self->query();
 	# Otherwise, form the name of the filter program to run by catenating
 	# the script name, underscore and the ext.
 	$server_pgm = $cgi_dir . $script . "_" . $ext;
