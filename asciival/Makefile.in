@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.26 1998/03/13 21:24:12 jimg Exp $
+# $Id: Makefile.in,v 1.27 1998/03/13 21:36:53 jimg Exp $
 
 @SET_MAKE@
 
@@ -129,10 +129,11 @@ extend:
 
 install: install-client
 
-install-client: urlqueue writeval loaddods
+install-client: urlqueue writeval asciival loaddods
 	$(INSTALL_PROGRAM) urlqueue $(bindir)
 	$(INSTALL_PROGRAM) posturl.pl $(etcdir)
 	$(INSTALL_PROGRAM) -s writeval $(bindir)
+	$(INSTALL_PROGRAM) -s asciival $(bindir)
 	$(INSTALL_PROGRAM) loaddods.mex* $(bindir)
 	$(INSTALL_PROGRAM) loaddods.m $(bindir)
 	$(INSTALL_PROGRAM) whodods.m $(bindir)
