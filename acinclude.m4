@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.10 1996/09/10 17:30:35 jimg Exp $
+# $Id: acinclude.m4,v 1.11 1996/09/10 18:23:02 jimg Exp $
 
 # Check for fill value usage.
 
@@ -166,7 +166,26 @@ AC_DEFUN(DODS_FIND_EXPECT, [dnl
     fi
 
     dnl Part two: Once we have found expect (and tcl), locate the tcl include
-    dnl directory.
+    dnl directory. Assume that all the tcl includes live where tclRegexp.h
+    dnl does.
+
+    AC_CHECK_HEADER(tclRegexp.h, found=1, found=0)
+
+    dnl Look some other places if not in the standard ones.
+   
+    tcl_include_paths="/usr/local/src/tcl7.4/ /usr/local/src/tcl7.5/generic"
+
+    if test $found -eq 0
+    then
+	for d in $tcl_include_paths
+	do
+	    if test -f ${d}/tclRegexp.h
+	    then
+		INCS="$INCS $d"
+	        break
+	    fi
+        done
+    fi
 
     AC_DEFINE_UNQUOTED(HAVE_EXPECT, $HAVE_EXPECT)])
 
@@ -260,6 +279,7 @@ AC_DEFUN(DODS_WWW_LIBRARY, [dnl
 
 AC_DEFUN(DODS_SEM, [dnl
 
+    found=0
     AC_CHECK_HEADERS(sys/sem.h, found=1, found=0)
     if test $found -eq 1
     then
