@@ -36,17 +36,16 @@
 
 #PATH_INFO="/version"
 
-PATH_INFO="/data/hdf/S3097160.HDF.dods"
+PATH_INFO="/data/nc/fnoc1.nc.dods"
 export PATH_INFO
 
-
-SCRIPT_NAME="/etc/nph-hdf"
+SCRIPT_NAME="/test/nph-nc"
 export SCRIPT_NAME
 
-QUERY_STRING=""
+QUERY_STRING="u"
 export QUERY_STRING
 
-PATH_TRANSLATED="/usr/local/etc/httpd/htdocs${PATH_INFO}"
+PATH_TRANSLATED="/usr/local/apache/share/htdocs${PATH_INFO}"
 export PATH_TRANSLATED
 
 HTTP_XDODS_ACCEPT_TYPES=All
