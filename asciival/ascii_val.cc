@@ -1,6 +1,6 @@
 
-// (c) COPYRIGHT URI/MIT 1998
-// Please read the full copyright statement in the file COPYRIGH.  
+// (c) COPYRIGHT URI/MIT 1998,1999
+// Please read the full copyright statement in the file COPYRIGHT.  
 //
 // Authors:
 //	jhrg,jimg	James Gallagher (jgallagher@gso.uri.edu)
@@ -13,6 +13,9 @@
     @author: jhrg */
 
 // $Log: ascii_val.cc,v $
+// Revision 1.11  1999/07/24 00:10:28  jimg
+// Merged the release-3-0-2 branch
+//
 // Revision 1.10  1999/05/25 18:47:11  jimg
 // Merged Nathan's fixes for the -t option and some debugging instrumentation.
 //
@@ -33,8 +36,8 @@
 // call to print_all_vals().
 //
 // Revision 1.4  1998/07/30 19:05:54  jimg
-// Fixed the call to usage; passing a char * invoked cgi-util.cc:usage which was
-// not what we wanted. Also added help about the -m option.
+// Fixed the call to usage; passing a char * invoked cgi-util.cc:usage which
+// was not what we wanted. Also added help about the -m option.
 //
 // Revision 1.3  1998/03/19 23:26:03  jimg
 // Added code to write out error messages read from the server.
@@ -48,7 +51,7 @@
 
 #include "config_dap.h"
 
-static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.10 1999/05/25 18:47:11 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.11 1999/07/24 00:10:28 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>

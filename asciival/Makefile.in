@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.40 1999/05/27 19:21:48 jimg Exp $
+# $Id: Makefile.in,v 1.41 1999/07/24 00:10:28 jimg Exp $
 
 @SET_MAKE@
 
@@ -21,7 +21,7 @@ MATLAB_ROOT = @MATLAB_ROOT@
 WWW_ROOT=@WWW_ROOT@
 
 INCS = -I. -I$(DODS_ROOT)/include -I$(MATLAB_ROOT)/extern/include @INCS@
-DEFS = @DEFS@ -DVERSION=\"@VERSION@\" -DUSE_LIBGXX_INLINES
+DEFS = @DEFS@ -DDODS_VERSION=\"@VERSION@\" -DUSE_LIBGXX_INLINES
 CPPFLAGS = @CPPFLAGS@ $(DEFS) $(INCS)
 CFLAGS = @CFLAGS@
 CXXFLAGS = @CXXFLAGS@
@@ -32,7 +32,7 @@ LIBS = -ldap++ @LIBS@
 MAT_LIBS = -ldap++ @MATLIBS@ @LIBS@
 TAGS_FLAGS = --include=../dap/TAGS
 TEST_COV_FLAGS = -ftest-coverage -fprofile-arcs
-CMEXFLAGS = -g $(CFLAGS) $(CPPFLAGS) @MAT_VERSION_FLAG@
+CMEXFLAGS = -g $(CPPFLAGS) @MAT_VERSION_FLAG@
 
 # Set the instalation directories; prefix can be set on the command line
 # during Makefile construction with `./configure --prefix /my/choice'
@@ -111,7 +111,7 @@ LD_SRCS = loaddods.c variable.c queue.c extend.c error.c
 
 # Leave out loaddods.o; I pass loaddods.c to cmex so it'll know we're doing C
 # code and not complain. 5/27/99 jhrg
-LD_OBJS = variable.o queue.o extend.o error.o
+LD_OBJS = loaddods.o variable.o queue.o extend.o error.o
 
 URLQ_SRCS = urlqueue.c queue.c
 
@@ -128,7 +128,10 @@ asciival: $(AV_OBJS) $(ASCIIOBJS)
 	$(CXX) $(LDFLAGS) -o asciival $(AV_OBJS) $(ASCIIOBJS) $(LIBS)
 
 loaddods: $(LD_OBJS)
-	$(CMEX) $(CMEXFLAGS) loaddods.c $(LD_OBJS)
+	$(CMEX) $(CMEXFLAGS) $(LD_OBJS)
+
+#loaddods.o: loaddods.c
+#	$(CC) -c $(CMEXFLAGS) -o $@ $<
 
 urlqueue: $(URLQ_OBJS)
 	$(CC) $(LDFLAGS) -o urlqueue $(URLQ_OBJS)
