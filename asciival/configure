@@ -13,7 +13,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: configure,v 1.5 1996/11/25 03:19:20 jimg Exp $
+# $Id: configure,v 1.6 1996/12/18 17:21:39 jimg Exp $
 
 # Check for fill value usage.
 
@@ -2758,7 +2758,9 @@ fi
 
        
     tcl_include_paths="$DODS_ROOT/third_party/tcl7.6/generic \
-			/usr/local/src/tcl7.5/generic /usr/local/src/tcl7.4/"
+			/usr/local/src/tcl7.5/generic \
+			/usr/local/src/tcl7.6/generic \
+			/usr/local/src/tcl7.4/"
 
     if test $found -eq 0
     then
@@ -2871,11 +2873,11 @@ else
   ac_cv_c_cross=yes
 else
 cat > conftest.$ac_ext <<EOF
-#line 2875 "configure"
+#line 2877 "configure"
 #include "confdefs.h"
 main(){return(0);}
 EOF
-{ (eval echo configure:2879: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }
+{ (eval echo configure:2881: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }
 if test -s conftest && (./conftest; exit) 2>/dev/null; then
   ac_cv_c_cross=no
 else
@@ -2945,7 +2947,7 @@ else
     { echo "configure: error: can not run test program while cross compiling" 1>&2; exit 1; }
 else
 cat > conftest.$ac_ext <<EOF
-#line 2949 "configure"
+#line 2951 "configure"
 #include "confdefs.h"
 #include <stdio.h>
 main()
@@ -2956,7 +2958,7 @@ main()
   exit(0);
 }
 EOF
-{ (eval echo configure:2960: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }
+{ (eval echo configure:2962: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }
 if test -s conftest && (./conftest; exit) 2>/dev/null; then
   ac_cv_sizeof_int=`cat conftestval`
 else
@@ -2979,7 +2981,7 @@ else
     { echo "configure: error: can not run test program while cross compiling" 1>&2; exit 1; }
 else
 cat > conftest.$ac_ext <<EOF
-#line 2983 "configure"
+#line 2985 "configure"
 #include "confdefs.h"
 #include <stdio.h>
 main()
@@ -2990,7 +2992,7 @@ main()
   exit(0);
 }
 EOF
-{ (eval echo configure:2994: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }
+{ (eval echo configure:2996: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }
 if test -s conftest && (./conftest; exit) 2>/dev/null; then
   ac_cv_sizeof_long=`cat conftestval`
 else
@@ -3013,7 +3015,7 @@ else
     { echo "configure: error: can not run test program while cross compiling" 1>&2; exit 1; }
 else
 cat > conftest.$ac_ext <<EOF
-#line 3017 "configure"
+#line 3019 "configure"
 #include "confdefs.h"
 #include <stdio.h>
 main()
@@ -3024,7 +3026,7 @@ main()
   exit(0);
 }
 EOF
-{ (eval echo configure:3028: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }
+{ (eval echo configure:3030: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }
 if test -s conftest && (./conftest; exit) 2>/dev/null; then
   ac_cv_sizeof_char=`cat conftestval`
 else
@@ -3047,7 +3049,7 @@ else
     { echo "configure: error: can not run test program while cross compiling" 1>&2; exit 1; }
 else
 cat > conftest.$ac_ext <<EOF
-#line 3051 "configure"
+#line 3053 "configure"
 #include "confdefs.h"
 #include <stdio.h>
 main()
@@ -3058,7 +3060,7 @@ main()
   exit(0);
 }
 EOF
-{ (eval echo configure:3062: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }
+{ (eval echo configure:3064: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }
 if test -s conftest && (./conftest; exit) 2>/dev/null; then
   ac_cv_sizeof_double=`cat conftestval`
 else
@@ -3081,7 +3083,7 @@ else
     { echo "configure: error: can not run test program while cross compiling" 1>&2; exit 1; }
 else
 cat > conftest.$ac_ext <<EOF
-#line 3085 "configure"
+#line 3087 "configure"
 #include "confdefs.h"
 #include <stdio.h>
 main()
@@ -3092,7 +3094,7 @@ main()
   exit(0);
 }
 EOF
-{ (eval echo configure:3096: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }
+{ (eval echo configure:3098: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }
 if test -s conftest && (./conftest; exit) 2>/dev/null; then
   ac_cv_sizeof_float=`cat conftestval`
 else
@@ -3171,11 +3173,11 @@ echo "$ac_t""$host" 1>&6
 	esac
 else
 cat > conftest.$ac_ext <<EOF
-#line 3175 "configure"
+#line 3177 "configure"
 #include "confdefs.h"
 ${ENDIAN_CHECK_PRG}
 EOF
-{ (eval echo configure:3179: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }
+{ (eval echo configure:3181: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }
 if test -s conftest && (./conftest; exit) 2>/dev/null; then
   SWAP=-DSWAP
 else
@@ -3199,11 +3201,11 @@ rm -fr conftest*
         esac
 else
 cat > conftest.$ac_ext <<EOF
-#line 3203 "configure"
+#line 3205 "configure"
 #include "confdefs.h"
 ${NETLONG_CHECK_PGM}
 EOF
-{ (eval echo configure:3207: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }
+{ (eval echo configure:3209: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }
 if test -s conftest && (./conftest; exit) 2>/dev/null; then
   NETLONG=""
 else
