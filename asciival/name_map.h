@@ -8,6 +8,9 @@
 //	jhrg,jimg	James Gallagher (jgallagher@gso.uri.edu)
 
 // $Log: name_map.h,v $
+// Revision 1.5  1998/03/13 21:24:26  jimg
+// Fixed up comments
+//
 // Revision 1.4  1997/02/06 20:44:52  jimg
 // Fixed log messages
 //
@@ -28,7 +31,6 @@
 #pragma interface
 #endif
 
-/// Map names using a simple thesaurus.
 /** This class can be used to build up a simple thesaurus which maps names from
     one string to another. The thesaurus is built by calling the #add# mfunc
     with a string of the form <source>:<dest> where <source> and <dest> are
@@ -40,7 +42,10 @@
     operation. This is performed as a separate step from the thesaurus scan
     so words with no entry in the thesaurus will still be canonicalized.
 
-    You can interleave calls to #add# and calls to #lookup#. */
+    You can interleave calls to #add# and calls to #lookup#. 
+
+    @memo Map names using a simple thesaurus.
+    @author jhrg */
 
 class name_map {
 private:
@@ -61,22 +66,19 @@ private:
     SLList<name_equiv> _names;
 
 public:
-    /// Create a new instance of the thesaurus.
     /** Create a new instance of the thesaurus and add the first equivalence
-        string to it. */
+        string to it. 
+	
+	@memo Create a new instance of the thesaurus. */
     name_map(char *raw_equiv);
 
-    /// Create an empty thesaurus.
+    /** Create an empty thesaurus. */
     name_map();
 
-    /// Add a new entry to the thesaurus.
     /** Add a new entry to the thesaurus. The form of the new entry is
-        <source>:<dest>.
-
-	Returns: void */
+        <source>:<dest>. */
     void add(char *raw_equiv);
 
-    /// Lookup a work in the thesaurus.
     /** Lookup a word in the thesaurus. If the name appears in the thesaurus,
         return its equivalent. If #canonical_names# is true, pass the string
 	#name# or its equivalent through a filter to replace all characters
@@ -84,11 +86,11 @@ public:
 	`%[0-9][0-9a-fA-F]' are considered to be hex escape codes and are
 	replaced by a single underscore.
 
-	Returns: the string #name#, its equivalent or its canonicalized
+	@return The string #name#, its equivalent or its canonicalized
 	equivalent. */
     String lookup(String name, const bool canonical_names = false);
 
-    /// Delete all the entries from the thesaurus.
+    /** Delete all the entries from the thesaurus. */
     void delete_all();
 };
 
