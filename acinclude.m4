@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.34 1997/10/09 22:19:04 jimg Exp $
+# $Id: acinclude.m4,v 1.35 1997/12/16 01:08:40 jimg Exp $
 
 # Check for fill value usage.
 
@@ -375,13 +375,16 @@ AC_DEFUN(DODS_MATLAB, [dnl
 
     if grep V4_COMPAT ${MATLAB_ROOT}/extern/include/mat.h > /dev/null 2>&1
     then
+       MAT_VERSION_FLAG="-V4"
        MATLIBS="-lmat -lmi -lmx -lut"
     else
+       MAT_VERSION_FLAG=""
        MATLIBS="-lmat"
     fi
 
     AC_CHECK_LIB(ots, _OtsDivide64Unsigned, MATLIBS="$MATLIBS -lots", )
-    AC_SUBST(MATLIBS)])
+    AC_SUBST(MATLIBS)
+    AC_SUBST(MAT_VERSION_FLAG)])
 
 # Find the root directory of the current rev of gcc
 
