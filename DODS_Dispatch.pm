@@ -22,6 +22,11 @@
 #      	       	       	      - Root name of the filter (e.g., *nc*_dods)
 #
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.17  1999/05/27 21:27:59  jimg
+# Moved the code that escapes the query into the section for asciival. Since
+# the security fixes only asciival needs special characters escaped (since it
+# is still run using a subshell).
+#
 # Revision 1.16  1999/05/24 23:34:35  dan
 # Added support for JGOFS dispatch script, which requires
 # filename = PATH_INFO, not filename = PATH_TRANSLATED
@@ -146,10 +151,6 @@ sub initialize {
 
     $query = $ENV{'QUERY_STRING'};
     $query =~ tr/+/ /;		# Undo escaping by client.
-
-    $query =~ s@\(@\\\(@g;	# escape left parentheses
-    $query =~ s@\)@\\\)@g;	# escape right parentheses
-    $query =~ s@\"@\\\"@g;	# escape quotes
 
     $self->{'query'} = $query;
 
@@ -400,6 +401,11 @@ sub command {
 	my $str = $server_pgm . " -v " . $self->{'caller_revision'}
 	           . " " . $self->filename();
 	if ($query ne "") {
+	    # Escape $query because we're running command using the shell
+	    # which will interpret the ()" characters. 5/27/99 jhrg
+	    $query =~ s@\(@\\\(@g;	# escape left parentheses
+	    $query =~ s@\)@\\\)@g;	# escape right parentheses
+	    $query =~ s@\"@\\\"@g;	# escape quotes
 	    $str .= " -e \"" .  $query . "\"";
 	}
 	# Never compress ASCII.
