@@ -22,6 +22,10 @@
 #      	       	       	      - Root name of the filter (e.g., *nc*_dods)
 #
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.16  1999/05/24 23:34:35  dan
+# Added support for JGOFS dispatch script, which requires
+# filename = PATH_INFO, not filename = PATH_TRANSLATED
+#
 # Revision 1.15  1999/05/21 20:05:11  jimg
 # Retracted some of the security stuff when using the ASCII mode of the
 # servers. In order to run a pipe from Perl you must use an intermediate shell
@@ -191,7 +195,14 @@ sub initialize {
     # Look for the XDODS-Accept-Types header. If it exists, store its value.
     $self->{'accept_types'} = $ENV{'HTTP_XDODS_ACCEPT_TYPES'};
 
-    $filename = $ENV{'PATH_TRANSLATED'};
+
+    if ($script eq "jg") {
+	$filename = $ENV{'PATH_INFO'};
+	$filename =~ s@.*/(.*)@$1@
+    }
+    else {
+	$filename = $ENV{'PATH_TRANSLATED'};
+    }
 
     # This odd regexp excludes shell metacharacters, spaces and %-escapes
     # (e.g., %3B) from $filename which plugs a security hole that provided a
