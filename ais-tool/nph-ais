@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -T
 # -*- Perl -*-
 
 # This file is part of libdap, A C++ implmentation of the OPeNDAP Data
@@ -29,7 +29,7 @@
 
 # Options: -T: use Perl's taint mode.
 #
-# $Id: nph-ais,v 1.1 2003/03/13 23:37:32 jimg Exp $
+# $Id: nph-ais,v 1.2 2003/03/14 20:02:48 jimg Exp $
 
 # Force PATH. This should work for most UNIXs. Forcing PATH means that -T
 # (taint) won't complain about running programs. Perl will consider any
@@ -44,8 +44,7 @@ $ENV{BASH_ENV} = '';
 
 # Configuration.
 my $debug = 0;
-my $ais_database =
-    "/home/jimg/DODS-trunk/src/dap/ais_testsuite/ais_database.xml";
+my $ais_database = "/home/jimg/DODS-trunk/etc/ais_demo_3.2003_3.xml";
 my $contact = "jgallagher\@opendap.org";
 
 my $object;
@@ -96,6 +95,9 @@ sub is_file {
 my $path_info = $ENV{PATH_INFO};
 print(STDERR "\nPATH_INFO: ", $path_info, "\n") if $debug > 1;
 
+my $ce = $ENV{QUERY_STRING};
+print(STDERR "QUESRY_STRING: ", $ce, "\n") if $debug > 1;
+
 # Figure out which object we're being asked for and get the un-adorned URL.
 
 # Using a pattern match followed substring assignment 'untaints a variable
@@ -136,7 +138,7 @@ elsif ($object eq "dods") {
 print(STDERR "object: ", $object, "\n") if $debug > 1;
 print(STDERR "url: ", $url, "\n") if $debug > 1;
 
-my @command = ("./ais_tool", "-B", $ais_database, $object, $url);
+my @command = ("./ais_tool", "-B", $ais_database, $object, $url, "-e", $ce);
 print(STDERR "Command: @command\n") if $debug > 1;
 
 if ($command[0] ne "") {		# if no error...
@@ -150,6 +152,10 @@ else {
 }
 
 # $Log: nph-ais,v $
+# Revision 1.2  2003/03/14 20:02:48  jimg
+# Added CE; This is passed to ais_tool. The AISDODSFilter object parses it from
+# the command line options.
+#
 # Revision 1.1  2003/03/13 23:37:32  jimg
 # Added.
 #
