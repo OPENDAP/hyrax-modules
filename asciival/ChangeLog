@@ -1,3 +1,9 @@
+1998-11-29  James Gallagher  <jimg@dcz.cvo.oneworld.com>
+
+	* Added -T option. Names longer than 19 chars are only truncated
+	when -T is given to loaddods. This means that longer names might
+	be interned in ML 5.
+
 1998-11-24  James Gallagher  <jimg@dcz.cvo.oneworld.com>
 
 	* Added identifier name truncation. All ids are truncated to 19
