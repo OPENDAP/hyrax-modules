@@ -1,3 +1,24 @@
+	
+Thu Feb  6 12:33:28 1997  James Gallagher  <jimg@dcz.cvo.oneworld.com>
+
+	* Changed the way writeval handles translation of String values to
+	Float64. If the -f switch is given, all string values will be
+	translated to float. First the software checks to see if the
+	string is a lat/lon value of the form dddmmssh. If so it is
+	translated into a +/- real number (with fractional degrees). If
+	not, then strtod() is used to translate the string to a double. If
+	that fails then NaN is output. Note that this is only true when
+	the -f option is given; without the option strings are just
+	strings. This introduces a bug in that with the -f option all
+	strings that don't translate to floats become NaN.
+
+	* Fixed many bugs - see the file `TODO' in this directory. 
+
+Thu Jan  9 22:36:13 1997  James Gallagher  <jimg@dcz.cvo.oneworld.com>
+
+	* Fixed situation where strange characters in identifiers confused
+	Matlab. Non-alphanumerics are turned into underscores.
+
 Mon Dec 23 11:31:48 1996  James Gallagher  <jimg@dcz.cvo.oneworld.com>
 
 	* Fixed a nasty bug in the do_array function where single
