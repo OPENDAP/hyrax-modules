@@ -22,8 +22,11 @@
 #      	       	       	      - Root name of the filter (e.g., *nc*_dods)
 #
 # $Log: DODS_Dispatch.pm,v $
-# Revision 1.20  1999/07/22 03:13:00  jimg
-# Undid a nasty mistake which wiped out the version 1.18 changes
+# Revision 1.21  1999/07/30 19:59:08  jimg
+# Added directory code from non-cvs version
+#
+# Revision 1.19  1999/07/22 03:08:46  jimg
+# Moved
 #
 # Revision 1.18  1999/06/12 00:00:26  jimg
 # Added server_name and request_uri procedure/fields.
@@ -131,6 +134,8 @@
 
 package DODS_Dispatch;
 
+my $debug = 0;
+
 sub send_error_object {
     my $msg = shift;
     my $error_obj = "\
@@ -165,6 +170,7 @@ sub initialize {
     $self->{'cgi_dir'} = "./";
 
     $self->{'server_name'} = $ENV{'SERVER_NAME'};
+    print(STDERR "server name: " , $self->{'server_name'}, "\n") if $debug > 1;
 
     $query = $ENV{'QUERY_STRING'};
     $query =~ tr/+/ /;		# Undo escaping by client.
@@ -178,16 +184,21 @@ sub initialize {
     $ext =~ s@.*\.(.*)@$1@;
 
     if ($ext =~ /[^A-Za-z\/]+/) {
-	print(STDERR "DODS_Dispatch.pm: ext: ", $ext, "\n") if $debug >= 2;
+	print(STDERR "DODS_Dispatch.pm: ext: ", $ext, "\n") if $debug > 1;
 	send_error_object("Extension contains bad characters.");
 	exit(1);
     }
 
     $self->{'ext'} = $ext;
+    print(STDERR "ext: ", $ext, "\n") if $debug > 1;
 
     my $request = $ENV{'REQUEST_URI'};
     $request =~ s@(.*)\.$ext@$1@;
     $self->{'request_uri'} = $request;
+
+    my $path_info = $ENV{'PATH_INFO'};
+    $path_info =~ s@(.*)\.$ext@$1@;
+    $self->{'path_info'} = $path_info;
 
     # Strip the `nph-' off of the front of the dispatch program's name. Also 
     # remove the extraneous partial-pathname that HTTPD glues on to the
@@ -233,7 +244,7 @@ sub initialize {
     # contents of /etc/passwd. 5/18/99 jhrg
 
     $filename =~ s@([^ !%&()*+?<>]*)\.$ext(.*)@$1@;
-    printf(STDERR "filename: %s\n", $filename) if $debug == 2;
+    printf(STDERR "filename: %s\n", $filename) if $debug > 1;
 
     $self->{'filename'} = $filename;
 }
@@ -381,9 +392,35 @@ sub command {
 	$server_pgm = $self->cgi_dir() . $self->script() . "_dods";
 	@command = ($server_pgm, "-v", $self->caller_revision(), "-V",
 	            $self->filename());
-    } elsif ($ext eq "help" || $ext eq "/help" || $ext eq "" || $ext eq "/") {
+    } elsif ($ext eq "help" || $ext eq "/help" || $ext eq "/help/"
+	     || $ext eq "") {
 	$self->print_help_message();
 	exit(0);
+    } elsif ($ext =~ ".*/\$") {	# Does $ext end in a slash?
+	use CGI;
+	use LWP::Simple;
+	use FilterDirHTML;	# FilterDirHTML is a subclass of HTML::Filter
+
+	# PATH_INFO is wrong here!
+	# Build URL without CGI in it.
+	my $url = "http://" . $self->{'server_name'} . $self->{'path_info'};
+	if ($self->{'query'} ne "") {
+	    $url .= "?" . $self->{'query'};
+	}
+	my $directory_html = get($url);
+
+	# Parse the HTML directory page
+	# Build URL with CGI in it but remove ?M=A type query expression.
+	my $server_url = "http://" . $self->{'server_name'} 
+	                 . $self->{request_uri};
+	if ($self->{'query'} ne "") {
+	    ($server_url) = ($server_url =~ m@(.*)\?.*@);
+	}
+	my $filtered_dir_html = new FilterDirHTML('.*', $server_url); 
+
+	$filtered_dir_html->parse($directory_html);
+	$filtered_dir_html->eof;
+	exit(0);		# Leave without returning @command!
     } elsif ($ext eq "das" || $ext eq "dds") {
 	my $query = $self->query();
 	my $cache_dir = $self->cache_dir();
@@ -422,7 +459,7 @@ sub command {
     } elsif ($ext eq "ascii" || $ext eq "asc") {
 	my $dods_url = ("http://" . $self->{'server_name'} 
 			. $self->{'request_uri'});
-	@command=("./asciival",  "--", $dods_url);
+	@command=("./asciival", "-m", "--", $dods_url);
     } elsif ($ext eq "html") {
 	my $dods_url = ("http://" . $self->{'server_name'} 
 			. $self->{'request_uri'});
@@ -456,7 +493,7 @@ one of the following a five suffixes to a URL: .das, .dds, .dods., .info,
 <dt> help <dd> help information (this text)</dl>
 </dl>
 For example, to request the DAS object from the FNOC1 dataset at URI/GSO (a
-test dataset) you would appand `.das' to the URL: http://dods.gso.uri.edu/gi-bin/nph-nc/data/fnoc1.nc.das.
+test dataset) you would appand `.das' to the URL: http://dods.gso.uri.edu/cgi-bin/nph-nc/data/fnoc1.nc.das.
 
 <p><b>Note</b>: Many DODS clients supply these extensions for you so you don't
 need to append them (for example when using interfaces supplied by us or
@@ -471,7 +508,7 @@ return the version number for the netCDF server used in the first example.
 <p><b>Suggestion</b>: If you're typing this URL into a WWW browser and
 would like information about the dataset, use the `.info' extension.
 
-If you'd like to see a data values, use the `.html' extension and submit a
+<p>If you'd like to see a data values, use the `.html' extension and submit a
 query using the customized form.\n";
 
 # This method takes three arguments; the object, a string which names the
