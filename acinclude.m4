@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.16 1996/10/01 17:23:35 jimg Exp $
+# $Id: acinclude.m4,v 1.17 1996/10/08 15:37:53 jimg Exp $
 
 # Check for fill value usage.
 
@@ -105,7 +105,8 @@ AC_DEFUN(DODS_PROG_LEX, [dnl
 	    ;;
     esac])
 
-# Look for Bison version 1.22 or greater
+# Look for Bison version 1.22 or greater. Define DODS_BISON_VER to be the
+# version number without the decimal point.
 
 AC_DEFUN(DODS_PROG_BISON, [dnl
     AC_CHECK_PROG(YACC,bison,bison)
@@ -113,6 +114,7 @@ AC_DEFUN(DODS_PROG_BISON, [dnl
 	bison)
 	    bison_ver1=`bison -V 2>&1 | sed 's/[[^0-9]]*\(.*\)/\1/'`
 	    bison_ver2=`echo $bison_ver1 | sed 's/\.//g'`
+	    AC_DEFINE_UNQUOTED(DODS_BISON_VER, $bison_ver2)
 	    if test -z $bison_ver2 -a $bison_ver2 -lt 122
 	    then
 		AC_MSG_WARN(Bison version: found ${bison_ver1} should be at least 1.22)
