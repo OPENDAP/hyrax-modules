@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.46 1999/04/22 00:48:24 jimg Exp $
+# $Id: acinclude.m4,v 1.47 1999/04/23 23:41:23 edavis Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -328,10 +328,15 @@ AC_DEFUN(DODS_DBNEW, [dnl
     esac])
 
 #check for hdf libraries
+# cross-compile problem with test option -d
 AC_DEFUN(DODS_HDF_LIBRARY, [dnl
     AC_ARG_WITH(hdf,
-        [  --with-hdf=ARG          Where is the HDF libarry (directory)],
-        HDF_PATH=${withval}, HDF_PATH=/usr/local/hdf)
+        [  --with-hdf=ARG          Where is the HDF library (directory)],
+        HDF_PATH=${withval}, HDF_PATH="$HDF_PATH")
+    if test ! -d "$HDF_PATH"
+    then
+        HDF_PATH="/usr/local/hdf"
+    fi
     if test "$HDF_PATH"
     then
             LDFLAGS="$LDFLAGS -L${HDF_PATH}/lib"
@@ -509,12 +514,16 @@ AC_DEFUN(DODS_CHECK_EXCEPTIONS, [dnl
 #---------------------------------------------------------------------------
 
 # Find the matlab root directory
+# cross-compile problem with test option -d
 
 AC_DEFUN(DODS_MATLAB, [dnl
     AC_ARG_WITH(matlab,
         [  --with-matlab=ARG       Where is the Matlab root directory],
-        MATLAB_ROOT=${withval}, MATLAB_ROOT="")
-
+        MATLAB_ROOT=${withval}, MATLAB_ROOT="$MATLAB_ROOT")
+    if test ! -d "$MATLAB_ROOT"
+    then
+        MATLAB_ROOT=""
+    fi
     if test -z "$MATLAB_ROOT"
     then
         AC_MSG_CHECKING(for matlab root)
@@ -559,12 +568,17 @@ AC_DEFUN(DODS_MATLAB, [dnl
     AC_SUBST(MATLIBS)
     AC_SUBST(MAT_VERSION_FLAG)])
 
+# cross-compile problem with test option -d
 AC_DEFUN(DODS_DSP_ROOT, [dnl
 
     AC_ARG_WITH(dsp,
 		[  --with-dsp=DIR          Directory containing DSP software from U of Miami],
-		DSP_ROOT=${withval}, DSP_ROOT=)
+		DSP_ROOT=${withval}, DSP_ROOT="$DSP_ROOT")
 
+    if test ! -d "$DSP_ROOT"
+    then
+        DSP_ROOT=""
+    fi
     if test -z "$DSP_ROOT"
     then
 	AC_MSG_CHECKING(for the DSP library root directory)
