@@ -1,5 +1,5 @@
 
- $Id: README,v 1.19 2001/10/14 01:52:17 jimg Exp $
+ $Id: README,v 1.20 2003/01/27 19:38:23 jimg Exp $
 
 The following provides background technical information on the design of
 asciival. For installation information, see the file INSTALL
@@ -28,6 +28,10 @@ C++ class library. See the general documentation files for DODS and/or the
 README and INSTALL files in $(DODS_ROOT)/packages and $(DODS_ROOT)/src/dap
 for information on building those parts of the system.
 
+COPYRIGHT INFORMATION
 
-
-
+  The OPeNDAP asciival software is copyrighted using the GNU GPL. See the
+  file COPYING or contact the Free Software Foundation, Inc., at 59 Temple
+  Place, Suite 330, Boston, MA 02111-1307 USA. Older versions of the software
+  were copyrighted by the University of Rhode Island and Massachusetts
+  Institute of Technology; see the file COPYRIGHT_URI.

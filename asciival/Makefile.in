@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.48 2001/09/28 23:46:06 jimg Exp $
+# $Id: Makefile.in,v 1.49 2003/01/27 19:38:23 jimg Exp $
 
 @SET_MAKE@
 
@@ -11,12 +11,6 @@ PROG = asciival
 
 DODS_ROOT = @dods_relative@
 
-# Unit tests. Experimental. 11/27/2000 jhrg
-# See the targets unit_tests and unit-check farther down.
-# CPP_UNIT=$(DODS_ROOT)../../CppUnit/test/framework
-# CPP_UNIT_INC=-I$(CPP_UNIT) 
-# CPP_UNIT_LIB=-L$(CPP_UNIT) 
-
 INCS = -I. @INCS@ $(CPP_UNIT_INC)
 DEFS = @DEFS@ -DDODS_VERSION=\"@VERSION@\"
 CPPFLAGS = @CPPFLAGS@ $(DEFS) $(INCS)
@@ -26,7 +20,6 @@ LDFLAGS = @LDFLAGS@ -L. $(CPP_UNIT_LIB)
 LFLAGS = -8
 YFLAGS = -d
 LIBS = -ldap++ @LIBS@
-XTRALIBS = @XTRALIBS@
 TAGS_FLAGS = --include=../../dap/TAGS
 TEST_COV_FLAGS = -ftest-coverage -fprofile-arcs
 
@@ -49,7 +42,8 @@ INSTALLMAN = man
 SHELL = /bin/sh
 srcdir = @srcdir@
 version = @VERSION@
-dir = asciival-@VERSION@
+basedir = asciival
+dir = $(basedir)-$(version)
 
 COMPONENT_NAME = DODS ASCII Client and Server Component
 
@@ -94,8 +88,7 @@ ALLSRCS = $(ASCIISRCS) $(AV_SRCS)
 all: $(PROG)
 
 asciival: $(AV_OBJS) $(ASCIIOBJS)
-	$(CXX) $(LDFLAGS) -o asciival $(AV_OBJS) $(ASCIIOBJS) \
-		$(LIBS) $(XTRALIBS)
+	$(CXX) $(LDFLAGS) -o asciival $(AV_OBJS) $(ASCIIOBJS) $(LIBS)
 
 # Standard targets with some customization for das-test and dds-test
 
@@ -127,30 +120,15 @@ collect-coverage-data:
 	     gcov -l -o ../ $$f >> $$cov_dat; \
          done)
 
-# The two targets unit_tests and unit-check use the CppUnit unit test
-# software. These are not yet ready for prime time. 4/13/2001 jhrg
-# You must modify TestRunner.cc for each new test class and include it here.
-# Note that TestRunner.cc includes the UNIT_TESTS *.cc files and that's why
-# the *.o versions of these files don't appear in the unit_tests target.
-# 5/14/2001 jhrg
-# UNIT_TESTS = AsciiArrayTest.cc AsciiOutputTest.cc
-UNIT_TEST_SRC = TestRunner.cc TextTestResult.cc $(UNIT_TESTS)
-UNIT_TEST_SCAFFOLD = TestRunner.o TextTestResult.o
+# You need CppUnit to run the unit test(s). 01/24/03 jhrg
+UNIT_TEST_SRC = AsciiOutputTest.cc
+UNIT_TEST_PROGS = AsciiOutputTest
 
-TestRunner.o: $(UNIT_TESTS)
+AsciiOutputTest: AsciiOutputTest.o $(ASCIIOBJS) name_map.o
+	$(CXX) -o $@ $(LDFLAGS) $^ -lcppunit $(LIBS)
 
-unit_tests: $(UNIT_TEST_SCAFFOLD) $(ASCIIOBJS) name_map.o
-	@if [ -z "$(UNIT_TESTS)" -o -z "$(CPP_UNIT)" ]; then \
-	  echo "You must define UNIT_TESTS and CPP_UNIT* in the Makefile."; \
-	  exit 1; \
-	fi
-	$(CXX) -o unit_tests $(LDFLAGS) \
-		$(UNIT_TEST_SCAFFOLD) $(ASCIIOBJS) name_map.o \
-		$(UNIT_LDFLAGS) -lcppunit $(LIBS)
-
-unit-check: unit_tests
-	./unit_tests AttrTableTest DODSFilterTest cgiUtilTest parserUtilTest \
-	generalUtilTest SequenceTest ByteTest
+unit-check: $(UNIT_TEST_PROGS)
+	./AsciiOutputTest
 
 clean:	
 	-rm -f *.o *.sum *.log *~ core w3chttp.out
@@ -187,7 +165,8 @@ tar:
 	-rm -r config.cache config.log config.status
 	cd $(DODS_ROOT)/.. && \
 	$(TAR) --exclude 'old' --exclude '.#*' --exclude 'CVS' \
-	    --gzip --create --dereference --file DODS-$(dir).tar.gz \
+	    --exclude 'Makefile' \
+            --gzip --create --dereference --file DODS-$(dir).tar.gz \
 	    DODS/src/tools/$(dir)
 
 binary-tar:
@@ -196,15 +175,11 @@ binary-tar:
 .PHONY: update-version
 update-version: check-version
 	@echo "Version is: `cat version.h`"
-	mv ../asciival* ../asciival-$(version)
-	touch $(DODS_ROOT)VERSION; cat $(DODS_ROOT)VERSION | \
-	  $(AWK) ' \
-	    BEGIN { found = 0 } \
-	    { if ( $$0 ~ /^$(COMPONENT_NAME):/) \
-	        { print "$(COMPONENT_NAME): $(version)"; found = 1 } \
-	      else { print $$0 } } \
-	    END { if ( ! found) { print "$(COMPONENT_NAME): $(version)" } \
-	        }' > $(DODS_ROOT)VERSION
+	if test ! -d ../$(dir); then mv ../$(basedir)* ../$(dir); fi
+	if test ! -f $(DODS_ROOT)VERSION; then touch $(DODS_ROOT)VERSION; fi
+	$(etcdir)/update-manifest.pl "$(COMPONENT_NAME)" $(version) \
+		< $(DODS_ROOT)VERSION > tmp.dods.manifest
+	mv tmp.dods.manifest $(DODS_ROOT)VERSION
 
 # Compare the version encoded in this Makefile (set by configure) with the
 # version in version.h. The version make variable is set up near the top of
@@ -287,7 +262,9 @@ AsciiSequence.o: AsciiSequence.cc config_asciival.h \
  ../../../include/InternalErr.h ../../../include/Error.h \
  AsciiSequence.h ../../../include/Sequence.h \
  ../../../include/BaseType.h ../../../include/Constructor.h \
- AsciiOutput.h name_map.h
+ AsciiOutput.h AsciiStructure.h ../../../include/Structure.h \
+ ../../../include/DDS.h ../../../include/Clause.h \
+ ../../../include/expr.h ../../../include/RValue.h name_map.h
 AsciiGrid.o: AsciiGrid.cc config_asciival.h \
  ../../../include/InternalErr.h ../../../include/Error.h AsciiGrid.h \
  ../../../include/Grid.h ../../../include/BaseType.h \

@@ -1,9 +1,33 @@
 
+// -*- mode: c++; c-basic-offset:4 -*-
+
+// This file is part of asciival, software which can return an ASCII
+// representation of the data read from a DAP server.
+
+// Copyright (c) 2002,2003 OPeNDAP, Inc.
+// Author: James Gallagher <jgallagher@opendap.org>
+//
+// asciival is free software; you can redistribute it and/or modify it under
+// the terms of the GNU General Public License as published by the Free
+// Software Foundation; either version 2, or (at your option) any later
+// version.
+// 
+// asciival is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+// more details.
+// 
+// You should have received a copy of the GNU General Public License along
+// with GCC; see the file COPYING. If not, write to the Free Software
+// Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+// 
+// You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
+ 
 // (c) COPYRIGHT URI/MIT 1998,2000
-// Please read the full copyright statement in the file COPYRIGHT.
+// Please read the full copyright statement in the file COPYRIGHT_URI.
 //
 // Authors:
-//      jhrg,jimg       James Gallagher (jgallagher@gso.uri.edu)
+//      jhrg,jimg       James Gallagher <jgallagher@gso.uri.edu>
 
 // Implementation for the class AsciiStructure. See AsciiByte.cc
 //
@@ -17,6 +41,8 @@
 
 #include <iostream>
 #include <string>
+
+using std::endl ;
 
 #include "InternalErr.h"
 #include "AsciiStructure.h"
@@ -64,6 +90,7 @@ AsciiStructure::print_header(ostream &os)
 	    os << names.lookup(dynamic_cast<AsciiOutput*>(var(p))->get_full_name(), translate);
 	else if (var(p)->type() == dods_structure_c)
 	    dynamic_cast<AsciiStructure*>(var(p))->print_header(os);
+    // May need a case here for Sequence 2/18/2002 jhrg
 	else
 	    throw InternalErr(__FILE__, __LINE__,
 "This method should only be called by instances for which `is_simple_structure' returns true.");
@@ -93,6 +120,22 @@ AsciiStructure::print_ascii(ostream &os, bool print_name) throw(InternalErr)
 }
 
 // $Log: AsciiStructure.cc,v $
+// Revision 1.7  2003/01/27 19:38:23  jimg
+// Updated the copyright information.
+// Merged with release-3-2-6.
+//
+// Revision 1.5.4.3  2002/12/18 23:41:25  pwest
+// gcc3.2 compile corrections, mainly regarding using statements
+//
+// Revision 1.5.4.2  2002/02/18 19:26:36  jimg
+// Fixed bug 329. In cases where a Structure was inside a Sequence,
+// print_header was being called (correctly). However, the method flagged
+// this as an error because it thought that such a sequence was not `linear.'
+// That is, it thought it could not be flattened and printed as a column. I
+// fixed AsciiSequence::print_header so that it calls AsciiStructure::print
+// _header. Note that the complimentary change is not needed since Structures
+// are printed one elment after the other.
+//
 // Revision 1.6  2001/09/28 23:46:06  jimg
 // merged with 3.2.3.
 //

@@ -45,10 +45,27 @@
 
 /* Define if you have the <unistd.h> header file.  */
 #undef HAVE_UNISTD_H
+
+/* GNU gcc/g++ provides a way to mark variables, etc. as unused */
+
+#if defined(__GNUG__) || defined(__GNUC__)
+#define not_used __attribute__ ((unused))
+#else
+#define not_used 
+#endif
+
 #endif /* HAVE_CONFIG_H */
 
 /* 
  * $Log: config_asciival.h.in,v $
+ * Revision 1.9  2003/01/27 19:38:23  jimg
+ * Updated the copyright information.
+ * Merged with release-3-2-6.
+ *
+ * Revision 1.8.4.1  2002/07/05 23:55:55  jimg
+ * Added the not_used thing for gcc. This makes it possible to use this
+ * file in place of config_dap.h, which is a good idea.
+ *
  * Revision 1.8  2000/10/02 20:09:52  jimg
  * Moved Log entries to the end of the files
  *

@@ -2,7 +2,7 @@
 dnl -*- m4 -*-
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.in,v 1.16 2001/06/15 23:55:15 jimg Exp $)
+AC_REVISION($Id: configure.in,v 1.17 2003/01/27 19:38:23 jimg Exp $)
 AC_INIT(ascii_val.cc)
 AC_CONFIG_HEADER(config_asciival.h)
 AC_CONFIG_AUX_DIR(../../../etc)
@@ -27,6 +27,7 @@ dnl Checks for programs.
 
 AC_PROG_AWK
 AC_PROG_CC
+AC_PROG_CXX
 AC_ISC_POSIX
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
@@ -38,9 +39,6 @@ DODS_GCC
 DODS_PROG_LEX
 DODS_PROG_GTAR
 DODS_PROG_BISON
-
-dnl DODS_OS
-dnl DODS_MACHINE
 
 CXX=${CXX-g++}
 AC_MSG_RESULT(Setting CXX to $CXX)
@@ -55,6 +53,11 @@ AC_C_CONST
 AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
 
+dnl Checks for specific libraries
+AC_CHECK_LIB(pthread, pthread_testcancel, 
+	[LIBS="$LIBS -lpthread"
+	 AC_DEFINE(_REENTRANT)])
+
 dnl Checks for library functions.
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(strerror strtol)
@@ -65,12 +68,8 @@ DODS_COMPRESSION_LIB
 DODS_RX_LIB
 DODS_WWW_LIB
 
-DODS_XTRALIBS
-
 DODS_EFENCE
-
 DODS_DBNEW
-
 DODS_DEBUG_OPTION
 
 if test $ac_cv_sizeof_long -eq 4 

@@ -1,9 +1,33 @@
 
+// -*- mode: c++; c-basic-offset:4 -*-
+
+// This file is part of libdap, A C++ implmentation of the OPeNDAP Data
+// Access Protocol.
+
+// Copyright (c) 2002,2003 OPeNDAP, Inc.
+// Author: James Gallagher <jgallagher@opendap.org>
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+// 
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
+ 
 // (c) COPYRIGHT URI/MIT 1998-2000
-// Please read the full copyright statement in the file COPYRIGHT.  
+// Please read the full copyright statement in the file COPYRIGHT_URI.  
 //
 // Authors:
-//	jhrg,jimg	James Gallagher (jgallagher@gso.uri.edu)
+//	jhrg,jimg	James Gallagher <jgallagher@gso.uri.edu>
 
 /** Asciival is a simple DODS client similar to geturl or writeval that reads
     a DODS data object (either by dereferencing a URL, reading from a file or
@@ -12,9 +36,10 @@
     
     @author: jhrg */
 
-#include "config_dap.h"
+//#include "config_dap.h"
+#include "config_asciival.h"
 
-static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.14 2001/09/28 23:46:06 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.15 2003/01/27 19:38:23 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -24,6 +49,9 @@ static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.14 2001/09/28 23:46:06 ji
 
 #include "BaseType.h"
 #include "Connect.h"
+#include "name_map.h"
+#include "cgi_util.h"
+#include "debug.h"
 
 #include "AsciiByte.h"
 #include "AsciiInt32.h"
@@ -37,16 +65,14 @@ static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.14 2001/09/28 23:46:06 ji
 #include "AsciiSequence.h"
 #include "AsciiGrid.h"
 
-#include "name_map.h"
-#include "cgi_util.h"
-#include "debug.h"
-
 name_map names;
 bool translate = false;
 
-#ifndef VERSION
+#ifdef DODS_VERSION
+const char *VERSION = DODS_VERSION;
+#else
 const char *VERSION = "unknown";
-#endif /* VERSION */
+#endif /* DODS_VERSION */
 
 static void
 usage(string name)
@@ -55,10 +81,8 @@ usage(string name)
 	 << " [mngvVt] -- [<url> [-r <var>:<newvar> ...] ...]" << endl
 	 << "       m: Output a MIME header." << endl
 	 << "       n: Turn on name canonicalization." << endl
-	 << "       g: Use the GUI to show progress" << endl
 	 << "       v: Verbose output." << endl
 	 << "       V: Print the version number and exit" << endl
-	 << "       t: Trace network I/O (HTTP, ...). See geturl" << endl
 	 << "       r: Per-URL name mappings; var becomes newvar." << endl
 	 << endl
 	 << "<url> may be a true URL, which asciival will dereference," << endl
@@ -94,37 +118,7 @@ process_per_url_options(int &i, int argc, char *argv[], bool verbose = false)
 }
 
 static void
-process_trace_options(char *tcode) 
-{
-    while (*tcode){
-	switch (*tcode) {
-	  case 'a': WWWTRACE |= SHOW_ANCHOR_TRACE; break;
-	  case 'A': WWWTRACE |= SHOW_APP_TRACE; break;
-	  case 'b': WWWTRACE |= SHOW_BIND_TRACE; break;
-	  case 'c': WWWTRACE |= SHOW_CACHE_TRACE; break;
-	  case 'h': WWWTRACE |= SHOW_AUTH_TRACE; break;
-	  case 'i': WWWTRACE |= SHOW_PICS_TRACE; break;
-	  case 'k': WWWTRACE |= SHOW_CORE_TRACE; break;
-	  case 'l': WWWTRACE |= SHOW_SGML_TRACE; break;
-	  case 'm': WWWTRACE |= SHOW_MEM_TRACE; break;
-	  case 'p': WWWTRACE |= SHOW_PROTOCOL_TRACE; break;
-	  case 's': WWWTRACE |= SHOW_STREAM_TRACE; break;
-	  case 't': WWWTRACE |= SHOW_THREAD_TRACE; break;
-	  case 'u': WWWTRACE |= SHOW_URI_TRACE; break;
-	  case 'U': WWWTRACE |= SHOW_UTIL_TRACE; break;
-	  case 'x': WWWTRACE |= SHOW_MUX_TRACE; break;
-	  case 'z': WWWTRACE = SHOW_ALL_TRACE; break;
-	  default:
-	    cerr << "Unrecognized trace option: `" << *tcode << "'" 
-		 << endl;
-	    break;
-	}
-	tcode++;
-    }
-}
-
-static void
-process_data(XDR *src, DDS *dds)
+process_data(DDS *dds)
 {
     cout << "Dataset: " << dds->get_dataset_name() << endl;
 
@@ -154,7 +148,7 @@ output_error_object(const Error &e)
 int
 main(int argc, char * argv[])
 {
-    GetOpt getopt (argc, argv, "ngmvVh?t:");
+    GetOpt getopt (argc, argv, "ngmvVh?");
     int option_char;
     bool verbose = false;
     bool trace = false;
@@ -174,16 +168,6 @@ main(int argc, char * argv[])
 	  case 'm': mime_header = true; break;
 	  case 'v': verbose = true; break;
 	  case 'V': {cerr << "asciival: " << VERSION << endl; exit(0);}
-	  case 't':
-	    trace = true;
-	    topts = strlen(getopt.optarg);
-	    if (topts) {
-		tcode = new char[topts + 1];
-		strcpy(tcode, getopt.optarg); 
-		process_trace_options(tcode);
-		delete tcode;
-	    }
-	    break;
 	  case 'h':
 	  case '?':
 	  default:
@@ -209,6 +193,12 @@ main(int argc, char * argv[])
 		    << argv[i] << endl << endl);
 	    }
 
+	    // asciival is used almost always as part of the DODS server. It
+	    // should not be caching values returned from/by the DAS, DDS, or
+	    // DataDDS handlers of the server. Doing so makes little hiccups
+	    // in the caching very hard for users to correct. 1/16/2002 jhrg 
+	    url->disable_cache();
+
 	    DBG2(cerr << "argv[" << i << "] (of " << argc << "): " 
 		 << argv[i] << endl);
 
@@ -231,25 +221,21 @@ main(int argc, char * argv[])
 
 	    process_per_url_options(i, argc, argv, verbose);
 
-	    DDS *dds;
+	    DataDDS dds;
 
 	    if (url->is_local() && (strcmp(argv[i], "-") == 0))
-		dds = url->read_data(stdin, gui, false);
+		url->read_data(dds, stdin);
 	    else if (url->is_local())
-		dds = url->read_data(fopen(argv[i], "r"), gui, false);
+		url->read_data(dds, fopen(argv[i], "r"));
 	    else
-		dds = url->request_data(expr, gui, false);
+		url->request_data(dds, expr);
 
-	    if (dds) {
-		if (mime_header)
-		    set_mime_text(cout, dods_data);
-		process_data(url->source(), dds);
-	    }
-	    else {
-		output_error_object(url->error());
-	    }
+	    if (mime_header)
+		set_mime_text(cout, dods_data);
+	    process_data(&dds);
 	}
 	catch (Error &e) {
+	    DBG(cerr << "Caught an Error object." << endl);
 	    output_error_object(e);
 	}
     }
@@ -261,6 +247,37 @@ main(int argc, char * argv[])
 }
 
 // $Log: ascii_val.cc,v $
+// Revision 1.15  2003/01/27 19:38:23  jimg
+// Updated the copyright information.
+// Merged with release-3-2-6.
+//
+// Revision 1.13.4.6  2002/12/23 23:23:03  jimg
+// Removed unused XDR * pointer from the process_data() function. This changes
+// was made to accommodate a change in Connect.
+//
+// Revision 1.13.4.5  2002/07/05 23:58:23  jimg
+// I switched to the local config header (config_asciival.h) from the DAP's
+// header. I removed a lot of code that was specific to libwww's trace system. I
+// changed they way the code uses Connect so that the new methods are used in
+// place of the old ones.
+//
+// Revision 1.13.4.4  2002/06/21 00:31:41  jimg
+// I changed many files throughout the source so that the 'make World' build
+// works with the new versions of Connect and libdap++ that use libcurl.
+// Most of these changes are either to Makefiles, configure scripts or to
+// the headers included by various C++ files. In a few places the oddities
+// of libwww forced us to hack up code and I've undone those and some of the
+// clients had code that supported libwww's generous tracing capabilities
+// (that's one part of libwww I'll miss); I had to remove support for that.
+// Once this code compiles and more work is done on Connect, I'll return to
+// each of these changes and polish them.
+//
+// Revision 1.13.4.3  2002/01/17 00:45:06  jimg
+// I added a call to Connect::disable_cache(). This will suppress use of the
+// cache which is important since this `client' is used as part of the DODS
+// server and it seems to cause problems whenthe server caches DataDDS
+// objects (among other things). I think servers should not cache, in general.
+//
 // Revision 1.14  2001/09/28 23:46:06  jimg
 // merged with 3.2.3.
 //

@@ -1,3 +1,21 @@
+2003-01-24    <jimg@dcz.dods.org>
+
+	* Fixed the unit test.
+
+	* Added GNU GPL copyright.
+
+	* Merged with release-3-2-5.
+
+2002-04-19    <jimg@dcz.dods.org>
+
+	* testsuite: I've updated the tests so that they all use the
+	datasets collected on dodsdev. 
+
+2002-04-03    <jimg@dcz.dods.org>
+
+	* Updated testsuite for new dataset names (Names now included
+	extensions.)
+
 2001-10-13  James Gallagher  <jimg@dcz.dods.org>
 
 	* Merged with release-3-2-4.
