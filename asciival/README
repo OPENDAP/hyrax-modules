@@ -1,5 +1,5 @@
 
- $Id: README,v 1.3 1996/10/07 16:30:08 jimg Exp $
+ $Id: README,v 1.4 1996/10/08 19:48:19 jimg Exp $
 
 There are four executables used in the DODS-Matlab interface:
 
@@ -31,5 +31,69 @@ application
 here for completeness. However, if users want to write their own HTML forms
 for building URLs then they can install and use their own copy of posturl and
 make a completely self contained system. 
+
+------------
+
+Here is a pseudo grammar describing the output of writeval. I used * as the
+Kleene closure (zero or more) and + a one or more. Basically, the idea is
+simple; write the type and name of the variable on one line and data for it
+on the next. For ctor types it becomes more complex, but not much. For arrays
+write Array, the type, the name, the number of dimensions and a list of
+dimension sizes on one line and the data on the next line. 
+
+Sequences are handled specially because of a possible bug in the core
+software. I `flatten' sequences so that a DDS like:
+	  Dataset {
+		  Sequence {
+			   Int32 a;
+			   Int32 b;
+			   Sequence {
+				    Float64 c;
+		           } inner;
+		  } outer;
+	  } ds;
+Will look like:
+	  Dataset {
+		  Sequence {
+			   Int32 a;
+			   Int32 b;
+			   Float64 c;
+		  } outer;
+	  } ds;
+
+Also note that Sequences of ctor types other than Sequence cannot be
+flattened and thus will fail. I believe that the failure won't crash, but
+some data will be lost.
+
+<data request> :: <variable>*
+
+<variable> :: <type name> 
+
+<simple variable> :: ' ' <variable name> '\n' <data values>
+
+<array variable> :: ' ' <variable name> <number of dims> <dim size>+
+
+<list variable> :: ' ' <variable name> <list size>
+
+<struct variables> :: <variable name> <num of elements> '\n' <variable>* '\n'
+		      <data>*
+NB: the number of <variable> matches the number of <data>
+
+<sequence variables> :: <variable name> <num of elements> '\n' <variable>* '\n'
+		        <data>*
+NB: the number of <data> is an integral multiple of <variable>.
+
+<variable> :: Byte <simple variable> '\n' <data> '\n'
+	   :: Int32 <simple variable> '\n' <data> '\n'
+	   :: Float64 <simple variable> '\n'  <data> '\n'
+	   :: Str <simple variable> '\n' <data> '\n'
+	   :: Url <simple variable> '\n' <data> '\n'
+	   :: Array <array variable> '\n' <data> '\n'
+	   :: List <list variable> '\n' <data> '\n'
+	   :: Structure <struct variables> `\n'
+	   :: Sequence <sequence variables> '\n'
+	   :: Grid <variable name> '\n' 'array: \n' <array variable> <data>
+	      'map: \n' <array variable>+ <data>+
+NB: The number of the second <array variable> and <data> must match.
 
 James Gallagher 10/4/96
