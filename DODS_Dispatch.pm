@@ -22,6 +22,12 @@
 #      	       	       	      - Root name of the filter (e.g., *nc*_dods)
 #
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.14  1999/05/21 17:18:09  jimg
+# Changed quoting of various strings, esp the $query. Since the command
+# arguments are now stored in a Perl list and passes to exec in that list (and
+# not a single string), the command is not evaluated by the shell. Thus, quotes
+# won't be removed by the shell and wind up confusing the parsers.
+#
 # Revision 1.13  1999/05/19 23:33:15  jimg
 # Fixes for security holes. The CWD module is no longer used; this makes it
 # simpler to run perl using the -T (taint) mode.
@@ -335,13 +341,13 @@ sub command {
 	@command = ($server_pgm, "-v", $self->{'caller_revision'}, 
 		    $self->filename());
 	if ($query ne "") {
-	    @command = (@command, "-e", "\"" . $query . "\"");
+	    @command = (@command, "-e", $query);
 	}
 	if ($cache_dir ne "") {
-	    @command = (@command, "-r", "\"" . $cache_dir . "\"");
+	    @command = (@command, "-r", $cache_dir);
 	}
 	if ($accept_types ne "") {
-	    @command = (@command, "-t", "\"" . $accept_types . "\"");
+	    @command = (@command, "-t", $accept_types);
 	}
     } elsif ($ext eq "dods") {
 	my $query = $self->query();
@@ -351,16 +357,16 @@ sub command {
 	@command = ($server_pgm, "-v", $self->{'caller_revision'}, 
 		    $self->filename());
 	if ($query ne "") {
-	    @command = (@command, "-e", "\"" . $query . "\"");
+	    @command = (@command, "-e", $query);
 	}
 	if ($cache_dir ne "") {
-	    @command = (@command, "-r", "\"" . $cache_dir . "\"");
+	    @command = (@command, "-r", $cache_dir);
 	}
 	if ($self->encoding() =~ /deflate/) {
 	    @command = (@command, "-c");
 	}
 	if ($accept_types ne "") {
-	    @command = (@command, "-t", "\"" . $accept_types . "\"");
+	    @command = (@command, "-t", $accept_types);
 	}
     } elsif ($ext eq "ascii" || $ext eq "asc") {
 	my $query = $self->query();
@@ -368,7 +374,7 @@ sub command {
 	@command = ($server_pgm, "-v", $self->{'caller_revision'}, 
 		    $self->filename());
 	if ($query ne "") {
-	    @command = (@command, "-e", "\"" . $query . "\"");
+	    @command = (@command, "-e", $query);
 	}
 	# Never compress ASCII.
 	local($ascii_srvr) = $cgi_dir . "asciival";
