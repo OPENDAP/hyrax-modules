@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.48 1999/07/22 03:01:02 jimg Exp $
+# $Id: acinclude.m4,v 1.49 1999/07/22 18:25:45 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -57,13 +57,21 @@ AC_DEFUN(DODS_SWAP, [dnl
 	    i386* | dec*) SWAP=-DSWAP;;
 	    *) SWAP="";;
 	esac])
-    if test -z "$SWAP"
+
+    dnl Look for the endian.h header. If it is present, *don't* define 
+    dnl BIG_ENDIAN or LITTLE_ENDIAN since one of those will be defined there.
+    dnl 5/13/99 jhrg
+    AC_CHECK_HEADER(endian.h, found=1, found=0)
+    if test $found eq 0
     then
-	AC_DEFINE(BIG_ENDIAN)
-	AC_MSG_RESULT(big endian)
-    else
-	AC_DEFINE(LITTLE_ENDIAN)
-	AC_MSG_RESULT(little endian)
+	if test -z "$SWAP"
+	then
+	    AC_DEFINE(BIG_ENDIAN)
+	    AC_MSG_RESULT(big endian)
+	else
+	    AC_DEFINE(LITTLE_ENDIAN)
+	    AC_MSG_RESULT(little endian)
+	fi
     fi
     AC_SUBST(SWAP)])
 
