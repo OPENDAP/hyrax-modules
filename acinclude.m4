@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.36 1998/02/04 22:22:09 jimg Exp $
+# $Id: acinclude.m4,v 1.37 1998/03/06 00:30:57 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -106,7 +106,8 @@ AC_DEFUN(DODS_DEFAULT, [$1=${$1-"$2"}; AC_SUBST([$1])])
 
 AC_DEFUN(DODS_GET_DODS_ROOT, [dnl
     fullpath=`pwd`
-    dods_root=`echo $fullpath | sed 's@\(.*/DODS[-.0-9]*\).*@\1@'`
+    dods_root=`echo $fullpath | sed 's@\(.*DODS[[-.0-9]]*\).*@\1@'`
+echo "dods root: $dods_root"
     AC_DEFINE_UNQUOTED(DODS_ROOT, "$dods_root")
     AC_SUBST(dods_root)])
 
@@ -151,6 +152,9 @@ AC_DEFUN(DODS_PACKAGES_SUPPORT, [dnl
     AC_REQUIRE([DODS_LIBS])
     # Assume that we always search the packages/lib directory for libraries.
     LDFLAGS="$LDFLAGS -L$dods_root/packages/lib"
+    # Assume that we can always search packages/include directory for include 
+    # files. 
+    INCS="$INCS -I$dods_root/packages/include"
     # Initialize $packages to null.
     packages=""
     AC_SUBST(packages)])
@@ -159,7 +163,7 @@ AC_DEFUN(DODS_COMPRESSION_LIB, [dnl
     AC_REQUIRE([DODS_PACKAGES_SUPPORT])
     AC_CHECK_LIB(z, zlibVersion,
 		 HAVE_Z=1; LIBS="$LIBS -lz",
-		 packages="$packages libz")
+		 packages="$packages libz"; HAVE_Z=1; LIBS="$LIBS -lz")
     AC_SUBST(packages)])
 
 # Look for the web library. Then look for the include files. If the library
@@ -169,8 +173,8 @@ AC_DEFUN(DODS_WWW_LIB, [dnl
     AC_REQUIRE([DODS_PACKAGES_SUPPORT])
     DODS_FIND_WWW_ROOT
     AC_CHECK_LIB(www, HTLibInit,
-		 HAVE_WWW=1; LIBS="$LIBS -lwww",
-		 packages="$packages libwww")
+		 HAVE_WWW=1; LIBS="-lwww $LIBS",
+		 packages="$packages libwww"; HAVE_WWW=1; LIBS="-lwww $LIBS")
     AC_SUBST(packages)])
 
 # Because the www library is now included in the DODS_ROOT/packages/ 
@@ -182,7 +186,6 @@ AC_DEFUN(DODS_WWW_LIB, [dnl
 
 AC_DEFUN(DODS_FIND_WWW_ROOT, [dnl
     AC_REQUIRE([DODS_PACKAGES_SUPPORT])
-    AC_MSG(libwww include files)
 
     AC_ARG_WITH(www,
 	[  --with-www=DIR          Directory containing the W3C header files],
@@ -191,7 +194,7 @@ AC_DEFUN(DODS_FIND_WWW_ROOT, [dnl
     AC_SUBST(WWW_ROOT)
     INCS="$INCS -I\$(WWW_ROOT)"
     AC_SUBST(INCS)
-    AC_MSG_RESULT($WWW_ROOT)])
+    AC_MSG_RESULT(Set the WWW header directory to $WWW_ROOT)])
 
 # Note that this macro looks for Tcl in addition to Expect since expect 
 # requires tcl. 2/3/98 jhrg
@@ -398,23 +401,40 @@ AC_DEFUN(DODS_CHECK_GCC_DEBUG, [dnl
 
 AC_DEFUN(DODS_FIND_GPP_INC, [dnl
     AC_MSG_CHECKING(for the g++ include directories)
-    specs=`gcc -v 2>&1`
-    dir=`echo $specs | sed 's@Reading specs from \(.*\)gcc-lib.*@\1@'`
-    GPP_INC="${dir}g++include"
-    AC_MSG_RESULT($GPP_INC)
-    AC_SUBST(GPP_INC)])
+    AC_REQUIRE([DODS_GCC_VERSION])
+
+    GPP_INC=""
+    case $GCC_VER in
+	2.8*) if test -d /usr/local/include/g++; 
+	      then 
+		  GPP_INC=/usr/local/include/g++
+	      fi;;
+	*) specs=`gcc -v 2>&1`;
+           dir=`echo $specs | sed 's@Reading specs from \(.*\)gcc-lib.*@\1@'`;
+           GPP_INC="${dir}g++include";;
+    esac
+
+    if test -z "$GPP_INC"
+    then
+	AC_MSG_WARN(not found)
+    else
+        AC_MSG_RESULT($GPP_INC);
+        AC_SUBST(GPP_INC)
+    fi])
 
 # Find the root directory of the current rev of gcc
 
 AC_DEFUN(DODS_GCC, [dnl
+    AC_REQUIRE([DODS_GCC_VERSION])
     AC_MSG_CHECKING(for gcc's libgcc.a)
 
     GCC_ROOT=`gcc -v 2>&1 | awk '/specs/ {print}'`
     GCC_ROOT=`echo $GCC_ROOT | sed 's@[[^/]]*\(/.*\)/specs@\1@'` 
     
     AC_SUBST(GCC_ROOT)
-    AC_MSG_RESULT($GCC_ROOT)
+    AC_MSG_RESULT($GCC_ROOT)])
 
+AC_DEFUN(DODS_GCC_VERSION, [dnl
     AC_MSG_CHECKING(for gcc/g++ 2.8 or greater)
 
     GCC_VER=`gcc -v 2>&1 | awk '/version/ {print}'`
@@ -704,7 +724,7 @@ AC_DEFUN(DODS_MACHINE, [dnl
 AC_DEFUN(DODS_CHECK_SIZES, [dnl
     # Ignore the errors about AC_TRY_RUN missing an argument. jhrg 5/2/95
 
-    AC_C_CROSS
+    AC_REQUIRE([AC_PROG_CC])
 
     if test "$cross_compiling" = "yes"
     then
