@@ -1,13 +1,24 @@
 
- $Id: README,v 1.13 1997/10/31 22:55:44 jimg Exp $
+ $Id: README,v 1.14 1998/03/16 22:08:24 jimg Exp $
 
 The following provides background technical information on the design of
-loaddods/writeval. For installation information, see the file
+loaddods/writeval and asciival. For installation information, see the file
 INSTALL-matlab-client and for help using the matlab command `loaddods', see
 the on-line help for that command (in Matlab type `help loaddods'). Make sure
 that the file loaddods.m is in the same directory as the loaddods.mex*
 program.
 
+ASCIIVAL: 
+The program asciival is a filter that is similar to writeval (described later
+in conjunction with loaddods) that can function as both a client and a server
+filter program. asciival can be read data from a URL, a local filename or
+from standard input. The program prints to standard output an ASCII tabular
+version of the data where columns are separated by commas and rows separated
+by newlines. Users can request data in ASCII form using the suffix .ascii or
+.asc in place of .dods in a DODS URL. To see how the asciival program is used
+on the server side, look at the DODS_Dispatch.pm Perl module.
+
+WRITEVAL:
 There are two programs that comprise the DODS-Matlab command line interface;
 loaddods and whodods. They are analogous to Matlab's load and who commands.
 However, they accept DODS URLs rather than Matlab files. On-line help is
@@ -24,9 +35,17 @@ either a user's directory for scripts and extensions or in a system-wide
 directory.
 
 loaddods accepts several command line switches some of which are listed below:
-   -V to get the version of loaddods. 
-   -g to activate the GUI.
-   +v to turn off verbose mode (it is on by default). 
+   -V: get the version of loaddods and writeval
+   -g: activate the GUI.
+   (-/+)v: turn on/off verbose mode (it is on by default). 
+   -k: turn on variable catenation.
+   -n: turn on fullnames.
+   -s: return a matrix of variable names - only works with the return args
+       form of the command.   
+
+   NB: other options will be passed to writeval for processing. Of these -F
+   and -A are the most important. See the on line help for loaddods or
+   writeval. 
 
 When called with a command switch, you must give that switch first and it
 must be quoted. E.G.: loaddods('-g', 'http://...'). See the online help file
