@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.25 1996/12/06 05:21:01 jimg Exp $
+# $Id: acinclude.m4,v 1.26 1996/12/06 21:08:43 jimg Exp $
 
 # Check for fill value usage.
 
@@ -188,7 +188,9 @@ AC_DEFUN(DODS_FIND_EXPECT, [dnl
     dnl Look some other places if not in the standard ones.
    
     tcl_include_paths="$DODS_ROOT/third_party/tcl7.6/generic \
-			/usr/local/src/tcl7.5/generic /usr/local/src/tcl7.4/"
+			/usr/local/src/tcl7.5/generic \
+			/usr/local/src/tcl7.6/generic \
+			/usr/local/src/tcl7.4/"
 
     if test $found -eq 0
     then
