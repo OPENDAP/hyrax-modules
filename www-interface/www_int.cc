@@ -1,4 +1,3 @@
-
 // (c) COPYRIGHT URI/MIT 1999
 // Please read the full copyright statement in the file COPYRIGHT.
 //
@@ -10,7 +9,7 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: www_int.cc,v 1.7 2000/10/03 20:07:21 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: www_int.cc,v 1.8 2000/11/09 21:04:37 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -32,9 +31,7 @@ static char rcsid[] not_used = {"$Id: www_int.cc,v 1.7 2000/10/03 20:07:21 jimg 
 #include "javascript.h"		// Try to hide this stuff...
 
 const char *version = WWW_INT_VER;
-#ifndef HELP_LOCATION
-const char *HELP_LOCATION = "http://localhost/dods/";
-#endif
+
 DAS global_das;
 WWWOutput wo(cout);
 
@@ -43,8 +40,12 @@ usage(string name)
 {
     cerr << "Usage: " << name << endl
 	 << "m: Print a MIME header. Use this with nph- style CGIs.\n"
+	 << "n: Print HTTP protocol and status for reply.\n"
+	 << "H: Location (URL) of the help file. Should end in '\'.\n"
+	 << "a: Server administrator email.\n"
 	 << "v: Verbose output. Currently a null option.\n"
 	 << "V: Print version information and exit.\n"
+	 << "t: HTTP trace information.\n"
 	 << "h|?: This meassage.\n";
 }
 
@@ -171,8 +172,9 @@ get_user_supplied_docs(string name, string cgi)
 static void
 process_trace_options(char *tcode) 
 {
-    while (tcode++)
-	switch (*tcode) {
+    char c;
+    while ((c = *tcode++))
+	switch (c) {
 	  case 'a': WWWTRACE |= SHOW_ANCHOR_TRACE; break;
 	  case 'A': WWWTRACE |= SHOW_APP_TRACE; break;
 	  case 'b': WWWTRACE |= SHOW_BIND_TRACE; break;
@@ -226,12 +228,14 @@ output_error_object(Error e)
 int
 main(int argc, char * argv[])
 {
-    GetOpt getopt (argc, argv, "vVt:hm");
+    GetOpt getopt (argc, argv, "vVt:nmH:a:h?");
     int option_char;
     bool trace = false;
     bool verbose = false;
     bool regular_header = false;
     bool nph_header = false;
+    string help_location = "http://unidata.ucar.edu/packages/dods/help_files/";
+    string admin_name = "";
     char *tcode = NULL;
     int topts = 0;
 
@@ -240,6 +244,8 @@ main(int argc, char * argv[])
     while ((option_char = getopt()) != EOF)
 	switch (option_char) {
 	  case 'm': regular_header = true; break;
+	  case 'H': help_location = getopt.optarg; break;
+	  case 'a': admin_name = getopt.optarg; break;
 	  case 'n': nph_header = true; break;
 	  case 'v': verbose = true; break;
 	  case 'V': {
@@ -303,7 +309,7 @@ main(int argc, char * argv[])
 	cout << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n"
 	     << "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n"
 	     << "<html><head><title>DODS Dataset Query Form</title>\n"
-	     << "<base href=\"" << HELP_LOCATION << "\">\n"
+	     << "<base href=\"" << help_location << "\">\n"
 	     << "<script type=\"text/javascript\">\n"
 	     << "<!--\n"
 	     // Javascript code here
@@ -313,7 +319,9 @@ main(int argc, char * argv[])
 	     << "</script>\n"
 	     << "</head>\n" 
 	     << "<body>\n"
-	     << "<center><h2>DODS Dataset Query Form</h2></center>\n"
+	     << "<p><h2 align='center'>DODS Dataset Access Form</h2>\n"
+	     << "<hr>\n"
+	     << "<font size=-1>Tested on Netscape 4.61 and Internet Explorer 5.00.</font>\n"
 	     << "<hr>\n"
 	     << "<form action=\"\">\n"
 	     << "<table>\n";
@@ -323,10 +331,18 @@ main(int argc, char * argv[])
 	cout << "<tr><td><td><hr>\n\n";
 	wo.write_variable_entries(global_das, dds);
 	cout << "</table></form>\n\n"
-	     << "<hr>\n\n"
-	     << "<address>Send questions or comments to: <a href=\"mailto:support@unidata.ucar.edu\">support@unidata.ucar.edu</a></address>"
-	     << "</body></html>\n";
-      }
+	     << "<hr>\n\n";
+	if (admin_name != "") {
+	    cout << "<address>Send questions or comments to: <a href=\"mailto:"
+		 << admin_name << "\">" << admin_name << "</a></address>\n\n"
+		 << "<address>For general help with DODS, see: "
+		 << "<a href=\"http://unidata.ucar.edu/packages/dods/\">"
+		 << "http://unidata.ucar.edu/packages/dods/</a></address>\n\n";
+	}
+	else {
+	     cout << "<address>Send questions or comments to: <a href=\"mailto:support@unidata.ucar.edu\">support@unidata.ucar.edu</a></address>"
+		  << "</body></html>\n";
+	}
       catch (Error &e) {
 	string error_msg = e.get_error_message();
 	cout << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n"
@@ -340,7 +356,7 @@ main(int argc, char * argv[])
 	     << "<hr>\n";
 	     
       }
-    } // End of the for loop.
+    }
 
     cout.flush();
     cerr.flush();
@@ -349,6 +365,11 @@ main(int argc, char * argv[])
 }
 
 // $Log: www_int.cc,v $
+// Revision 1.8  2000/11/09 21:04:37  jimg
+// Merged changes from release-3-1. There was a goof and a bunch of the
+// changes never made it to the branch. I merged the entire branch.
+// There maybe problems still...
+//
 // Revision 1.7  2000/10/03 20:07:21  jimg
 // Moved Logs to the end of each file.
 //

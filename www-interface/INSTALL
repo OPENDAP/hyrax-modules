@@ -1,5 +1,5 @@
 
-	$Id: INSTALL,v 1.1 1999/07/29 18:42:31 jimg Exp $
+	$Id: INSTALL,v 1.2 2000/11/09 21:04:37 jimg Exp $
 
 To build the WWW interface component of the dods servers, type:
 
@@ -9,4 +9,8 @@ To build the WWW interface component of the dods servers, type:
 
 The interface does not yet have a testsuite.
 
-
+The install target copies the filter `www_int' to the DODS_ROOT/etc
+directory. If this directory is not one of your CGI binary directories, then
+the filter must be copied to such a directory. Look in your web server's
+configuration files or ask your system administrator if you don't know the
+correct directory. 

@@ -11,7 +11,7 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.5 2000/10/03 20:07:21 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.6 2000/11/09 21:04:37 jimg Exp $"};
 
 #include <string>
 #include <iostream>
@@ -58,16 +58,17 @@ WWWOutput::write_disposition(string url)
 
     _os << \
 "<tr>
-<td align=\"right\"><h3><a href=\"query-help.html#data_url\">Data URL:</a>
-</h3>
-<td><input name=\"url\" type=\"text\" size=" << _attr_cols << " value=\"" 
-<< url << "\">
+<td align=\"right\"><h3><a href=\"dods_form_help.html#disposition\" valign=\"bottom\">Action:</a></h3>
+<td><input type=\"button\" value=\"Get ASCII\" onclick=\"ascii_button()\">
+<input type=\"button\" value=\"Get Binary\" onclick=\"binary_button()\">
+<input type=\"button\" value=\"Send to Program\" onclick=\"program_button()\">
+<input type=\"button\" value=\"Show Help\" onclick=\"help_button()\">
 
 <tr>
-<td align=\"right\"><h3><a href=\"query-help.html#disposition\">Data:</a></h3>
-<td><input type=\"button\" value=\"ASCII\" onclick=\"ascii_button()\">
-<input type=\"button\" value=\"Binary\" onclick=\"binary_button()\">
-<input type=\"button\" value=\"To Matlab\" onclick=\"matlab_button()\">";
+<td align=\"right\"><h3><a href=\"dods_form_help.html#data_url\" valign=\"bottom\">Data URL:</a>
+</h3>
+<td><input name=\"url\" type=\"text\" size=" << _attr_cols << " value=\"" 
+<< url << "\">"; 
 }
 
 void
@@ -93,7 +94,7 @@ WWWOutput::write_global_attributes(DAS &das)
 "
 <tr>
 <td align=\"right\" valign=\"top\"><h3>
-<a href=\"query-help.html#global_attr\">Global Attributes:</a></h3>
+<a href=\"dods_form_help.html#global_attr\">Global Attributes:</a></h3>
 <td><textarea name=\"global_attr\" rows=" << _attr_rows << " cols=" 
 << _attr_cols << ">\n";
 
@@ -115,7 +116,7 @@ void
 WWWOutput::write_variable_list(DDS &dds)
 {
     _os << \
-       "<a href=\"query-help.html#dataset_variables\"><h4>Dataset Variables</a>:</h4>
+       "<a href=\"dods_form_help.html#dataset_variables\"><h4>Dataset Variables</a>:</h4>
 <select name=\"variables\" multiple size=5 onChange=\"variables_obj.var_selection()\">" << endl;
 
     for (Pix p = dds.first_var(); p; dds.next_var(p)) {
@@ -135,7 +136,7 @@ WWWOutput::write_variable_entries(DAS &das, DDS &dds)
 "
 <tr>
 <td align=\"right\" valign=\"top\">
-<h3><a href=\"query-help.html#dataset_variables\">Variables:</a></h3>
+<h3><a href=\"dods_form_help.html#dataset_variables\">Variables:</a></h3>
 <td>";
     
     for (Pix p = dds.first_var(); p; dds.next_var(p)) {
@@ -282,6 +283,11 @@ write_simple_variable(ostream &os, const string &name, const string &type)
 }
 
 // $Log: WWWOutput.cc,v $
+// Revision 1.6  2000/11/09 21:04:37  jimg
+// Merged changes from release-3-1. There was a goof and a bunch of the
+// changes never made it to the branch. I merged the entire branch.
+// There maybe problems still...
+//
 // Revision 1.5  2000/10/03 20:07:21  jimg
 // Moved Logs to the end of each file.
 //

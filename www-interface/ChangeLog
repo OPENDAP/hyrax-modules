@@ -1,3 +1,4 @@
+
 2000-10-03  James Gallagher  <jimg@dcz.dods.org>
 
 	* Added a config_www_int.h(.in) header. config_dap.h is no longer
@@ -18,6 +19,12 @@
 1999-11-03  James Gallagher  <jimg@dcz.dods.org>
 
 	* The help page is now stored at Unidata.
+
+	* Fixed IE5 bugs in the JavaScript code.
+
+1999-11-03  James Gallagher  <jimg@dcz.dods.org>
+
+	* The helppage is now stored at Unidata.
 
 	* Fixed IE5 bugs in the JavaScript code.
 
