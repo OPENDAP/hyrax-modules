@@ -39,6 +39,9 @@
 #include <vector>
 #include <string>
 
+using std::vector;
+using std::string;
+
 /** This class can be used to build up a simple thesaurus which maps names
     from one string to another. The thesaurus is built by calling the #add#
     mfunc with a string of the form <source>:<dest> where <source> and <dest>
@@ -106,6 +109,21 @@ public:
 };
 
 // $Log: name_map.h,v $
+// Revision 1.12  2004/07/08 22:18:25  jimg
+// Merged with release-3-4-3FCS
+//
+// Revision 1.11.4.3  2004/07/05 03:12:10  rmorris
+// Use "using std::*" in the standard way.
+//
+// Revision 1.11.4.2  2003/07/11 04:28:18  jimg
+// Boldly (ahem) removed the GNUG interface/implementation #pragma.
+// compared object sizes; there's a little difference, but it looks like a
+// draw as to which is bigger.
+//
+// Revision 1.11.4.1  2003/06/26 07:38:59  rmorris
+// #ifdef'd out #pragma interface directives under OS X.  They cause problems
+// with the dynamic typing system under Jaguar.
+//
 // Revision 1.11  2003/01/27 19:38:23  jimg
 // Updated the copyright information.
 // Merged with release-3-2-6.

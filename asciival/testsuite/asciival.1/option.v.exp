@@ -14,7 +14,7 @@
 # Test the `-v' option. See other options.?.exp files for test for the other
 # options. 
 
-# $Id: option.v.exp,v 1.4 2003/01/27 20:39:23 jimg Exp $
+# $Id: option.v.exp,v 1.5 2004/07/08 22:18:25 jimg Exp $
 
 global comp_output		# contains output from das-test_start
 global verbose			# this and srcdir are set by runtest.exp
@@ -34,7 +34,7 @@ compare_stdout "testsuite/data/asciival/coads.option.v.data" "$test_name: coads"
 # Test Grid of Bytes.
 
 asciival_start "-v" "${dsp_1}?${dsp_1_ce}" "/dev/null"
-compare_stdout "testsuite/data/asciival/dsp_1.option.v.data" "$test_name: dsp 1"
+compare_stdout "testsuite/data/asciival/dsp_1.option.v.data" "$test_name: dsp 1" 1
 
 # Test Array of Bytes.
 

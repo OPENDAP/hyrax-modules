@@ -39,7 +39,7 @@
 //#include "config_dap.h"
 #include "config_asciival.h"
 
-static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.19 2004/01/28 16:27:30 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.20 2004/07/08 22:18:25 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -50,6 +50,11 @@ using std::cerr ;
 using std::endl ;
 
 #include <GetOpt.h>
+
+#ifdef WIN32
+#include <io.h>
+#include <fcntl.h>
+#endif
 
 #include "BaseType.h"
 #include "Connect.h"
@@ -162,6 +167,10 @@ main(int argc, char * argv[])
     char *tcode = NULL;
     int topts = 0;
 
+#ifdef WIN32
+    _setmode(_fileno(stdout), _O_BINARY);
+#endif
+
     putenv("_POSIX_OPTION_ORDER=1"); // Suppress GetOpt's argv[] permutation.
 
     while ((option_char = getopt()) != EOF)
@@ -252,6 +261,21 @@ main(int argc, char * argv[])
 }
 
 // $Log: ascii_val.cc,v $
+// Revision 1.20  2004/07/08 22:18:25  jimg
+// Merged with release-3-4-3FCS
+//
+// Revision 1.16.2.4  2004/07/05 07:47:59  rmorris
+// For the last output 'mode' fix, a couple of includes are required.  Added.
+//
+// Revision 1.16.2.3  2004/07/05 07:27:30  rmorris
+// Use binary mode to output under win32.
+//
+// Revision 1.16.2.2  2003/05/08 00:10:09  jimg
+// Removed code that commented out.
+// $Log: ascii_val.cc,v $
+// Revision 1.20  2004/07/08 22:18:25  jimg
+// Merged with release-3-4-3FCS
+//
 // Revision 1.19  2004/01/28 16:27:30  jimg
 // Corrected use of Connect. This code was using a constructor that is no longer
 // present. The old ctor was present when the software used libwww.

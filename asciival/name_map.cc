@@ -35,12 +35,7 @@
 
 #include "config_dap.h"
 
-static char rcsid[] not_used = {"$Id: name_map.cc,v 1.9 2003/01/27 19:38:23 jimg Exp $"};
-
-using namespace std;
-
-#include <vector>
-#include <string>
+static char rcsid[] not_used = {"$Id: name_map.cc,v 1.10 2004/07/08 22:18:25 jimg Exp $"};
 
 #include <Regex.h>
 
@@ -103,6 +98,17 @@ name_map::delete_all()
 }
 
 // $Log: name_map.cc,v $
+// Revision 1.10  2004/07/08 22:18:25  jimg
+// Merged with release-3-4-3FCS
+//
+// Revision 1.9.4.2  2004/07/05 03:12:10  rmorris
+// Use "using std::*" in the standard way.
+//
+// Revision 1.9.4.1  2003/07/11 04:28:18  jimg
+// Boldly (ahem) removed the GNUG interface/implementation #pragma.
+// compared object sizes; there's a little difference, but it looks like a
+// draw as to which is bigger.
+//
 // Revision 1.9  2003/01/27 19:38:23  jimg
 // Updated the copyright information.
 // Merged with release-3-2-6.
