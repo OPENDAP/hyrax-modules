@@ -1,0 +1,74 @@
+# $Id: Makefile.in,v 1.1 1995/04/25 15:48:40 jimg Exp $
+
+@SET_MAKE@
+
+# Set makefile variables, some with values supplied by configure.
+# DEFS gets the `-D' defines that describe what a particular system has
+# or doesn't have.
+
+CFLAGS = -g -I$(prefix)/include
+CXXFLAGS = -g -DUSE_LIBGXX_INLINES -I$(prefix)/include 
+LDFLAGS = -g -L$(prefix)/lib
+LFLAGS=-8
+YFLAGS=-d
+DEBUG_LIB=-ldebug_new
+DEFS = @DEFS@
+LIBS = @LIBS@
+
+# Set the instalation directories; prefix can be set on the command line
+# during Makefile construction with `./configure --prefix /my/choice'
+
+prefix = /home/dcz/jimg/src/DODS
+exec_prefix = $(prefix)
+bindir = $(exec_prefix)/bin
+libdir = $(exec_prefix)/lib
+includedir = $(prefix)/include
+manext = 1
+mandir = $(prefix)/man/man$(manext)
+dir = 
+INSTALLMAN = man
+
+SHELL = /bin/sh
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+# testsuite specifics
+RUNTEST= runtest
+RUNTESTFLAGS= #--all --verbose
+
+# names of key programs
+
+LN_S = @LN_S@
+AWK = @AWK@
+CC = @CC@
+CXX = g++# @CXX@
+YACC = bison# @YACC@
+LEX = flex# @LEX@
+AR = ar
+RANLIB = @RANLIB@
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+
+# Source and Objects here
+
+# Targets here
+
+$(PROG): $(OBJ)
+
+install:
+
+Makefile: ${srcdir}/Makefile.in
+	  ${SHELL} config.status
+	  make depend
+
+check:	test1.o
+
+tar:
+	cd ..; tar --exclude-from $(dir)/tar-excludes -c -f $(dir).tar $(dir)
+
+clean:	
+	-rm -f $(OBJ) $(PROG) *~ core 
+
+depend:
+	makedepend -- $(CFLAGS) -- $(SRC)
