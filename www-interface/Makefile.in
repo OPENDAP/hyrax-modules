@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.13 2003/01/27 23:53:54 jimg Exp $
+# $Id: Makefile.in,v 1.14 2003/12/08 18:08:02 edavis Exp $
 
 @SET_MAKE@
 
@@ -120,6 +120,7 @@ collect-coverage-data:
 
 clean:	
 	-rm -f *.o *.sum *.log *~ core
+	-rm -f javascript.h
 	-rm -f $(PROG)
 
 distclean: clean

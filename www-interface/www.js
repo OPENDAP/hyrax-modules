@@ -29,7 +29,7 @@
 // Authors:
 //	jhrg,jimg	James Gallagher <jgallagher@gso.uri.edu>
 
-// $Id: www.js,v 1.4 2003/01/27 23:53:55 jimg Exp $
+// $Id: www.js,v 1.5 2003/12/08 18:08:02 edavis Exp $
 
 var reflection_cgi = "http://unidata.ucar.edu/cgi-bin/dods/posturl.pl";
 
@@ -352,6 +352,13 @@ function get_selection() {
 }    
 
 // $Log: www.js,v $
+// Revision 1.5  2003/12/08 18:08:02  edavis
+// Merge release-3-4 into trunk
+//
+// Revision 1.4.4.2  2003/06/29 02:58:55  rmorris
+// Had to come up with a more robust solution to line termination in side
+// the very-big-long-string landing in javascript.h.  Related to very last fix.
+//
 // Revision 1.4  2003/01/27 23:53:55  jimg
 // Merged with release-3-2-7.
 //

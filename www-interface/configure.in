@@ -2,7 +2,7 @@
 dnl -*- m4 -*-
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.in,v 1.9 2003/01/27 23:53:55 jimg Exp $)
+AC_REVISION($Id: configure.in,v 1.10 2003/12/08 18:08:02 edavis Exp $)
 AC_INIT(www_int.cc)
 AC_CONFIG_HEADER(config_www_int.h)
 AC_CONFIG_AUX_DIR(../../../etc)

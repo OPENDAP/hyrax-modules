@@ -39,7 +39,7 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: WWWGrid.cc,v 1.7 2003/01/27 23:53:54 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: WWWGrid.cc,v 1.8 2003/12/08 18:08:02 edavis Exp $"};
 
 #include <assert.h>
 #include <iostream>
@@ -125,6 +125,9 @@ WWWGrid::print_val(ostream &os, string space, bool print_decl_p)
 }
 
 // $Log: WWWGrid.cc,v $
+// Revision 1.8  2003/12/08 18:08:02  edavis
+// Merge release-3-4 into trunk
+//
 // Revision 1.7  2003/01/27 23:53:54  jimg
 // Merged with release-3-2-7.
 //

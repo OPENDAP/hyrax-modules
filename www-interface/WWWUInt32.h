@@ -36,8 +36,10 @@
 #ifndef _wwwuint32_h
 #define _wwwuint32_h 1
 
+#ifndef __POWERPC__
 #ifdef __GNUG__
 #pragma interface
+#endif
 #endif
 
 #include "UInt32.h"
@@ -56,6 +58,13 @@ public:
 };
 
 // $Log: WWWUInt32.h,v $
+// Revision 1.6  2003/12/08 18:08:02  edavis
+// Merge release-3-4 into trunk
+//
+// Revision 1.5.4.1  2003/06/26 07:53:39  rmorris
+// #ifdef'd out #pragma interface directive under OS X.  It makes the dynamic
+// typing system not work.
+//
 // Revision 1.5  2003/01/27 23:53:54  jimg
 // Merged with release-3-2-7.
 //

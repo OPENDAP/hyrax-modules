@@ -39,10 +39,9 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: WWWUInt32.cc,v 1.5 2003/01/27 23:53:54 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: WWWUInt32.cc,v 1.6 2003/12/08 18:08:02 edavis Exp $"};
 
-#include <assert.h>
-#include <iostream.h>
+#include <iostream>
 
 #include <Pix.h>
 #include <string>
@@ -81,6 +80,13 @@ WWWUInt32::print_val(ostream &os, string, bool print_decl_p)
 }
 
 // $Log: WWWUInt32.cc,v $
+// Revision 1.6  2003/12/08 18:08:02  edavis
+// Merge release-3-4 into trunk
+//
+// Revision 1.5.4.1  2003/07/11 05:27:02  jimg
+// Changed <iostream.h> to <iostream>. This will build with both 3.2, 2.95
+// and most other current compilers.
+//
 // Revision 1.5  2003/01/27 23:53:54  jimg
 // Merged with release-3-2-7.
 //

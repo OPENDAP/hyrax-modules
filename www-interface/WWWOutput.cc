@@ -35,11 +35,14 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.11 2003/05/08 00:38:20 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.12 2003/12/08 18:08:02 edavis Exp $"};
 
 #include <string>
 #include <iostream>
+#include <sstream>
+#if 0
 #include <strstream.h>
+#endif
 
 #include <unistd.h>
 
@@ -70,15 +73,13 @@ string
 name_for_js_code(const string &dods_name)
 {
     pid_t pid = getpid();
-    ostrstream oss;
+    ostringstream oss;
     // Calling id2www with a different set of allowable chars gets an
     // identifier with chars allowable for JavaScript. Then turn the `%' sign
     // into an underscore.
     oss << "org_dods_dcz" << pid 
-	<< esc2underscore(id2www(dods_name, allowable)) << ends;
-    string ret_val = oss.str();
-    oss.freeze(0);
-    return ret_val;
+	<< esc2underscore(id2www(dods_name, allowable));// << ends;
+    return oss.str();
 }
 
 WWWOutput::WWWOutput(ostream &os, int rows, int cols):
@@ -193,7 +194,11 @@ void
 WWWOutput::write_variable_list(DDS &dds)
 {
     _os << \
+<<<<<<< WWWOutput.cc
 "<a href=\"dods_form_help.html#dataset_variables\"><h4>Dataset Variables</a>:</h4>\n\
+=======
+       "<a href=\"dods_form_help.html#dataset_variables\"><h4>Dataset Variables</a>:</h4>\n\
+>>>>>>> 1.10.4.1
 <select name=\"variables\" multiple size=5 onChange=\"variables_obj.var_selection()\">" << endl;
 
     for (Pix p = dds.first_var(); p; dds.next_var(p)) {
@@ -260,24 +265,19 @@ fancy_typename(BaseType *v)
       case dods_url_c:
 	return "URL";
       case dods_array_c: {
-	  ostrstream type;
+	  ostringstream type;
 	  Array *a = (Array *)v;
 	  type << "Array of " << fancy_typename(a->var()) <<"s ";
 	  for (Pix p = a->first_dim(); p; a->next_dim(p))
 	      type << "[" << a->dimension_name(p) << " = 0.." 
 		   << a->dimension_size(p, false)-1 << "]";
-	  type << ends;
-	  string fancy = type.str();
-	  type.freeze(0);
-	  return fancy;
+	  return type.str();
       }
       case dods_list_c: {
-	  ostrstream type;
+	  ostringstream type;
 	  List *l = (List *)v;
-	  type << "List of " << fancy_typename(l->var()) <<"s " << ends;
-	  string fancy = type.str();
-	  type.freeze(0);
-	  return fancy;
+	  type << "List of " << fancy_typename(l->var()) <<"s ";
+	  return type.str();
       }
       case dods_structure_c:
 	return "Structure";
@@ -352,8 +352,15 @@ write_simple_variable(ostream &os, const string &name, const string &type)
 }
 
 // $Log: WWWOutput.cc,v $
+// Revision 1.12  2003/12/08 18:08:02  edavis
+// Merge release-3-4 into trunk
+//
 // Revision 1.11  2003/05/08 00:38:20  jimg
 // Fixed multi-line string literals.
+//
+// Revision 1.10.4.1  2003/05/07 22:08:51  jimg
+// Added 'using namespace std;', fixed multi-line string literals and replaced
+// ostrstream with ostringstream.
 //
 // Revision 1.10  2003/01/27 23:53:54  jimg
 // Merged with release-3-2-7.

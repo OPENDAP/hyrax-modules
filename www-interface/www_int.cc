@@ -33,13 +33,11 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: www_int.cc,v 1.13 2003/03/06 18:50:29 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: www_int.cc,v 1.14 2003/12/08 18:08:02 edavis Exp $"};
 
 #include <stdio.h>
-#include <assert.h>
 
 #include <fstream>
-#include <strstream>		// Should be sstream! 4/8/99 jhrg
 #include <string>
 
 #include <GetOpt.h>
@@ -73,37 +71,6 @@ usage(string name)
 	 << "h|?: This meassage.\n";
 }
 
-static void
-process_trace_options(char *tcode) 
-{
-#if 0
-    char c;
-    while ((c = *tcode++))
-	switch (c) {
-	  case 'a': WWWTRACE |= SHOW_ANCHOR_TRACE; break;
-	  case 'A': WWWTRACE |= SHOW_APP_TRACE; break;
-	  case 'b': WWWTRACE |= SHOW_BIND_TRACE; break;
-	  case 'c': WWWTRACE |= SHOW_CACHE_TRACE; break;
-	  case 'h': WWWTRACE |= SHOW_AUTH_TRACE; break;
-	  case 'i': WWWTRACE |= SHOW_PICS_TRACE; break;
-	  case 'k': WWWTRACE |= SHOW_CORE_TRACE; break;
-	  case 'l': WWWTRACE |= SHOW_SGML_TRACE; break;
-	  case 'm': WWWTRACE |= SHOW_MEM_TRACE; break;
-	  case 'p': WWWTRACE |= SHOW_PROTOCOL_TRACE; break;
-	  case 's': WWWTRACE |= SHOW_STREAM_TRACE; break;
-	  case 't': WWWTRACE |= SHOW_THREAD_TRACE; break;
-	  case 'u': WWWTRACE |= SHOW_URI_TRACE; break;
-	  case 'U': WWWTRACE |= SHOW_UTIL_TRACE; break;
-	  case 'x': WWWTRACE |= SHOW_MUX_TRACE; break;
-	  case 'z': WWWTRACE = SHOW_ALL_TRACE; break;
-	  default:
-	    cerr << "Unrecognized trace option: `" << *tcode << "'" 
-		 << endl;
-	    break;
-	}
-#endif
-}
-
 /** Write out the given error object. If the Error object #e# is empty, don't
     write anything out.
 
@@ -134,7 +101,7 @@ output_error_object(Error e)
 int
 main(int argc, char * argv[])
 {
-    GetOpt getopt (argc, argv, "vVt:nmH:a:h?");
+    GetOpt getopt (argc, argv, "vVnmH:a:h?");
     int option_char;
     bool trace = false;
     bool verbose = false;
@@ -159,16 +126,6 @@ main(int argc, char * argv[])
 		 << "DAP version: " << dap_version() << endl; 
 	    exit(0);
 	  }
-	  case 't':
-	    trace = true;
-	    topts = strlen(getopt.optarg);
-	    if (topts) {
-		tcode = new char[topts + 1];
-		strcpy(tcode, getopt.optarg); 
-		process_trace_options(tcode);
-		delete tcode;
-	    }
-	    break;
 	  case 'h':
 	  case '?':
 	  default:
@@ -187,7 +144,7 @@ main(int argc, char * argv[])
     }
 
     try {
-	url = new Connect(argv[getopt.optind], trace);
+	url = new Connect(argv[getopt.optind]);
 
 	url->set_cache_enabled(false); // Server components should not cache...
 
@@ -221,8 +178,6 @@ main(int argc, char * argv[])
 	     << "<body>\n"
 	     << "<p><h2 align='center'>DODS Dataset Access Form</h2>\n"
 	     << "<hr>\n"
-	     << "<font size=-1>Tested on Netscape 4.61 and Internet Explorer 5.00.</font>\n"
-	     << "<hr>\n"
 	     << "<form action=\"\">\n"
 	     << "<table>\n";
 	wo.write_disposition(argv[getopt.optind]);
@@ -231,6 +186,8 @@ main(int argc, char * argv[])
 	cout << "<tr><td><td><hr>\n\n";
 	wo.write_variable_entries(global_das, dds);
 	cout << "</table></form>\n\n"
+	     << "<hr>\n"
+	     << "<font size=-1>Tested on Netscape 4.61, Internet Explorer 5.0, 6.0, Mozilla 1.2.1, Galeon 1.2.7 and Konqueror 3.1-13.</font>\n"
 	     << "<hr>\n\n";
 	if (admin_name != "") {
 	    cout << "<address>Send questions or comments to: <a href=\"mailto:"
@@ -264,6 +221,20 @@ main(int argc, char * argv[])
 }
 
 // $Log: www_int.cc,v $
+// Revision 1.14  2003/12/08 18:08:02  edavis
+// Merge release-3-4 into trunk
+//
+// Revision 1.13.2.3  2003/07/28 21:08:24  jimg
+// Tested on all the browsers I have; added to list shown in page and moved that
+// list to the bottom of the page.
+//
+// Revision 1.13.2.2  2003/07/11 05:27:34  jimg
+// Fixed the build of the javascript.h header from www.js.
+//
+// Revision 1.13.2.1  2003/05/07 17:13:55  jimg
+// Changed to Connect's new ctor and removed old HTTP trace code (that doesn't
+// work with libcurl).
+//
 // Revision 1.13  2003/03/06 18:50:29  jimg
 // Replaced call to Connect::disable_cache() with a call to
 // Connect::set_cache_enable(false). The disable_cache() method no longer exists.
