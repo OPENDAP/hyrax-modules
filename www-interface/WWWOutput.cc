@@ -35,7 +35,7 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.13 2004/01/26 18:58:48 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.14 2004/01/28 16:47:49 jimg Exp $"};
 
 #include <string>
 #include <iostream>
@@ -190,11 +190,7 @@ void
 WWWOutput::write_variable_list(DDS &dds)
 {
     _os << \
-<<<<<<< WWWOutput.cc
 "<a href=\"dods_form_help.html#dataset_variables\"><h4>Dataset Variables</a>:</h4>\n\
-=======
-       "<a href=\"dods_form_help.html#dataset_variables\"><h4>Dataset Variables</a>:</h4>\n\
->>>>>>> 1.10.4.1
 <select name=\"variables\" multiple size=5 onChange=\"variables_obj.var_selection()\">" << endl;
 
     for (Pix p = dds.first_var(); p; dds.next_var(p)) {
@@ -269,12 +265,14 @@ fancy_typename(BaseType *v)
 		   << a->dimension_size(p, false)-1 << "]";
 	  return type.str();
       }
+#if 0
       case dods_list_c: {
 	  ostringstream type;
 	  List *l = (List *)v;
 	  type << "List of " << fancy_typename(l->var()) <<"s ";
 	  return type.str();
       }
+#endif
       case dods_structure_c:
 	return "Structure";
       case dods_sequence_c:
@@ -348,6 +346,10 @@ write_simple_variable(ostream &os, const string &name, const string &type)
 }
 
 // $Log: WWWOutput.cc,v $
+// Revision 1.14  2004/01/28 16:47:49  jimg
+// Removed case for dods_list_c since List has been removed from the DAP.
+// Fixed a missed conflict fromthe last merge.
+//
 // Revision 1.13  2004/01/26 18:58:48  jimg
 // Build fixes
 //
