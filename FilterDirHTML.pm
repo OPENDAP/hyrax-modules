@@ -7,6 +7,10 @@
 # Fixed link to parent directory. 8/12/98 jhrg
 
 # $Log: FilterDirHTML.pm,v $
+# Revision 1.3  1998/09/29 22:58:29  jimg
+# Fixed a bug where the protocol and machine part of a dataset URL were
+# repeated (meaning that they appeared twice in the same URL).
+#
 # Revision 1.2  1998/08/12 18:20:31  jimg
 # Added the `server' param to those that are passed to sub query_dir.pl
 # calls. This fixes a bug where going into nested directories caused dataset
@@ -186,8 +190,9 @@ sub output {
 	# two parts of the data file URL and splice in the DODS server name.
 	elsif ($self->{anchor_href} =~ /.*$self->{ext}$/) {
 	    my ($machine, $path) = $self->{base_url} =~ /(http:\/\/[^\/]*\/)(.*\/)*/;
-	    my $data_url = $machine . $self->{server} . $path .
-		$self->{anchor_href} ;
+#  	    my $data_url = $machine . $self->{server} . $path .
+#  		$self->{anchor_href} ;
+	    my $data_url = $self->{server} . $path . $self->{anchor_href} ;
 
 	    $new_anchor = "<A HREF=" . $self->{query_cgi} . $data_url . ">"; 
 	}
