@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.7 1996/04/05 01:23:28 jimg Exp $
+# $Id: acinclude.m4,v 1.8 1996/08/09 18:42:40 jimg Exp $
 
 # Check for fill value usage.
 
@@ -141,4 +141,116 @@ AC_DEFUN(DODS_CHECK_GCC_DEBUG, [dnl
 	AC_MSG_RESULT(not supported)
     else
 	AC_MSG_RESULT(supported)
+    fi])
+
+dnl look for expect 5.20 *or* 5.19. NB: 5.19 has a bug that DODS exercises
+dnl but there are patched version of the library out so many will work even
+dnl though the official release won't.
+
+AC_DEFUN(DODS_FIND_EXPECT, [dnl
+    HAVE_EXPECT=0
+
+    AC_CHECK_LIB(expect5.20, main, \
+	 AC_DEFINE(HAVE_EXPECT, 1) HAVE_EXPECT=1;expect=expect5.20;tcl=tcl7.5,\
+	 AC_DEFINE(HAVE_EXPECT, 0), -ltcl7.5)
+
+    if test $HAVE_EXPECT = "1"
+    then
+	LIBS="$LIBS -l${expect} -l${tcl}"
+    else
+	AC_CHECK_LIB(expect, main, \
+	    AC_DEFINE(HAVE_EXPECT, 1) HAVE_EXPECT=1;expect=expect;tcl=tcl7.4, \
+	    AC_DEFINE(HAVE_EXPECT, 0), -ltcl7.4)
+	if test $HAVE_EXPECT = "1"
+	then
+	    LIBS="$LIBS -l${expect} -l${tcl}"
+	fi
+    fi])
+
+AC_DEFUN(DODS_EFENCE, [dnl
+    AC_ARG_ENABLE(efence,
+		  [  --enable-efence         Runtime memory checks (malloc)],
+		  EFENCE=$enableval, EFENCE=no)
+
+    case "$EFENCE" in
+    yes)
+      AC_MSG_RESULT(Configuring dynamic memory checks on malloc/free calls)
+      LIBS="$LIBS -lefence"
+      ;;
+    *)
+      ;;
+    esac])
+
+AC_DEFUN(DODS_DBNEW, [dnl
+    AC_ARG_ENABLE(dbnew,
+	          [  --enable-dbnew          Runtime memory checks (new)],
+		  DBNEW=$enableval, DBNEW=no)
+
+    case "$DBNEW" in
+    yes)
+      AC_MSG_RESULT(Configuring dynamic memory checks on new/delete calls)
+      AC_DEFINE(TRACE_NEW)
+      LIBS="$LIBS -ldbnew"
+      ;;
+    *)
+      ;;
+    esac])
+
+AC_DEFUN(DODS_DEBUG_OPTION, [dnl
+    AC_ARG_ENABLE(debug, 
+		  [  --enable-debug=ARG      Program instrumentation (1,2)],
+		  DEBUG=$enableval, DEBUG=no)
+
+    case "$DEBUG" in
+    no) 
+      ;;
+    1)
+      AC_MSG_RESULT(Setting debugging to level 1)
+      AC_DEFINE(DODS_DEBUG)
+      ;;
+    2) 
+      AC_MSG_RESULT(Setting debugging to level 2)
+      AC_DEFINE(DODS_DEBUG)
+      AC_DEFINE(DODS_DEBUG2)
+      ;;
+    *)
+      AC_MSG_ERROR(Bad debug value)
+      ;;
+    esac])
+
+AC_DEFUN(DODS_FIND_WWW_INCLUDES, [dnl
+
+    AC_MSG_CHECKING(Looking for the WWW library include files)
+
+    dods_www_includes=
+    for d in /usr/local/src/WWW /usr/local/WWW ${dods_root}/includes/WWW \
+	     `ls -dr /usr/local/src/WWW[1-9]* 2>/dev/null` \
+	     `ls -dr /usr/local/WWW[1-9]* 2>/dev/null`
+    do
+	if test -f ${d}/Library/Implementation/WWWCore.h
+	then
+	    dods_www_includes=${d}/Library/Implementation
+	    break
+	fi
+    done
+
+    if test "$dods_www_includes"
+    then
+	INCS="$INCS -I${dods_www_includes}"
+	AC_MSG_RESULT($dods_www_includes)
+	AC_SUBST(INCS)
+    else
+	AC_MSG_ERROR(not found!)
+    fi])
+
+AC_DEFUN(DODS_WWW_LIBRARY, [dnl
+
+    AC_ARG_WITH(www,
+		[  --with-www=ARG          Where is the WWW libarry (directory)],
+		WWW_LIB=${withval}, WWW_LIB=)
+
+    if test "$WWW_LIB"
+    then
+	    LDFLAGS="$LDFLAGS -L${WWW_LIB}"
+	    AC_SUBST(LDFLAGS)
     fi])
