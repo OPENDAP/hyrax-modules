@@ -39,7 +39,7 @@
 //#include "config_dap.h"
 #include "config_asciival.h"
 
-static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.18 2004/01/26 17:38:05 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.19 2004/01/28 16:27:30 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -185,13 +185,13 @@ main(int argc, char * argv[])
 		delete url;
 	
 	    if (strcmp(argv[i], "-") == 0){
-		url = new Connect("stdin", trace, false);
+		url = new Connect("stdin");
 		DBG(cerr << "Instantiated Connect object using stdin." \
 		    << endl);
 
 	    }
 	    else{
-		url = new Connect(argv[i], trace);
+		url = new Connect(argv[i]);
 		DBG(cerr << endl << "Instantiated Connect object using " \
 		    << argv[i] << endl << endl);
 	    }
@@ -252,6 +252,10 @@ main(int argc, char * argv[])
 }
 
 // $Log: ascii_val.cc,v $
+// Revision 1.19  2004/01/28 16:27:30  jimg
+// Corrected use of Connect. This code was using a constructor that is no longer
+// present. The old ctor was present when the software used libwww.
+//
 // Revision 1.18  2004/01/26 17:38:05  jimg
 // Removed List from the DAP
 //
