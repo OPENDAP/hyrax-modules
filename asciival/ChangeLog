@@ -1,3 +1,10 @@
+1998-03-20  James Gallagher  <jimg@dcz.cvo.oneworld.com>
+
+	* Added support for vectors of strings to loaddods.
+
+	* Added support for error messages to writeval, asciival and
+	loaddods. loaddods now uses mexErrMsgTxt to display error messages.
+
 1998-03-16  James Gallagher  <jimg@dcz.cvo.oneworld.com>
 
 	* Added the asciival program. This is a simple filter (similar to
