@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.22 1996/11/04 22:09:10 jimg Exp $
+# $Id: acinclude.m4,v 1.23 1996/11/07 23:38:01 jimg Exp $
 
 # Check for fill value usage.
 
@@ -156,9 +156,21 @@ AC_DEFUN(DODS_FIND_EXPECT, [dnl
 	LIBS="$LIBS -l${expect} -l${tcl}", , -ltcl76)
 
     if test $HAVE_EXPECT -eq 0; then
+        AC_CHECK_LIB(expect5.21, main, \
+		HAVE_EXPECT=1;expect=expect5.21;tcl=tcl7.6;\
+		LIBS="$LIBS -l${expect} -l${tcl}", , -ltcl7.6)
+    fi
+
+    if test $HAVE_EXPECT -eq 0; then
         AC_CHECK_LIB(expect520, main, \
 		HAVE_EXPECT=1;expect=expect520;tcl=tcl75;\
 		LIBS="$LIBS -l${expect} -l${tcl}", , -ltcl75)
+    fi
+
+    if test $HAVE_EXPECT -eq 0; then
+        AC_CHECK_LIB(expect5.20, main, \
+		HAVE_EXPECT=1;expect=expect5.20;tcl=tcl7.5;\
+		LIBS="$LIBS -l${expect} -l${tcl}", , -ltcl7.5)
     fi
 
     if test $HAVE_EXPECT -eq 0; then
@@ -253,46 +265,6 @@ AC_DEFUN(DODS_DEBUG_OPTION, [dnl
 
 dnl depricated
 
-AC_DEFUN(DODS_FIND_WWW_INCLUDES, [dnl
-
-    AC_MSG_CHECKING(for the WWW library include files)
-
-    dods_www_includes=
-    for d in /usr/local/src/WWW /usr/local/WWW include/WWW ../include/WWW \
-	     ../../include/WWW ../../../include/WWW ../../../../include/WWW \
-	     `ls -dr /usr/local/src/WWW[[1-9.]]* 2>/dev/null` \
-	     `ls -dr /usr/local/WWW[[1-9.]]* 2>/dev/null`
-    do
-	if test -f ${d}/Library/Implementation/WWWCore.h
-	then
-	    dods_www_includes=${d}/Library/Implementation
-	    break
-	fi
-    done
-
-    if test "$dods_www_includes"
-    then
-	INCS="$INCS -I${dods_www_includes}"
-	AC_MSG_RESULT($dods_www_includes)
-	AC_SUBST(INCS)
-    else
-	AC_MSG_ERROR(not found!)
-    fi])
-
-dnl depricated
-
-AC_DEFUN(DODS_WWW_LIBRARY, [dnl
-
-    AC_ARG_WITH(www,
-		[  --with-www=ARG          Where is the WWW libarry (directory)],
-		WWW_LIB=${withval}, WWW_LIB=)
-
-    if test "$WWW_LIB"
-    then
-	    LDFLAGS="$LDFLAGS -L${WWW_LIB}"
-	    AC_SUBST(LDFLAGS)
-    fi])
-
 AC_DEFUN(DODS_FIND_WWW_ROOT, [dnl
 
     AC_MSG_CHECKING(for the WWW library root directory)
@@ -332,12 +304,14 @@ AC_DEFUN(DODS_FIND_WWW_ROOT, [dnl
 AC_DEFUN(DODS_WWW_ROOT, [dnl
 
     AC_ARG_WITH(www,
-		[  --with-www=DIR          Directory containing the W3C software],
-		WWW_ROOT=${withval}, WWW_ROOT=)
+	[  --with-www=DIR          Directory containing the W3C software],
+	WWW_ROOT=${withval}, WWW_ROOT=)
 
     if test "$WWW_ROOT"
     then
 	AC_SUBST(WWW_ROOT)
+	INCS="$INCS -I$(WWW_ROOT) -I$(WWW_ROOT)/Library/src"
+	AC_SUBST(INCS)
 	AC_MSG_RESULT(Set WWW root directory to $WWW_ROOT) 
     else
 	DODS_FIND_WWW_ROOT
@@ -404,30 +378,19 @@ AC_DEFUN(DODS_OS, [dnl
     fi
     case $OS in
         aix)
-dnl            OS_NAME=`uname -s`
-dnl            OS_MAJOR=`uname -v | sed 's/[^0-9]*\([0-9]*\)\..*/\1/'`
             ;;
         hp-ux)
             OS=hpux`uname -r | sed 's/[A-Z.0]*\([0-9]*\).*/\1/'`
-dnl            OS_NAME=HPUX
-dnl            OS_MAJOR=`uname -r | sed 's/[A-Z.0]*\([0-9]*\).*/\1/'`
             ;;
         irix)
             OS=${OS}`uname -r | sed 's/\..*//'`
-dnl            OS_NAME=IRIX
-dnl            OS_MAJOR=`uname -r | sed 's/\..*//'`
             ;;
         osf*)
-dnl            OS_NAME=OSF1
-dnl            OS_MAJOR=`uname -r | sed 's/[^0-9]*\([0-9]*\)\..*/\1/'`
             ;;
         sn*)
             OS=unicos
-dnl            OS_NAME=UNICOS
-dnl            OS_MAJOR=`uname -r | sed 's/[^0-9]*\([0-9]*\)\..*/\1/'`
             ;;
         sunos)
-dnl            OS_NAME=SunOS
             OS_MAJOR=`uname -r | sed 's/\..*//'`
             OS=$OS$OS_MAJOR
             ;;
@@ -437,19 +400,13 @@ dnl            OS_NAME=SunOS
                 OS=vax-ultrix
                 ;;
             esac
-dnl           OS_NAME=ULTRIX
-dnl            OS_MAJOR=`uname -r | sed 's/\..*//'`
             ;;
         *)
             # On at least one UNICOS system, 'uname -s' returned the
             # hostname (sigh).
             if uname -a | grep CRAY >/dev/null; then
                 OS=unicos
-dnl               OS_NAME=UNICOS
-dnl            else
-dnl               OS_NAME=`uname -s | sed 's/[^A-Za-z0-9_]//g'`
             fi
-dnl            OS_MAJOR=`uname -r | sed 's/[^0-9]*\([0-9]*\)\..*/\1/'`
             ;;
     esac
 
@@ -467,8 +424,6 @@ dnl            OS_MAJOR=`uname -r | sed 's/[^0-9]*\([0-9]*\)\..*/\1/'`
     esac
 
     AC_SUBST(OS)
-dnl    AC_DEFINE(OS_NAME, $OS_NAME)
-dnl    AC_DEFINE(OS_MAJOR, $OS_MAJOR)
 
     AC_MSG_RESULT($OS)])
 
@@ -535,9 +490,8 @@ AC_DEFUN(DODS_CHECK_EXCEPTIONS, [dnl
 #check for hdf libraries
 AC_DEFUN(DODS_HDF_LIBRARY, [dnl
     AC_ARG_WITH(hdf,
-                [  --with-hdf=ARG          Where is the HDF libarry
-(directory)],
-                HDF_PATH=${withval}, HDF_PATH=/usr/local/hdf)
+        [  --with-hdf=ARG          Where is the HDF libarry (directory)],
+        HDF_PATH=${withval}, HDF_PATH=/usr/local/hdf)
     if test "$HDF_PATH"
     then
             LDFLAGS="$LDFLAGS -L${HDF_PATH}/lib"
@@ -550,3 +504,88 @@ AC_DEFUN(DODS_HDF_LIBRARY, [dnl
     AC_CHECK_LIB(df, Hopen, LIBS="-ldf $LIBS" , nohdf=1)
     AC_CHECK_LIB(mfhdf, SDstart, LIBS="-lmfhdf $LIBS" , nohdf=1)
     ])
+
+AC_DEFUN(DODS_FIND_DSP_ROOT, [dnl
+
+    AC_MSG_CHECKING(for the DSP library root directory)
+
+    DSP_ROOT=
+
+    for p in /usr/local/src/DSP /usr/local/DSP \
+	     /usr/local/src/dsp /usr/local/dsp \
+	     /usr/contrib/src/dsp /usr/contrib/dsp \
+	     $DODS_ROOT/third-party/dsp /usr/dsp
+    do
+        if test "$DSP_ROOT"; then
+	    break
+	fi
+	dnl `ls -dr' lists dirs without descending and reverses ordering
+	for d in `ls -dr ${p}[[-.0-9]]* 2>/dev/null`
+	do
+	    if test -f ${d}/inc/dsplib.h; then
+	        DSP_ROOT=${d}
+	        break
+	    fi
+	done
+    done
+
+    if test "$DSP_ROOT"
+    then
+	AC_MSG_RESULT($DSP_ROOT)
+	AC_SUBST(DSP_ROOT)
+	INCS="$INCS -I$(DSP_ROOT)/inc"
+	AC_SUBST(INCS)
+	LIBS="$LIBS -L$(DSP_ROOT)/lib -L$(DSP_ROOT)/shlib"
+	AC_SUBST(LIBS)
+    else
+	AC_MSG_WARN(not found!)
+    fi])
+
+AC_DEFUN(DODS_DSP_ROOT, [dnl
+
+    AC_ARG_WITH(dsp,
+		[  --with-dsp=DIR          Directory containing DSP software from U of Miami],
+		DSP_ROOT=${withval}, DSP_ROOT=)
+
+    if test "$DSP_ROOT"
+    then
+	AC_SUBST(DSP_ROOT)
+	INCS="$INCS -I$(DSP_ROOT)/inc"
+	AC_SUBST(INCS)
+	LIBS="$LIBS -L$(DSP_ROOT)/lib -L$(DSP_ROOT)/shlib"
+	AC_SUBST(LIBS)
+	AC_MSG_RESULT(Set DSP root directory to $DSP_ROOT) 
+    else
+	DODS_FIND_DSP_ROOT
+    fi])
+
+AC_DEFUN(DODS_CHECK_SIZES, [dnl
+    dnl Ignore the errors about AC_TRY_RUN missing an argument. jhrg 5/2/95
+
+    AC_C_CROSS
+
+    if test "$cross_compiling" = yes
+    then
+	    case "$host" in
+	    *alpha*) AC_DEFINE(SIZEOF_CHAR, 1)
+		     AC_DEFINE(SIZEOF_DOUBLE, 8)
+		     AC_DEFINE(SIZEOF_FLOAT, 4)
+		     AC_DEFINE(SIZEOF_INT, 4)
+		     AC_DEFINE(SIZEOF_LONG, 8)
+		     ;;
+	    *)	AC_MSG_WARN(Assuming that your target is a 32bit machine)
+		    AC_DEFINE(SIZEOF_CHAR, 1)
+		    AC_DEFINE(SIZEOF_DOUBLE, 8)
+		    AC_DEFINE(SIZEOF_FLOAT, 4)
+		    AC_DEFINE(SIZEOF_INT, 4)
+		    AC_DEFINE(SIZEOF_LONG, 4)
+		    ;;
+	    esac
+    else
+	    AC_CHECK_SIZEOF(int)
+	    AC_CHECK_SIZEOF(long)
+	    AC_CHECK_SIZEOF(char)
+	    AC_CHECK_SIZEOF(double)
+	    AC_CHECK_SIZEOF(float)
+    fi])
+
