@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.65 2000/08/02 22:20:23 jimg Exp $
+# $Id: acinclude.m4,v 1.66 2000/08/29 21:06:49 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -883,7 +883,7 @@ AC_DEFUN(DODS_PROG_PERL, [dnl
     case "$PERL" in
 	*perl*)
 	    perl_ver=`$PERL -v 2>&1 | awk '/This is perl/ {print}'`
-	    perl_ver=`echo $perl_ver | sed 's/This is perl, version \([[0-9._]]*\).*/\1/'`
+	    perl_ver=`echo $perl_ver | sed 's/This is perl,[[^0-9]]*\([[0-9._]]*\).*/\1/'`
             perl_ver_main=`echo $perl_ver | sed 's/\([[0-9]]*\).*/\1/'`
 	    if test -n "$perl_ver" && test $perl_ver_main -ge 5
 	    then
