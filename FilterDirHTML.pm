@@ -7,6 +7,9 @@
 # Fixed link to parent directory. 8/12/98 jhrg
 
 # $Log: FilterDirHTML.pm,v $
+# Revision 1.5  1999/06/10 23:52:49  jimg
+# Fixed the `parent directory' link.
+#
 # Revision 1.4  1998/11/19 03:32:35  jimg
 # Changed from `Dataurl' to `url' to match the query_form.pl code.
 #
@@ -185,6 +188,8 @@ sub output {
 		$new_anchor = "<A HREF=" . $self->{dir_cgi} . 
 		    $self->{base_url} . $self->{anchor_href} . ">"; 
 	    }
+
+	    $self->{first_anchor_processed} = 1;
 	}
 	# Is the href a data file? If so build the URL to the query form.
 	# This means that the URL to the dataset must be built from the URL
@@ -206,9 +211,6 @@ sub output {
 # 	    $new_anchor = "<A HREF=" . $self->{base_url} .
 # 		$self->{anchor_href} . ">"; 
 # 	}
-
-	# However we got here, the first anchor has been processed.
-	$self->{first_anchor_processed} = 1;
 
 	$self->SUPER::output($new_anchor);
     }
