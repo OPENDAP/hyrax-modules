@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.15 1997/04/11 19:41:59 jimg Exp $
+# $Id: Makefile.in,v 1.16 1997/04/11 19:44:53 jimg Exp $
 
 @SET_MAKE@
 
@@ -109,7 +109,7 @@ install-client: urlqueue writeval loaddods
 	$(INSTALL_PROGRAM) loaddods.mex* $(bindir)
 	$(INSTALL_PROGRAM) loaddods.m $(bindir)
 	$(INSTALL_PROGRAM) whodods.m $(bindir)
-	$(INSTALL_DATA) INSTALL-matlab-client $(bindir)
+	$(INSTALL_DATA) INSTALL-matlab-client $(etcdir)
 
 Makefile: ${srcdir}/Makefile.in
 	${SHELL} ./config.status
