@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.17 1996/10/08 15:37:53 jimg Exp $
+# $Id: acinclude.m4,v 1.18 1996/10/11 00:05:25 jimg Exp $
 
 # Check for fill value usage.
 
@@ -257,8 +257,8 @@ AC_DEFUN(DODS_FIND_WWW_INCLUDES, [dnl
     dods_www_includes=
     for d in /usr/local/src/WWW /usr/local/WWW include/WWW ../include/WWW \
 	     ../../include/WWW ../../../include/WWW ../../../../include/WWW \
-	     `ls -dr /usr/local/src/WWW[1-9.]* 2>/dev/null` \
-	     `ls -dr /usr/local/WWW[1-9.]* 2>/dev/null`
+	     `ls -dr /usr/local/src/WWW[[1-9.]]* 2>/dev/null` \
+	     `ls -dr /usr/local/WWW[[1-9.]]* 2>/dev/null`
     do
 	if test -f ${d}/Library/Implementation/WWWCore.h
 	then
