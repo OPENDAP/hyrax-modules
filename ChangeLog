@@ -1,3 +1,8 @@
+2000-03-31  James Gallagher  <jimg@dcz.dods.org>
+
+	* Merged: The next merge should use -j release-3-1-5 -j
+	release-3-1. 
+
 1999-11-04  James Gallagher  <jimg@dcz.dods.org>
 
 	* Merged: cvs update -j release-3-1, The next merge should use -j
