@@ -49,10 +49,10 @@ WWWOutput::write_disposition(string url)
 << url << "\">
 
 <tr>
-<td align=\"right\"><h3><a href=\"query-help.html#disposition\">Disposition:</a></h3>
-<td><input type=\"button\" value=\"ASCII Data\" onclick=\"ascii_button()\">
-<input type=\"button\" value=\"Binary Data\" onclick=\"binary_button()\">
-<input type=\"button\" value=\"Data to Matlab\" onclick=\"matlab_button()\">";
+<td align=\"right\"><h3><a href=\"query-help.html#disposition\">Data:</a></h3>
+<td><input type=\"button\" value=\"ASCII\" onclick=\"ascii_button()\">
+<input type=\"button\" value=\"Binary\" onclick=\"binary_button()\">
+<input type=\"button\" value=\"To Matlab\" onclick=\"matlab_button()\">";
 }
 
 void
