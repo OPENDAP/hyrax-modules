@@ -240,11 +240,12 @@ sub initialize {
     # FastTrack server. See bug 111. 4/30/2001 jhrg
     # my $request = $ENV{REQUEST_URI};
     my $request = $ENV{SCRIPT_NAME} . $ENV{PATH_INFO};
-    if ($ENV{QUERY_STRING} ne "") {
-	$request .= "?" . $ENV{QUERY_STRING};
-    }
     $request =~ m@(.*)\.$self->{ext}@;
     $self->{request_uri} = $1;
+
+    # Now we can set the full_uri.
+    $self->{full_uri} = "http://" . $self->server_name() . $self->port()
+	. $self->request_uri();
 
     # Now extract the filename part of the path.
     my $path_info = $ENV{PATH_INFO};
@@ -443,9 +444,22 @@ sub server_name {
     return $self->{server_name};
 }
 
+# The request_uri is the part of the URI after the protocol, machine and
+# port and goes upto, but not include, the DODS request extension.
+# Example: http://dods.org/dods-3.4/nph-dods/data/dataset.hdf.dods?x,y,z
+# request_uri: /dods-3.4/nph-dods/data/dataset.hdf
 sub request_uri {
     my $self = shift;
     return $self->{request_uri};
+}
+
+# The full_uri is the whole URI, starting with http:// and continuing until,
+# but not including, the DODS request extension. 
+# Example: http://dods.org/dods-3.4/nph-dods/data/dataset.hdf.dods?x,y,z
+# full_uri: http://dods.org/dods-3.4/nph-dods/data/dataset.hdf
+sub full_uri {
+    my $self = shift;
+    return $self->{full_uri};
 }
 
 sub maintainer {
@@ -631,8 +645,9 @@ sub command {
 	    $self->send_dods_version();
 	    exit(0);
 	} else {
-	    $server_pgm = $self->cgi_dir() . $self->script() . "_dods";
-	    @command = ($server_pgm, "-V", $self->filename());
+	    $server_pgm = $self->cgi_dir() . $self->script() . "_handler";
+	    @command = ($server_pgm, "-o", "Version", "-u", $self->fule_uri(),
+			$self->filename());
 	}
     } elsif ($self->ext() eq "stats") {
 	print DBG_LOG "Found stats\n" if $debug > 0;
@@ -669,18 +684,15 @@ sub command {
 	my $directory_html = &get_url($url);
 
 	# Parse the HTML directory page
-	# Build URL with CGI in it but remove ?M=A type query expression.
-	my $server_url = "http://" . $self->server_name() . $self->port()
-                       . $self->request_uri();
+	my $server_url = $self->full_uri();
+
 	# Make sure server_url ends in a slash. 10/12/2001 jhrg
-	if ($self->request_uri() !~ m@^.*/$@) {
+	if ($server_url !~ m@^.*/$@) {
 	    print(DBG_LOG "In ext == `/', adding trailing slash(2).\n")
 		if $debug > 1;
 	    $server_url .= "/";
 	}
-	if ($self->query() ne "") {
-	    ($server_url) = ($server_url =~ m@(.*)\?.*@);
-	}
+
 	my $excludes = $self->{exclude}; # it's an array reference.
 	my $filtered_dir_html 
 	    = new FilterDirHTML($server_url, $url,
@@ -690,10 +702,11 @@ sub command {
 	$filtered_dir_html->eof;
 	exit(0);		# Leave without returning @command!
     } elsif ($self->ext() eq "das" || $self->ext() eq "dds" 
-	     || $self->ext() eq "dods") {
-	$server_pgm = $self->cgi_dir() . $self->script() . "_" . $self->ext();
- 	@command = ($server_pgm, "-v", $self->caller_revision(), 
- 		    $self->filename());
+	     || $self->ext() eq "dods"|| $self->ext() eq "ddx" ) {
+	$server_pgm = $self->cgi_dir() . $self->script() . "_handler";
+ 	@command = ($server_pgm, "-v", $self->caller_revision(),
+		    "-o", $self->ext(), "-u", $self->full_uri(),
+		    $self->filename());
   	if ($self->query() ne "") {
   	    @command = (@command, "-e", $self->query());
   	}
@@ -707,17 +720,14 @@ sub command {
   	    @command = (@command, "-c");
   	}
     } elsif ($self->ext() eq "ascii" || $self->ext() eq "asc") {
-	my $dods_url = "http://" . $self->server_name() . $self->port()
-                     . $self->request_uri();
-	@command = ("./asciival", "-m", "--", $dods_url);
+	@command = ("./asciival", "-m", "--", 
+		    $self->full_uri() . "?" . $self->query());
     } elsif ($self->ext() eq "netcdf") {
-	my $dods_url = "http://" . $self->server_name() . $self->port()
-                     . $self->request_uri();
-	@command = ("./dods2ncdf", "-m", "-p", "--", $dods_url);
+	@command = ("./dods2ncdf", "-m", "-p", "--",
+		    $self->full_uri() . "?" . $self->query());
     } elsif ($self->ext() eq "html") {
-	my $dods_url = "http://" . $self->server_name() . $self->port()
-                     . $self->request_uri();
-	@command = ("./www_int", "-m", "-n", "--", $dods_url);
+	@command = ("./www_int", "-m", "-n", "--",
+		    $self->full_uri() . "?" . $self->query());
     } else {
 	$self->print_error_message($unknown_ext, 1);
 	exit(1);
@@ -1018,6 +1028,9 @@ if ($test) {
 1;
 
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.38  2003/05/27 21:39:02  jimg
+# Added test for 'ddx' extension.
+#
 # Revision 1.37  2003/05/02 16:28:45  jimg
 # Switched to a DODS-specific log for the diagnostic messages. Also, boosted
 # the filtering of environment variables so that taint mode works with perl 5.8.
