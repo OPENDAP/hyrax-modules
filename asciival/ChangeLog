@@ -1,3 +1,18 @@
+1998-06-08  James Gallagher  <jimg@dcz.cvo.oneworld.com>
+
+	* Fixed bug where writeval was not located even if it was on the
+	path or in DODS_ROOT/bin.
+
+	* Fixed error handling. loaddods now exits on an error passed back
+	from writeval. 
+
+	* Fixed a bug in ClientStr::write_val where deserialize was not
+	called at the start of a Sequence. This meant that the first
+	element of every sequence was garbage.
+
+	* Made verbose a global and moved messages in ClientStr.cc about
+	Nans only appear when the verbose option is used (-v).
+
 1998-03-20  James Gallagher  <jimg@dcz.cvo.oneworld.com>
 
 	* Added support for vectors of strings to loaddods.
