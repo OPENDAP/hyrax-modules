@@ -1,11 +1,28 @@
 
- $Id: README,v 1.7 1996/10/30 00:10:23 jimg Exp $
+ $Id: README,v 1.8 1997/02/06 20:33:20 jimg Exp $
 
-There are four executables used in the DODS-Matlab interface:
+There are two programs that comprise the DODS-Matlab interface; loaddods ad
+whodods. They are analogous to Matlab's load and who commands. However, they
+accept DODS URLs rather than Matlab files. On-line help is available for both
+commands - make sure that you have the loaddods.m, loaddods.mex* and
+whodods.m file in a directory that Matlab will search for binaries.
+
+Here is a summary of the software in the entire DODS Matlab client (including
+parts that users don't see and option parts):
 
 1) loaddods; A cmex program run by Matlab. This program must be accessible to
 Matlab. It can be placed in either a user's directory for scripts and
-extensions or in a system-wide directory. loaddods can be used in four ways:
+extensions or in a system-wide directory. 
+
+loaddods accepts several command line switches:
+   -V to get the version of loaddods. 
+   -g to activate the GUI.
+   +v to turn off verbose mode (it is on by default). 
+
+When called with a command switch, you must give that switch first and it
+must be quoted. E.G.: loaddods('-g', 'http://...')
+
+loaddods can be used in four ways:
 
 a) when run with a URL as its argument the program assumes that the URL is a
 fully qualified DODS URL and invokes writeval to get the associated data,
@@ -16,13 +33,10 @@ Netscape and open the DODS locator main page,
 c) a URL prefixed by a `*' or `?' will be passed to netscape and used as an
 alternative data locator page, and
 
-NB: Since the URL builder is not yet complete these options have limited
-utility. 
-
 d) with no argument at all, loaddods waits for a URL to be sent via a WWW
 browser.
 
-Thus loaddods is a very flexible program since you can use it with a URL
+loaddods is a very flexible program since you can use it with a URL
 saved or cut from some other source, with the HTML interface we have built,
 with some other interface or after you have found some data with the browser.
 
@@ -43,6 +57,11 @@ application.
 here for completeness. However, if users want to write their own HTML forms
 for building URLs then they can install and use their own copy of posturl and
 make a completely self contained system.
+
+5) whodods; print the Dataset Descriptor Structure for the URL. This provides
+a way to look at the structure of a dataset without leaving Matlab. It can be
+thought of as a simple alternative to the HTML-based GUI (although users
+don't need to leave Matlab to use that either...).
 
 ------------
 
