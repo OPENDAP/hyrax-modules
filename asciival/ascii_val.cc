@@ -13,13 +13,16 @@
     @author: jhrg */
 
 // $Log: ascii_val.cc,v $
+// Revision 1.2  1998/03/16 19:45:09  jimg
+// Added mime header output. See -m.
+//
 // Revision 1.1  1998/03/16 18:30:19  jimg
 // Added
 //
 
 #include "config_dap.h"
 
-static char rcsid[] __unused__ = {"$Id: ascii_val.cc,v 1.1 1998/03/16 18:30:19 jimg Exp $"};
+static char rcsid[] __unused__ = {"$Id: ascii_val.cc,v 1.2 1998/03/16 19:45:09 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -44,7 +47,9 @@ static char rcsid[] __unused__ = {"$Id: ascii_val.cc,v 1.1 1998/03/16 18:30:19 j
 #include "AsciiSequence.h"
 #include "AsciiFunction.h"
 #include "AsciiGrid.h"
+
 #include "name_map.h"
+#include "cgi_util.h"
 
 name_map names;
 bool translate = false;
@@ -155,12 +160,13 @@ process_data(XDR *src, DDS *dds)
 int
 main(int argc, char * argv[])
 {
-    GetOpt getopt (argc, argv, "ngvVh?t:");
+    GetOpt getopt (argc, argv, "ngmvVh?t:");
     int option_char;
     bool verbose = false;
     bool trace = false;
     bool translate = false;
     bool gui = false;
+    bool mime_header = false;
     String expr = "";
     char *tcode = NULL;
     int topts = 0;
@@ -171,6 +177,7 @@ main(int argc, char * argv[])
 	switch (option_char) {
 	  case 'n': translate = true; break;
 	  case 'g': gui = true; break;
+	  case 'm': mime_header = true; break;
 	  case 'v': verbose = true; break;
 	  case 'V': {cerr << VERSION << endl; exit(0);}
 	  case 't':
@@ -226,8 +233,11 @@ main(int argc, char * argv[])
 	else
 	    dds = url->request_data(expr, gui, false);
 
-	if (dds)
+	if (dds) {
+	    if (mime_header)
+		set_mime_text(dods_data);
 	    process_data(url->source(), dds);
+	}
     }
 
     cout.flush();
