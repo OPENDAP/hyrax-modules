@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.5 1996/02/12 21:42:51 jimg Exp $
+# $Id: acinclude.m4,v 1.6 1996/02/12 22:46:54 jimg Exp $
 
 # Check for fill value usage.
 
@@ -124,3 +124,18 @@ AC_DEFUN(DODS_PROG_BISON, [dnl
 	    AC_MSG_WARN(Bison is required for grammar changes.)
 	    ;;
     esac])
+
+# Check for support of `-g' by gcc (SGI does not support it unless your using
+# gas (and maybe ld).
+
+NULL_PROGRAM="mail() {}"
+
+AC_DEFUN(DODS_CHECK_GCC_DEBUG, [dnl
+    AC_MSG_CHECKING(for support of debugging by gcc)
+    msgs=`gcc -g /dev/null 2>&1`
+    if echo $msgs | egrep "\`-g' option not supported"
+    then		
+	CFLAGS=`echo $CFLAGS | sed 's/-g//'`;
+	CXXFLAGS=`echo $CXXFLAGS | sed 's/-g//'`;
+	LDFLAGS=`echo $LDFLAGS | sed 's/-g//'`;
+    fi])
