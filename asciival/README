@@ -1,20 +1,35 @@
 
- $Id: README,v 1.2 1996/10/07 16:05:24 jimg Exp $
+ $Id: README,v 1.3 1996/10/07 16:30:08 jimg Exp $
 
 There are four executables used in the DODS-Matlab interface:
 
 1) loaddods; a mex program run by Matlab. This program must be accessible to
 Matlab. It can be placed in either a user's directory from scripts and
-extensions or in a system-wide directory.
+extensions or in a system-wide directory. loaddods can be used in three ways:
+a) when run with a URL as its argument the program assumes that the URL is a
+fully qualified DODS URL and invokes writeval to get the associated data, b)
+with no argument at all, loaddods waits for a URL to be sent via the urlqueue
+program and c) if loaddods is run with `?' as its argument, then the program
+will start Netscape and open the DODS locator main page. Thus loaddods is a
+very flexible program since you can use it with a URL saved or cut from some
+other source, with the HTML interface we have built, with some other
+interface or after you have found some data with the browser.
+
 2) writeval; dereferences a DODS URL and returns a binary stream of data.
 This can be installed anywhere on the system, but its path is hard coded into
 the loaddods program so unless you want to modify the loaddods source code it
-should be placed in the same directory as loaddods.
+should be placed in the same directory as loaddods. While this program is
+used by loaddods, it could be used for other purposes as well. For example a
+user could save binary data to a file with writeval.
+
 3) urlqueue; a helper application for Netscape (or other WWW browser) which
-passes information from a browser to another program such as loaddods.
+passes information from a browser to another program such as loaddods. The
+file `mailcap' contains a sample mailcap file entry for the helper
+application
+
 4) posturl; Users do not need to have this on their system. It is included
 here for completeness. However, if users want to write their own HTML forms
 for building URLs then they can install and use their own copy of posturl and
-make a completely self contained system.
+make a completely self contained system. 
 
 James Gallagher 10/4/96
