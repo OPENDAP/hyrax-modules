@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.50 2003/05/02 16:30:30 jimg Exp $
+# $Id: Makefile.in,v 1.51 2004/01/22 18:11:08 jimg Exp $
 
 @SET_MAKE@
 
@@ -209,109 +209,138 @@ tags:
 
 # DO NOT DELETE; depend depends on this line.
 AsciiByte.o: AsciiByte.cc config_asciival.h \
- ../../../include/InternalErr.h ../../../include/Error.h AsciiByte.h \
- ../../../include/Byte.h ../../../include/dods-datatypes.h \
- ../../../include/BaseType.h AsciiOutput.h
+  ../../../include/InternalErr.h ../../../include/Error.h AsciiByte.h \
+  ../../../include/Byte.h ../../../include/dods-datatypes.h \
+  ../../../include/BaseType.h ../../../include/AttrTable.h \
+  ../../../include/Pix.h ../../../include/IteratorAdapter.h AsciiOutput.h
 AsciiInt32.o: AsciiInt32.cc config_asciival.h \
- ../../../include/InternalErr.h ../../../include/Error.h AsciiInt32.h \
- ../../../include/Int32.h ../../../include/dods-datatypes.h \
- ../../../include/BaseType.h AsciiOutput.h
+  ../../../include/InternalErr.h ../../../include/Error.h AsciiInt32.h \
+  ../../../include/Int32.h ../../../include/dods-datatypes.h \
+  ../../../include/BaseType.h ../../../include/AttrTable.h \
+  ../../../include/Pix.h ../../../include/IteratorAdapter.h AsciiOutput.h
 AsciiFloat64.o: AsciiFloat64.cc config_asciival.h \
- ../../../include/InternalErr.h ../../../include/Error.h \
- AsciiFloat64.h ../../../include/Float64.h \
- ../../../include/dods-datatypes.h ../../../include/BaseType.h \
- AsciiOutput.h
-AsciiStr.o: AsciiStr.cc config_asciival.h \
- ../../../include/InternalErr.h ../../../include/Error.h AsciiStr.h \
- ../../../include/Str.h ../../../include/dods-limits.h \
- ../../../include/BaseType.h AsciiOutput.h
+  ../../../include/InternalErr.h ../../../include/Error.h AsciiFloat64.h \
+  ../../../include/Float64.h ../../../include/dods-datatypes.h \
+  ../../../include/BaseType.h ../../../include/AttrTable.h \
+  ../../../include/Pix.h ../../../include/IteratorAdapter.h AsciiOutput.h
+AsciiStr.o: AsciiStr.cc config_asciival.h ../../../include/InternalErr.h \
+  ../../../include/Error.h AsciiStr.h ../../../include/Str.h \
+  ../../../include/dods-limits.h ../../../include/BaseType.h \
+  ../../../include/AttrTable.h ../../../include/Pix.h \
+  ../../../include/IteratorAdapter.h ../../../include/dods-datatypes.h \
+  AsciiOutput.h
 AsciiUrl.o: AsciiUrl.cc config_asciival.h AsciiUrl.h AsciiStr.h \
- ../../../include/Str.h ../../../include/dods-limits.h \
- ../../../include/BaseType.h ../../../include/InternalErr.h \
- ../../../include/Error.h AsciiOutput.h
+  ../../../include/Str.h ../../../include/dods-limits.h \
+  ../../../include/BaseType.h ../../../include/AttrTable.h \
+  ../../../include/Pix.h ../../../include/IteratorAdapter.h \
+  ../../../include/Error.h ../../../include/InternalErr.h \
+  ../../../include/dods-datatypes.h AsciiOutput.h
 AsciiArray.o: AsciiArray.cc ../../../include/config_dap.h \
- ../../../include/util.h ../../../include/BaseType.h \
- ../../../include/InternalErr.h ../../../include/Error.h \
- ../../../include/Byte.h ../../../include/dods-datatypes.h \
- ../../../include/Int16.h ../../../include/UInt16.h \
- ../../../include/Int32.h ../../../include/UInt32.h \
- ../../../include/Float32.h ../../../include/Float64.h \
- ../../../include/Str.h ../../../include/dods-limits.h \
- ../../../include/Url.h ../../../include/Array.h \
- ../../../include/Vector.h ../../../include/DDS.h \
- ../../../include/Clause.h ../../../include/expr.h \
- ../../../include/RValue.h ../../../include/List.h \
- ../../../include/Structure.h ../../../include/Constructor.h \
- ../../../include/Sequence.h ../../../include/Grid.h AsciiArray.h \
- AsciiOutput.h name_map.h
+  ../../../include/util.h ../../../include/BaseType.h \
+  ../../../include/AttrTable.h ../../../include/Pix.h \
+  ../../../include/IteratorAdapter.h ../../../include/Error.h \
+  ../../../include/InternalErr.h ../../../include/dods-datatypes.h \
+  ../../../include/Byte.h ../../../include/Int16.h \
+  ../../../include/UInt16.h ../../../include/Int32.h \
+  ../../../include/UInt32.h ../../../include/Float32.h \
+  ../../../include/Float64.h ../../../include/Str.h \
+  ../../../include/dods-limits.h ../../../include/Url.h \
+  ../../../include/Array.h ../../../include/Vector.h \
+  ../../../include/DDS.h ../../../include/DAS.h ../../../include/Clause.h \
+  ../../../include/expr.h ../../../include/RValue.h \
+  ../../../include/Structure.h ../../../include/Constructor.h \
+  ../../../include/Sequence.h ../../../include/Grid.h AsciiArray.h \
+  AsciiOutput.h name_map.h
 AsciiStructure.o: AsciiStructure.cc config_asciival.h \
- ../../../include/InternalErr.h ../../../include/Error.h \
- AsciiStructure.h ../../../include/Structure.h \
- ../../../include/BaseType.h ../../../include/Constructor.h \
- ../../../include/DDS.h ../../../include/Clause.h \
- ../../../include/expr.h ../../../include/RValue.h AsciiOutput.h \
- AsciiSequence.h ../../../include/Sequence.h name_map.h
+  ../../../include/InternalErr.h ../../../include/Error.h \
+  AsciiStructure.h ../../../include/Structure.h ../../../include/Pix.h \
+  ../../../include/IteratorAdapter.h ../../../include/BaseType.h \
+  ../../../include/AttrTable.h ../../../include/dods-datatypes.h \
+  ../../../include/Constructor.h ../../../include/DDS.h \
+  ../../../include/DAS.h ../../../include/Clause.h \
+  ../../../include/expr.h ../../../include/RValue.h AsciiOutput.h \
+  AsciiSequence.h ../../../include/Sequence.h name_map.h
 AsciiList.o: AsciiList.cc config_asciival.h \
- ../../../include/InternalErr.h ../../../include/Error.h AsciiList.h \
- ../../../include/List.h ../../../include/dods-limits.h \
- ../../../include/Vector.h ../../../include/BaseType.h \
- ../../../include/DDS.h ../../../include/Clause.h \
- ../../../include/expr.h ../../../include/RValue.h AsciiOutput.h \
- name_map.h
+  ../../../include/InternalErr.h ../../../include/Error.h AsciiList.h \
+  ../../../include/List.h ../../../include/dods-limits.h \
+  ../../../include/Vector.h ../../../include/BaseType.h \
+  ../../../include/AttrTable.h ../../../include/Pix.h \
+  ../../../include/IteratorAdapter.h ../../../include/dods-datatypes.h \
+  ../../../include/DDS.h ../../../include/DAS.h ../../../include/Clause.h \
+  ../../../include/expr.h ../../../include/RValue.h AsciiOutput.h \
+  name_map.h
 AsciiSequence.o: AsciiSequence.cc config_asciival.h \
- ../../../include/InternalErr.h ../../../include/Error.h \
- AsciiSequence.h ../../../include/Sequence.h \
- ../../../include/BaseType.h ../../../include/Constructor.h \
- AsciiOutput.h AsciiStructure.h ../../../include/Structure.h \
- ../../../include/DDS.h ../../../include/Clause.h \
- ../../../include/expr.h ../../../include/RValue.h name_map.h
+  ../../../include/InternalErr.h ../../../include/Error.h AsciiSequence.h \
+  ../../../include/Sequence.h ../../../include/Pix.h \
+  ../../../include/IteratorAdapter.h ../../../include/BaseType.h \
+  ../../../include/AttrTable.h ../../../include/dods-datatypes.h \
+  ../../../include/Constructor.h AsciiOutput.h AsciiStructure.h \
+  ../../../include/Structure.h ../../../include/DDS.h \
+  ../../../include/DAS.h ../../../include/Clause.h \
+  ../../../include/expr.h ../../../include/RValue.h name_map.h
 AsciiGrid.o: AsciiGrid.cc config_asciival.h \
- ../../../include/InternalErr.h ../../../include/Error.h AsciiGrid.h \
- ../../../include/Grid.h ../../../include/BaseType.h \
- ../../../include/Constructor.h AsciiOutput.h AsciiArray.h \
- ../../../include/Array.h ../../../include/dods-limits.h \
- ../../../include/Vector.h ../../../include/DDS.h \
- ../../../include/Clause.h ../../../include/expr.h \
- ../../../include/RValue.h name_map.h
+  ../../../include/InternalErr.h ../../../include/Error.h AsciiGrid.h \
+  ../../../include/Grid.h ../../../include/Pix.h \
+  ../../../include/IteratorAdapter.h ../../../include/BaseType.h \
+  ../../../include/AttrTable.h ../../../include/dods-datatypes.h \
+  ../../../include/Constructor.h AsciiOutput.h AsciiArray.h \
+  ../../../include/Array.h ../../../include/dods-limits.h \
+  ../../../include/Vector.h ../../../include/DDS.h ../../../include/DAS.h \
+  ../../../include/Clause.h ../../../include/expr.h \
+  ../../../include/RValue.h name_map.h
 AsciiUInt32.o: AsciiUInt32.cc config_asciival.h \
- ../../../include/InternalErr.h ../../../include/Error.h AsciiUInt32.h \
- ../../../include/UInt32.h ../../../include/dods-datatypes.h \
- ../../../include/BaseType.h AsciiOutput.h
+  ../../../include/InternalErr.h ../../../include/Error.h AsciiUInt32.h \
+  ../../../include/UInt32.h ../../../include/dods-datatypes.h \
+  ../../../include/BaseType.h ../../../include/AttrTable.h \
+  ../../../include/Pix.h ../../../include/IteratorAdapter.h AsciiOutput.h
 AsciiInt16.o: AsciiInt16.cc config_asciival.h \
- ../../../include/InternalErr.h ../../../include/Error.h AsciiInt16.h \
- ../../../include/Int16.h ../../../include/dods-datatypes.h \
- ../../../include/BaseType.h AsciiOutput.h
+  ../../../include/InternalErr.h ../../../include/Error.h AsciiInt16.h \
+  ../../../include/Int16.h ../../../include/dods-datatypes.h \
+  ../../../include/BaseType.h ../../../include/AttrTable.h \
+  ../../../include/Pix.h ../../../include/IteratorAdapter.h AsciiOutput.h
 AsciiUInt16.o: AsciiUInt16.cc config_asciival.h \
- ../../../include/InternalErr.h ../../../include/Error.h AsciiUInt16.h \
- ../../../include/UInt16.h ../../../include/dods-datatypes.h \
- ../../../include/BaseType.h AsciiOutput.h
+  ../../../include/InternalErr.h ../../../include/Error.h AsciiUInt16.h \
+  ../../../include/UInt16.h ../../../include/dods-datatypes.h \
+  ../../../include/BaseType.h ../../../include/AttrTable.h \
+  ../../../include/Pix.h ../../../include/IteratorAdapter.h AsciiOutput.h
 AsciiFloat32.o: AsciiFloat32.cc config_asciival.h \
- ../../../include/InternalErr.h ../../../include/Error.h \
- AsciiFloat32.h ../../../include/Float32.h \
- ../../../include/dods-datatypes.h ../../../include/BaseType.h \
- AsciiOutput.h
+  ../../../include/InternalErr.h ../../../include/Error.h AsciiFloat32.h \
+  ../../../include/Float32.h ../../../include/dods-datatypes.h \
+  ../../../include/BaseType.h ../../../include/AttrTable.h \
+  ../../../include/Pix.h ../../../include/IteratorAdapter.h AsciiOutput.h
 AsciiOutput.o: AsciiOutput.cc config_asciival.h \
- ../../../include/BaseType.h ../../../include/InternalErr.h \
- ../../../include/Error.h ../../../include/debug.h AsciiOutput.h \
- name_map.h
-ascii_val.o: ascii_val.cc ../../../include/config_dap.h \
- ../../../include/BaseType.h ../../../include/InternalErr.h \
- ../../../include/Error.h ../../../include/Connect.h \
- ../../../include/DAS.h ../../../include/AttrTable.h \
- ../../../include/DDS.h ../../../include/Clause.h \
- ../../../include/expr.h ../../../include/RValue.h \
- ../../../include/util.h ../../../include/Byte.h \
- ../../../include/dods-datatypes.h ../../../include/Int16.h \
- ../../../include/UInt16.h ../../../include/Int32.h \
- ../../../include/UInt32.h ../../../include/Float32.h \
- ../../../include/Float64.h ../../../include/Str.h \
- ../../../include/dods-limits.h ../../../include/Url.h \
- ../../../include/Array.h ../../../include/Vector.h \
- ../../../include/List.h ../../../include/Structure.h \
- ../../../include/Constructor.h ../../../include/Sequence.h \
- ../../../include/Grid.h AsciiByte.h AsciiOutput.h AsciiInt32.h \
- AsciiUInt32.h AsciiFloat64.h AsciiStr.h AsciiUrl.h AsciiList.h \
- AsciiArray.h AsciiStructure.h AsciiSequence.h AsciiGrid.h name_map.h \
- ../../../include/cgi_util.h ../../../include/debug.h
+  ../../../include/BaseType.h ../../../include/AttrTable.h \
+  ../../../include/Pix.h ../../../include/IteratorAdapter.h \
+  ../../../include/Error.h ../../../include/InternalErr.h \
+  ../../../include/dods-datatypes.h ../../../include/debug.h \
+  AsciiOutput.h name_map.h
+ascii_val.o: ascii_val.cc config_asciival.h ../../../include/GetOpt.h \
+  ../../../include/BaseType.h ../../../include/AttrTable.h \
+  ../../../include/Pix.h ../../../include/IteratorAdapter.h \
+  ../../../include/Error.h ../../../include/InternalErr.h \
+  ../../../include/dods-datatypes.h ../../../include/Connect.h \
+  ../../../include/DAS.h ../../../include/DDS.h ../../../include/Clause.h \
+  ../../../include/expr.h ../../../include/RValue.h \
+  ../../../include/util.h ../../../include/Byte.h \
+  ../../../include/Int16.h ../../../include/UInt16.h \
+  ../../../include/Int32.h ../../../include/UInt32.h \
+  ../../../include/Float32.h ../../../include/Float64.h \
+  ../../../include/Str.h ../../../include/dods-limits.h \
+  ../../../include/Url.h ../../../include/Array.h \
+  ../../../include/Vector.h ../../../include/Structure.h \
+  ../../../include/Constructor.h ../../../include/Sequence.h \
+  ../../../include/Grid.h ../../../include/DataDDS.h \
+  ../../../include/HTTPConnect.h ../../../include/curl/curl.h \
+  ../../../include/curl/types.h ../../../include/curl/easy.h \
+  ../../../include/curl/multi.h ../../../include/RCReader.h \
+  ../../../include/ObjectType.h ../../../include/HTTPCache.h \
+  ../../../include/config_dap.h ../../../include/ResponseTooBigErr.h \
+  ../../../include/HTTPCacheDisconnectedMode.h \
+  ../../../include/HTTPResponse.h ../../../include/Response.h \
+  ../../../include/debug.h name_map.h ../../../include/cgi_util.h \
+  ../../../include/EncodingType.h AsciiByte.h AsciiOutput.h AsciiInt32.h \
+  AsciiUInt32.h AsciiFloat64.h AsciiStr.h AsciiUrl.h AsciiList.h \
+  ../../../include/List.h AsciiArray.h AsciiStructure.h AsciiSequence.h \
+  AsciiGrid.h
 name_map.o: name_map.cc ../../../include/config_dap.h \
- ../../../include/escaping.h name_map.h
+  ../../../include/Regex.h ../../../include/escaping.h name_map.h
