@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.73 2002/12/31 22:28:45 jimg Exp $
+# $Id: acinclude.m4,v 1.74 2003/02/10 22:39:15 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -347,8 +347,15 @@ AC_DEFUN(DODS_MATLAB, [dnl
 
     if grep V4_COMPAT ${MATLAB_ROOT}/extern/include/mat.h > /dev/null 2>&1
     then
-       MAT_VERSION_FLAG="-V4"
-       MATLIBS="-lmat -lmi -lmx -lut"
+	dnl if we're here, we're linking under ML 5 or 6. 02/10/03 jhrg
+	MAT_VERSION_FLAG="-V4"
+	dnl ML 6 lacks libmi.a/.so. 02/10/03 jhrg
+	if access -r ${matlab_lib_dir}/libmi.*
+	then
+	    MATLIBS="-lmat -lmi -lmx -lut"
+	else
+	    MATLIBS="-lmat -lmx -lut"
+	fi
     else
        MAT_VERSION_FLAG=""
        MATLIBS="-lmat"
