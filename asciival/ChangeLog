@@ -1,3 +1,25 @@
+Wed Sep 10 15:43:33 1997  James Gallagher  <jimg@localhost>
+
+	* Added a feature to writeval that prints the DAS to stdout - so
+	that users can look at the DAS with out interning any values.
+
+	* Fixed a bug in loaddods which caused attribute values with
+	embedded spaces to be truncated.
+
+Fri Sep  5 09:57:09 1997  James Gallagher  <jimg@localhost>
+
+	* Added a new feature to writeval: -A can be used to print the
+	attribute structure to stdout. In order to `project' only one
+	specific container (in a way analogous to the way projections are
+	used to filter out specific variables from a data request) use the
+	-c switch. Make sure to separate the -A switch and the URL and
+	optional -c switch with a `--'.
+
+Thu Sep  4 15:49:31 1997  James Gallagher  <jimg@localhost>
+
+	* verbose (-v) now controls whether writeval prints `Constraint: '
+	when processing the per-url option -c.
+
 Mon Jun  9 17:18:37 1997  James Gallagher  <jimg@dcz.cvo.oneworld.com>
 
 	* writeval can now read from stdin.
