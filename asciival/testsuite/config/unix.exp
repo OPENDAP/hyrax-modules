@@ -1,14 +1,7 @@
 
 # Tcl/Expect code for the writeval test.
 # 
-# $Id: unix.exp,v 1.2 1998/11/21 01:31:22 jimg Exp $
-
-# Make sure the global var WRITEVAL is set correctly.
-
-global WRITEVAL
-if ![info exists WRITEVAL] then {
-    set WRITEVAL [transform writeval]
-}
+# $Id: unix.exp,v 1.3 1999/01/05 23:13:07 jimg Exp $
 
 # Compare $expected to the global $comp_output. Run `pass' if they match,
 # `fail' otherwise unless `xfailp' is true in which case run `xfail' if they
@@ -59,7 +52,6 @@ proc compare_stdout {expected msg {xfailp 0} {str_test compare}} {
 
 proc writeval_start { {switches ""} {urls ""} {file ""}} {
     global verbose
-    global WRITEVAL
     global comp_output
     global spawn_id
 
@@ -68,13 +60,13 @@ proc writeval_start { {switches ""} {urls ""} {file ""}} {
 	    send_user "Testing writeval $switches -- $urls ...\n"
 	    exp_internal 1
 	}
-	catch "exec $WRITEVAL $switches -- $urls" comp_output
+	catch "exec writeval $switches -- $urls" comp_output
     } else {
 	if {$verbose >= 1} {
 	    send_user "Testing writeval $switches -- $urls >& $file ...\n"
 	    exp_internal 1
 	}
-	catch "exec $WRITEVAL $switches -- $urls > $file" comp_output
+	catch "exec writeval $switches -- $urls > $file" comp_output
     }
 }
 
