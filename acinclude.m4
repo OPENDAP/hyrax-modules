@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.39 1998/04/17 17:49:55 jimg Exp $
+# $Id: acinclude.m4,v 1.40 1998/07/30 17:23:44 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -143,6 +143,14 @@ AC_DEFUN(DODS_LIBS, [dnl
     AC_CHECK_FUNC(gethostbyname, , AC_CHECK_LIB(nsl, main, 
 		  [LIBS="$LIBS -lnsl"]))])
 
+AC_DEFUN(DODS_FIND_PACKAGES_DIR, [dnl
+    AC_MSG_CHECKING("for the packages directory")
+    # Where does DODS live?
+    AC_REQUIRE([DODS_GET_DODS_ROOT])
+    DODS_PACKAGES_DIR=`ls -1d $dods_root/packages-*`
+    AC_MSG_RESULT("found it at $DODS_PACKAGES_DIR")
+    AC_SUBST(DODS_PACKAGES_DIR)])
+
 AC_DEFUN(DODS_PACKAGES_SUPPORT, [dnl
     # Where does DODS live?
     AC_REQUIRE([DODS_GET_DODS_ROOT])
@@ -150,11 +158,13 @@ AC_DEFUN(DODS_PACKAGES_SUPPORT, [dnl
     AC_REQUIRE([AC_PROG_CC])
     # Find out about -lns and -lsocket
     AC_REQUIRE([DODS_LIBS])
+    # Find the full name of the packages directory
+    AC_REQUIRE([DODS_FIND_PACKAGES_DIR])
     # Assume that we always search the packages/lib directory for libraries.
-    LDFLAGS="$LDFLAGS -L$dods_root/packages/lib"
+    LDFLAGS="$LDFLAGS -L$DODS_PACKAGES_DIR/lib"
     # Assume that we can always search packages/include directory for include 
     # files. 
-    INCS="$INCS -I$dods_root/packages/include"
+    INCS="$INCS -I$DODS_PACKAGES_DIR/include"
     # Initialize $packages to null.
     packages=""
     AC_SUBST(packages)])
@@ -177,7 +187,7 @@ AC_DEFUN(DODS_WWW_LIB, [dnl
 		 packages="$packages libwww"; HAVE_WWW=1; LIBS="-lwww $LIBS")
     AC_SUBST(packages)])
 
-# Because the www library is now included in the DODS_ROOT/packages/ 
+# Because the www library is now included in the DODS_ROOT/packages-*/ 
 # directory, look there for the include files. Users can specify a 
 # different directory using --with-www. jhrg 2/4/98
 
@@ -189,7 +199,7 @@ AC_DEFUN(DODS_FIND_WWW_ROOT, [dnl
 
     AC_ARG_WITH(www,
 	[  --with-www=DIR          Directory containing the W3C header files],
-	WWW_ROOT=${withval}, WWW_ROOT=${dods_root}/packages/include/w3c)
+	WWW_ROOT=${withval}, WWW_ROOT=$DODS_PACKAGES_DIR/include/w3c)
 
     AC_SUBST(WWW_ROOT)
     INCS="$INCS -I\$(WWW_ROOT)"
@@ -254,7 +264,7 @@ AC_DEFUN(DODS_EXPECT_LIB, [dnl
     then
     	tcl_include_paths="/usr/local/src/tcl7.6/generic \
 		       $EXCEPT_PATH/src/tcl7.6/generic \
-		       $dods_root/packages/src/tcl7.6/generic"
+		       $DODS_PACKAGES_DIR/src/tcl7.6/generic"
 
 	AC_MSG_CHECKING(for tclRegex.h in some more places)
 
@@ -576,6 +586,14 @@ AC_DEFUN(DODS_DSP_ROOT, [dnl
 
 # 5. Misc stuff
 #---------------------------------------------------------------------------
+
+# Use the version.h file in the current directory to set the version 
+# Makefile varible. All Makefiles should have targets that use this variable
+# to rename the directory, build source distribution tarfiles, etc.
+AC_DEFUN(DODS_DIRECTORY_VERSION, [dnl
+    VERSION=`cat version.h`
+    AC_MSG_RESULT(Setting Makefile version variable to $VERSION)
+    AC_SUBST(VERSION)])
 
 AC_DEFUN(DODS_DEBUG_OPTION, [dnl
     AC_ARG_ENABLE(debug, 
