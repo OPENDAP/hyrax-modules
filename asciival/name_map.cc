@@ -1,3 +1,4 @@
+
 // (c) COPYRIGHT URI/MIT 1996
 // Please read the full copyright statement in the file COPYRIGH.  
 //
@@ -5,6 +6,9 @@
 //	jhrg,jimg	James Gallagher (jgallagher@gso.uri.edu)
 
 // $Log: name_map.cc,v $
+// Revision 1.4  1997/02/06 20:44:51  jimg
+// Fixed log messages
+//
 // Revision 1.3  1997/01/10 06:50:30  jimg
 // Added to lookup mfunc the ability to map non-alphanmerics to underscore.
 //
@@ -21,7 +25,7 @@
 
 #include "config_dap.h"
 
-static char rcsid[] __unused__ ={"$Id: name_map.cc,v 1.3 1997/01/10 06:50:30 jimg Exp $"};
+static char rcsid[] __unused__ ={"$Id: name_map.cc,v 1.4 1997/02/06 20:44:51 jimg Exp $"};
 
 #include <Pix.h>
 #include <SLList.h>

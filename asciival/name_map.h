@@ -8,6 +8,9 @@
 //	jhrg,jimg	James Gallagher (jgallagher@gso.uri.edu)
 
 // $Log: name_map.h,v $
+// Revision 1.4  1997/02/06 20:44:52  jimg
+// Fixed log messages
+//
 // Revision 1.3  1997/01/10 06:50:32  jimg
 // Added to lookup mfunc the ability to map non-alphanmerics to underscore.
 //
@@ -32,13 +35,12 @@
     string literals. Once the thesaurus is built, the #lookup# mfunc can be
     used to get the equivalent of any string in the thesaurus. 
 
-    An additional feature, this class can canonicalize an identifier (remove
-    non-alphanumeric characters) when performing the lookup operation. This
-    is performed as a separate step from the thesaurus scan so words with no
-    entry in the thesaurus can still be canonicalized.
+    As an additional feature, this class can canonicalize an identifier
+    (remove non-alphanumeric characters) when performing the lookup
+    operation. This is performed as a separate step from the thesaurus scan
+    so words with no entry in the thesaurus will still be canonicalized.
 
-    You can interleave calls to #add# and calls to #lookup#.
-*/
+    You can interleave calls to #add# and calls to #lookup#. */
 
 class name_map {
 private:
@@ -61,8 +63,7 @@ private:
 public:
     /// Create a new instance of the thesaurus.
     /** Create a new instance of the thesaurus and add the first equivalence
-        string to it.
-    */
+        string to it. */
     name_map(char *raw_equiv);
 
     /// Create an empty thesaurus.
@@ -72,21 +73,19 @@ public:
     /** Add a new entry to the thesaurus. The form of the new entry is
         <source>:<dest>.
 
-	Returns: void
-    */
+	Returns: void */
     void add(char *raw_equiv);
 
     /// Lookup a work in the thesaurus.
     /** Lookup a word in the thesaurus. If the name appears in the thesaurus,
         return its equivalent. If #canonical_names# is true, pass the string
-	#name# or its equivalent through a filter to replacing all characters
+	#name# or its equivalent through a filter to replace all characters
 	that are not alphanumerics with the underscore. Sequences matching
 	`%[0-9][0-9a-fA-F]' are considered to be hex escape codes and are
 	replaced by a single underscore.
 
-	Returns: the string #name#, it equivalent or its canonicalized
-	equivalent.
-    */
+	Returns: the string #name#, its equivalent or its canonicalized
+	equivalent. */
     String lookup(String name, const bool canonical_names = false);
 
     /// Delete all the entries from the thesaurus.
