@@ -33,7 +33,7 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: www_int.cc,v 1.12 2003/01/27 23:53:55 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: www_int.cc,v 1.13 2003/03/06 18:50:29 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -189,7 +189,7 @@ main(int argc, char * argv[])
     try {
 	url = new Connect(argv[getopt.optind], trace);
 
-	url->disable_cache();	// Server components should not cache...
+	url->set_cache_enabled(false); // Server components should not cache...
 
 	if (url->is_local()) {
 	    string msg = "Error: URL `";
@@ -264,6 +264,10 @@ main(int argc, char * argv[])
 }
 
 // $Log: www_int.cc,v $
+// Revision 1.13  2003/03/06 18:50:29  jimg
+// Replaced call to Connect::disable_cache() with a call to
+// Connect::set_cache_enable(false). The disable_cache() method no longer exists.
+//
 // Revision 1.12  2003/01/27 23:53:55  jimg
 // Merged with release-3-2-7.
 //

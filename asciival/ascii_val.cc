@@ -39,7 +39,7 @@
 //#include "config_dap.h"
 #include "config_asciival.h"
 
-static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.15 2003/01/27 19:38:23 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.16 2003/03/06 18:52:10 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -197,7 +197,7 @@ main(int argc, char * argv[])
 	    // should not be caching values returned from/by the DAS, DDS, or
 	    // DataDDS handlers of the server. Doing so makes little hiccups
 	    // in the caching very hard for users to correct. 1/16/2002 jhrg 
-	    url->disable_cache();
+	    url->set_cache_enabled(false);
 
 	    DBG2(cerr << "argv[" << i << "] (of " << argc << "): " 
 		 << argv[i] << endl);
@@ -247,6 +247,10 @@ main(int argc, char * argv[])
 }
 
 // $Log: ascii_val.cc,v $
+// Revision 1.16  2003/03/06 18:52:10  jimg
+// Replaced call to Connect::disable_cache() with a call to
+// Connect::set_cache_enable(false). The disable_cache() method no longer exists.
+//
 // Revision 1.15  2003/01/27 19:38:23  jimg
 // Updated the copyright information.
 // Merged with release-3-2-6.
