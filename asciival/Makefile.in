@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.8 1996/11/23 00:03:57 jimg Exp $
+# $Id: Makefile.in,v 1.9 1997/01/29 20:53:58 jimg Exp $
 
 @SET_MAKE@
 
@@ -108,7 +108,12 @@ install-client: urlqueue writeval loaddods
 Makefile: ${srcdir}/Makefile.in
 	${SHELL} ./config.status
 
-check:
+# Tests
+
+check: writeval writeval-check
+
+writeval-check: writeval
+	${RUNTEST} ${RUNTESTFLAGS} --tool writeval --srcdir testsuite
 
 # these tests all fail when das-test is linked with -lnew_debug.
 
