@@ -22,6 +22,14 @@
 #      	       	       	      - Root name of the filter (e.g., *nc*_dods)
 #
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.9  1999/04/29 02:37:12  jimg
+# Fix the secure server stuff.
+#
+# Revision 1.8.4.1  1999/04/26 19:04:44  jimg
+# Dan's fixes for the secure server code. The script and filename variables are
+# now set correctly when data files are located in user directories (e.g.,
+# ~bob/data/file.dat).
+#
 # Revision 1.8  1999/02/20 01:36:52  jimg
 # Recognizes the XDODS-Accept-Types header (passed to the CGI using an
 # environment variable). Passes along the value to the _dds and _dods filters
@@ -92,18 +100,14 @@ sub initialize {
     $script = $ENV{'SCRIPT_NAME'};
     $script =~ s@.*nph-(.*)@$1@;
 
-    $self->{'script'} = $script;
-
     # Look for an ext on the script name; if one is present assume we
     # are dealing with a `secure' server (one that limits access to a
-    # particular group of users). Remove the ext and set a flag
-    # indicating that this sever is secure.
+    # particular group of users). Remove the ext.
     if ($script =~ m@(.*)\..*@) {
 	$script =~ s@(.*)\..*@$1@;	# Remove any ext if present
-	$secure = 1;
-    } else {
-	$secure = 0;
     }
+
+    $self->{'script'} = $script;
 
     # Look for the Accept-Encoding header. Does it exist? If so, store the
     # value. 
@@ -112,24 +116,9 @@ sub initialize {
     # Look for the XDODS-Accept-Types header. If it exists, store its value.
     $self->{'accept_types'} = $ENV{'HTTP_XDODS_ACCEPT_TYPES'};
 
-    # If this is a `secure' server, add the pathname from the document root
-    # to the CGI into PATH_TRANSLATED. Because CGI 1.1 does not pass DOCUMENT
-    # ROOT into the CGI we must extract it from PATH_TRANSLATED using
-    # PATH_INFO. This is pretty messy stuff; if you want to see what is
-    # really going on, look at the output of test-cgi.sh.
-    if ($secure == 1) {
-	$doc_root = $ENV{'PATH_TRANSLATED'};
-	$path_info = $ENV{'PATH_INFO'};
-	$doc_root =~ s@(.*)$path_info@$1@;
-	$path_info =~ s@(.*)\.$ext@$1@;
-	$doc_path = $ENV{'SCRIPT_NAME'};
-	$doc_path =~ s@(.*)/.*@$1@;
-	$filename = $doc_root . $doc_path . $path_info;
-    } else {
-	# Get the name of the filter to run from the data set's `ext'.
-	$filename = $ENV{'PATH_TRANSLATED'};
-	$filename =~ s@(.*)\.$ext@$1@;
-    }
+    # Get the name of the filter to run from the data set's `ext'.
+    $filename = $ENV{'PATH_TRANSLATED'};
+    $filename =~ s@(.*)\.$ext@$1@;
 
     $self->{'filename'} = $filename;
 }
@@ -268,7 +257,7 @@ sub command {
 	$full_script = $cgi_dir . $script;
 	$command = $server_pgm . " " . $filename . " " . $full_script;
     } elsif ($ext eq "ver" || $ext eq "/version") {
-	$script_rev = '$Revision: 1.8 $ ';
+	$script_rev = '$Revision: 1.9 $ ';
 	$script_rev =~ s@\$([A-z]*): (.*) \$@$2@;
 	$server_pgm = $cgi_dir . $script . "_dods";
 	$command = $server_pgm . " -v " . $script_rev . " " . $filename;
