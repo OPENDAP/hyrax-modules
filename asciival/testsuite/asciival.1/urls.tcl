@@ -1,21 +1,21 @@
 
-# $Id: urls.tcl,v 1.3 2001/10/14 01:52:17 jimg Exp $
+# $Id: urls.tcl,v 1.4 2003/01/27 20:39:23 jimg Exp $
 
 # Datasets and their expected output (the information that asciival sends to
 # stdout - not the stuff that should be going into the file).
 
 # NODC/OPDB:
-set nodb_xb "http://abu.nodc.noaa.gov/bin/nph-jg/nodb_xb"
-set nodb_xb_dds ""
+#  set nodb_xb "http://abu.nodc.noaa.gov/bin/nph-jg/nodb_xb"
+#  set nodb_xb_dds ""
 
-set nodb_hctd "http://abu.nodc.noaa.gov/bin/nph-jg/nodb_hctd"
-set nodb_hctd_dds ""
+#  set nodb_hctd "http://abu.nodc.noaa.gov/bin/nph-jg/nodb_hctd"
+#  set nodb_hctd_dds ""
 
-set nodb_bo "http://abu.nodc.noaa.gov/bin/nph-jg/nodb_bo"
-set nodb_bo_dds ""
+#  set nodb_bo "http://abu.nodc.noaa.gov/bin/nph-jg/nodb_bo"
+#  set nodb_bo_dds ""
 
 # PMEL/COADS:
-set coads_pmel "http://ferret.wrc.noaa.gov/cgi-bin/nph-nc/data/coads_climatology.nc"
+set coads_pmel "http://dodsdev.gso.uri.edu/dods-test/nph-dods/data/nc/coads_climatology.nc"
 set coads_pmel_dds "Dataset {
     Float64 COADSX\[COADSX = 180\];
     Float64 COADSY\[COADSY = 90\];
@@ -55,7 +55,8 @@ set coads_pmel_dds "Dataset {
 } coads_climatology;"
 
 # URI/COADS:
-set coads "http://dods.gso.uri.edu/cgi-bin/nph-nc/data/coads_climatology.nc"
+#set coads "http://localhost/dods-3.2nph-dods/data/nc/coads_climatology.nc"
+set coads "http://dodsdev.gso.uri.edu/dods-test/nph-dods/data/nc/coads_climatology.nc"
 set coads_sst_ce "SST\\\[0:0\\\]\\\[10:20\\\]\\\[50:60\\\]"
 set coads_dds "Dataset {
     Float64 COADSX\[COADSX = 180\];
@@ -96,38 +97,24 @@ set coads_dds "Dataset {
 } coads_climatology;"
 
 # URI/FNOC
-set fnoc1 "http://dods.gso.uri.edu/cgi-bin/nph-nc/data/fnoc1.nc"
+set fnoc1 "http://dodsdev.gso.uri.edu/dods-test/nph-dods/data/nc/fnoc1.nc"
 set fnoc1_ce "u\\\[0:0\\\]\\\[0:9\\\]\\\[0:9\\\]"
-set fnoc2 "http://dods.gso.uri.edu/cgi-bin/nph-nc/data/fnoc2.nc"
+set fnoc2 "http://dodsdev.gso.uri.edu/dods-test/nph-dods/data/nc/fnoc2.nc"
 set fnoc2_ce "u\\\[0:0\\\]\\\[0:9\\\]\\\[0:9\\\]"
-set fnoc3 "http://dods.gso.uri.edu/cgi-bin/nph-nc/data/fnoc3.nc"
+set fnoc3 "http://dodsdev.gso.uri.edu/dods-test/nph-dods/data/nc/fnoc3.nc"
 set fnoc3_ce "u\\\[0:0\\\]\\\[0:9\\\]\\\[0:9\\\],v\\\[0:0\\\]\\\[4:9\\\]\\\[4:9\\\]"
 
 # URI/DSP:
-set dsp_1 "http://dods.gso.uri.edu/cgi-bin/nph-dsp/data/f96243170857.img"
+set dsp_1 "http://dodsdev.gso.uri.edu/dods-test/nph-dods/data/dsp/east.coast.pvu"
 set dsp_1_ce "dsp_band_1\\\[20:30\\\]\\\[20:30\\\]"
 set dsp_1_dds "Dataset {
-    Grid {
-     ARRAY:
-        Byte dsp_band_1\[lat = 512\]\[lon = 512\];
-     MAPS:
-        Float64 lat\[lat = 512\];
-        Float64 lon\[lon = 512\];
-    } dsp_band_1;
-    Float64 lat\[lat = 512\];
-    Float64 lon\[lon = 512\];
-} f96243170857;"
-
-set dsp_2 "http://dods.gso.uri.edu/cgi-bin/nph-dsp/data/east.coast"
-set dsp_2_ce "dsp_band_1\\\[20:30\\\]\\\[20:30\\\]"
-set dsp_2_dds "Dataset {
     Byte dsp_band_1\[line = 512\]\[pixel = 512\];
-} east;"
+} east.coast.pvu;"
 
 # JGOFS:
-set jg_test "http://dcz.dods.org/dods-3.2/nph-dods/test"
+set jg_test "http://dodsdev.gso.uri.edu/dods-test/nph-dods/test"
 
-set jg_diatoms "http://dods.gso.uri.edu/cgi-bin/nph-jg/diatoms"
+set jg_diatoms "http://dodsdev.gso.uri.edu/dods-test/nph-dods/diatoms"
 set jg_diatoms_dds "Dataset {
     Sequence {
         String sta;
@@ -139,7 +126,7 @@ set jg_diatoms_dds "Dataset {
     } Level_0;
 } diatoms;"
 
-set jg_ctd "http://dods.gso.uri.edu/cgi-bin/nph-jg/ctd"
+set jg_ctd "http://dodsdev.gso.uri.edu/dods-test/nph-dods/ctd"
 set jg_ctd_dds "Dataset {
     Sequence {
         String sta;
@@ -167,7 +154,7 @@ set jg_ctd_dds "Dataset {
     } Level_0;
 } ctd;"
 
-set jg_bot "http://dods.gso.uri.edu/cgi-bin/nph-jg/bot"
+set jg_bot "http://dodsdev.gso.uri.edu/dods-test/nph-dods/bot"
 set jg_bot_dds "Dataset {
     Sequence {
         String event;
@@ -192,8 +179,8 @@ set jg_bot_dds "Dataset {
 
 set jg_ctd_ce "sta,time"
 
-set hdf_winds  "http://dcz.dods.org/dods-3.2/nph-dods/data/hdf/S3096277.HDF.Z"
-set hdf_winds_ce "Avg_Wind_Speed\\\[0:5\\\],RMS_Wind_Speed\\\[0:5\\\]"
+set hdf_winds  "http://dodsdev.gso.uri.edu/dods-test/nph-dods/data/hdf/S3096277.HDF.Z"
+set hdf_winds_ce "Avg_Wind_Speed\\\[0:5\\\]\\\[0\\\],RMS_Wind_Speed\\\[0:5\\\]\\\[0\\\]"
 
 set stdin_test_data  "testsuite/asciival.1/stdin_test"
 

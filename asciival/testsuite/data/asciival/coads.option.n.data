@@ -1,4 +1,4 @@
-Dataset: coads_climatology
+Dataset: coads_climatology.nc
 SST.COADSX, 121, 123, 125, 127, 129, 131, 133, 135, 137, 139, 141
 SST.SST[SST.TIME=366][SST.COADSY=-69], -1e+34, -1e+34, -1e+34, -1e+34, -1e+34, -1e+34, -1e+34, -1e+34, -1e+34, -1e+34, -1e+34
 SST.SST[SST.TIME=366][SST.COADSY=-67], -1e+34, -1e+34, -1e+34, -1e+34, -1e+34, -0.73, -1e+34, -0.685, -1e+34, -0.234, -0.387778
