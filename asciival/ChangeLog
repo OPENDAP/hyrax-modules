@@ -1,3 +1,7 @@
+1999-03-29  James Gallagher  <jimg@dcz.dods.org>
+
+	* Added support for the new datatypes.
+
 1999-02-08  James Gallagher  <jimg@dcz.cvo.oneworld.com>
 
 	* Fixed a bug where loaddods failed to search for writeval correctly.
