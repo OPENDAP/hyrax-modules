@@ -437,7 +437,7 @@ sub command {
 }
 
 my $DODS_Para1 = "The URL extension did not match any that are known by this
-server. Below is a list of the five extensions that are be recognized by
+server. Below is a list of the extensions that are be recognized by
 all DODS servers. If you think that the server is broken (that the URL you
 submitted should have worked), then please contact the\n";
 
@@ -445,8 +445,8 @@ my $DODS_Local_Admin = "administrator of this site at: ";
 my $DODS_Support = "DODS user support coordinator at: ";
 
 my $DODS_Para2 = "To access most of the features of this DODS server, append
-one of the following a five suffixes to a URL: .das, .dds, .dods., .info,
-.ver or .help. Using these suffixes, you can ask this server for:<dl>
+one of the following suffixes to a URL. Using these suffixes, you can ask 
+this server for:<dl> 
 <dt> das  <dd> attribute object
 <dt> dds  <dd> data type object
 <dt> dods <dd> data object
@@ -552,6 +552,9 @@ if ($test) {
 1;
 
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.27  2001/02/12 18:04:21  tom
+# edited incorrect error message
+#
 # Revision 1.26  2001/01/26 19:18:14  jimg
 # Merged with release-3-2.
 #
