@@ -1,3 +1,7 @@
+1999-02-08  James Gallagher  <jimg@dcz.cvo.oneworld.com>
+
+	* Fixed a bug where loaddods failed to search for writeval correctly.
+
 1998-11-29  James Gallagher  <jimg@dcz.cvo.oneworld.com>
 
 	* Added -T option. Names longer than 19 chars are only truncated
