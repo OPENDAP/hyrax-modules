@@ -1,3 +1,11 @@
+2003-01-27    <jimg@dcz.dods.org>
+
+	* Examined the versions on the 3.2 branch and tagged the code at
+	the end of that branch as release-3-2-6. I then checked in the
+	code here (with the updated copyright) with a log that said
+	`merged with release-3-2-6.' Hmmm. I hope this doesn't hose things
+	too much. This should be the last merge from the 3.2 branch...
+
 2003-01-24    <jimg@dcz.dods.org>
 
 	* Fixed the unit test.
