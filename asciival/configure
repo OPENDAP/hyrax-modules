@@ -21,7 +21,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: configure,v 1.30 1999/05/18 22:40:46 jimg Exp $
+# $Id: configure,v 1.31 1999/05/25 23:56:55 ndp Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -1310,8 +1310,9 @@ echo "configure:1297: checking for matlab root" >&5
         echo "$ac_t"""Set Matlab root to $MATLAB_ROOT"" 1>&6
     fi
 
-        matlab_lib_dir=`find ${MATLAB_ROOT}/extern -name 'libmat*' -print \
-		    | sed 's@\(.*\)/libmat.*@\1@'`
+#        matlab_lib_dir=`find ${MATLAB_ROOT}/extern -name 'libmat*' -print \
+#		    | sed 's@\(.*\)/libmat.*@\1@'`
+        matlab_lib_dir="/home/server/local/apps/matlab.42c/extern/lib/sol2"
     if test "$matlab_lib_dir"
     then
 	LDFLAGS="$LDFLAGS -L$matlab_lib_dir"
