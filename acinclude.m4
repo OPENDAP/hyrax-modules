@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.38 1998/03/31 19:53:30 jimg Exp $
+# $Id: acinclude.m4,v 1.39 1998/04/17 17:49:55 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -477,7 +477,7 @@ AC_DEFUN(DODS_CHECK_EXCEPTIONS, [dnl
         AC_MSG_RESULT(no)
         AC_MSG_WARN("Compiling without exception handling.  See README.")
         CXXFLAGS=$OLDCXXFLAGS
-        DEFS="$DEFS -DNO_EXCEPTIONS"
+        CPPFLAGS="$CPPFLAGS -DNO_EXCEPTIONS"
         ],true)])
 
 # 4. Macros to locate various programs/systems used by parts of DODS
@@ -757,12 +757,12 @@ AC_DEFUN(DODS_CHECK_SIZES, [dnl
     then
 	ARCHFLAG=ARCH_32BIT
 	AC_SUBST(ARCHFLAG)
-	DEFS="-DARCH_32BIT $DEFS"
+	CPPFLAGS="-DARCH_32BIT $CPPFLAGS"
     elif test $ac_cv_sizeof_long -eq 8
     then
 	ARCHFLAG=ARCH_64BIT
 	AC_SUBST(ARCHFLAG)
-	DEFS="-DARCH_64BIT $DEFS"
+	CPPFLAGS="-DARCH_64BIT $CPPFLAGS"
     else
 	AC_MSG_ERROR(Could not determine architecture size - 32 or 64 bits)
     fi])
