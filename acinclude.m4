@@ -18,8 +18,8 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.62 2000/03/28 17:09:14 jimg Exp $
-
+# $Id: acinclude.m4,v 1.63 2000/03/31 21:42:44 jimg Exp $
+#
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
 
@@ -352,7 +352,7 @@ AC_DEFUN(DODS_PROG_LEX, [dnl
 AC_DEFUN(DODS_PROG_BISON, [dnl
     AC_CHECK_PROG(YACC,bison,bison)
     case "$YACC" in
-	bison)
+	*bison)
 	    bison_ver1=`bison -V 2>&1 | sed 's/[[^0-9]]*\(.*\)/\1/'`
 	    bison_ver2=`echo $bison_ver1 | sed 's/\.//g'`
 	    AC_DEFINE_UNQUOTED(DODS_BISON_VER, $bison_ver2)
@@ -575,14 +575,22 @@ AC_DEFUN(DODS_DSP_ROOT, [dnl
 # Find IDL. 9/23/99 jhrg
 
 AC_DEFUN(DODS_IDL, [dnl
+    AC_ARG_WITH(idl,
+        [  --with-idl=ARG       Where is the IDL root directory],
+        IDL_ROOT=${withval}, IDL_ROOT="$IDL_ROOT")
     AC_REQUIRE([AC_CANONICAL_HOST])
 
-    # Find IDL's root directory by looking at the exectuable and then 
-    # finding where that symbolic link points.
     AC_MSG_CHECKING(for the IDL root directory)
-    idl_loc=`which idl`
-    idl_loc=`ls -l $idl_loc | sed 's/.*->[ ]*\(.*\)$/\1/'`
-    IDL_ROOT=`echo $idl_loc | sed 's/\(.*\)\/bin.*/\1/'`
+    if test -z "$IDL_ROOT"
+    then
+        # Find IDL's root directory by looking at the exectuable and then 
+        # finding where that symbolic link points.
+        # !!! Doesn't work if idl isn't a symbolic link - erd !!!
+        idl_loc=`which idl`
+        idl_loc=`ls -l $idl_loc | sed 's/.*->[ ]*\(.*\)$/\1/'`
+        IDL_ROOT=`echo $idl_loc | sed 's/\(.*\)\/bin.*/\1/'`
+    fi
+
     AC_MSG_RESULT($IDL_ROOT)
     AC_SUBST(IDL_ROOT)
 
@@ -818,13 +826,13 @@ AC_DEFUN(DODS_CHECK_SIZES, [dnl
 # Added by Ethan, 1999/06/21
 # Look for perl.
 # 
-# I modified the regexp below to removed any text that follows the version
-# number. This extra text was hosing the text. 7/15/99 jhrg
+# I modified the regexp below to remove any text that follows the version
+# number. This extra text was hosing the test. 7/15/99 jhrg
 
 AC_DEFUN(DODS_PROG_PERL, [dnl
     AC_CHECK_PROG(PERL, perl, `which perl`)
     case "$PERL" in
-	perl)
+	*perl*)
 	    perl_ver=`$PERL -v 2>&1 | awk '/This is perl/ {print}'`
 	    perl_ver=`echo $perl_ver | sed 's/This is perl, version \([[0-9._]]*\).*/\1/'`
             perl_ver_main=`echo $perl_ver | sed 's/\([[0-9]]*\).*/\1/'`
@@ -862,11 +870,11 @@ AC_DEFUN(DODS_PROG_GTAR, [dnl
 	    then
 		AC_MSG_RESULT(Found Gnu tar version ${tar_ver}.)
 	    else
-		AC_MSG_WARN(GNU tar is required.)
+		AC_MSG_WARN(GNU tar is required for some Makefile targets.)
 	    fi
 	    ;;
 	*)
-	    AC_MSG_WARN(GNU tar is required.)
+	    AC_MSG_WARN(GNU tar is required for some Makefile targets.)
 	    ;;
     esac
 
