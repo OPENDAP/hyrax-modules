@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.6 1996/02/12 22:46:54 jimg Exp $
+# $Id: acinclude.m4,v 1.7 1996/04/05 01:23:28 jimg Exp $
 
 # Check for fill value usage.
 
@@ -131,11 +131,14 @@ AC_DEFUN(DODS_PROG_BISON, [dnl
 NULL_PROGRAM="mail() {}"
 
 AC_DEFUN(DODS_CHECK_GCC_DEBUG, [dnl
-    AC_MSG_CHECKING(for support of debugging by gcc)
+    AC_MSG_CHECKING(for gcc debugging support)
     msgs=`gcc -g /dev/null 2>&1`
     if echo $msgs | egrep "\`-g' option not supported"
     then		
 	CFLAGS=`echo $CFLAGS | sed 's/-g//'`;
 	CXXFLAGS=`echo $CXXFLAGS | sed 's/-g//'`;
 	LDFLAGS=`echo $LDFLAGS | sed 's/-g//'`;
+	AC_MSG_RESULT(not supported)
+    else
+	AC_MSG_RESULT(supported)
     fi])
