@@ -39,11 +39,15 @@
 //#include "config_dap.h"
 #include "config_asciival.h"
 
-static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.16 2003/03/06 18:52:10 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.17 2003/05/08 21:08:33 pwest Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
 #include <string>
+#include <iostream>
+
+using std::cerr ;
+using std::endl ;
 
 #include <GetOpt.h>
 
@@ -223,15 +227,17 @@ main(int argc, char * argv[])
 
 	    DataDDS dds;
 
-	    if (url->is_local() && (strcmp(argv[i], "-") == 0))
+	    if (url->is_local() && (strcmp(argv[i], "-") == 0)) {
 		url->read_data(dds, stdin);
-	    else if (url->is_local())
+	    } else if (url->is_local()) {
 		url->read_data(dds, fopen(argv[i], "r"));
-	    else
+	    } else {
 		url->request_data(dds, expr);
+	    }
 
 	    if (mime_header)
 		set_mime_text(cout, dods_data);
+
 	    process_data(&dds);
 	}
 	catch (Error &e) {
@@ -247,6 +253,9 @@ main(int argc, char * argv[])
 }
 
 // $Log: ascii_val.cc,v $
+// Revision 1.17  2003/05/08 21:08:33  pwest
+// added include for iostream and using statements to compile
+//
 // Revision 1.16  2003/03/06 18:52:10  jimg
 // Replaced call to Connect::disable_cache() with a call to
 // Connect::set_cache_enable(false). The disable_cache() method no longer exists.
