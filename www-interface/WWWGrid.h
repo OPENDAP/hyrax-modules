@@ -12,6 +12,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWGrid.h,v $
+// Revision 1.3  2000/10/02 22:42:44  jimg
+// Modified the read method to match the new definition in the dap
+//
 // Revision 1.2  1999/05/09 04:14:51  jimg
 // String --> string
 //
@@ -35,7 +38,7 @@ public:
     
     virtual BaseType *ptr_duplicate();
 
-    virtual bool read(const string &dataset, int &error);
+    virtual bool read(const string &dataset);
 
     virtual void print_val(ostream &os, string space = "", 
 			   bool print_decl_p = true);

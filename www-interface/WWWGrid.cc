@@ -10,6 +10,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWGrid.cc,v $
+// Revision 1.3  2000/10/02 22:42:44  jimg
+// Modified the read method to match the new definition in the dap
+//
 // Revision 1.2  1999/05/09 04:14:51  jimg
 // String --> string
 //
@@ -30,6 +33,8 @@
 #include <string>
 
 #include "Array.h"
+#include "InternalErr.h"
+
 #include "WWWGrid.h"
 #include "WWWOutput.h"
 
@@ -54,10 +59,9 @@ WWWGrid::~WWWGrid()
 }
 
 bool
-WWWGrid::read(const string &, int &)
+WWWGrid::read(const string &)
 {
-    assert(false);
-    return false;
+  throw InternalErr(__FILE__, __LINE__, "Called unimplemented read method");
 }
 
 void

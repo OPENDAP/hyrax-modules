@@ -10,6 +10,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWStr.cc,v $
+// Revision 1.3  2000/10/02 22:42:44  jimg
+// Modified the read method to match the new definition in the dap
+//
 // Revision 1.2  1999/05/09 04:14:51  jimg
 // String --> string
 //
@@ -31,6 +34,8 @@
 #include <SLList.h>
 #include <string>
 
+#include "InternalErr.h"
+
 #include "WWWStr.h"
 #include "WWWOutput.h"
 
@@ -51,10 +56,9 @@ WWWStr::ptr_duplicate()
 }
 
 bool
-WWWStr::read(const string &, int &)
+WWWStr::read(const string &)
 {
-    assert(false);
-    return false;
+  throw InternalErr(__FILE__, __LINE__, "Called unimplemented read method");
 }
 
 void 

@@ -10,6 +10,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWStructure.cc,v $
+// Revision 1.3  2000/10/02 22:42:44  jimg
+// Modified the read method to match the new definition in the dap
+//
 // Revision 1.2  1999/05/09 04:14:52  jimg
 // String --> string
 //
@@ -29,6 +32,8 @@
 #include <string>
 
 #include "DAS.h"
+#include "InternalErr.h"
+
 #include "WWWStructure.h"
 #include "WWWSequence.h"
 #include "WWWOutput.h"
@@ -60,10 +65,9 @@ WWWStructure::~WWWStructure()
 // comprise the structure. 
 
 bool
-WWWStructure::read(const string &, int &)
+WWWStructure::read(const string &)
 {
-    assert(false);
-    return false;
+  throw InternalErr(__FILE__, __LINE__, "Called unimplemented read method");
 }
 
 // As is the case with geturl, use print_all_vals to print all the values of

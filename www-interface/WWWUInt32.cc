@@ -10,6 +10,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWUInt32.cc,v $
+// Revision 1.3  2000/10/02 22:42:44  jimg
+// Modified the read method to match the new definition in the dap
+//
 // Revision 1.2  1999/05/09 04:14:52  jimg
 // String --> string
 //
@@ -27,6 +30,8 @@
 #include <Pix.h>
 #include <SLList.h>
 #include <string>
+
+#include "InternalErr.h"
 
 #include "WWWUInt32.h"
 #include "WWWOutput.h"
@@ -48,10 +53,9 @@ WWWUInt32::ptr_duplicate()
 }
 
 bool
-WWWUInt32::read(const string &, int &)
+WWWUInt32::read(const string &)
 {
-    assert(false);
-    return false;
+  throw InternalErr(__FILE__, __LINE__, "Called unimplemented read method");
 }
 
 void 

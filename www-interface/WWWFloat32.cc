@@ -10,6 +10,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWFloat32.cc,v $
+// Revision 1.3  2000/10/02 22:42:44  jimg
+// Modified the read method to match the new definition in the dap
+//
 // Revision 1.2  1999/05/09 04:14:51  jimg
 // String --> string
 //
@@ -25,6 +28,8 @@
 #include <iostream.h>
 
 #include <string>
+
+#include "InternalErr.h"
 
 #include "WWWFloat32.h"
 #include "WWWOutput.h"
@@ -46,10 +51,9 @@ WWWFloat32::ptr_duplicate()
 }
  
 bool
-WWWFloat32::read(const string &, int &)
+WWWFloat32::read(const string &)
 {
-    assert(false);
-    return false;
+  throw InternalErr(__FILE__, __LINE__, "Called unimplemented read method");
 }
 
 void 
