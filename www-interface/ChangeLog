@@ -1,3 +1,16 @@
+2001-08-27  James Gallagher  <jimg@dcz.dods.org>
+
+	* Merged with release-3-2-3. The next merge should use -j
+	release-3-2-3 -j release-3-2.
+
+2001-07-13  James Gallagher  <jimg@dcz.dods.org>
+
+	* WWWOutput.cc (name_for_js_code): Changed the prefix applied to
+	variable names (which is done to reduce/eliminate name collisions
+	between the HTML page, the dataset and JavaScript). The prefix
+	used to be `dods_' and now it's `org_dods_dcz<pid>.' This should
+	fix bug #228.
+
 2001-06-15  James Gallagher  <jimg@dcz.dods.org>
 
 	* Merged with release-3-2-2. The next merge should use -j

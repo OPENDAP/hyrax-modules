@@ -11,11 +11,13 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.7 2001/01/26 19:17:36 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.8 2001/08/27 17:53:07 jimg Exp $"};
 
 #include <string>
 #include <iostream>
 #include <strstream.h>
+
+#include <unistd.h>
 
 #include "Regex.h"
 
@@ -31,14 +33,17 @@ static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.7 2001/01/26 19:17:36 jim
 
 static bool name_is_global(string &name);
 static bool name_in_kill_file(const string &name);
-#if 0
-static string downcase(const string &s);
-#endif
 
+// This function adds some text to the variable name so that conflicts with
+// JavaScript's reserved words and other conflicts are avoided (or
+// minimized...) 7/13/2001 jhrg
 string
 name_for_js_code(const string &dods_name)
 {
-    return "dods_" + dods_name;
+    pid_t pid = getpid();
+    ostrstream oss;
+    oss << "org_dods_dcz" << pid << dods_name << ends;
+    return string(oss.str());
 }
 
 WWWOutput::WWWOutput(ostream &os, int rows, int cols):
@@ -234,18 +239,6 @@ name_in_kill_file(const string &name)
     return dim.match(name.c_str(), name.length()) != -1;
 }
 
-#if 0
-static string 
-downcase(const string &s)
-{
-    string d("");
-    string::const_iterator p = s.begin();
-    while (p != s.end())
-	d += tolower(*p++);
-    return d;
-}
-#endif
-
 static bool
 name_is_global(string &name)
 {
@@ -295,6 +288,15 @@ write_simple_variable(ostream &os, const string &name, const string &type)
 }
 
 // $Log: WWWOutput.cc,v $
+// Revision 1.8  2001/08/27 17:53:07  jimg
+// Merged with release-3-2-3.
+//
+// Revision 1.6.2.2  2001/07/13 20:23:31  jimg
+// The string (dods_) used to prefix variable names so that variables which have
+// the same name as a JavaScript reserved word was not `unique enough' to avoid
+// other conflicts. I changed it to `org_dods_dcz' and added www_int's process
+// ID. That should eliminate all conflicts in practice.
+//
 // Revision 1.7  2001/01/26 19:17:36  jimg
 // Merged with release-3-2.
 //
