@@ -39,7 +39,7 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: WWWStructure.cc,v 1.6 2003/12/08 18:08:02 edavis Exp $"};
+static char rcsid[] not_used = {"$Id: WWWStructure.cc,v 1.7 2004/01/28 16:48:58 jimg Exp $"};
 
 #include <iostream>
 
@@ -94,11 +94,20 @@ WWWStructure::print_val(ostream &os, string space, bool print_decls)
     os << "<b>Structure " << name() << "</b><br>\n";
     os << "<dl><dd>\n";
 
+#if 0
     for (Pix p = first_var(); p; next_var(p)) {
 	var(p)->print_val(os, "", print_decls);
 	wo.write_variable_attributes(var(p), global_das);
 	os << "<p><p>\n";
     }
+#endif
+
+    for (Vars_iter i = var_begin(); i != var_end(); ++i) {
+	(*i)->print_val(os, "", print_decls);
+	wo.write_variable_attributes(*i, global_das);
+	os << "<p><p>\n";
+    }
+
     os << "</dd></dl>\n";
 }
 
@@ -108,6 +117,7 @@ WWWStructure::print_val(ostream &os, string space, bool print_decls)
 bool
 WWWStructure::is_simple_structure()
 {
+#if 0
     for (Pix p = first_var(); p; next_var(p)) {
 	if (var(p)->type() == dods_structure_c) {
 	    if (!dynamic_cast<WWWStructure *>(var(p))->is_simple_structure())
@@ -118,11 +128,28 @@ WWWStructure::is_simple_structure()
 		return false;
 	}
     }
+#endif
+
+    for (Vars_iter i = var_begin(); i != var_end(); ++i) {
+	if ((*i)->type() == dods_structure_c) {
+	    if (!dynamic_cast<WWWStructure *>(*i)->is_simple_structure())
+		return false;
+	}
+	else {
+	    if (!(*i)->is_simple_type())
+		return false;
+	}
+    }
+
 
     return true;
 }
 
 // $Log: WWWStructure.cc,v $
+// Revision 1.7  2004/01/28 16:48:58  jimg
+// Switched from Pix to iterators. This fixes a compilation bug where the
+// var(Pix&) method can't be found.
+//
 // Revision 1.6  2003/12/08 18:08:02  edavis
 // Merge release-3-4 into trunk
 //

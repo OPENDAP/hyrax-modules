@@ -39,7 +39,7 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: WWWSequence.cc,v 1.6 2003/12/08 18:08:02 edavis Exp $"};
+static char rcsid[] not_used = {"$Id: WWWSequence.cc,v 1.7 2004/01/28 16:48:47 jimg Exp $"};
 
 #include <iostream>
 
@@ -90,13 +90,13 @@ WWWSequence::length()
 bool
 WWWSequence::is_simple_sequence()
 {
-    for (Pix p = first_var(); p; next_var(p)) {
-	if (var(p)->type() == dods_sequence_c) {
-	    if (!dynamic_cast<WWWSequence *>(var(p))->is_simple_sequence())
+    for (Vars_iter i = var_begin(); i != var_end(); ++i) {
+	if ((*i)->type() == dods_sequence_c) {
+	    if (!dynamic_cast<WWWSequence *>((*i))->is_simple_sequence())
 		return false;
 	}
 	else {
-	    if (!var(p)->is_simple_type())
+	    if (!(*i)->is_simple_type())
 		return false;
 	}
     }
@@ -113,9 +113,9 @@ WWWSequence::print_val(ostream &os, string space, bool print_decls)
     os << "<b>Sequence " << name() << "</b><br>\n";
     os << "<dl><dd>\n";
 
-    for (Pix p = first_var(); p; next_var(p)) {
-	var(p)->print_val(os, "", print_decls);
-	wo.write_variable_attributes(var(p), global_das);
+    for (Vars_iter i = var_begin(); i != var_end(); ++i) {
+	(*i)->print_val(os, "", print_decls);
+	wo.write_variable_attributes((*i), global_das);
 	os << "<p><p>\n";
     }
 
@@ -123,6 +123,10 @@ WWWSequence::print_val(ostream &os, string space, bool print_decls)
 }
 
 // $Log: WWWSequence.cc,v $
+// Revision 1.7  2004/01/28 16:48:47  jimg
+// Switched from Pix to iterators. This fixes a compilation bug where the
+// var(Pix&) method can't be found.
+//
 // Revision 1.6  2003/12/08 18:08:02  edavis
 // Merge release-3-4 into trunk
 //
