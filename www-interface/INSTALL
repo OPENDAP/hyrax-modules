@@ -1,0 +1,12 @@
+
+	$Id: INSTALL,v 1.1 1999/07/29 18:42:31 jimg Exp $
+
+To build the WWW interface component of the dods servers, type:
+
+   ./configure
+   make
+   make install
+
+The interface does not yet have a testsuite.
+
+
