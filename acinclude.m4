@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.68 2000/10/16 22:07:38 jimg Exp $
+# $Id: acinclude.m4,v 1.69 2000/10/19 23:51:33 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -525,8 +525,9 @@ AC_DEFUN(DODS_IDL, [dnl
 # Makefile varible. All Makefiles should have targets that use this variable
 # to rename the directory, build source distribution tarfiles, etc.
 AC_DEFUN(DODS_DIRECTORY_VERSION, [dnl
+    AC_MSG_CHECKING([version])
     VERSION=`cat version.h`
-    AC_MSG_RESULT(Setting Makefile version variable to $VERSION)
+    AC_MSG_RESULT($VERSION)
     AC_SUBST(VERSION)])
 
 AC_DEFUN(DODS_DEBUG_OPTION, [dnl
