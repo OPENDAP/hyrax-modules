@@ -1,0 +1,53 @@
+
+das_dds_parser.pl,230
+sub dds_var_extract 54,2862
+sub das_var_extract 305,11138
+sub _get_endgroup 384,13003
+sub _get_grptype 399,13254
+sub _get_varname 414,13524
+sub _get_ddsvar 439,14038
+sub _strip_spfbr 453,14319
+sub _strip_spbbrsc 464,14465
+
+error.pl,54
+sub error_report 6,55
+sub _error_report_html 22,540
+
+html_code.pl,768
+sub form_start 17,550
+sub url_html 26,893
+sub global_attributes_html 38,1214
+sub variables_html 74,2106
+sub MakeArrayEntry_html 91,2545
+sub MakeStandEntry_html 110,3183
+sub VarName_html 126,3686
+sub VarAtt_html 147,4422
+sub BoolBox1_html 170,4932
+sub ArrayInputField_html 180,5223
+sub VarInputField_html 186,5402
+sub BoolBox2_html 192,5579
+sub VarHidden_html 202,5865
+sub GridInputField_html 209,6013
+sub ArrayAttConstr_box 216,6230
+sub GridAttConstr_box 225,6554
+sub ParseRange 234,6877
+sub MakeGridEntry_html 255,7459
+sub header_html 270,7892
+sub header_end_html 277,8045
+sub script_html 281,8094
+sub script_end_html 285,8140
+sub end_form_html{289,8191
+sub start_table_html 299,8590
+sub end_table_html 303,8647
+sub _separator_html 307,8696
+
+javascript_code.pl,208
+sub dods_obj 270,8387
+sub dodsobj_create 278,8659
+sub dods_structures_create 293,9275
+sub url_obj_create 307,9739
+sub make_forms_arrays 314,9891
+sub grid_att_form 403,13431
+sub var_dimension 423,14034
+
+query_form_builder.pl,0
