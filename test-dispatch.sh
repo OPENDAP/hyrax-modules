@@ -39,13 +39,13 @@
 PATH_INFO="/data/nc/fnoc1.nc.dods"
 export PATH_INFO
 
-SCRIPT_NAME="/test-3.1/nph-nc"
+SCRIPT_NAME="/test/nph-dods"
 export SCRIPT_NAME
 
 QUERY_STRING="u"
 export QUERY_STRING
 
-PATH_TRANSLATED="/usr/local/apache/share/htdocs${PATH_INFO}"
+PATH_TRANSLATED="/home/httpd/html/htdocs${PATH_INFO}"
 export PATH_TRANSLATED
 
 HTTP_XDODS_ACCEPT_TYPES=All
