@@ -39,7 +39,10 @@ all DODS servers. If you think that the server is broken (that the URL you
 submitted should have worked), then please contact the\n";
 # Bad file/dataset types.
 my $unknown_p1 = "This DODS server does not know how to serve the dataset `";
-my $unknown_p2 = ".'\n Please check the URL for errors. If you think that the URL is correct,\n please contact the ";
+my $unknown_p2 = ".'
+It maybe that the server has not been configured for this type of dataset.
+Please double check the URL for errors and, if you think that the URL is
+correct, please contact the "; 
 
 # Test if variables are tainted.
 # From Programming Perl, p.258. 12/11/2000 jhrg
@@ -160,22 +163,21 @@ sub initialize {
     # Figure out which type of handler to use when processing this request.
     # The config_file field is set in new(). Note that we only use the
     # handlers to generate the DAP objects and ver and info responses; 
-    # everything else is passed off to a helper or taken care of here.
-    # 6/14/2001 jhrg 
-    if ($self->{ext} eq "das" || $self->{ext} eq "dds" 
-	|| $self->{ext} eq "dods" || $self->{ext} eq "ver" 
-	|| $self->{ext} eq "info") {
-	$self->{script} = handler_name($path_info, $self->{config_file});
-	if ($self->{script} eq "") {
-	    #&& !($self->{ext} eq "help" || $self->{ext} eq "version"
-	    # || $self->{ext} eq "/")) {
-	    $self->print_dods_error("${unknown_p1}${path_info}${unknown_p2}",
-				    0);
-	    exit(1);
-	}
-    } else {
-	$self->{script} = "";
+    # everything else is passed off to a helper or taken care of by this
+    # script. However, we ask for the handler for all of the extensions to
+    # make sure that the server (via dods.ini) is configured for the
+    # particular type of URL. If we don't do that then a request for .html,
+    # for example, will loop forever (since it's a subordinate request that
+    # access the dataset and that's what fails. 9/19/2001 jhrg
+
+    $self->{script} = handler_name($path_info, $self->{config_file});
+    if ($self->{script} eq "") {
+	$self->print_dods_error("${unknown_p1}${path_info}${unknown_p2}",
+				0);
+	exit(1);
     }
+
+    print STDERR "Server type: $self->{script}\n" if $debug > 1;
 
     # Look for the Accept-Encoding header. Does it exist? If so, store the
     # value. 
@@ -202,7 +204,8 @@ sub initialize {
 
     if ($self->{script} eq "jg") {
 	$filename = $ENV{PATH_INFO};
-	$filename =~ s@.*/(.*)@$1@;
+        # The following regexp negates jg-dods changes for Ver-3.2.2
+	#$filename =~ s@.*/(.*)@$1@;
     }
     else {
 	$filename = $ENV{PATH_TRANSLATED};
@@ -438,7 +441,8 @@ sub command {
     } elsif ($ext eq "help") {
 	$self->print_help_message();
 	exit(0);
-    } elsif (is_directory($self->{filename})) {
+    } elsif ($ext eq "/") {
+#    } elsif (is_directory($self->{filename})) {
 	# old } elsif ($ext =~ ".*/\$") {	# Does $ext end in a slash?
 	# Change the test above to use the is_dir() function above. 5/8/2001
 	# jhrg 
@@ -665,6 +669,7 @@ sub print_help_message {
 
     print "HTTP/1.0 200 OK\n";
     print "XDODS-Server: $self->{script}/$self->{caller_revision}\n";
+    print "Content-Type: text/html\n";
     print "\n";
 
     print "<h3>DODS Server Help</h3>\n";
@@ -733,6 +738,35 @@ if ($test) {
 1;
 
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.29  2001/09/28 20:30:11  jimg
+# Merged with 3.2.7.
+#
+# Revision 1.25.2.20  2001/09/28 20:20:50  jimg
+# Fixed an error in the command() method where $filename was tested with using
+# is_directory() when $ext eq "/" should have been used.
+#
+# Revision 1.25.2.19  2001/09/26 22:27:47  dan
+# Removed the regexp that stripped the PATH_INFO variable for the jg-dods
+# filters.   Changes to jg-dods starting with version 3.2.2 require all the
+# information that is available in PATH_INFO to allow relative directory
+# searching to support multiple object dictionary files at a provider site.
+#
+# Revision 1.25.2.18  2001/09/19 20:37:59  jimg
+# Fixed the error message displayed when no regex matches the dataset's
+# extension.
+#
+# Revision 1.25.2.17  2001/07/19 22:22:04  jimg
+# Turned off debugging for revision in CVS.
+#
+# Revision 1.25.2.16  2001/07/13 18:52:22  jimg
+# Modified Rob's fix to use PATH_TRANSLATED and removed match looking for
+# slashes.
+#
+# Revision 1.25.2.15  2001/07/12 22:07:09  jimg
+# Fix from Rob Morris for directory names with `.' in them. The call to
+# is_directory() was moved before the the line that uses a regex to separate
+# the file's basename from its extension.
+#
 # Revision 1.28  2001/06/15 23:38:36  jimg
 # Merged with release-3-2-4.
 #

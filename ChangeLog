@@ -1,3 +1,39 @@
+2001-09-26  Daniel Holloway  <dan@dax.po.gso.uri.edu>
+
+	* Modified DODS_Dispatch.pm, removing regexp for 'jg'
+	server which stripped the PATH_INFO variable.  The
+	current version of the 'jg' filters (v-3.2.2) now use
+	the directory information in the PATH_INFO to support
+	multiple object dictionaries at a provider site.  
+	Unfortunately, the 'jg' server still requires PATH_INFO
+	which is different from all the other servers.
+
+2001-08-21  James Gallagher  <jimg@dcz.dods.org>
+
+	* Fix from Rob Morris for directory names with `.' in them. The
+	call to is_directory() was moved before the the line that uses a
+	regex to separate the file's basename from its extension. I then
+	fixed this fix by modifying Rob's fix to use PATH_TRANSLATED and
+	removed match looking for slashes.
+
+	* I also fixed a problem with the used of sort. Perl was spitting
+	out a warning because the ordering function used by sort used a
+	variable that was out of scope.
+
+	* Fixed a security problem (Bug 186) where pathnames with shell
+	meta characters could make their way to /bin/sh (if they were
+	present in pathnames to be decompressed). The shell is still used
+	(haven't figured out how to run gzip in the server without
+	redirecting stdout) but paths are sanitized. 
+
+2001-07-10  James Gallagher  <jimg@dcz.dods.org>
+
+	* Added an error message return to
+	DODS_Cache::decompress_and_cache(); nph-dods checks for the error
+	and wraps it in an error response if it's present.
+
+	* Fixed a security hole in DODS_Cache.pm.
+
 2001-06-15  James Gallagher  <jimg@dcz.dods.org>
 
 	* Merged with release-3-2-4. The next merge should use -j
