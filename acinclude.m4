@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.14 1996/09/20 23:26:58 jimg Exp $
+# $Id: acinclude.m4,v 1.15 1996/09/23 18:45:29 jimg Exp $
 
 # Check for fill value usage.
 
@@ -335,7 +335,7 @@ AC_DEFUN(DODS_OS, [dnl
     if test -z "$OS"; then
       OS=`uname -s | tr '[A-Z]' '[a-z]' | sed 's;/;;g'`
       if test -z "$OS"; then
-        echo "OS:operating system:sunos5" >> confdefs.missing
+        AC_MSG_WARN(OS unknown!)
       fi
     fi
     case $OS in
@@ -413,7 +413,7 @@ AC_DEFUN(DODS_MACHINE, [dnl
     AC_MSG_CHECKING(type of machine)
 
     if test -z "$MACHINE"; then
-    MACHINE=`uname -m | tr [A-Z] [a-z]`
+    MACHINE=`uname -m | tr '[A-Z]' '[a-z]'`
     case $OS in
         aix*)
             MACHINE=rs6000
