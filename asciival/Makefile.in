@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.25 1998/03/11 00:42:36 jimg Exp $
+# $Id: Makefile.in,v 1.26 1998/03/13 21:24:12 jimg Exp $
 
 @SET_MAKE@
 
@@ -14,7 +14,7 @@
 # a url. In addition it can read and process DAS and DDS objects, displaying
 # the print representation on the screen.
 
-PROG= writeval loaddods urlqueue
+PROG= writeval asciival loaddods urlqueue
 
 DODS_ROOT = ../..
 MATLAB_ROOT = @MATLAB_ROOT@
@@ -83,9 +83,21 @@ CLIENTOBJS = ClientByte.o ClientInt32.o ClientFloat64.o ClientStr.o \
 	ClientUrl.o ClientArray.o ClientStructure.o ClientList.o \
 	ClientSequence.o ClientFunction.o ClientGrid.o ClientUInt32.o
 
+ASCIISRCS = AsciiByte.cc AsciiInt32.cc AsciiFloat64.cc AsciiStr.cc \
+	AsciiUrl.cc AsciiArray.cc AsciiStructure.cc AsciiList.cc \
+	AsciiSequence.cc AsciiFunction.cc AsciiGrid.cc AsciiUInt32.cc
+
+ASCIIOBJS = AsciiByte.o AsciiInt32.o AsciiFloat64.o AsciiStr.o \
+	AsciiUrl.o AsciiArray.o AsciiStructure.o AsciiList.o \
+	AsciiSequence.o AsciiFunction.o AsciiGrid.o AsciiUInt32.o
+
 WV_SRCS = write_val.cc name_map.cc attributes.cc
 
 WV_OBJS = write_val.o name_map.o attributes.o
+
+AV_SRCS = ascii_val.cc name_map.cc
+
+AV_OBJS = ascii_val.o name_map.o
 
 LD_SRCS = loaddods.c variable.c queue.c extend.c
 
@@ -99,6 +111,9 @@ all: $(PROG)
 
 writeval: $(WV_OBJS) $(CLIENTOBJS)
 	$(CXX) $(LDFLAGS) -o writeval $(WV_OBJS) $(CLIENTOBJS) $(LIBS)
+
+asciival: $(AV_OBJS) $(ASCIIOBJS)
+	$(CXX) $(LDFLAGS) -o asciival $(AV_OBJS) $(ASCIIOBJS) $(LIBS)
 
 loaddods: $(LD_OBJS)
 	$(CMEX) $(CMEXFLAGS) $(LD_OBJS)
