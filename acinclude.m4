@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.13 1996/09/20 22:55:14 jimg Exp $
+# $Id: acinclude.m4,v 1.14 1996/09/20 23:26:58 jimg Exp $
 
 # Check for fill value usage.
 
@@ -292,7 +292,7 @@ AC_DEFUN(DODS_SEM, [dnl
     if test $found -eq 1
     then
         AC_CHECKING(semaphore features in sem.h)
-        if grep 'extern int  *semctl.*(' /usr/include/sys/sem.h >/dev/null 2>&1
+        if grep 'int  *semctl.*(' /usr/include/sys/sem.h >/dev/null 2>&1
         then
             AC_DEFINE(HAVE_SEM_PROTO, 1)
         else
