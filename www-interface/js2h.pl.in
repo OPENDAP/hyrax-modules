@@ -1,0 +1,36 @@
+#!@PERL@
+#
+# This little bit of excitment reads the javascript code from
+# javascript.h.tmpl and dumps it to a file that so that the entire file of js
+# is one huge C++ string object. In the process it rips off the files header
+# and CVS log and escapes all the double quotes. This makes the javascript
+# code simpler to edit.
+# 
+# Usage: process_jf_tmpl.pl <template> > javascript.h
+#
+# 10/7/99 jhrg
+
+use strict;
+
+my $id_found = 0;
+
+print <<EOD;
+
+// Automatically generated file. DO NOT EDIT!
+// Edit $ARGV[0] instead.
+
+const string java_code = \"
+EOD
+
+while (<>) {
+    if (/\$Id/) {
+	$id_found = 1;
+    }
+    if ($id_found) {
+	s@\\\"@\\\\\"@g;
+	s@\"@\\\"@g;
+	print;
+    }
+}
+
+print "\";";

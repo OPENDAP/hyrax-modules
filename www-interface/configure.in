@@ -2,7 +2,7 @@
 dnl -*- m4 -*-
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.in,v 1.7 2001/01/26 19:17:36 jimg Exp $)
+AC_REVISION($Id: configure.in,v 1.8 2001/06/16 00:00:05 jimg Exp $)
 AC_INIT(www_int.cc)
 AC_CONFIG_HEADER(config_www_int.h)
 AC_CONFIG_AUX_DIR(../../../etc)
@@ -17,7 +17,7 @@ DODS_DIRECTORY_VERSION
 
 dnl `depend' is the command to use to generate dependencies for Makefiles.
 
-depend=${dods_root}/etc/depend.sh
+depend=${dods_relative}/etc/depend.sh
 AC_SUBST(depend)
 
 CFLAGS="-gstabs -O2 $CFLAGS"
@@ -81,4 +81,4 @@ else
 	AC_MSG_ERROR(Could not determine architecture size - 32 or 64 bits)
 fi
 
-AC_OUTPUT(Makefile)
+AC_OUTPUT(Makefile js2h.pl, [chmod 775 js2h.pl])

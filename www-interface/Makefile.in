@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.9 2001/01/26 19:17:35 jimg Exp $
+# $Id: Makefile.in,v 1.10 2001/06/16 00:00:05 jimg Exp $
 
 @SET_MAKE@
 
@@ -9,8 +9,7 @@
 
 PROG = www_int
 
-DODS_ROOT = ../../..
-WWW_ROOT=@WWW_ROOT@
+DODS_ROOT = @dods_relative@
 
 INCS = -I. @INCS@
 DEFS = @DEFS@ -DWWW_INT_VER=\"@VERSION@\"
@@ -30,14 +29,14 @@ TAGS_FLAGS = --include=../../dap/TAGS
 
 prefix = @prefix@
 exec_prefix = $(prefix)
-bindir = $(exec_prefix)/bin
-libdir = $(exec_prefix)/lib
-includedir = $(prefix)/include
+bindir = $(exec_prefix)bin
+libdir = $(exec_prefix)lib
+includedir = $(prefix)include
 manext = 1
-mandir = $(prefix)/man/man$(manext)
+mandir = $(prefix)man/man$(manext)
 
-src = $(DODS_ROOT)/src
-etcdir = $(DODS_ROOT)/etc
+src = $(DODS_ROOT)src
+etcdir = $(DODS_ROOT)etc
 
 INSTALLMAN = man
 
@@ -133,7 +132,7 @@ docs:
 	doc++ -d docs -f $(ALLSRCS)
 
 configure: configure.in
-	autoconf --localdir=$(DODS_ROOT)/etc
+	autoconf --localdir=$(DODS_ROOT)etc
 
 Makefile: Makefile.in
 	if [ -x ./config.status ]; \
@@ -175,7 +174,7 @@ check-version:
 .PHONY: tar
 tar:
 	-rm -r config.cache config.log config.status
-	cd $(DODS_ROOT)/.. && \
+	cd $(DODS_ROOT).. && \
 	$(TAR) --exclude 'old' --exclude '.#*' --exclude 'CVS' \
 	    --exclude '.flc' --exclude '.snprj' \
 	    --gzip --create --dereference --file DODS-$(dir).tar.gz \
@@ -197,247 +196,134 @@ tags:
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) -o $@ $<
 
 # DO NOT DELETE; depend depends on this line.
-WWWByte.o: WWWByte.cc config_www_int.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/InternalErr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Error.h WWWByte.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Byte.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/dods-datatypes.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/BaseType.h WWWOutput.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DDS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Clause.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/expr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/RValue.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/debug.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DAS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/AttrTable.h
+WWWByte.o: WWWByte.cc config_www_int.h ../../../include/InternalErr.h \
+ ../../../include/Error.h WWWByte.h ../../../include/Byte.h \
+ ../../../include/dods-datatypes.h ../../../include/BaseType.h \
+ WWWOutput.h ../../../include/DDS.h ../../../include/Clause.h \
+ ../../../include/expr.h ../../../include/RValue.h \
+ ../../../include/debug.h ../../../include/DAS.h \
+ ../../../include/AttrTable.h
 WWWInt32.o: WWWInt32.cc config_www_int.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/InternalErr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Error.h WWWInt32.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Int32.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/dods-datatypes.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/BaseType.h WWWOutput.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DDS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Clause.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/expr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/RValue.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/debug.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DAS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/AttrTable.h
+ ../../../include/InternalErr.h ../../../include/Error.h WWWInt32.h \
+ ../../../include/Int32.h ../../../include/dods-datatypes.h \
+ ../../../include/BaseType.h WWWOutput.h ../../../include/DDS.h \
+ ../../../include/Clause.h ../../../include/expr.h \
+ ../../../include/RValue.h ../../../include/debug.h \
+ ../../../include/DAS.h ../../../include/AttrTable.h
 WWWFloat64.o: WWWFloat64.cc config_www_int.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/InternalErr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Error.h WWWFloat64.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Float64.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/dods-datatypes.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/BaseType.h WWWOutput.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DDS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Clause.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/expr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/RValue.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/debug.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DAS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/AttrTable.h
-WWWStr.o: WWWStr.cc config_www_int.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/InternalErr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Error.h WWWStr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/dods-limits.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Str.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/BaseType.h WWWOutput.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DDS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Clause.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/expr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/RValue.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/debug.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DAS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/AttrTable.h
+ ../../../include/InternalErr.h ../../../include/Error.h WWWFloat64.h \
+ ../../../include/Float64.h ../../../include/dods-datatypes.h \
+ ../../../include/BaseType.h WWWOutput.h ../../../include/DDS.h \
+ ../../../include/Clause.h ../../../include/expr.h \
+ ../../../include/RValue.h ../../../include/debug.h \
+ ../../../include/DAS.h ../../../include/AttrTable.h
+WWWStr.o: WWWStr.cc config_www_int.h ../../../include/InternalErr.h \
+ ../../../include/Error.h WWWStr.h ../../../include/dods-limits.h \
+ ../../../include/Str.h ../../../include/BaseType.h WWWOutput.h \
+ ../../../include/DDS.h ../../../include/Clause.h \
+ ../../../include/expr.h ../../../include/RValue.h \
+ ../../../include/debug.h ../../../include/DAS.h \
+ ../../../include/AttrTable.h
 WWWUrl.o: WWWUrl.cc config_www_int.h WWWUrl.h WWWStr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/dods-limits.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Str.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/BaseType.h WWWOutput.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DDS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Clause.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/expr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/RValue.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/debug.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DAS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/AttrTable.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Error.h
-WWWArray.o: WWWArray.cc config_www_int.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/config_dap.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/InternalErr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Error.h WWWArray.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Array.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/dods-limits.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Vector.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/BaseType.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DDS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Clause.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/expr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/RValue.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/debug.h WWWOutput.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DAS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/AttrTable.h
+ ../../../include/dods-limits.h ../../../include/Str.h \
+ ../../../include/BaseType.h WWWOutput.h ../../../include/DDS.h \
+ ../../../include/Clause.h ../../../include/expr.h \
+ ../../../include/RValue.h ../../../include/debug.h \
+ ../../../include/DAS.h ../../../include/AttrTable.h \
+ ../../../include/Error.h
+WWWArray.o: WWWArray.cc config_www_int.h ../../../include/config_dap.h \
+ ../../../include/InternalErr.h ../../../include/Error.h WWWArray.h \
+ ../../../include/Array.h ../../../include/dods-limits.h \
+ ../../../include/Vector.h ../../../include/BaseType.h \
+ ../../../include/DDS.h ../../../include/Clause.h \
+ ../../../include/expr.h ../../../include/RValue.h \
+ ../../../include/debug.h WWWOutput.h ../../../include/DAS.h \
+ ../../../include/AttrTable.h
 WWWStructure.o: WWWStructure.cc config_www_int.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DAS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/AttrTable.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Error.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/InternalErr.h WWWStructure.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Structure.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/BaseType.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DDS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Clause.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/expr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/RValue.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/debug.h WWWSequence.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Sequence.h WWWOutput.h
-WWWList.o: WWWList.cc config_www_int.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/InternalErr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Error.h WWWList.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/List.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/dods-limits.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Vector.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/BaseType.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DDS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Clause.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/expr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/RValue.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/debug.h
-WWWSequence.o: WWWSequence.cc config_www_int.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DAS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/AttrTable.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Error.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/InternalErr.h WWWSequence.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Sequence.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/BaseType.h WWWOutput.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DDS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Clause.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/expr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/RValue.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/debug.h
-WWWGrid.o: WWWGrid.cc config_www_int.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Array.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/dods-limits.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Vector.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/BaseType.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DDS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Clause.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/expr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/RValue.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/debug.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/InternalErr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Error.h WWWGrid.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Grid.h WWWOutput.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DAS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/AttrTable.h
+ ../../../include/DAS.h ../../../include/AttrTable.h \
+ ../../../include/Error.h ../../../include/InternalErr.h \
+ WWWStructure.h ../../../include/Structure.h \
+ ../../../include/BaseType.h ../../../include/DDS.h \
+ ../../../include/Clause.h ../../../include/expr.h \
+ ../../../include/RValue.h ../../../include/debug.h WWWSequence.h \
+ ../../../include/Sequence.h WWWOutput.h
+WWWList.o: WWWList.cc config_www_int.h ../../../include/InternalErr.h \
+ ../../../include/Error.h WWWList.h ../../../include/List.h \
+ ../../../include/dods-limits.h ../../../include/Vector.h \
+ ../../../include/BaseType.h ../../../include/DDS.h \
+ ../../../include/Clause.h ../../../include/expr.h \
+ ../../../include/RValue.h ../../../include/debug.h
+WWWSequence.o: WWWSequence.cc config_www_int.h ../../../include/DAS.h \
+ ../../../include/AttrTable.h ../../../include/Error.h \
+ ../../../include/InternalErr.h WWWSequence.h \
+ ../../../include/Sequence.h ../../../include/BaseType.h WWWOutput.h \
+ ../../../include/DDS.h ../../../include/Clause.h \
+ ../../../include/expr.h ../../../include/RValue.h \
+ ../../../include/debug.h
+WWWGrid.o: WWWGrid.cc config_www_int.h ../../../include/Array.h \
+ ../../../include/dods-limits.h ../../../include/Vector.h \
+ ../../../include/BaseType.h ../../../include/DDS.h \
+ ../../../include/Clause.h ../../../include/expr.h \
+ ../../../include/RValue.h ../../../include/debug.h \
+ ../../../include/InternalErr.h ../../../include/Error.h WWWGrid.h \
+ ../../../include/Grid.h WWWOutput.h ../../../include/DAS.h \
+ ../../../include/AttrTable.h
 WWWUInt32.o: WWWUInt32.cc config_www_int.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/InternalErr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Error.h WWWUInt32.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/UInt32.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/dods-datatypes.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/BaseType.h WWWOutput.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DDS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Clause.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/expr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/RValue.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/debug.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DAS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/AttrTable.h
+ ../../../include/InternalErr.h ../../../include/Error.h WWWUInt32.h \
+ ../../../include/UInt32.h ../../../include/dods-datatypes.h \
+ ../../../include/BaseType.h WWWOutput.h ../../../include/DDS.h \
+ ../../../include/Clause.h ../../../include/expr.h \
+ ../../../include/RValue.h ../../../include/debug.h \
+ ../../../include/DAS.h ../../../include/AttrTable.h
 WWWInt16.o: WWWInt16.cc config_www_int.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/InternalErr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Error.h WWWInt16.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Int16.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/dods-datatypes.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/BaseType.h WWWOutput.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DDS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Clause.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/expr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/RValue.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/debug.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DAS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/AttrTable.h
+ ../../../include/InternalErr.h ../../../include/Error.h WWWInt16.h \
+ ../../../include/Int16.h ../../../include/dods-datatypes.h \
+ ../../../include/BaseType.h WWWOutput.h ../../../include/DDS.h \
+ ../../../include/Clause.h ../../../include/expr.h \
+ ../../../include/RValue.h ../../../include/debug.h \
+ ../../../include/DAS.h ../../../include/AttrTable.h
 WWWUInt16.o: WWWUInt16.cc config_www_int.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/InternalErr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Error.h WWWUInt16.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/UInt16.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/dods-datatypes.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/BaseType.h WWWOutput.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DDS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Clause.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/expr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/RValue.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/debug.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DAS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/AttrTable.h
+ ../../../include/InternalErr.h ../../../include/Error.h WWWUInt16.h \
+ ../../../include/UInt16.h ../../../include/dods-datatypes.h \
+ ../../../include/BaseType.h WWWOutput.h ../../../include/DDS.h \
+ ../../../include/Clause.h ../../../include/expr.h \
+ ../../../include/RValue.h ../../../include/debug.h \
+ ../../../include/DAS.h ../../../include/AttrTable.h
 WWWFloat32.o: WWWFloat32.cc config_www_int.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/InternalErr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Error.h WWWFloat32.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Float32.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/dods-datatypes.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/BaseType.h WWWOutput.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DDS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Clause.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/expr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/RValue.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/debug.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DAS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/AttrTable.h
-WWWOutput.o: WWWOutput.cc config_www_int.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Regex.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/BaseType.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Array.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/dods-limits.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Vector.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DDS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Clause.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/expr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/RValue.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/debug.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/List.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DAS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/AttrTable.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Error.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/InternalErr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/util.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Byte.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/dods-datatypes.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Int16.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/UInt16.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Int32.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/UInt32.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Float32.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Float64.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Str.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Url.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Structure.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Sequence.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Grid.h WWWOutput.h
-www_int.o: www_int.cc config_www_int.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/BaseType.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Connect.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DAS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/AttrTable.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Error.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/DDS.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Clause.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/expr.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/RValue.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/debug.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/util.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Byte.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/dods-datatypes.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Int16.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/UInt16.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Int32.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/UInt32.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Float32.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Float64.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Str.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/dods-limits.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Url.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Array.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Vector.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/List.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Structure.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Sequence.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/Grid.h \
- /home/jimg/src/DODS-rel/DODS-3.2/include/cgi_util.h WWWOutput.h \
+ ../../../include/InternalErr.h ../../../include/Error.h WWWFloat32.h \
+ ../../../include/Float32.h ../../../include/dods-datatypes.h \
+ ../../../include/BaseType.h WWWOutput.h ../../../include/DDS.h \
+ ../../../include/Clause.h ../../../include/expr.h \
+ ../../../include/RValue.h ../../../include/debug.h \
+ ../../../include/DAS.h ../../../include/AttrTable.h
+WWWOutput.o: WWWOutput.cc config_www_int.h ../../../include/Regex.h \
+ ../../../include/BaseType.h ../../../include/Array.h \
+ ../../../include/dods-limits.h ../../../include/Vector.h \
+ ../../../include/DDS.h ../../../include/Clause.h \
+ ../../../include/expr.h ../../../include/RValue.h \
+ ../../../include/debug.h ../../../include/List.h \
+ ../../../include/DAS.h ../../../include/AttrTable.h \
+ ../../../include/Error.h ../../../include/InternalErr.h \
+ ../../../include/util.h ../../../include/Byte.h \
+ ../../../include/dods-datatypes.h ../../../include/Int16.h \
+ ../../../include/UInt16.h ../../../include/Int32.h \
+ ../../../include/UInt32.h ../../../include/Float32.h \
+ ../../../include/Float64.h ../../../include/Str.h \
+ ../../../include/Url.h ../../../include/Structure.h \
+ ../../../include/Sequence.h ../../../include/Grid.h WWWOutput.h
+www_int.o: www_int.cc config_www_int.h ../../../include/BaseType.h \
+ ../../../include/Connect.h ../../../include/DAS.h \
+ ../../../include/AttrTable.h ../../../include/Error.h \
+ ../../../include/DDS.h ../../../include/Clause.h \
+ ../../../include/expr.h ../../../include/RValue.h \
+ ../../../include/debug.h ../../../include/util.h \
+ ../../../include/Byte.h ../../../include/dods-datatypes.h \
+ ../../../include/Int16.h ../../../include/UInt16.h \
+ ../../../include/Int32.h ../../../include/UInt32.h \
+ ../../../include/Float32.h ../../../include/Float64.h \
+ ../../../include/Str.h ../../../include/dods-limits.h \
+ ../../../include/Url.h ../../../include/Array.h \
+ ../../../include/Vector.h ../../../include/List.h \
+ ../../../include/Structure.h ../../../include/Sequence.h \
+ ../../../include/Grid.h ../../../include/cgi_util.h WWWOutput.h \
  javascript.h
