@@ -10,6 +10,9 @@
 // 3/12/98 jhrg
 
 // $Log: AsciiUInt16.cc,v $
+// Revision 1.2  1999/04/30 17:06:54  jimg
+// Merged with no-gnu and release-2-24
+//
 // Revision 1.1  1999/03/29 21:22:54  jimg
 // Added
 //
@@ -23,7 +26,7 @@
 
 #include <iostream.h>
 
-#include <String.h>
+#include <string>
 
 #include "AsciiUInt16.h"
 #include "name_map.h"
@@ -32,12 +35,12 @@ extern bool translate;
 extern name_map names;
 
 UInt16 *
-NewUInt16(const String &n)
+NewUInt16(const string &n)
 {
     return new AsciiUInt16(n);
 }
 
-AsciiUInt16::AsciiUInt16(const String &n) : UInt16(n)
+AsciiUInt16::AsciiUInt16(const string &n) : UInt16(n)
 {
 }
 
@@ -48,14 +51,14 @@ AsciiUInt16::ptr_duplicate()
 }
 
 bool
-AsciiUInt16::read(const String &, int &)
+AsciiUInt16::read(const string &, int &)
 {
     assert(false);
     return false;
 }
 
 void 
-AsciiUInt16::print_val(ostream &os, String, bool print_decl_p)
+AsciiUInt16::print_val(ostream &os, string, bool print_decl_p)
 {
     if (print_decl_p)
 	os << names.lookup(name(), translate) << ", ";

@@ -12,6 +12,9 @@
 // 3/12/98 jhrg
 
 // $Log: AsciiUInt16.h,v $
+// Revision 1.2  1999/04/30 17:06:54  jimg
+// Merged with no-gnu and release-2-24
+//
 // Revision 1.1  1999/03/29 21:22:55  jimg
 // Added
 //
@@ -30,14 +33,14 @@
 
 class AsciiUInt16: public UInt16 {
 public:
-    AsciiUInt16(const String &n = (char *)0);
+    AsciiUInt16(const string &n = (char *)0);
     virtual ~AsciiUInt16() {}
 
     virtual BaseType *ptr_duplicate();
     
-    virtual bool read(const String &dataset, int &error);
+    virtual bool read(const string &dataset, int &error);
     
-    void print_val(ostream &os, String space = "", bool print_decl_p = true);
+    void print_val(ostream &os, string space = "", bool print_decl_p = true);
 };
 
 #endif

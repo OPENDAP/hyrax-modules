@@ -12,6 +12,9 @@
 // 3/12/98 jhrg
 
 // $Log: AsciiStructure.h,v $
+// Revision 1.3  1999/04/30 17:06:54  jimg
+// Merged with no-gnu and release-2-24
+//
 // Revision 1.2  1998/09/16 23:31:29  jimg
 // Added print_all_vals().
 //
@@ -34,18 +37,18 @@ private:
     void print_header(ostream &os);
 
 public:
-    AsciiStructure(const String &n = (char *)0);
+    AsciiStructure(const string &n = (char *)0);
     virtual ~AsciiStructure();
 
     virtual BaseType *ptr_duplicate();
 
-    virtual bool read(const String &dataset, int &error);
+    virtual bool read(const string &dataset, int &error);
 
-    virtual void print_val(ostream &os, String space = "", 
+    virtual void print_val(ostream &os, string space = "", 
 			   bool print_decl_p = true);
 
     virtual void print_all_vals(ostream &os, XDR *src, DDS *dds, 
-				String space = "", bool print_decl_p = true);
+				string space = "", bool print_decl_p = true);
 };
 
 #endif

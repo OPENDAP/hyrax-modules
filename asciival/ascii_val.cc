@@ -13,6 +13,9 @@
     @author: jhrg */
 
 // $Log: ascii_val.cc,v $
+// Revision 1.8  1999/04/30 17:06:56  jimg
+// Merged with no-gnu and release-2-24
+//
 // Revision 1.7  1999/03/24 06:23:43  brent
 // convert String.h to std lib <string>, convert to packages regex -- B^2
 //
@@ -39,7 +42,7 @@
 
 #include "config_dap.h"
 
-static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.7 1999/03/24 06:23:43 brent Exp $"};
+static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.8 1999/04/30 17:06:56 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -62,7 +65,6 @@ static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.7 1999/03/24 06:23:43 bre
 #include "AsciiArray.h"
 #include "AsciiStructure.h"
 #include "AsciiSequence.h"
-#include "AsciiFunction.h"
 #include "AsciiGrid.h"
 
 #include "name_map.h"
@@ -70,7 +72,10 @@ static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.7 1999/03/24 06:23:43 bre
 
 name_map names;
 bool translate = false;
-const char *VERSION = "DODS asciival version: 1.0";
+
+#ifndef VERSION
+const char *VERSION = "unknown";
+#endif /* VERSION */
 
 static void
 usage(string name)
@@ -223,7 +228,7 @@ main(int argc, char * argv[])
 	  case 'g': gui = true; break;
 	  case 'm': mime_header = true; break;
 	  case 'v': verbose = true; break;
-	  case 'V': {cerr << VERSION << endl; exit(0);}
+	  case 'V': {cerr << "asciival: " << VERSION << endl; exit(0);}
 	  case 't':
 	    trace = true;
 	    topts = strlen(getopt.optarg);

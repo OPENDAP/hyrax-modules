@@ -10,6 +10,9 @@
 // 3/12/98 jhrg
 
 // $Log: AsciiFloat32.cc,v $
+// Revision 1.2  1999/04/30 17:06:53  jimg
+// Merged with no-gnu and release-2-24
+//
 // Revision 1.1  1999/03/29 21:22:55  jimg
 // Added
 //
@@ -24,7 +27,7 @@
 #include <assert.h>
 #include <iostream.h>
 
-#include <String.h>
+#include <string>
 
 #include "AsciiFloat32.h"
 #include "name_map.h"
@@ -33,12 +36,12 @@ extern bool translate;
 extern name_map names;
 
 Float32 *
-NewFloat32(const String &n)
+NewFloat32(const string &n)
 {
     return new AsciiFloat32(n);
 }
 
-AsciiFloat32::AsciiFloat32(const String &n) : Float32(n)
+AsciiFloat32::AsciiFloat32(const string &n) : Float32(n)
 {
 }
 
@@ -49,14 +52,14 @@ AsciiFloat32::ptr_duplicate()
 }
  
 bool
-AsciiFloat32::read(const String &, int &)
+AsciiFloat32::read(const string &, int &)
 {
     assert(false);
     return false;
 }
 
 void 
-AsciiFloat32::print_val(ostream &os, String, bool print_decl_p)
+AsciiFloat32::print_val(ostream &os, string, bool print_decl_p)
 {
     if (print_decl_p)
 	os << names.lookup(name(), translate) << ", ";

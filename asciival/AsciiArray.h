@@ -12,6 +12,9 @@
 // 3/12/98 jhrg
 
 // $Log: AsciiArray.h,v $
+// Revision 1.2  1999/04/30 17:06:53  jimg
+// Merged with no-gnu and release-2-24
+//
 // Revision 1.1  1998/03/13 21:25:20  jimg
 // Added
 //
@@ -31,15 +34,15 @@ private:
     int print_vector(ostream &os, int index, int number);
 
 public:
-    AsciiArray(const String &n = (char *)0, BaseType *v = 0);
+    AsciiArray(const string &n = (char *)0, BaseType *v = 0);
     virtual ~AsciiArray();
 
     virtual BaseType *ptr_duplicate();
 
-    virtual bool read(const String &dataset, int &error);
+    virtual bool read(const string &dataset, int &error);
 
     /// Overload of BaseType mfunc. This prints arrays using commas and CRs.
-    virtual void print_val(ostream &os, String space = "", 
+    virtual void print_val(ostream &os, string space = "", 
 			   bool print_decl_p = true);
 };
 

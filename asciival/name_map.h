@@ -8,8 +8,14 @@
 //	jhrg,jimg	James Gallagher (jgallagher@gso.uri.edu)
 
 // $Log: name_map.h,v $
+// Revision 1.7  1999/04/30 17:06:58  jimg
+// Merged with no-gnu and release-2-24
+//
 // Revision 1.6  1999/03/24 06:40:48  brent
 // convert String.h to std lib <string>, convert to packages regex -- B^2
+//
+// Revision 1.5.18.1  1999/03/30 20:26:02  jimg
+// Added include of SLList
 //
 // Revision 1.5  1998/03/13 21:24:26  jimg
 // Fixed up comments
@@ -33,6 +39,8 @@
 #ifdef __GNUG__
 #pragma interface
 #endif
+
+#include <SLList.h>
 
 /** This class can be used to build up a simple thesaurus which maps names from
     one string to another. The thesaurus is built by calling the #add# mfunc

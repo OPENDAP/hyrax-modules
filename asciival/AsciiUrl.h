@@ -11,6 +11,9 @@
 // 3/12/98 jhrg
 
 // $Log: AsciiUrl.h,v $
+// Revision 1.2  1999/04/30 17:06:54  jimg
+// Merged with no-gnu and release-2-24
+//
 // Revision 1.1  1998/03/13 21:25:26  jimg
 // Added
 //
@@ -26,7 +29,7 @@
 
 class AsciiUrl: public AsciiStr {
 public:
-    AsciiUrl(const String &n = (char *)0);
+    AsciiUrl(const string &n = (char *)0);
     virtual ~AsciiUrl() {}
 
     virtual BaseType *ptr_duplicate();

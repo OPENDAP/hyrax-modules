@@ -11,6 +11,9 @@
 // 3/12/98 jhrg
 
 // $Log: AsciiFloat64.h,v $
+// Revision 1.2  1999/04/30 17:06:54  jimg
+// Merged with no-gnu and release-2-24
+//
 // Revision 1.1  1998/03/13 21:25:22  jimg
 // Added
 //
@@ -26,14 +29,14 @@
 
 class AsciiFloat64: public Float64 {
 public:
-    AsciiFloat64(const String &n = (char *)0);
+    AsciiFloat64(const string &n = (char *)0);
     virtual ~AsciiFloat64() {}
 
     virtual BaseType *ptr_duplicate();
     
-    virtual bool read(const String &dataset, int &error);
+    virtual bool read(const string &dataset, int &error);
 
-    virtual void print_val(ostream &os, String space = "", 
+    virtual void print_val(ostream &os, string space = "", 
 			   bool print_decl_p = true);
 };
 

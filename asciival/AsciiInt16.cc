@@ -10,6 +10,9 @@
 // 3/12/98 jhrg
 
 // $Log: AsciiInt16.cc,v $
+// Revision 1.2  1999/04/30 17:06:54  jimg
+// Merged with no-gnu and release-2-24
+//
 // Revision 1.1  1999/03/29 21:22:54  jimg
 // Added
 //
@@ -24,7 +27,7 @@
 #include <assert.h>
 #include <iostream.h>
 
-#include <String.h>
+#include <string>
 
 #include "AsciiInt16.h"
 #include "name_map.h"
@@ -33,12 +36,12 @@ extern bool translate;
 extern name_map names;
 
 Int16 *
-NewInt16(const String &n)
+NewInt16(const string &n)
 {
     return new AsciiInt16(n);
 }
 
-AsciiInt16::AsciiInt16(const String &n) : Int16(n)
+AsciiInt16::AsciiInt16(const string &n) : Int16(n)
 {
 }
 
@@ -49,14 +52,14 @@ AsciiInt16::ptr_duplicate()
 }
 
 bool
-AsciiInt16::read(const String &, int &)
+AsciiInt16::read(const string &, int &)
 {
     assert(false);
     return false;
 }
 
 void 
-AsciiInt16::print_val(ostream &os, String, bool print_decl_p)
+AsciiInt16::print_val(ostream &os, string, bool print_decl_p)
 {
     if (print_decl_p)
 	os << names.lookup(name(), translate) << ", ";
