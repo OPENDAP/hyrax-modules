@@ -3,9 +3,12 @@
 #define _DODS_CONFIG_WV_H_
 
 /* $Log: config_asciival.h.in,v $
-/* Revision 1.3  1997/05/06 00:35:08  jimg
-/* Protect BIG/LITTLE ENDIAN define
+/* Revision 1.4  1997/06/06 04:56:49  jimg
+/* *** empty log message ***
 /*
+ * Revision 1.3  1997/05/06 00:35:08  jimg
+ * Protect BIG/LITTLE ENDIAN define
+ *
  * Revision 1.2  1997/02/06 19:40:02  jimg
  * Added DODS_ROOT and {BIG,LITTLE}_ENDIAN.
  *
@@ -27,7 +30,9 @@
 #undef LITTLE_ENDIAN
 #endif
 
+#ifndef DODS_ROOT
 #undef DODS_ROOT
+#endif
 
 #endif /* HAVE_CONFIG_H */
 
