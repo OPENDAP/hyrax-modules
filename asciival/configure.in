@@ -1,7 +1,7 @@
 
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.in,v 1.8 1998/02/19 20:16:46 jimg Exp $)
+AC_REVISION($Id: configure.in,v 1.9 1998/07/13 20:31:10 jimg Exp $)
 AC_INIT(write_val.cc)
 AC_CONFIG_HEADER(config_writeval.h)
 AC_CONFIG_AUX_DIR(../../etc)
@@ -16,6 +16,7 @@ dir=`basename ${fulldir}`
 AC_SUBST(dir)
 
 DODS_GET_DODS_ROOT
+DODS_DIRECTORY_VERSION
 
 dnl `depend' is the command to use to generate dependencies for Makefiles.
 
@@ -99,6 +100,8 @@ dnl Checks for library functions.
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(strerror strtol)
 
+DODS_CHECK_SIZES
+
 DODS_LIBS
 
 DODS_COMPRESSION_LIB
@@ -110,8 +113,6 @@ DODS_EFENCE
 DODS_DBNEW
 
 DODS_DEBUG_OPTION
-
-DODS_CHECK_SIZES
 
 if test $ac_cv_sizeof_long -eq 4 
 then

@@ -1,5 +1,5 @@
 
- $Id: README,v 1.15 1998/03/17 22:21:42 jimg Exp $
+ $Id: README,v 1.16 1998/07/13 20:31:08 jimg Exp $
 
 The following provides background technical information on the design of
 loaddods/writeval and asciival. For installation information, see the file
@@ -7,6 +7,10 @@ INSTALL-matlab-client and for help using the matlab command `loaddods', see
 the on-line help for that command (in Matlab type `help loaddods'). Make sure
 that the file loaddods.m is in the same directory as the loaddods.mex*
 program.
+
+Note that the configure script for this directory checks for Matlab but only
+issues a warning if its not found. Of the three programs loaddods, writeval
+and asciival, only loaddods needs the Matlab libraries. 
 
 ASCIIVAL: 
 The program asciival is a filter that is similar to writeval (described later
@@ -17,6 +21,8 @@ version of the data where columns are separated by commas and rows separated
 by newlines. Users can request data in ASCII form using the suffix .ascii or
 .asc in place of .dods in a DODS URL. To see how the asciival program is used
 on the server side, look at the DODS_Dispatch.pm Perl module.
+
+I think that asciival should be moved to the dap directory ASAP. 5/22/98 jhrg
 
 WRITEVAL:
 There are two programs that comprise the DODS-Matlab command line interface;
