@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.30 1997/03/27 18:37:41 jimg Exp $
+# $Id: acinclude.m4,v 1.31 1997/07/15 19:56:07 jimg Exp $
 
 # Check for fill value usage.
 
@@ -95,11 +95,11 @@ AC_DEFUN(DODS_PROG_LEX, [dnl
 	flex)
 	    flex_ver1=`flex -V 2>&1 | sed 's/[[^0-9]]*\(.*\)/\1/'`
 	    flex_ver2=`echo $flex_ver1 | sed 's/\.//g'`
-	    if test -z $flex_ver2 -a $flex_ver2 -lt 252
+	    if test -n "$flex_ver2" && test $flex_ver2 -ge 252
 	    then
-		AC_MSG_ERROR(Flex version: found ${flex_venr1} should be at least 2.5.2)
-	    else
 		AC_MSG_RESULT(Found flex version ${flex_ver1}.)
+	    else
+		AC_MSG_ERROR(Flex version: found ${flex_venr1} should be at least 2.5.2)
 	    fi
 	    ;;
 	*)
@@ -117,11 +117,11 @@ AC_DEFUN(DODS_PROG_BISON, [dnl
 	    bison_ver1=`bison -V 2>&1 | sed 's/[[^0-9]]*\(.*\)/\1/'`
 	    bison_ver2=`echo $bison_ver1 | sed 's/\.//g'`
 	    AC_DEFINE_UNQUOTED(DODS_BISON_VER, $bison_ver2)
-	    if test -z $bison_ver2 -a $bison_ver2 -lt 124
+	    if test -n "$bison_ver2" && test $bison_ver2 -ge 124
 	    then
-		AC_MSG_ERROR(Bison version: found ${bison_ver1} should be at least 1.24)
-	    else
 		AC_MSG_RESULT(Found bison version ${bison_ver1}.)
+	    else
+		AC_MSG_ERROR(Bison version: found ${bison_ver1} should be at least 1.24)
 	    fi
 	    ;;
 	*)
@@ -305,9 +305,9 @@ AC_DEFUN(DODS_WWW_ROOT, [dnl
     if test "$WWW_ROOT"
     then
 	AC_SUBST(WWW_ROOT)
-	INCS="$INCS -I$(WWW_ROOT) -I$(WWW_ROOT)/Library/src"
+	INCS="$INCS -I\$(WWW_ROOT) -I\$(WWW_ROOT)/Library/src"
 	AC_SUBST(INCS)
-	LDFLAGS="$LDFLAGS -L$(WWW_ROOT)/Library/src"
+	LDFLAGS="$LDFLAGS -L\$(WWW_ROOT)/Library/src"
 	AC_MSG_RESULT(Set WWW root directory to $WWW_ROOT) 
     else
 	AC_MSG_WARN(not found!)
@@ -553,8 +553,8 @@ AC_DEFUN(DODS_DSP_ROOT, [dnl
     then
 	AC_SUBST(DSP_ROOT)
 	dnl Only add this path to gcc's options... jhrg 11/15/96
-	CFLAGS="$CFLAGS -I$(DSP_ROOT)/inc"
-	LDFLAGS="$LDFLAGS -L$(DSP_ROOT)/lib -L$(DSP_ROOT)/shlib"
+	CFLAGS="$CFLAGS -I\$(DSP_ROOT)/inc"
+	LDFLAGS="$LDFLAGS -L\$(DSP_ROOT)/lib -L\$(DSP_ROOT)/shlib"
 	AC_MSG_RESULT(Set DSP root directory to $DSP_ROOT) 
     else
         AC_MSG_WARN(not found!)
