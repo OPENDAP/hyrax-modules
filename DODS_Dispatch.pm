@@ -22,6 +22,14 @@
 #      	       	       	      - Root name of the filter (e.g., *nc*_dods)
 #
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.15  1999/05/21 20:05:11  jimg
+# Retracted some of the security stuff when using the ASCII mode of the
+# servers. In order to run a pipe from Perl you must use an intermediate shell
+# or (maybe) explicitly open the two processes using open("|", ...). The later
+# might work but does not fit well into the design of DODS_Dispatch.pm. In the
+# long run, we'll have to change DODS_Dispatch, but for now I'm running that
+# part of the server through a shell.
+#
 # Revision 1.14  1999/05/21 17:18:09  jimg
 # Changed quoting of various strings, esp the $query. Since the command
 # arguments are now stored in a Perl list and passes to exec in that list (and
@@ -369,16 +377,33 @@ sub command {
 	    @command = (@command, "-t", $accept_types);
 	}
     } elsif ($ext eq "ascii" || $ext eq "asc") {
+	# Circumvent some of the security changes; build up a command that is
+	# run by the shell. Note that the trick of passing exec() a list and
+	# making that list a shell, -c and string is what bypasses the Perl
+	# taint security stuff. I've left the old code here (commented out)
+	# in case this patch has security problems. A better solution might
+	# be to open asciival using the open("|", ...) feature of Perl and
+	# pipe it the output of nc_dods. 5/21/99 jhrg
 	my $query = $self->query();
-	$server_pgm = $self->cgi_dir() . $self->script() . "_dods";
-	@command = ($server_pgm, "-v", $self->{'caller_revision'}, 
-		    $self->filename());
+	my $server_pgm = $self->cgi_dir() . $self->script() . "_dods";
+	my $str = $server_pgm . " -v " . $self->{'caller_revision'}
+	           . " " . $self->filename();
 	if ($query ne "") {
-	    @command = (@command, "-e", $query);
+	    $str .= " -e \"" .  $query . "\"";
 	}
 	# Never compress ASCII.
-	local($ascii_srvr) = $cgi_dir . "asciival";
-	@command = (@command, "|", $ascii_srvr, " -m -- -");
+	local($ascii_srvr) = $self->cgi_dir() . "asciival";
+	$str .= " | " . $ascii_srvr . " -m -- -";
+	@command = ("sh", '-c', $str);
+
+#  	@command = ($server_pgm, "-v", $self->{'caller_revision'}, 
+#  		    $self->filename());
+#  	if ($query ne "") {
+#  	    @command = (@command, "-e", $query);
+#  	}
+#  	# Never compress ASCII.
+#  	local($ascii_srvr) = $self->cgi_dir() . "asciival";
+#  	@command = (@command, "|", $ascii_srvr, " -m -- -");
     } else {
 	$self->print_error_message();
 	exit(1);
