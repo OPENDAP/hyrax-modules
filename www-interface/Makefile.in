@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.3 1999/05/09 04:14:50 jimg Exp $
+# $Id: Makefile.in,v 1.4 1999/06/22 17:11:30 jimg Exp $
 
 @SET_MAKE@
 
@@ -172,7 +172,7 @@ tar:
 
 .PHONY: tags
 tags:
-	$(TAGS) $(TAGS_FLAGS) *.cc *.h *.c
+	$(TAGS) $(TAGS_FLAGS) *.cc *.h
 
 .SUFFIXES:      .o .cc .c
 
