@@ -1,36 +1,45 @@
 
- $Id: README,v 1.4 1996/10/08 19:48:19 jimg Exp $
+ $Id: README,v 1.5 1996/10/24 00:13:57 jimg Exp $
 
 There are four executables used in the DODS-Matlab interface:
 
-1) loaddods; a mex program run by Matlab. This program must be accessible to
-Matlab. It can be placed in either a user's directory from scripts and
-extensions or in a system-wide directory. loaddods can be used in three ways:
-a) when run with a URL as its argument the program assumes that the URL is a
-fully qualified DODS URL and invokes writeval to get the associated data, b)
-with no argument at all, loaddods waits for a URL to be sent via the urlqueue
-program and c) if loaddods is run with `?' as its argument, then the program
-will start Netscape and open the DODS locator main page. Thus loaddods is a
-very flexible program since you can use it with a URL saved or cut from some
-other source, with the HTML interface we have built, with some other
-interface or after you have found some data with the browser.
+1) loaddods; A cmex program run by Matlab. This program must be accessible to
+Matlab. It can be placed in either a user's directory for scripts and
+extensions or in a system-wide directory. loaddods can be used in four ways:
 
-2) writeval; dereferences a DODS URL and returns a binary stream of data.
+a) when run with a URL as its argument the program assumes that the URL is a
+fully qualified DODS URL and invokes writeval to get the associated data,
+
+b) if loaddods is run with `*' or '?' as its argument, the program will start
+Netscape and open the DODS locator main page,
+
+c) a URL prefixed by a `*' or `?' will be passed to netscape and used as an
+alternative data locator page, and
+
+d) with no argument at all, loaddods waits for a URL to be sent via a WWW
+browser.
+
+Thus loaddods is a very flexible program since you can use it with a URL
+saved or cut from some other source, with the HTML interface we have built,
+with some other interface or after you have found some data with the browser.
+
+2) writeval; Dereferences a DODS URL and returns a binary stream of data.
 This can be installed anywhere on the system, but its path is hard coded into
 the loaddods program so unless you want to modify the loaddods source code it
 should be placed in the same directory as loaddods. While this program is
 used by loaddods, it could be used for other purposes as well. For example a
-user could save binary data to a file with writeval.
+user could save binary data to a file with writeval. Note that with the `-f'
+option writeval translates all simple types to either Float64 or String.
 
-3) urlqueue; a helper application for Netscape (or other WWW browser) which
+3) urlqueue; A helper application for Netscape (or other WWW browser) which
 passes information from a browser to another program such as loaddods. The
 file `mailcap' contains a sample mailcap file entry for the helper
-application
+application.
 
-4) posturl; Users do not need to have this on their system. It is included
+4) posturl.pl; Users do not need to have this on their system. It is included
 here for completeness. However, if users want to write their own HTML forms
 for building URLs then they can install and use their own copy of posturl and
-make a completely self contained system. 
+make a completely self contained system.
 
 ------------
 
@@ -41,59 +50,38 @@ on the next. For ctor types it becomes more complex, but not much. For arrays
 write Array, the type, the name, the number of dimensions and a list of
 dimension sizes on one line and the data on the next line. 
 
-Sequences are handled specially because of a possible bug in the core
-software. I `flatten' sequences so that a DDS like:
-	  Dataset {
-		  Sequence {
-			   Int32 a;
-			   Int32 b;
-			   Sequence {
-				    Float64 c;
-		           } inner;
-		  } outer;
-	  } ds;
-Will look like:
-	  Dataset {
-		  Sequence {
-			   Int32 a;
-			   Int32 b;
-			   Float64 c;
-		  } outer;
-	  } ds;
-
-Also note that Sequences of ctor types other than Sequence cannot be
-flattened and thus will fail. I believe that the failure won't crash, but
-some data will be lost.
-
 <data request> :: <variable>*
 
-<variable> :: <type name> 
+<simple variable> :: <variable name> '\n' <data values>
 
-<simple variable> :: ' ' <variable name> '\n' <data values>
+<array variable> :: <variable type> <variable name> <number of dims> 
+		    <dim size>+
 
-<array variable> :: ' ' <variable name> <number of dims> <dim size>+
+<list variable> :: <variable type> <variable name> <list size>
 
-<list variable> :: ' ' <variable name> <list size>
+<struct variables> :: <variable name> <num of elements> '\n' (<variable> '\n'
+		      <data>)+
 
-<struct variables> :: <variable name> <num of elements> '\n' <variable>* '\n'
-		      <data>*
-NB: the number of <variable> matches the number of <data>
+<sequence variables> :: <variable name> <num of elements> '\n' (<variable> '\n'
+		        <data>)+
 
-<sequence variables> :: <variable name> <num of elements> '\n' <variable>* '\n'
-		        <data>*
-NB: the number of <data> is an integral multiple of <variable>.
+<function variables> :: << note yet done >>
 
-<variable> :: Byte <simple variable> '\n' <data> '\n'
-	   :: Int32 <simple variable> '\n' <data> '\n'
-	   :: Float64 <simple variable> '\n'  <data> '\n'
-	   :: Str <simple variable> '\n' <data> '\n'
-	   :: Url <simple variable> '\n' <data> '\n'
-	   :: Array <array variable> '\n' <data> '\n'
-	   :: List <list variable> '\n' <data> '\n'
-	   :: Structure <struct variables> `\n'
-	   :: Sequence <sequence variables> '\n'
-	   :: Grid <variable name> '\n' 'array: \n' <array variable> <data>
+<grid variables> :: <variable name> '\n' 'array: \n' <array variable> <data>
 	      'map: \n' <array variable>+ <data>+
-NB: The number of the second <array variable> and <data> must match.
+
+<variable> :: Byte ' ' <simple variable> '\n' <data> '\n'
+	   :: Int32 ' ' <simple variable> '\n' <data> '\n'
+	   :: Float64 ' ' <simple variable> '\n'  <data> '\n'
+	   :: Str ' ' <simple variable> '\n' <data> '\n'
+	   :: Url ' ' <simple variable> '\n' <data> '\n'
+
+	   :: Array ' ' <array variable> '\n' <data> '\n'
+	   :: List ' ' <list variable> '\n' <data> '\n'
+
+	   :: Structure ' ' <struct variables> '\n'
+	   :: Sequence ' ' <sequence variables> '\n'
+	   :: Function ' ' <function variables> '\n'
+	   :: Grid ' ' <grid variables> '\n'
 
 James Gallagher 10/4/96
