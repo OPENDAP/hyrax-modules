@@ -19,7 +19,7 @@
 # 5. Macros used to test things about the computer/OS/hardware
 #
 
-# $Id: acinclude.m4,v 1.58 1999/11/04 23:59:58 jimg Exp $
+# $Id: acinclude.m4,v 1.59 2000/01/11 00:05:18 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -141,15 +141,15 @@ AC_DEFUN(DODS_GET_DODS_ROOT, [dnl
 # From Tcl7.6 configure.in. jhrg 11/18/96
 
 AC_DEFUN(DODS_LIBS, [dnl
-    tcl_checkBoth=0
-    AC_CHECK_FUNC(connect, tcl_checkSocket=0, tcl_checkSocket=1)
-    if test "$tcl_checkSocket" = 1; then
-	AC_CHECK_LIB(socket, main, LIBS="$LIBS -lsocket", tcl_checkBoth=1)
+    checkBoth=0
+    AC_CHECK_FUNC(connect, checkSocket=0, checkSocket=1)
+    if test "$checkSocket" = 1; then
+	AC_CHECK_LIB(socket, main, LIBS="$LIBS -lsocket", checkBoth=1)
     fi
-    if test "$tcl_checkBoth" = 1; then
-	tk_oldLibs=$LIBS
+    if test "$checkBoth" = 1; then
+	oldLibs=$LIBS
 	LIBS="$LIBS -lsocket -lnsl"
-	AC_CHECK_FUNC(accept, tcl_checkNsl=0, [LIBS=$tk_oldLibs])
+	AC_CHECK_FUNC(accept, checkNsl=0, [LIBS=$oldLibs])
     fi
     AC_CHECK_FUNC(gethostbyname, , AC_CHECK_LIB(nsl, main, 
 		  [LIBS="$LIBS -lnsl"]))])
@@ -180,7 +180,11 @@ AC_DEFUN(DODS_PACKAGES_SUPPORT, [dnl
     # Find a good C compiler (hopefully gcc).
     AC_REQUIRE([AC_PROG_CC])
     # Find out about -lns and -lsocket
-    AC_REQUIRE([DODS_LIBS])
+    # I removed the following line because DODS_LIBS includes libraries that 
+    # TK also uses. Since We can get those libraries from the TK Script
+    # (which should be run in configure) there's no need to look for the
+    # libraries here, too. 1/10/2000 jhrg
+    # AC_REQUIRE([DODS_LIBS])
     # Find the full name of the packages directory
     AC_REQUIRE([DODS_FIND_PACKAGES_DIR])
     # Assume that we always search the packages/lib directory for libraries.
