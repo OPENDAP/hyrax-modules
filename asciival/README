@@ -1,5 +1,5 @@
 
- $Id: README,v 1.14 1998/03/16 22:08:24 jimg Exp $
+ $Id: README,v 1.15 1998/03/17 22:21:42 jimg Exp $
 
 The following provides background technical information on the design of
 loaddods/writeval and asciival. For installation information, see the file
@@ -145,6 +145,8 @@ terminated by a newline. A second newline follows the last string.
 	   :: Sequence '\n' <sequence variables>
 	   :: Function '\n' <function variables>
 	   :: Grid '\n' <grid variables>
+
+<error> :: Error '\n' <message> '\n'
 
 James Gallagher 10/4/96
 
