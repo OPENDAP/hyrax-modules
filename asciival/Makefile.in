@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.22 1997/12/16 00:58:52 jimg Exp $
+# $Id: Makefile.in,v 1.23 1998/02/05 20:14:51 jimg Exp $
 
 @SET_MAKE@
 
@@ -24,7 +24,7 @@ INCS = -I. -I$(DODS_ROOT)/include -I$(MATLAB_ROOT)/extern/include @INCS@
 DEFS = @DEFS@ -DUSE_LIBGXX_INLINES
 CPPFLAGS = @CPPFLAGS@ $(DEFS) $(INCS)
 CFLAGS = @CFLAGS@
-CXXFLAGS = @CXXFLAGS@
+CXXFLAGS = @CXXFLAGS@ -fno-rtti -fno-exceptions
 LDFLAGS = @LDFLAGS@ -L. -L$(DODS_ROOT)/lib
 LFLAGS = -8
 YFLAGS = -d
