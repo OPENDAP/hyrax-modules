@@ -13,6 +13,9 @@
     @author: jhrg */
 
 // $Log: ascii_val.cc,v $
+// Revision 1.3  1998/03/19 23:26:03  jimg
+// Added code to write out error messages read from the server.
+//
 // Revision 1.2  1998/03/16 19:45:09  jimg
 // Added mime header output. See -m.
 //
@@ -22,7 +25,7 @@
 
 #include "config_dap.h"
 
-static char rcsid[] __unused__ = {"$Id: ascii_val.cc,v 1.2 1998/03/16 19:45:09 jimg Exp $"};
+static char rcsid[] __unused__ = {"$Id: ascii_val.cc,v 1.3 1998/03/19 23:26:03 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -152,6 +155,18 @@ process_data(XDR *src, DDS *dds)
     }
 }
 
+/** Write out the given error object. If the Error object #e# is empty, don't
+    write anything out (since that will confuse loaddods).
+
+    @author jhrg */
+
+void
+output_error_object(Error e)
+{
+    if (e.OK())
+	cout << "Error: " << e.error_message() << endl;
+}
+
 // Read a DODS data object. The object maybe specified by a URL (which will
 // be dereferenceed using Connect, it maybe read from a file or it maybe read
 // from stdin. Use `-' in the command line to indicate the next input should
@@ -235,8 +250,11 @@ main(int argc, char * argv[])
 
 	if (dds) {
 	    if (mime_header)
-		set_mime_text(dods_data);
+		set_mime_text(cout, dods_data);
 	    process_data(url->source(), dds);
+	}
+	else {
+	    output_error_object(url->error());
 	}
     }
 
