@@ -15,7 +15,8 @@
 package DODS_Cache;
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(purge_cache is_compressed decompress_and_cache);
+@EXPORT = qw(purge_cache is_compressed decompress_and_cache is_dodster
+	     dodster_and_cache);
 
 my $test = 0;
 my $debug = 0;
@@ -38,7 +39,7 @@ use strict;
 # files falls below the max size. Use an `oldest first' purge strategy. The
 # cache directory can be used by other programs; this routine removes only
 # files added by the routine decompress_and_cache(). It does this by
-# selecting files which containt he regex `dods_cache#'.
+# selecting files which contains he regex `dods_cache#'.
 #
 # The arguments to this subroutine are: 
 # CACHE: the directory that holds the cached files
@@ -99,6 +100,15 @@ sub is_compressed {
     return ($file_name =~ m/.*$compressed_regex/) ? 1 : 0;
 }
 
+my $dods_ext = "(das|dds|dods|asc|ascii|html|info|ver)";
+
+# Return 1 if the filename looks like a DODSter filename, 0 otherwise.
+sub is_dodster {
+    my $file_name = shift;
+
+    return ($file_name =~ m@(http|ftp)://.*@) ? 1 : 0;
+}
+
 # Given the full path name to a compressed file, decompress that file and
 # store the result in the cache. If the file already exists in the cache, do
 # nothing. Return the name of the cache entity. Use this in place of the
@@ -108,14 +118,31 @@ sub decompress_and_cache {
     my $pathname = shift;
     my $cache_dir = shift;
 
+    # Strip shell meta-characters from the $pathname. 7/10/2001 jhrg
+    print STDERR "pathname: $pathname\n" if $debug;
+    $pathname !~ m@.*[\s%&()*?<>]+.*@ 
+	or return ("", "Found shell meta characters in pathname");
+
     my $cache_entity = cache_name($pathname, $cache_dir);
 
     # Only uncompress and cache if the data file actually exits *and* has not
     # already been decompressed and cached.
     if ((! -e $cache_entity) && (-e $pathname)) { 
-	my $uncomp = "gzip -c -d " . $pathname . " > " .  $cache_entity;
-	# Using system opens a potential hole. 5/31/2001 jhrg
-	system($uncomp); # uncompress and put output to cache
+	# This code uses two opens and is a safer than using system since
+	# $cache_entity is not run through the shell. However, it sounds like
+	# (see ``Programming PERL'') that $pathanme is still exposed to the
+	# shell since open uses /bin/sh when a pipe symbol is present. 
+	my $uncomp = "/bin/gzip -c -d " . $pathname . " |";
+	my $buf;
+	open GZIP, $uncomp 
+	    or return ("", "Could not decompress $pathname: Unable to open the decompresser");
+	open DEST, ">$cache_entity" 
+	    or return ("", "Could not decompress $pathname: Unable to open destination");
+	while (read GZIP, $buf, 16384) {
+	    print DEST $buf;
+	}
+	close GZIP;
+	close DEST;
     }
 
     return $cache_entity;
@@ -128,10 +155,89 @@ sub cache_name {
 
     $pathname =~ s@^/@@;  # delete leading /
     $pathname =~ s@/@\#@g; # turn remaining / into #
-    $pathname =~ s@$compressed_regex@@; # delete trailing filetype
+    $pathname =~ s@$compressed_regex@@; # delete trailing file type
 
     return $cache_dir . "/" . "dods_cache#" . $pathname;
 }
+
+# Given a DODSter URL...
+sub dodster_and_cache {
+    my $url = shift;
+    my $cache_dir = shift;
+
+    # Strip shell meta-characters from the $pathname. 7/10/2001 jhrg
+    print STDERR "URL: $url\n" if $debug;
+    $url !~ m@.*[\s%&()*?<>]+.*@ 
+	or return ("", "Found shell meta characters in DODSter URL");
+
+    my $cache_entity = dodster_name($url, $cache_dir);
+
+    my @trans_response;
+    # Only transfer and cache if the data file has not already been cached.
+    if (! -e $cache_entity) {
+	print(STDERR "Starting transfer of remote file... ") if $debug > 0;
+	@trans_response = &transfer_remote_file($url, $cache_entity);
+	if ($trans_response[1] ne "") {
+	    print(STDERR "error\n") if $debug > 0;
+	    return ("", $trans_response[1]);
+	}
+	print(STDERR "successful ($trans_response[0] bytes).\n") if $debug > 0;
+    }
+    else {
+	print(STDERR "Remote file ($url) found in cache.\n") if $debug > 0;
+    }
+
+    return ($cache_entity, "");
+}
+
+# Private. Get the remote thing. The param $url should be scanned for shell
+# meta-characters. 
+sub transfer_remote_file {
+    my $url = shift;
+    my $cache_entity = shift;
+
+    my $curl = "curl";
+    $curl = "../bin/curl" if (-e "../bin/curl");
+
+    my $transfer = $curl . " --silent --user anonymous:root\@dods.org " . $url . " |";
+    my $buf;
+    open CURL, $transfer 
+	or return ("", "Could not transfer $url: Unable to open the transfer utility.");
+    open DEST, ">$cache_entity" 
+	or return ("", "Could not transfer $url: Unable to open destination in the local cache.");
+
+    my $bytes;
+    my $total = 0;
+    while ($bytes = read CURL, $buf, 16384) {
+	my $status = print DEST $buf;
+	print(STDERR "Status: $status\n") if $debug > 0;
+	if (!$status) {
+	    close CURL;
+	    close DEST;
+	    unlink $cache_entity;
+	    return ($total, "Error transferring remote file ($url) to the cache.");
+	}
+	$total += $bytes;
+    }
+
+    close CURL;
+    close DEST;
+
+    return ($total, "");
+}
+
+# Private. Build up the cache filename for a DODSter thing.
+sub dodster_name {
+    my $pathname = shift;
+    my $cache_dir = shift;
+
+    $pathname =~ s@^/@@;  # delete leading /
+    $pathname =~ s@/@\#@g; # turn remaining / into #
+
+    return $cache_dir . "/" . "dods_cache#" . $pathname;
+}
+
+##########################################################################
 
 if ($test) {
     (1 == is_compressed("myfile.Z")) || die;
@@ -142,6 +248,22 @@ if ($test) {
     (0 == is_compressed("test")) || die;
     (0 == is_compressed("gz")) || die;
     print "\t is_compressed passed all tests\n";
+
+    (1 == is_dodster("/http://dcz.dods.org/nph-dods/data/nc/fnoc1.nc.das")) 
+	|| die;
+    (1 == is_dodster("/http://dcz.dods.org/nph-dods/data/nc/fnoc1.nc.dods")) 
+	|| die;
+    (1 == is_dodster("/http://dcz.dods.org/nph-dods/data/nc/fnoc1.nc.asc")) 
+	|| die;
+    (1 == is_dodster("/ftp://dcz.dods.org/nph-dods/data/nc/fnoc1.nc.asc")) 
+	|| die;
+    (1 == is_dodster("/ftp://dcz.dods.org/nph-dods/data/nc/fnoc1.nc.das")) 
+	|| die;
+    (0 == is_dodster("/http/dcz.dods.org/nph-dods/data/nc/fnoc1.nc.asc")) 
+	|| die;
+    (0 == is_dodster("/ftp/dcz.dods.org/nph-dods/data/nc/fnoc1.nc.asc")) 
+	|| die;
+    print "\t is_dodster passed all tests\n";
 
     # NB: Never call cache_name with "" for the cache directory. I'm doing it
     # here just to test stuff. 10/18/2000 jhrg
@@ -164,24 +286,55 @@ if ($test) {
 					     "/usr/tmp")) || die;
     print "\t cache_name passed all tests\n";
 
-    ("/usr/tmp/dods_cache#test_file" eq decompress_and_cache("test_file.gz",
-						  "/usr/tmp")) || die;
+    ("/dods_cache#http:##stuff" == dodster_name("/http://stuff", ""))
+	|| die;
+    ("/dods_cache#ftp:##dcz.dods.org#nph-dods#data#nc#fnoc1.nc" == dodster_name("/ftp://dcz.dods.org/nph-dods/data/nc/fnoc1.nc", ""))
+	|| die;
+    ("/dods_cache#http:##dcz.dods.org#nph-dods#data#nc#fnoc1.nc" == dodster_name("/http://dcz.dods.org/nph-dods/data/nc/fnoc1.nc", ""))
+	|| die;
+    print "\t dodster_name passed all tests\n";
+
+    ($a, $b) = decompress_and_cache("test_file.gz", "/usr/tmp");
+    ("/usr/tmp/dods_cache#test_file" eq $a && "" eq $b) || die;
     (-e "/usr/tmp/dods_cache#test_file") || die;
-    (89 == -s "/usr/tmp/dods_cache#test_file") || die;
-    ("/usr/tmp/dods_cache#test_file" eq decompress_and_cache("test_file.gz",
-						  "/usr/tmp")) || die;
-    ("/usr/tmp/dods_cache#test#test_file" eq decompress_and_cache("test/test_file.Z",
-						       "/usr/tmp")) || die;
+    (55 == -s "/usr/tmp/dods_cache#test_file") || die;
+
+    ($a, $b) = decompress_and_cache("test/test_file.gz", "/usr/tmp");
+    ("/usr/tmp/dods_cache#test#test_file" eq $a && "" eq $b) || die;
     (-e "/usr/tmp/dods_cache#test#test_file") || die;
-    (89 == -s "/usr/tmp/dods_cache#test_file") || die;
+    (55 == -s "/usr/tmp/dods_cache#test_file") || die;
+
+    # Test scanning for meta chars before sending pathname to /bin/sh.
+    ($a, $b) = decompress_and_cache("test_file.gz%3Bcat%20/etc/passwd%3B", 
+				    "/usr/tmp");
+    ("" eq $a && "" ne $b) || die; # Any error message passes the test.
+
     print "\t decompress_and_cache passed all tests\n";
 
-    (178 == purge_cache("/usr/tmp", 1)) || die;
+    # Test the transfer_remote_file() function
+
+    transfer_remote_file("http://dcz.dods.org/data/nc/fnoc1.nc", "/tmp/dods_http_fnoc1.nc");
+    (-e "/tmp/dods_http_fnoc1.nc" && 23944 == -s "/tmp/dods_http_fnoc1.nc") 
+	|| die;
+    # No anonymous transfers from dcz!
+#     transfer_remote_file("ftp://dcz.dods.org/data/nc/fnoc1.nc", "/tmp/dods_ftp_fnoc1.nc");
+#     (-e "/tmp/dods_ftp_fnoc1.nc" && 23944 == -s "/tmp/dods_ftp_fnoc1.nc") 
+# 	|| die;
+    unlink "/tmp/dods_http_fnoc1.nc";
+#    unlink "/tmp/dods_ftp_fnoc1.nc";
+
+    print "\t transfer_remote_file passed all tests\n";
+
+    ($a, $b) = dodster_and_cache("http://dcz.dods.org/data/nc/fnoc1.nc", "/usr/tmp");
+    ("/usr/tmp/dods_cache#http:##dcz.dods.org#data#nc#fnoc1.nc" eq $a && "" eq $b) || die;
+    (-e "/usr/tmp/dods_cache#http:##dcz.dods.org#data#nc#fnoc1.nc") || die;
+    (23944 == -s "/usr/tmp/dods_cache#http:##dcz.dods.org#data#nc#fnoc1.nc") || die;
+
+    print "\t dodster_and_cache passed all tests\n";
+    
+    (purge_cache("/usr/tmp", 1) > 0) || die;
     (0 == purge_cache("/usr/tmp", 0)) || die;
     print "\t purge_cache passed all tests\n";
-
-    #unlink "/usr/tmp/dods_cache#test_file"; # get rid of the test files.
-    #unlink "/usr/tmp/dods_cache#test#test_file";
 
     print "All tests succeeded\n";
 }
@@ -189,6 +342,39 @@ if ($test) {
 1;
 
 # $Log: DODS_Cache.pm,v $
+# Revision 1.6  2002/12/31 22:28:45  jimg
+# Merged with release 3.2.10.
+#
+# Revision 1.4.2.7  2002/11/05 00:38:32  jimg
+# DODSter fixes.
+#
+# Revision 1.4.2.6  2002/10/24 01:03:11  jimg
+# I improved the call to curl so that it uses the copy in ../bin if it's
+# there, otherwise it uses the copy on PATH.
+#
+# Revision 1.4.2.5  2002/10/24 00:41:07  jimg
+# Added dodster code.
+#
+# Revision 1.4.2.4  2002/05/26 23:10:00  jimg
+# I removed tests for the Progress Indicator from the configure.in and
+# configure scripts. Also removed was the libdap++-gui.a library and any
+# use of it by the Makefile.in templates. Finally, the src/packages/libtcl
+# and libtk directories were removed (from the cvs repository; they are
+# in the src/packages/Attic directory). This removes all vestiges of the
+# tcl/tk based progress indicator from our code.
+#
+# Revision 1.4.2.3  2001/10/14 00:42:32  jimg
+# Merged with release-3-2-8
+#
+# Revision 1.4.2.2  2001/07/11 05:08:40  jimg
+# Fixed a security problem (Bug 186) where pathnames with shell meta characters
+# could make their way to /bin/sh (if they were present in pathnames to be
+# decompressed. The shell is still used (haven't figured out how to run gzip in
+# the server without redirecting stdout) but paths are sanitized.
+# I also fixed a problem with the used of sort. Perl was spitting out a
+# warning because the ordering function used by sort used a variable that was
+# out of scope.
+#
 # Revision 1.5  2001/06/15 23:38:36  jimg
 # Merged with release-3-2-4.
 #
@@ -205,7 +391,7 @@ if ($test) {
 # Refer to cache files using the full path instead a relative path so that
 # failure to "be in" the right directory during purging of cache files
 # doesn't make cache purging fail and bring down the server when the
-# filesystem fills.   This only effects the hdf server.
+# file system fills.   This only effects the hdf server.
 #
 # Revision 1.2  1997/10/09 22:19:17  jimg
 # Resolved conflicts in merge of 2.14c to trunk.

@@ -1,3 +1,88 @@
+2002-12-31    <jimg@dcz.dods.org>
+
+	* Merged with release-3-2-10.
+
+2002-06-05    <jimg@dcz.dods.org>
+
+	* DODS_Dispatch.pm: Modified so that usage gets option
+	information. See bug 453.
+
+2002-05-21    <jimg@dcz.dods.org>
+
+	* installServers, DODS_Dispatch.pm, nph-dods.in: Added two options
+	to the server dispatch and install code: Servers can be registered
+	by answering a question in the installServers script. Servers can
+	also provide remote access to activity logs. Users must agree to
+	this stuff before anything happens. The default is to register the
+	server but to not provide access to the activity info.
+
+2002-04-24    <jimg@dcz.dods.org>
+
+	* nightly_dods_build.sh (host): Now does not send an email if the
+	only problems were things that won't build because configure
+	cannot find the required stuff (like Matlab or IDL).
+
+2002-04-23    <jimg@dcz.dods.org>
+
+	* common_tests.exp: Switched back to the compare test...
+
+2002-04-19    <jimg@dcz.dods.org>
+
+	* nightly_dods_build.conf.example (MAKE): Added MAKE.
+
+	* common_tests.exp: equal is now the default string comparison op.
+
+2002-04-17    <jimg@dcz.dods.org>
+
+	* nightly_dods_build.sh (host): Added time/date stamp to end of build.
+
+2002-04-12    <jimg@dcz.dods.org>
+
+	* nightly_dods_build.sh: Added configuration stuff.
+
+	* dods.ini: Added line for the matlab server.
+
+	* aclocal.m4: Changed dsp root not fround from warning to error.
+
+2002-04-05    <jimg@dcz.dods.org>
+
+	* aclocal.m4 (DODS_MATLAB): Removed ML 4 compat switch.
+
+2002-04-03    <jimg@dcz.dods.org>
+
+	* DODS_Dispatch.pm (rfc822_to_time): Added instrumentation.
+	Removed debugging.
+
+	* aclocal.m4: Fixed DODS_FIND_IDL.
+
+2001-12-27  James Gallagher  <jimg@dcz.dods.org>
+
+	* DODS_Dispatch.pm: Added a patch contibuted by Jason Thaxter so
+	that servers known by IP addresses work.
+	(initialize): Fixed a bug that caused directory names with dots to
+	break. 
+
+2001-12-11  James Gallagher  <jimg@dcz.dods.org>
+
+	* Fixed two problems in DODS_Dispatch.pm. DODS servers were
+	responding to directory URLs that did not end in a slash by saying
+	that the URL had a bad character in its extension. That's fixed. I
+	also expanded on the formats of time strings the code understands.
+
+2001-10-13  James Gallagher  <jimg@dcz.dods.org>
+
+	* Merged with release-3-2-8.
+
+	* Fixed the Matlab macro in aclocal.m4.
+
+	* Fixes to DODS_Dispatch.pm (seemingly endless).
+
+2001-10-01  James Gallagher  <jimg@dcz.dods.org>
+
+	* Added check_perl.sh, a simple shell script, to check that
+	debugging is really turned off in the perl scripts before we make
+	a binary tar!
+
 2001-09-26  Daniel Holloway  <dan@dax.po.gso.uri.edu>
 
 	* Modified DODS_Dispatch.pm, removing regexp for 'jg'

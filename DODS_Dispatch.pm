@@ -28,8 +28,10 @@ package DODS_Dispatch;
 
 use Env;
 use handler_name;
+use dods_logging;
+use DODS_Cache;
 
-my $debug = 2;
+my $debug = 0; 
 my $test = 0;
 
 # Error message for bad extensions.
@@ -48,7 +50,7 @@ correct, please contact the ";
 # From Programming Perl, p.258. 12/11/2000 jhrg
 sub is_tainted {
     not eval {
-	join("",@_), kill 0;	# perl warns about join; don't listen to it.
+	join("",@_), kill 0;	# Perl warns about join; don't listen to it.
 	1;
     };
 }
@@ -61,7 +63,7 @@ sub is_file {
     return -f @_[0];
 }
 
-# Given a time string that's nominally rfc822/1023 compliant, return the
+# Given a time string that's nominally RFC822/1023 compliant, return the
 # matching Unix time. Assume that the time string is in GMT.
 sub rfc822_to_time {
     use Time::Local;
@@ -70,6 +72,24 @@ sub rfc822_to_time {
 	= split /[:, ]+/, $time_string;
     my %mon = (Jan => 0, Feb => 1, Mar => 2, Apr => 3, May => 4, Jun => 5,
 	       Jul => 6, Aug => 7, Sep => 8, Oct => 9, Nov => 10, Dec => 11);
+    
+    print(STDERR "In RFC822_to_time: $time_string.\n") if $debug >= 1;
+
+    # Look for two common date strings, otherwise punt. 12/11/2001 jhrg
+    if ($time_string =~ /[A-z]+ [A-z]+ [0-3][0-9] .*/) {
+	($dummy, $mon_name, $mday, $hour, $min, $sec, $year) 
+	    = split /[:, ]+/, $time_string;
+    }
+    elsif ($time_string =~ /[A-z]+,* [0-3][0-9] [A-z]+ .*/) {
+	($dummy, $mday, $mon_name, $year, $hour, $min, $sec) 
+	    = split /[:, ]+/, $time_string;
+    }
+    else {
+	print(STDERR "unrecognizable time string: ", $time_string, "\n")
+	    if $debug > 0;
+	return -1;
+    }
+
     return timegm($sec, $min, $hour, $mday, $mon{$mon_name}, $year);
 }
 
@@ -84,14 +104,14 @@ sub rfc822_to_time {
 # QUERY_STRING: Contains the DODS CE
 # PATH_INFO: Used to extract the extension from the filename which is used to
 # choose the server's filter program (.das --> nc_das, etc.)
-# SCRIPT_NAME: Used to build the `basename' part of the server's fileter
+# SCRIPT_NAME: Used to build the `basename' part of the server's filter
 # program (nc --> nc_das, etc.).
 # PATH_TRANSLATED: Used to get the file/dataset name.
 # HTTP_ACCEPT_ENCODING: Used to indicate that the client can understand
 # compressed responses.
 # HTTP_IF_MODIFIED_SINCE: Used with conditional requests. 
-# HTTP_XDODS_ACCEPT_TYPES: A DAP-only header. Which DAP datatypes can the
-# server understand?
+# HTTP_XDODS_ACCEPT_TYPES: A DAP-only header. Which DAP data types can the
+# server understand? *** This is obsolete. 10/21/02 jhrg
 
 sub initialize {
     my $self = shift;
@@ -102,7 +122,15 @@ sub initialize {
     $self->{server_port} = $ENV{SERVER_PORT};
     print(STDERR "server port: " , $self->{server_port}, "\n") if $debug > 1;
 
-    $self->{server_name} = $ENV{SERVER_NAME};
+    # The HOST header may not be in the http request object, but if it is use
+    # it. If the host is known by an IP number and not a name that number may
+    # be in the HOST header. Patch suggested by Jason Thaxter
+    # <thaxter@gomoos.org>, see bug #336. 12/27/2001 jhrg
+    $self->{server_name} = $ENV{HTTP_HOST} || $ENV{SERVER_NAME};
+    # Sanitize.
+    $self->{server_name} =~ m@(.*)[\s%&()*?<>]*.*@;
+    $self->{server_name} = $1;
+
     print(STDERR "server name: " , $self->{server_name}, "\n") if $debug > 1;
 
     $self->{server_admin} = $ENV{SERVER_ADMIN};
@@ -120,16 +148,23 @@ sub initialize {
     $ext = $ENV{PATH_INFO};
     print(STDERR "PATH_INFO: ", $ext, "\n") if $debug > 1;
 
-    # Using `s' does not untaint $ext, but using a patern match followed
+    # Using `s' does not untaint $ext, but using a pattern match followed
     # substring assignment does (see Programming Perl, p.358.). $ext needs to
     # be sanitized because that is used further down to sanitize $filename
     # which is passed to system() under some conditions. 12/11/2000 jhrg
+    # System is no longer used (it was used to handle decompression). So,
+    # it's no longer true that $filename needs to be sanitized. But, it can't
+    # hurt... Additionally, in DODS_Cache.pm where system() was used  we
+    # check for shell meta characters in $filename, rejecting any that are
+    # found. 10/21/02 jhrg
 
-    # Special case URLs for directories. 1/3/2001 jhrg
-    # Replace Perl soon. For now special case help and version. 3/26/2001
-    # jhrg
-    if ($ext =~ /^.*(help|version)(\/?)$/) {
+    if ($ext =~ /^.*(help|version|stats)(\/?)$/) {
 	$ext = $1;
+    }
+    # Special case URLs for directories. 1/3/2001 jhrg
+    # Use PATH_TRANSLATED for the directory test. 7/13/2001 jhrg
+    elsif (is_directory($ENV{PATH_TRANSLATED})) {
+	$ext = "/";
     }
     elsif ($ext =~ /^.*\.(.*)$/) {
 	$ext = $1;
@@ -157,23 +192,34 @@ sub initialize {
     $self->{request_uri} = $request;
 
     my $path_info = $ENV{PATH_INFO};
-    $path_info =~ s@(.*)\.$ext@$1@;
+    print(STDERR "Second PATH_INFO access: ", $ENV{PATH_INFO}, "\n") if
+	$debug > 1;
+    # Sanitize.
+    # I removed a '\.' in the patern below to get this to work with
+    # directories. The original pattern was @(.*)\.$ext@ 10/22/02 jhrg
+    $path_info =~ m@(.*)\.$ext@;
+    $path_info = $1;
     $self->{path_info} = $path_info;
-  
+
+    print(STDERR "path_info: ", $path_info, "\n") if $debug > 1;
+
     # Figure out which type of handler to use when processing this request.
     # The config_file field is set in new(). Note that we only use the
     # handlers to generate the DAP objects and ver and info responses; 
     # everything else is passed off to a helper or taken care of by this
     # script. However, we ask for the handler for all of the extensions to
     # make sure that the server (via dods.ini) is configured for the
-    # particular type of URL. If we don't do that then a request for .html,
-    # for example, will loop forever (since it's a subordinate request that
-    # access the dataset and that's what fails. 9/19/2001 jhrg
+    # particular type of URL. If we don't do that then an errant request for
+    # .html, for example, will loop forever (since it's a subordinate request
+    # that accesses the dataset and that's what fails). 9/19/2001 jhrg
+    #
+    # Slight modification: If the handler is null ("") and the extension is a
+    # slash ("/"), that's OK. See Bug 334. 12/27/2001 jhrg
 
     $self->{script} = handler_name($path_info, $self->{config_file});
-    if ($self->{script} eq "") {
-	$self->print_dods_error("${unknown_p1}${path_info}${unknown_p2}",
-				0);
+    if ($ext ne "/" && $ext ne "stats" && $ext ne "version" && $ext ne "help"
+	&& $self->{script} eq "") {
+	$self->print_dods_error("${unknown_p1}${path_info}${unknown_p2}", 0);
 	exit(1);
     }
 
@@ -202,10 +248,17 @@ sub initialize {
     print (STDERR "PATH_TRANSLATED: ", $ENV{PATH_TRANSLATED}, "\n") 
 	if $debug > 1; 
 
-    if ($self->{script} eq "jg") {
+    # Here's where we need to set $filename so that it's something that
+    # DODS_Cache can be hacked to deal with. If $filename is set to
+    # $PATH_INFO, we should be all set. We process a DODSter URL in much the
+    # same way a compressed local file is processed (see nph-dods.in).
+    # 10/22/02 jhrg
+    if ($self->{script} eq "jg" || is_dodster($ENV{PATH_INFO})) {
 	$filename = $ENV{PATH_INFO};
-        # The following regexp negates jg-dods changes for Ver-3.2.2
-	#$filename =~ s@.*/(.*)@$1@;
+	# For both DODSter and JGOFS URLs, remove PATH_INFO's leading slash.
+	if ($filename =~ m@/(.*)@) {
+	    $filename = $1;
+	}
     }
     else {
 	$filename = $ENV{PATH_TRANSLATED};
@@ -222,13 +275,17 @@ sub initialize {
     print STDERR "filename: $filename\n" if $debug > 1;
 
     # Simpler regex. 12/11/2000 jhrg
-    if ($ext eq "help" || $ext eq "version") {
+    if ($ext eq "help" || $ext eq "version" || $ext eq "stats") {
 	$filename = "";
     }
-    elsif ($filename =~ /^([-\/.\w]+)\.$ext.*$/) {
+    # Added `:' to support DODSter. For that case, $filename will be a URL.
+    # 10/22/02 jhrg
+    elsif ($filename =~ /^([-\/.\w:]+)\.$ext.*$/) { # match - / . and words
 	$filename = $1;
     }
-    elsif ($ext eq "/" && $filename =~ /^([-\/.\w]+$ext).*$/) {
+    # This makes directory URLs that end in `?M=A, et c., work by separating
+    # the pseudo-query part from the `filename' part. 12/11/2001 jhrg
+    elsif ($ext eq "/" && $filename =~ /^([-\/.\w]+).*$/) {
 	$filename = $1;
     }
     else {
@@ -255,15 +312,18 @@ sub initialize {
 
 # Extract various environment variables used to pass `parameters' encoded in
 # URL. The two arguments to this ctor are the current revision of the caller
-# and an email adrress of the dataset/server maintainer. 
+# and an email address of the dataset/server maintainer. 
 #
 # Note that the $type variable is used so that DODS_Dispatch my be
-# subclassed. See the perlobj man page for more information. 7/27/98 jhrg
+# sub-classed. See the perlobj man page for more information. 7/27/98 jhrg
 #
 # Added @exclude to the list of ctor params. This is a list of `handler
 # names' (see the dods.ini file) that have regular expressions which should
 # NOT be rerouted through the DODS server's HTML form generator. Often this
 # is the case because their regexes are something like `.*'. 5/9/2001 jhrg
+#
+# At some point a fourth param was added so that it would be possible to pass
+# into this object the name of the configuration file. 10/21/02 jhrg
 sub new {
     my $type = shift;
     my $caller_revision = shift;
@@ -384,6 +444,50 @@ sub cache_dir {
     }
 }
 
+sub access_log {
+    my $self = shift;
+    my $access_log = shift;	# The second arg is optional
+
+    if ($access_log eq "") {
+	return $self->{access_log};
+    } else {
+	return $self->{access_log} = $access_log;
+    }
+}
+
+sub error_log {
+    my $self = shift;
+    my $error_log = shift;	# The second arg is optional
+
+    if ($error_log eq "") {
+	return $self->{error_log};
+    } else {
+	return $self->{error_log} = $error_log;
+    }
+}
+
+sub machine_names {
+    my $self = shift;
+    my $machine_names = shift;	# The second arg is optional
+
+    if ($machine_names eq "") {
+	return $self->{machine_names};
+    } else {
+	return $self->{machine_names} = $machine_names;
+    }
+}
+
+sub is_stat_on {
+    my $self = shift;
+    my $value = shift;
+
+    if ($value eq "") {
+	return $self->{is_stat_on};
+    } else {
+	return $self->{is_stat_on} = $value;
+    }
+}
+
 sub script {
     my $self = shift;
     my $script = shift;		# The second arg is optional
@@ -395,8 +499,9 @@ sub script {
     }
 }
     
-# Unlike the other accessor functions you *cannot* set the value encoding. It
-# can only be set by the request header.
+# Unlike the other access or functions you *cannot* set the value encoding. It
+# can only be set by the request header. The same is true for
+# if_modified_since. 
 
 sub encoding {
     my $self = shift;
@@ -416,19 +521,50 @@ sub if_modified_since {
     return $self->{if_modified_since};
 }
 
+# Private. Get the remote thing. The param $url should be scanned for shell
+# meta-characters. 
+sub get_url {
+    my $url = shift;
+
+    # If curl is in our bin directory, use it. Otherwise try to find it on
+    # $PATH. 
+    my $curl = "curl";
+    $curl = "../bin/curl" if (-e "../bin/curl");
+
+    my $transfer = $curl . " --silent " . $url . " |";
+    my $buf;
+    open CURL, $transfer 
+	or return ("", "Could not transfer $url: Unable to open the transfer utility (curl).");
+    my $offset = 0;
+    my $bytes;
+    while ($bytes = read CURL, $buf, 20, $offset) {
+	$offset += $bytes;
+    }
+
+    close CURL;
+
+    return $buf;
+}
+
 sub command {
     my $self = shift;
 
-    # If the user wants to see info, version of help information, provide
+    # If the user wants to see info, version or help information, provide
     # that. Otherwise, form the name of the filter program to run by
     # catenating the script name, underscore and the ext.
     if ($ext eq "info") {
+	# I modified this so that the caller revision and cache directory
+	# information is passed to usage so that it can pass it on to the
+	# filter programs. Passing the cache dir info addresses bug #453
+	# where the HDF server was writing its cache files to the data
+	# directory (because that's the default). 6/5/2002 jhrg
 	$server_pgm = $self->cgi_dir() . "usage";
-	# usage does not support the version flag like the other filter
-	# programs. 5/19/99 jhrg
-	# $server_pgm .= " -v " . $self->{'caller_revision'} . " ";
-	$full_script = $self->cgi_dir() . $self->script();
-	@command = ($server_pgm, $self->filename(), $full_script);
+	$options = "'-v " .$self->caller_revision() . " ";
+	if ($self->cache_dir() ne "") {
+	    $options .= "-r " . $self->cache_dir() . "'";
+	}
+ 	$full_script = $self->cgi_dir() . $self->script();
+	@command = ($server_pgm, $options, $self->filename(), $full_script);
     } elsif ($ext eq "ver" || $ext eq "version") {
 	# if there's no filename assume `.../nph-dods/version/'. 6/8/2001 jhrg
 	if ($self->filename() eq "") {
@@ -438,22 +574,31 @@ sub command {
 	    $server_pgm = $self->cgi_dir() . $self->script() . "_dods";
 	    @command = ($server_pgm, "-V", $self->filename());
 	}
+    } elsif ($ext eq "stats") {
+	print STDERR "Found stats\n" if $debug > 0;
+	if ($self->is_stat_on()) {
+	    $self->send_dods_stats();
+	}
+	exit(0);
     } elsif ($ext eq "help") {
 	$self->print_help_message();
 	exit(0);
     } elsif ($ext eq "/") {
-#    } elsif (is_directory($self->{filename})) {
-	# old } elsif ($ext =~ ".*/\$") {	# Does $ext end in a slash?
-	# Change the test above to use the is_dir() function above. 5/8/2001
-	# jhrg 
-	use CGI;
-	use LWP::Simple;
+	# use CGI;
+	# use LWP::Simple;
 	use FilterDirHTML;	# FilterDirHTML is a subclass of HTML::Filter
 
 	# Build URL without CGI in it and use that to get the directory
 	# listing from the web server.
-	my $url = "http://" . $self->server_name() . $self->port()
-	          . $self->path_info();
+
+ 	my $url = "http://" . $self->server_name() . $self->port()
+ 	          . $self->path_info();
+	# Make sure URL ends in a slash. 10/12/2001 jhrg
+	if ($self->path_info() !~ m@^.*/$@) {
+	    print(STDERR "In ext == `/', adding trailing slash.\n")
+		if $debug > 1;
+	    $url .= "/";
+	}
 	if ($self->{query} ne "") {
 	    $url .= "?" . $self->query();
 	}
@@ -461,7 +606,7 @@ sub command {
 	print(STDERR "Getting the directory listing using: $url\n")
 	    if $debug > 1;
 
-	my $directory_html = get($url);
+	my $directory_html = &get_url($url);
 
 	# Parse the HTML directory page
 	# Build URL with CGI in it but remove ?M=A type query expression.
@@ -493,6 +638,9 @@ sub command {
 	}
 	if ($self->if_modified_since() != -1) {
 	    @command = (@command, "-l", $self->if_modified_since());
+	}
+	if ($self->encoding() =~ /deflate/) {
+	    @command = (@command, "-c");
 	}
     } elsif ($ext eq "dods") {
 	$server_pgm = $self->cgi_dir() . $self->script() . "_" . $ext;
@@ -526,7 +674,7 @@ sub command {
 	exit(1);
     }
 
-    print(STDERR "DODS server command: ", @command, "\n") if $debug;
+    print(STDERR "DODS server command: @command.\n") if $debug;
     return @command;
 }
 
@@ -551,11 +699,11 @@ this server for:<dl>
 <dt> help <dd> help information (this text)</dl>
 </dl>
 For example, to request the DAS object from the FNOC1 dataset at URI/GSO (a
-test dataset) you would appand `.das' to the URL: http://dods.gso.uri.edu/cgi-bin/nph-nc/data/fnoc1.nc.das.
+test dataset) you would append `.das' to the URL: http://dods.gso.uri.edu/cgi-bin/nph-nc/data/fnoc1.nc.das.
 
-<p><b>Note</b>: Many DODS clients supply these extensions for you so you don't
-need to append them (for example when using interfaces supplied by us or
-software re-linked with a DODS client-library). Generally, you only need to
+<p><b>Note</b>: Many DODS clients supply these extensions for you so you
+should not append them when using interfaces supplied by us or software
+re-linked with a DODS client-library. Generally, you only need to
 add these if you are typing a URL directly into a WWW browser.
 
 <p><b>Note</b>: If you would like version information for this server but
@@ -581,16 +729,35 @@ sub send_dods_version {
     print "DODS server core software: $core_version\n";
 } 
 
+# Send the DODS stats information. Only call this if is_stat_on() is true.
+sub send_dods_stats {
+    my $self = shift;
+    my $core_version = $self->caller_revision();
+    my $blessed = "unidata.ucar.edu|.*gso.uri.edu|.*dods.org";
+    my $machine_names = $self->machine_names();
+
+    print STDERR "In send_dods_stats\n" if $debug > 0;
+    if ($self->server_name() =~ m@($blessed|$machine_names)@) {
+	print "HTTP/1.0 200 OK\n";
+	print "XDODS-Server: dods/$core_version\n";
+	print "Content-Type: text/plain\n\n";
+
+	print "Server: ", $self->server_name(), " (version: $core_version)\n";
+	print STDERR "Access log: ", $self->access_log(), "\n" if $debug > 0;
+	&print_log_info($self->access_log(), $self->error_log());
+    }
+} 
+
 # This method takes three arguments; the object, a string which names the
 # script's version number and an address for mailing bug reports. If the last
 # parameter is not supplied, use the maintainer address from the environment
 # variables. 
 #
 # Note that this mfunc takes the script_rev and address information as
-# arguments for historical resons. That information is now part of the object.
+# arguments for historical reasons. That information is now part of the object.
 # 2/10/1998 jhrg
 #
-# Futher changed the dispatch script. The caller_revision and maintainer
+# Further changed the dispatch script. The caller_revision and maintainer
 # fields are used explicitly and the args are ignored. 5/4/99 jhrg
 #
 # Changed by adding the two new arguments. The first (after the `self'
@@ -658,7 +825,7 @@ sub print_dods_error {
     print "};";
 
     my $date = localtime;
-    print(STDERR "[$date] DODS Server error: ", $whole_msg, "\n");
+    print(STDERR "[$date] DODS Server error: ", $msg, "\n");
 }
 
 # Assumption: If this message is being shown, it is probably being shown in a
@@ -703,7 +870,39 @@ if ($test) {
     $dd->extension() eq "dods" || die;
     $dd->script() eq "nc" || die;
 
-    # Test the rfc822_to_time function.
+    print "Directory names ending in a slash\n";
+    # Directory ending in a slash. 
+    # NOTE: The directory must really exist!
+    $ENV{PATH_INFO} = "/data/";
+    $ENV{PATH_TRANSLATED} = "/var/www/html/data/";
+    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.ini");
+    $dd->extension() eq "/" || die;
+    $dd->script() eq "" || die; # a weird anomaly of handler.pm
+
+    print "Directory names ending in a slash with a M=A query\n";
+    # Directory ending in a slash with a query string
+    $ENV{QUERY_STRING} = "M=A";
+    $ENV{PATH_INFO} = "/data/";
+    $ENV{PATH_TRANSLATED} = "/var/www/html/data/";
+    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.ini");
+    $dd->extension() eq "/" || die;
+
+    print "Directory names not ending in a slash\n";
+    # Directory, not ending in a slash
+    $ENV{PATH_INFO} = "/data";
+    $ENV{PATH_TRANSLATED} = "/var/www/html/data";
+    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.ini");
+    $dd->extension() eq "/" || die;
+
+    print "Directory names not ending in a slash with a M=A query\n";
+    # Directory, not ending in a slash with a M=A query
+    $ENV{QUERY_STRING} = "M=A";
+    $ENV{PATH_INFO} = "/data";
+    $ENV{PATH_TRANSLATED} = "/var/www/html/data";
+    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.ini");
+    $dd->extension() eq "/" || die;
+
+    # Test the RFC822_to_time function.
     use POSIX;
     my $t = time;
     my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) 
@@ -732,12 +931,106 @@ if ($test) {
     !is_file("/etc/") || die;
     is_file("/etc/passwd") || die;
     
+    $ENV{PATH_INFO} = "/http://dcz.dods.org/dods-3.2/nph-dods/data/nc/fnoc1.nc.das";
+    $ENV{PATH_TRANSLATED} = "/var/www/html$ENV{PATH_INFO}";
+    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.ini");
+    # print "DODSter filename: $dd->filename() \n";
+    # $dd->extension() eq "/" || die;
+    # $dd->script() eq "" || die; # a weird anomaly of handler.pm
+
     print "All tests successful\n";
 }
 
 1;
 
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.30  2002/12/31 22:28:45  jimg
+# Merged with release 3.2.10.
+#
+# Revision 1.25.2.41  2002/12/30 01:46:05  jimg
+#  Removed debugging.
+#
+# Revision 1.25.2.40  2002/11/05 00:40:12  jimg
+# DODSter and JGOFS fixes.
+#
+# Revision 1.25.2.39  2002/10/24 01:03:11  jimg
+# I improved the call to curl so that it uses the copy in ../bin if it's
+# there, otherwise it uses the copy on PATH.
+#
+# Revision 1.25.2.38  2002/10/24 00:43:43  jimg
+# Added changes that work with the dodster code. I replaced the LWP::get call
+# with code that uses curl. It still needs some work...
+#
+# Revision 1.25.2.37  2002/08/20 16:09:12  edavis
+# Reword .html and error message.
+#
+# Revision 1.25.2.36  2002/07/03 19:25:10  jimg
+# I changed the set of DODS machines that can access stats information to
+# any machine at gso.uri.edu or dods.org. The machine unidata.ucar.edu can
+# still get the information.
+#
+# Revision 1.25.2.35  2002/06/06 01:04:25  jimg
+# Cleared the debug flag.
+#
+# Revision 1.25.2.34  2002/06/06 00:53:45  jimg
+# The info service now passes caller revision and cache directory information
+# to usage so that it can be passed onto the filter programs. This enables the
+# HDF server to use the cache dir set in the nph-dods CGI rather than having to
+# fall back on the default. Using the default is bad because it's the data
+# directory, a place where CGIs often don't have write privileges.
+#
+# Revision 1.25.2.33  2002/05/21 21:21:36  jimg
+# Added code so that server log information can be accessed remotely.
+#
+# Revision 1.25.2.32  2002/04/22 15:57:52  jimg
+# Added a line for the dods2nc filter. This is triggered by the .netcdf
+# extension. Also added -m -n switches to the www_int call.
+#
+# Revision 1.25.2.31  2002/04/03 21:04:38  jimg
+# Removed debugging (how'd that get checked in...)
+#
+# Revision 1.25.2.30  2002/04/03 13:53:41  jimg
+# I added some instrumentation to the RFC_822 time string parsing code that
+# prints a message to STDERR when an unrecognized time string is sent. This was
+# to help debug a problem reported a while ago about Mozilla's time strings.
+# The problem seems to have gone away, but I thought the instrumentation was
+# useful in its own right.
+#
+# Revision 1.25.2.29  2002/01/30 00:56:02  jimg
+# Added comment about bug 334
+#
+# Revision 1.25.2.28  2001/12/27 21:17:53  jimg
+# Directories with dots in their names broke again. I fixed this once (by
+# adding a patch from Rob Morris) but it broke again further down in the code
+# that looks at the return value from handler_name(). So now it's fixed again.
+#
+# Revision 1.25.2.27  2001/12/27 20:18:34  jimg
+# Added Jason Thaxter's <thaxter@gomoos.org> patch for getting the server name
+# from either the HTTP_HOST or SERVER_NAME env variables.
+#
+# Revision 1.25.2.26  2001/12/12 01:36:11  jimg
+# Fixed a problem with directory names that don't end in slashes. These were
+# being reported as `URLs with Bad characters in the extension.'
+# Changed RFC822_to_time so that it recognizes more time strings.
+# Added tests to cover the above changes/fixes.
+#
+# Revision 1.25.2.25  2001/10/14 00:42:32  jimg
+# Merged with release-3-2-8
+#
+# Revision 1.25.2.24  2001/10/13 22:17:39  jimg
+# *** empty log message ***
+#
+# Revision 1.25.2.23  2001/10/12 23:32:48  jimg
+# Fixed a bug (#306) where clicking on a dataset link in the directory page
+# fails because the URL is missing the slash that separates the file from the
+# last directory.
+#
+# Revision 1.25.2.22  2001/10/10 23:10:46  jimg
+# *** empty log message ***
+#
+# Revision 1.25.2.21  2001/10/02 00:45:50  jimg
+# Removed Perl debugging.
+#
 # Revision 1.29  2001/09/28 20:30:11  jimg
 # Merged with 3.2.7.
 #
@@ -835,7 +1128,7 @@ if ($test) {
 #
 # Revision 1.25.2.3  2001/01/05 18:26:04  jimg
 # Consolidated the regexps that sanitize $ext and $filename.
-# Made error messages about bad a extention or filename exit the script.
+# Made error messages about bad a extension or filename exit the script.
 #
 # Revision 1.25.2.2  2001/01/04 17:43:28  jimg
 # Added to the regexps that `sanitize' the filename and extension. These
@@ -992,7 +1285,7 @@ if ($test) {
 # to specify various weird filename/directory locations for ancillary files.
 #
 # Revision 1.2  1997/06/05 23:17:39  jimg
-# Added to the accesser functions so that they can be used to set the field
+# Added to the accessor functions so that they can be used to set the field
 # values in addition to reading values from the `object'.
 #
 # Revision 1.1  1997/06/02 21:04:35  jimg
