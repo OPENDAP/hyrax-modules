@@ -56,12 +56,12 @@ public:
 
     virtual ~AISDODSFilter() {}
 
-    virtual int process_options(int argc, char *argv[]);
+    virtual int process_options(int argc, char *argv[]) throw(Error);
 
     string get_ais_db() { return d_ais_db; }
     ObjectType get_object() { return d_object; }
 
-    virtual void print_usage() { 
+    virtual void print_usage() throw(Error) { 
 	cerr << "AISDODSFilter::print_usage: FIX ME" << endl;
     }
 };

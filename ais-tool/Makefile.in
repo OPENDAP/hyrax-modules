@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.1 2003/03/13 23:37:32 jimg Exp $
+# $Id: Makefile.in,v 1.2 2004/02/04 20:47:04 jimg Exp $
 
 @SET_MAKE@
 
@@ -200,38 +200,41 @@ tags:
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) -o $@ $<
 
 # DO NOT DELETE; depend depends on this line.
-ais_tool.o: ais_tool.cc config_ais_tool.h \
- ../../../include/AISConnect.h ../../../include/Connect.h \
- ../../../include/DAS.h ../../../include/Pix.h \
- ../../../include/IteratorAdapter.h ../../../include/AttrTable.h \
- ../../../include/Error.h ../../../include/DDS.h \
- ../../../include/BaseType.h ../../../include/InternalErr.h \
- ../../../include/Clause.h ../../../include/expr.h \
- ../../../include/RValue.h ../../../include/util.h \
- ../../../include/Byte.h ../../../include/dods-datatypes.h \
- ../../../include/Int16.h ../../../include/UInt16.h \
- ../../../include/Int32.h ../../../include/UInt32.h \
- ../../../include/Float32.h ../../../include/Float64.h \
- ../../../include/Str.h ../../../include/dods-limits.h \
- ../../../include/Url.h ../../../include/Array.h \
- ../../../include/Vector.h ../../../include/List.h \
- ../../../include/Structure.h ../../../include/Constructor.h \
- ../../../include/Sequence.h ../../../include/Grid.h \
- ../../../include/DataDDS.h ../../../include/HTTPConnect.h \
- ../../../include/RCReader.h ../../../include/ObjectType.h \
- ../../../include/HTTPCache.h ../../../include/ResponseTooBigErr.h \
- ../../../include/HTTPCacheDisconnectedMode.h \
- ../../../include/Response.h ../../../include/debug.h \
- ../../../include/AISMerge.h ../../../include/AISResources.h \
- ../../../include/Regex.h ../../../include/Resource.h \
- ../../../include/AISExceptions.h AISDODSFilter.h \
- ../../../include/DODSFilter.h ../../../include/cgi_util.h \
- ../../../include/EncodingType.h
-AISDODSFilter.o: AISDODSFilter.cc config_ais_tool.h AISDODSFilter.h \
- ../../../include/DODSFilter.h ../../../include/DAS.h \
- ../../../include/Pix.h ../../../include/IteratorAdapter.h \
- ../../../include/AttrTable.h ../../../include/Error.h \
- ../../../include/DDS.h ../../../include/BaseType.h \
- ../../../include/InternalErr.h ../../../include/Clause.h \
- ../../../include/expr.h ../../../include/RValue.h \
- ../../../include/ObjectType.h ../../../include/debug.h
+ais_tool.o: ais_tool.cc config_ais_tool.h ../../../include/GetOpt.h \
+  ../../../include/AISConnect.h ../../../include/Connect.h \
+  ../../../include/DAS.h ../../../include/Pix.h \
+  ../../../include/IteratorAdapter.h ../../../include/AttrTable.h \
+  ../../../include/Error.h ../../../include/DDS.h \
+  ../../../include/BaseType.h ../../../include/InternalErr.h \
+  ../../../include/dods-datatypes.h ../../../include/Clause.h \
+  ../../../include/expr.h ../../../include/RValue.h \
+  ../../../include/util.h ../../../include/Byte.h \
+  ../../../include/Int16.h ../../../include/UInt16.h \
+  ../../../include/Int32.h ../../../include/UInt32.h \
+  ../../../include/Float32.h ../../../include/Float64.h \
+  ../../../include/Str.h ../../../include/dods-limits.h \
+  ../../../include/Url.h ../../../include/Array.h \
+  ../../../include/Vector.h ../../../include/Structure.h \
+  ../../../include/Constructor.h ../../../include/Sequence.h \
+  ../../../include/Grid.h ../../../include/DataDDS.h \
+  ../../../include/HTTPConnect.h ../../../include/curl/curl.h \
+  ../../../include/curl/types.h ../../../include/curl/easy.h \
+  ../../../include/curl/multi.h ../../../include/RCReader.h \
+  ../../../include/ObjectType.h ../../../include/HTTPCache.h \
+  ../../../include/config_dap.h ../../../include/ResponseTooBigErr.h \
+  ../../../include/HTTPCacheDisconnectedMode.h \
+  ../../../include/HTTPResponse.h ../../../include/Response.h \
+  ../../../include/debug.h ../../../include/AISMerge.h \
+  ../../../include/AISResources.h ../../../include/Regex.h \
+  ../../../include/Resource.h ../../../include/AISExceptions.h \
+  AISDODSFilter.h ../../../include/DODSFilter.h \
+  ../../../include/cgi_util.h ../../../include/EncodingType.h
+AISDODSFilter.o: AISDODSFilter.cc config_ais_tool.h \
+  ../../../include/GetOpt.h AISDODSFilter.h ../../../include/DODSFilter.h \
+  ../../../include/DAS.h ../../../include/Pix.h \
+  ../../../include/IteratorAdapter.h ../../../include/AttrTable.h \
+  ../../../include/Error.h ../../../include/DDS.h \
+  ../../../include/BaseType.h ../../../include/InternalErr.h \
+  ../../../include/dods-datatypes.h ../../../include/Clause.h \
+  ../../../include/expr.h ../../../include/RValue.h \
+  ../../../include/ObjectType.h ../../../include/debug.h

@@ -29,7 +29,7 @@
 
 #include "config_ais_tool.h"
 
-static char rcsid[] not_used = {"$Id: AISDODSFilter.cc,v 1.1 2003/03/13 23:37:32 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: AISDODSFilter.cc,v 1.2 2004/02/04 20:47:04 jimg Exp $"};
 
 #include <GetOpt.h>
 
@@ -47,7 +47,7 @@ AISDODSFilter::AISDODSFilter(int argc, char *argv[])
     is probably \i not the best way to handle this sort of thing, but
     splitting up the option processing is hard to do with GetOpt. */
 int
-AISDODSFilter::process_options(int argc, char *argv[])
+AISDODSFilter::process_options(int argc, char *argv[]) throw(Error)
 {
     DBG(cerr << "Entering process_options... ");
 
@@ -66,7 +66,9 @@ AISDODSFilter::process_options(int argc, char *argv[])
 	  case 'c': d_comp = true; break;
 	  case 'e': d_ce = getopt.optarg; break;
 	  case 'v': d_cgi_ver = getopt.optarg; break;
+#if 0
 	  case 'V': d_ver = true; break;
+#endif
 	  case 'd': d_anc_dir = getopt.optarg; break;
 	  case 'f': d_anc_file = getopt.optarg; break;
 	  case 'r': d_cache_dir = getopt.optarg; break;
