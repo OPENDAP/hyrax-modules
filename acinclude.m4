@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.23 1996/11/07 23:38:01 jimg Exp $
+# $Id: acinclude.m4,v 1.24 1996/11/13 23:39:05 jimg Exp $
 
 # Check for fill value usage.
 
@@ -312,6 +312,8 @@ AC_DEFUN(DODS_WWW_ROOT, [dnl
 	AC_SUBST(WWW_ROOT)
 	INCS="$INCS -I$(WWW_ROOT) -I$(WWW_ROOT)/Library/src"
 	AC_SUBST(INCS)
+	LIBS="$LIBS -L$(WWW_ROOT)/Library/src"
+	AC_SUBST(LIBS)
 	AC_MSG_RESULT(Set WWW root directory to $WWW_ROOT) 
     else
 	DODS_FIND_WWW_ROOT
@@ -324,14 +326,14 @@ AC_DEFUN(DODS_SEM, [dnl
     if test $found -eq 1
     then
         AC_CHECKING(semaphore features in sem.h)
-        if grep 'int  *semctl.*(' /usr/include/sys/sem.h >/dev/null 2>&1
+        if grep 'int *semctl.*(' /usr/include/sys/sem.h >/dev/null 2>&1
         then
             AC_DEFINE(HAVE_SEM_PROTO, 1)
         else
             AC_DEFINE(HAVE_SEM_PROTO, 0)
         fi
 
-        if grep 'union semun  *{' /usr/include/sys/sem.h >/dev/null 2>&1
+        if grep 'union *semun *{' /usr/include/sys/sem.h >/dev/null 2>&1
         then
            AC_DEFINE(HAVE_SEM_UNION, 1)
         else
@@ -466,26 +468,31 @@ AC_DEFUN(DODS_MACHINE, [dnl
 
 dnl Check for exceptions handling support. From Todd.
 
+# Check for exceptions handling support
 AC_DEFUN(DODS_CHECK_EXCEPTIONS, [dnl
     AC_LANG_CPLUSPLUS
-    AC_MSG_CHECKING(for exception handling support in C++ compiler)
-    OLDCFLAGS=$CFLAGS
-    if test CXX = "g++"; then
-       CFLAGS="$OLDCFLAGS -fhandle-exceptions"
+    AC_MSG_CHECKING("for exception handling support in C++ compiler")
+    OLDCXXFLAGS="$CXXFLAGS"
+    if test $CXX = "g++"; then
+       CXXFLAGS="$OLDCXXFLAGS -fhandle-exceptions -O0"
     fi
     EXCEPTION_CHECK_PRG="int foo(void) {
-		              throw int;
-	                 }
-			 main() {
-			      try { foo(); }
-			      catch(int) {}
-			      exit(0);
-	                 }"
-    AC_TRY_RUN([${EXCEPTION_CHECK_PRG}], AC_MSG_RESULT(yes), [dnl
-	AC_MSG_RESULT(no)
-	AC_MSG_WARN(Compiling without exception handling. See README)
-	CFLAGS=$OLDCFLAGS],[AC_MSG_WARN(maybe...)])
-    ])
+                              throw int();
+                         }
+                         main() {
+                              try { foo(); }
+                              catch(int) { exit(0); }
+                              exit(1);
+                         }"
+
+    AC_TRY_RUN([${EXCEPTION_CHECK_PRG}],
+        AC_MSG_RESULT(yes),
+	[dnl
+        AC_MSG_RESULT(no)
+        AC_MSG_WARN("Compiling without exception handling.  See README.")
+        CXXFLAGS=$OLDCXXFLAGS
+        DEFS="$DEFS -DNO_EXCEPTIONS"
+        ],true)])
 
 #check for hdf libraries
 AC_DEFUN(DODS_HDF_LIBRARY, [dnl
@@ -502,8 +509,7 @@ AC_DEFUN(DODS_HDF_LIBRARY, [dnl
     AC_CHECK_LIB(z, inflate_flush, LIBS="-lz $LIBS", nohdf=1)
     AC_CHECK_LIB(jpeg, jpeg_start_compress, LIBS="-ljpeg $LIBS", nohdf=1)
     AC_CHECK_LIB(df, Hopen, LIBS="-ldf $LIBS" , nohdf=1)
-    AC_CHECK_LIB(mfhdf, SDstart, LIBS="-lmfhdf $LIBS" , nohdf=1)
-    ])
+    AC_CHECK_LIB(mfhdf, SDstart, LIBS="-lmfhdf $LIBS" , nohdf=1)])
 
 AC_DEFUN(DODS_FIND_DSP_ROOT, [dnl
 
@@ -587,5 +593,27 @@ AC_DEFUN(DODS_CHECK_SIZES, [dnl
 	    AC_CHECK_SIZEOF(char)
 	    AC_CHECK_SIZEOF(double)
 	    AC_CHECK_SIZEOF(float)
+
+    if test $ac_cv_sizeof_long -eq 4 
+    then
+	ARCHFLAG=ARCH_32BIT
+	AC_SUBST(ARCHFLAG)
+	DEFS="-DARCH_32BIT $DEFS"
+    elif test $ac_cv_sizeof_long -eq 8
+    then
+	ARCHFLAG=ARCH_64BIT
+	AC_SUBST(ARCHFLAG)
+	DEFS="-DARCH_64BIT $DEFS"
+    else
+	AC_MSG_ERROR(Could not determine architecture size - 32 or 64 bits)
+    fi
+
     fi])
+
+dnl Check for -lsocket and -lnsl for sockets and xdr code. Needed for
+dnl Solaris. 
+
+AC_DEFUN(DODS_LIBS, [dnl
+    AC_CHECK_LIB(socket, bind)
+    AC_CHECK_LIB(nsl, xdr_int)])
 
