@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.9 1996/08/15 20:39:07 jimg Exp $
+# $Id: acinclude.m4,v 1.10 1996/09/10 17:30:35 jimg Exp $
 
 # Check for fill value usage.
 
@@ -150,22 +150,25 @@ dnl though the official release won't.
 AC_DEFUN(DODS_FIND_EXPECT, [dnl
     HAVE_EXPECT=0
 
-    AC_CHECK_LIB(expect5.20, main, \
-	 AC_DEFINE(HAVE_EXPECT, 1) HAVE_EXPECT=1;expect=expect5.20;tcl=tcl7.5,\
-	 AC_DEFINE(HAVE_EXPECT, 0), -ltcl7.5)
+    AC_CHECK_LIB(expect5.20, main, 
+	HAVE_EXPECT=1;expect=expect5.20;tcl=tcl7.5, , -ltcl7.5)
 
     if test $HAVE_EXPECT = "1"
     then
 	LIBS="$LIBS -l${expect} -l${tcl}"
     else
 	AC_CHECK_LIB(expect, main, \
-	    AC_DEFINE(HAVE_EXPECT, 1) HAVE_EXPECT=1;expect=expect;tcl=tcl7.4, \
-	    AC_DEFINE(HAVE_EXPECT, 0), -ltcl7.4)
+	    HAVE_EXPECT=1;expect=expect;tcl=tcl7.4, , -ltcl7.4)
 	if test $HAVE_EXPECT = "1"
 	then
 	    LIBS="$LIBS -l${expect} -l${tcl}"
 	fi
-    fi])
+    fi
+
+    dnl Part two: Once we have found expect (and tcl), locate the tcl include
+    dnl directory.
+
+    AC_DEFINE_UNQUOTED(HAVE_EXPECT, $HAVE_EXPECT)])
 
 AC_DEFUN(DODS_EFENCE, [dnl
     AC_ARG_ENABLE(efence,
@@ -261,7 +264,7 @@ AC_DEFUN(DODS_SEM, [dnl
     if test $found -eq 1
     then
         AC_CHECKING(Looking at semaphore features in sem.h)
-        if grep 'extern int  *semctl(' /usr/include/sys/sem.h >/dev/null 2>&1
+        if grep 'extern int  *semctl.*(' /usr/include/sys/sem.h >/dev/null 2>&1
         then
             AC_DEFINE(HAVE_SEM_PROTO, 1)
         else
@@ -276,4 +279,119 @@ AC_DEFUN(DODS_SEM, [dnl
         fi
     fi])
 
+
+AC_DEFUN(DODS_OS, [dnl
+    AC_MSG_CHECKING(checking type of operating system)
+    if test -z "$OS"; then
+      OS=`uname -s | tr '[A-Z]' '[a-z]' | sed 's;/;;g'`
+      if test -z "$OS"; then
+        echo "OS:operating system:sunos5" >> confdefs.missing
+      fi
+    fi
+    case $OS in
+        aix)
+            OS_NAME=`uname -s`
+            OS_MAJOR=`uname -v | sed 's/[^0-9]*\([0-9]*\)\..*/\1/'`
+            ;;
+        hp-ux)
+            OS=hpux`uname -r | sed 's/[A-Z.0]*\([0-9]*\).*/\1/'`
+            OS_NAME=HPUX
+            OS_MAJOR=`uname -r | sed 's/[A-Z.0]*\([0-9]*\).*/\1/'`
+            ;;
+        irix)
+            OS=${OS}`uname -r | sed 's/\..*//'`
+            OS_NAME=IRIX
+            OS_MAJOR=`uname -r | sed 's/\..*//'`
+            ;;
+        osf*)
+            OS_NAME=OSF1
+            OS_MAJOR=`uname -r | sed 's/[^0-9]*\([0-9]*\)\..*/\1/'`
+            ;;
+        sn*)
+            OS=unicos
+            OS_NAME=UNICOS
+            OS_MAJOR=`uname -r | sed 's/[^0-9]*\([0-9]*\)\..*/\1/'`
+            ;;
+        sunos)
+            OS_NAME=SunOS
+            OS_MAJOR=`uname -r | sed 's/\..*//'`
+            OS=$OS$OS_MAJOR
+            ;;
+        ultrix)
+            case `uname -m` in
+            VAX)
+                OS=vax-ultrix
+                ;;
+            esac
+            OS_NAME=ULTRIX
+            OS_MAJOR=`uname -r | sed 's/\..*//'`
+            ;;
+        *)
+            # On at least one UNICOS system, 'uname -s' returned the
+            # hostname (sigh).
+            if uname -a | grep CRAY >/dev/null; then
+                OS=unicos
+                OS_NAME=UNICOS
+            else
+                OS_NAME=`uname -s | sed 's/[^A-Za-z0-9_]//g'`
+            fi
+            OS_MAJOR=`uname -r | sed 's/[^0-9]*\([0-9]*\)\..*/\1/'`
+            ;;
+    esac
+
+    # Adjust OS for CRAY MPP environment.
+    #
+    case "$OS" in
+    unicos)
+
+        case "$CC$TARGET$CFLAGS" in
+        *cray-t3*)
+            OS=unicos-mpp
+            ;;
+        esac
+        ;;
+    esac
+
+    AC_SUBST(OS)
+    AC_DEFINE(OS_NAME, $OS_NAME)
+    AC_DEFINE(OS_MAJOR, $OS_MAJOR)
+
+    AC_MSG_RESULT($OS)])
+
+
+AC_DEFUN(DODS_MACHINE, [dnl
+    AC_MSG_CHECKING(checking type of machine)
+
+    if test -z "$MACHINE"; then
+    MACHINE=`uname -m | tr [A-Z] [a-z]`
+    case $OS in
+        aix*)
+            MACHINE=rs6000
+            ;;
+        hp*)
+            MACHINE=hp`echo $MACHINE | sed 's%/.*%%'`
+            ;;
+        sunos*)
+            case $MACHINE in
+                sun4*)
+                    MACHINE=sun4
+                    ;;
+            esac
+            ;;
+        irix*)
+            case $MACHINE in
+                ip20)
+                    MACHINE=sgi
+                    ;;
+            esac
+            ;;
+    esac
+
+    if test -z "$MACHINE"; then
+      echo "MACHINE:machine hardware type:sun4" >> confdefs.missing
+    fi
+    fi
+
+    AC_SUBST(MACHINE)
+    AC_MSG_RESULT($MACHINE)])
 
