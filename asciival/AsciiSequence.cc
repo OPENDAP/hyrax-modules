@@ -151,16 +151,20 @@ AsciiSequence::print_ascii_rows(ostream &os, BaseTypeRow outer_vars)
 void
 AsciiSequence::print_header(ostream &os)
 {
-    for (Pix p = first_var(); p; next_var(p), (void)(p && os << ", "))
-	if (var(p)->is_simple_type())
-	    os << names.lookup(dynamic_cast<AsciiOutput*>(var(p))->get_full_name(), translate);
-	else if (var(p)->type() == dods_sequence_c)
-	    dynamic_cast<AsciiSequence *>(var(p))->print_header(os);
-	else if (var(p)->type() == dods_structure_c)
-	    dynamic_cast<AsciiStructure *>(var(p))->print_header(os);
+    Vars_iter p = var_begin();
+    while (p != var_end()) {
+	if ((*p)->is_simple_type())
+	    os << names.lookup(dynamic_cast<AsciiOutput*>((*p))->get_full_name(), translate);
+	else if ((*p)->type() == dods_sequence_c)
+	    dynamic_cast<AsciiSequence *>((*p))->print_header(os);
+	else if ((*p)->type() == dods_structure_c)
+	    dynamic_cast<AsciiStructure *>((*p))->print_header(os);
 	else
 	    throw InternalErr(__FILE__, __LINE__,
 "This method should only be called by instances for which `is_simple_sequence' returns true.");
+	if (++p != var_end())
+	    os << ", ";
+    }
 }
 
 void
@@ -206,6 +210,10 @@ AsciiSequence::print_ascii(ostream &os, bool print_name) throw(InternalErr)
 }
 
 // $Log: AsciiSequence.cc,v $
+// Revision 1.7  2004/02/03 17:23:40  jimg
+// Removed Pix code which was not building (???). Removed AsciiList from
+// Build.
+//
 // Revision 1.6  2003/01/27 19:38:23  jimg
 // Updated the copyright information.
 // Merged with release-3-2-6.

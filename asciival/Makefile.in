@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.52 2004/01/26 23:30:36 jimg Exp $
+# $Id: Makefile.in,v 1.53 2004/02/03 17:23:40 jimg Exp $
 
 @SET_MAKE@
 
@@ -70,12 +70,12 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 STRIP = strip
 
 ASCIISRCS = AsciiByte.cc AsciiInt32.cc AsciiFloat64.cc AsciiStr.cc \
-	AsciiUrl.cc AsciiArray.cc AsciiStructure.cc AsciiList.cc \
+	AsciiUrl.cc AsciiArray.cc AsciiStructure.cc \
 	AsciiSequence.cc AsciiGrid.cc AsciiUInt32.cc \
 	AsciiInt16.cc AsciiUInt16.cc AsciiFloat32.cc AsciiOutput.cc
 
 ASCIIOBJS = AsciiByte.o AsciiInt32.o AsciiFloat64.o AsciiStr.o \
-	AsciiUrl.o AsciiArray.o AsciiStructure.o AsciiList.o \
+	AsciiUrl.o AsciiArray.o AsciiStructure.o \
 	AsciiSequence.o AsciiGrid.o AsciiUInt32.o \
 	AsciiInt16.o AsciiUInt16.o AsciiFloat32.o AsciiOutput.o
 

@@ -85,16 +85,20 @@ AsciiStructure::read(const string &)
 void
 AsciiStructure::print_header(ostream &os)
 {
-    for (Pix p = first_var(); p; next_var(p), (void)(p && os << ", "))
-	if (var(p)->is_simple_type())
-	    os << names.lookup(dynamic_cast<AsciiOutput*>(var(p))->get_full_name(), translate);
-	else if (var(p)->type() == dods_structure_c)
-	    dynamic_cast<AsciiStructure*>(var(p))->print_header(os);
-    // May need a case here for Sequence 2/18/2002 jhrg
-    // Yes, we do, and for Grid as well. 04/04/03 jhrg
+    Vars_iter p = var_begin();
+    while (p != var_end()) {
+	if ((*p)->is_simple_type())
+	    os << names.lookup(dynamic_cast<AsciiOutput*>((*p))->get_full_name(), translate);
+	else if ((*p)->type() == dods_structure_c)
+	    dynamic_cast<AsciiStructure*>((*p))->print_header(os);
+	// May need a case here for Sequence 2/18/2002 jhrg
+	// Yes, we do, and for Grid as well. 04/04/03 jhrg
 	else
 	    throw InternalErr(__FILE__, __LINE__,
 			      "Support for ASCII output of datasets with structures which contain Sequences or Grids has not been completed.");
+	if (++p != var_end())
+	    os << ", ";
+    }
 }
 
 void
@@ -106,12 +110,16 @@ AsciiStructure::print_ascii(ostream &os, bool print_name) throw(InternalErr)
 	    os << endl;
 	}
 	
-	for (Pix p = first_var(); p; next_var(p), (void)(p && os << ", "))
-	    dynamic_cast<AsciiOutput*>(var(p))->print_ascii(os, false);
+	Vars_iter p = var_begin();
+	while (p != var_end()) {
+	    dynamic_cast<AsciiOutput*>((*p))->print_ascii(os, false);
+	    if (++p != var_end())
+		os << ", ";
+	}
     }
     else {
-	for (Pix p = first_var(); p; next_var(p)) {
-	    dynamic_cast<AsciiOutput*>(var(p))->print_ascii(os, true);
+	for (Vars_iter p = var_begin(); p != var_end(); ++p) {
+	    dynamic_cast<AsciiOutput*>((*p))->print_ascii(os, true);
 	    // This line outputs an extra endl when print_ascii is called for
 	    // nested structures because an endl is written for each member
 	    // and then once for the structure itself. 9/14/2001 jhrg
@@ -121,6 +129,10 @@ AsciiStructure::print_ascii(ostream &os, bool print_name) throw(InternalErr)
 }
 
 // $Log: AsciiStructure.cc,v $
+// Revision 1.9  2004/02/03 17:23:40  jimg
+// Removed Pix code which was not building (???). Removed AsciiList from
+// Build.
+//
 // Revision 1.8  2003/05/02 16:30:30  jimg
 // Fixes for the builds
 //
