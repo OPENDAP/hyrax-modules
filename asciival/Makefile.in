@@ -1,5 +1,4 @@
-
-# $Id: Makefile.in,v 1.29 1998/03/21 00:17:38 jimg Exp $
+# $Id: Makefile.in,v 1.30 1998/06/09 02:49:40 jimg Exp $
 
 @SET_MAKE@
 
@@ -51,8 +50,8 @@ INSTALLMAN = man
 
 SHELL = /bin/sh
 srcdir = @srcdir@
-# VPATH = 
-dir = @dir@
+version = @VERSION@
+dir = writeval-@VERSION@
 
 # testsuite specifics
 RUNTEST = runtest
@@ -168,13 +167,6 @@ clean:
 distclean: clean
 	-rm -f config.status config.log config.cache
 
-tar:
-	cd .. && tar --exclude $(dir)/old --gzip -c -f $(dir).tar.gz $(dir) &&\
-		cd $(dir)
-
-tags:
-	$(TAGS) $(TAGS_FLAGS) *.cc *.h *.lex *.y
-
 .PHONY: docs
 docs:
 	doc++ -d docs -f $(CLIENTSRCS) $(ASCIISRCS) $(WV_SRCS) $(AV_SRCS) \
@@ -186,6 +178,41 @@ depend:
 	@depend@ -m dependencies \
 	-- $(CPPFLAGS) -I@GPP_INC@ -- \
 	$(CLIENTSRCS) $(WV_SRCS) $(LD_SRCS) $(URLQ_SRCS)
+
+# This is a special tar target because it builds not only the tar file for
+# the core software but also the lib, etc, and bin directories. It assumes
+# that the root directory for DODS is called `DODS' (no version number).
+.PHONY: tar
+tar:
+	@echo "You should first run distclean in DODS_ROOT!"
+	@echo "(ignore this if you have)"
+	cd $(DODS_ROOT)/.. && \
+	tar --exclude '*/old' --exclude '*/.#*' --exclude '*/CVS' \
+	    --gzip --create --dereference --file DODS-$(dir).tar.gz \
+	    DODS/src/$(dir)
+
+.PHONY: update-version
+update-version: check-version
+	@echo "Version is: `cat version.h`"
+	mv ../writeval* ../writeval-$(version)
+
+# Compare the version encoded in this Makefile (set by configure) with the
+# version in version.h. The version make variable is set up near the top of
+# the Makefile.
+.PHONY: check-version
+check-version:
+	@echo "Checking for version.h and Makefile version match-up"
+	@if [ "$(version)" != "`cat version.h`" ]; \
+	then \
+		echo "You must manually re-run configure!"; \
+		exit 1; \
+	else \
+		echo "Yes, they match."; \
+	fi
+
+.PHONY: tags
+tags:
+	$(TAGS) $(TAGS_FLAGS) *.cc *.h *.lex *.y
 
 .SUFFIXES:      .o .cc .c
 
