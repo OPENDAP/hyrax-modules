@@ -13,7 +13,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: configure,v 1.10 1997/04/19 00:55:37 jimg Exp $
+# $Id: configure,v 1.11 1997/05/06 00:35:21 jimg Exp $
 
 # Check for fill value usage.
 
@@ -139,7 +139,7 @@ NULL_PROGRAM="mail() {}"
 ac_help=
 ac_default_prefix=/usr/local
 # Any additions from configure.in:
-ac_default_prefix="$(DODS_ROOT)"
+ac_default_prefix="\$(DODS_ROOT)"
 ac_help="$ac_help
   --with-matlab=ARG       Where is the Matlab root directory"
 ac_help="$ac_help
@@ -1180,11 +1180,11 @@ fi
 	flex)
 	    flex_ver1=`flex -V 2>&1 | sed 's/[^0-9]*\(.*\)/\1/'`
 	    flex_ver2=`echo $flex_ver1 | sed 's/\.//g'`
-	    if test -z $flex_ver2 -a $flex_ver2 -lt 252
+	    if test -n "$flex_ver2" && test $flex_ver2 -ge 252
 	    then
-		{ echo "configure: error: Flex version: found ${flex_venr1} should be at least 2.5.2" 1>&2; exit 1; }
-	    else
 		echo "$ac_t""Found flex version ${flex_ver1}." 1>&6
+	    else
+		{ echo "configure: error: Flex version: found ${flex_venr1} should be at least 2.5.2" 1>&2; exit 1; }
 	    fi
 	    ;;
 	*)
@@ -1226,11 +1226,11 @@ fi
 #define DODS_BISON_VER $bison_ver2
 EOF
 
-	    if test -z $bison_ver2 -a $bison_ver2 -lt 124
+	    if test -n "$bison_ver2" && test $bison_ver2 -ge 124
 	    then
-		{ echo "configure: error: Bison version: found ${bison_ver1} should be at least 1.24" 1>&2; exit 1; }
-	    else
 		echo "$ac_t""Found bison version ${bison_ver1}." 1>&6
+	    else
+		{ echo "configure: error: Bison version: found ${bison_ver1} should be at least 1.24" 1>&2; exit 1; }
 	    fi
 	    ;;
 	*)
@@ -2550,9 +2550,9 @@ fi
     if test "$WWW_ROOT"
     then
 	
-	INCS="$INCS -I$(WWW_ROOT) -I$(WWW_ROOT)/Library/src"
+	INCS="$INCS -I\$(WWW_ROOT) -I\$(WWW_ROOT)/Library/src"
 	
-	LDFLAGS="$LDFLAGS -L$(WWW_ROOT)/Library/src"
+	LDFLAGS="$LDFLAGS -L\$(WWW_ROOT)/Library/src"
 	echo "$ac_t""Set WWW root directory to $WWW_ROOT" 1>&6 
     else
 	echo "configure: warning: not found!" 1>&2

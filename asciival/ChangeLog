@@ -1,3 +1,13 @@
+Mon May  5 17:35:54 1997  James Gallagher  <jimg@dcz.cvo.oneworld.com>
+
+	* Error message from urlqueue is now slightly more helpful...
+
+	* loaddods now returns arguments when called using Matlab's return
+	arg syntax ([a b c] = loaddods();).
+
+	* Fixed the bug where loaddods dumped core with given -v or -k as
+	a single option.
+
 Mon Apr 21 09:47:03 1997  James Gallagher  <jimg@dcz.cvo.oneworld.com>
 
 	* Change: loaddods now looks along the user's PATH and in
