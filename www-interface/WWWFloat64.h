@@ -11,6 +11,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWFloat64.h,v $
+// Revision 1.2  1999/05/09 04:14:51  jimg
+// String --> string
+//
 // Revision 1.1  1999/04/20 00:21:03  jimg
 // First version
 //
@@ -27,14 +30,14 @@
 
 class WWWFloat64: public Float64 {
 public:
-    WWWFloat64(const String &n = (char *)0);
+    WWWFloat64(const string &n = (char *)0);
     virtual ~WWWFloat64() {}
 
     virtual BaseType *ptr_duplicate();
     
-    virtual bool read(const String &dataset, int &error);
+    virtual bool read(const string &dataset, int &error);
 
-    virtual void print_val(ostream &os, String space = "", 
+    virtual void print_val(ostream &os, string space = "", 
 			   bool print_decl_p = true);
 };
 

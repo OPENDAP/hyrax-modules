@@ -10,6 +10,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWInt16.cc,v $
+// Revision 1.2  1999/05/09 04:14:51  jimg
+// String --> string
+//
 // Revision 1.1  1999/04/20 00:21:03  jimg
 // First version
 //
@@ -21,18 +24,18 @@
 #include <assert.h>
 #include <iostream.h>
 
-#include <String.h>
+#include <string>
 
 #include "WWWInt16.h"
 #include "WWWOutput.h"
 
 Int16 *
-NewInt16(const String &n)
+NewInt16(const string &n)
 {
     return new WWWInt16(n);
 }
 
-WWWInt16::WWWInt16(const String &n) : Int16(n)
+WWWInt16::WWWInt16(const string &n) : Int16(n)
 {
 }
 
@@ -43,14 +46,14 @@ WWWInt16::ptr_duplicate()
 }
 
 bool
-WWWInt16::read(const String &, int &)
+WWWInt16::read(const string &, int &)
 {
     assert(false);
     return false;
 }
 
 void 
-WWWInt16::print_val(ostream &os, String, bool print_decl_p)
+WWWInt16::print_val(ostream &os, string, bool print_decl_p)
 {
-    write_simple_variable(os, (string)name().chars(), fancy_typename(this));
+    write_simple_variable(os, (string)name().c_str(), fancy_typename(this));
 }

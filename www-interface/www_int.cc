@@ -9,13 +9,16 @@
     @author: jhrg */
 
 // $Log: www_int.cc,v $
+// Revision 1.2  1999/05/09 04:14:52  jimg
+// String --> string
+//
 // Revision 1.1  1999/04/20 00:21:06  jimg
 // First version
 //
 
 #include "config_dap.h"
 
-static char rcsid[] __unused__ = {"$Id: www_int.cc,v 1.1 1999/04/20 00:21:06 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: www_int.cc,v 1.2 1999/05/09 04:14:52 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -27,7 +30,7 @@ static char rcsid[] __unused__ = {"$Id: www_int.cc,v 1.1 1999/04/20 00:21:06 jim
 #include <GetOpt.h>
 #include <Pix.h>
 #include <SLList.h>
-#include <String.h>
+#include <string>
 
 #include "BaseType.h"
 #include "Connect.h"
@@ -44,7 +47,7 @@ WWWOutput wo(cout);
 static void
 usage(string name)
 {
-    cerr << "Usage: " << name 
+    cerr << "Usage: " << name << endl
 	 << "m: Print a MIME header. Use this with nph- style CGIs.\n"
 	 << "v: Verbose output. Currently a null option.\n"
 	 << "V: Print version information and exit.\n"
@@ -260,7 +263,7 @@ main(int argc, char * argv[])
 	  case 'h':
 	  case '?':
 	  default:
-	    usage((String)argv[0]); exit(1); break;
+	    usage((string)argv[0]); exit(1); break;
 	}
 
     Connect *url = 0;

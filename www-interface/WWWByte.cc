@@ -10,6 +10,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWByte.cc,v $
+// Revision 1.2  1999/05/09 04:14:51  jimg
+// String --> string
+//
 // Revision 1.1  1999/04/20 00:21:02  jimg
 // First version
 //
@@ -39,18 +42,18 @@
 #include <iostream.h>
 #include <Pix.h>
 #include <SLList.h>
-#include <String.h>
+#include <string>
 
 #include "WWWByte.h"
 #include "WWWOutput.h"
 
 Byte *
-NewByte(const String &n)
+NewByte(const string &n)
 {
     return new WWWByte(n);
 }
 
-WWWByte::WWWByte(const String &n) : Byte(n)
+WWWByte::WWWByte(const string &n) : Byte(n)
 {
 }
 
@@ -61,16 +64,16 @@ WWWByte::ptr_duplicate()
 }
 
 bool
-WWWByte::read(const String &, int &)
+WWWByte::read(const string &, int &)
 {
     assert(false);
     return false;
 }
 
 void 
-WWWByte::print_val(ostream &os, String, bool print_decl_p)
+WWWByte::print_val(ostream &os, string, bool print_decl_p)
 {
-    write_simple_variable(os, (string)name().chars(), fancy_typename(this));
+    write_simple_variable(os, (string)name().c_str(), fancy_typename(this));
 }
 
 

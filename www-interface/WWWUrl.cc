@@ -10,6 +10,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWUrl.cc,v $
+// Revision 1.2  1999/05/09 04:14:52  jimg
+// String --> string
+//
 // Revision 1.1  1999/04/20 00:21:05  jimg
 // First version
 //
@@ -18,17 +21,17 @@
 #pragma implementation
 #endif
 
-#include <String.h>
+#include <string>
 
 #include "WWWUrl.h"
 
 WWWUrl *
-NewUrl(const String &n)
+NewUrl(const string &n)
 {
     return new WWWUrl(n);
 }
 
-WWWUrl::WWWUrl(const String &n) : WWWStr(n)
+WWWUrl::WWWUrl(const string &n) : WWWStr(n)
 {
 }
 

@@ -11,6 +11,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWUrl.h,v $
+// Revision 1.2  1999/05/09 04:14:52  jimg
+// String --> string
+//
 // Revision 1.1  1999/04/20 00:21:05  jimg
 // First version
 //
@@ -26,7 +29,7 @@
 
 class WWWUrl: public WWWStr {
 public:
-    WWWUrl(const String &n = (char *)0);
+    WWWUrl(const string &n = (char *)0);
     virtual ~WWWUrl() {}
 
     virtual BaseType *ptr_duplicate();

@@ -10,6 +10,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWFloat32.cc,v $
+// Revision 1.2  1999/05/09 04:14:51  jimg
+// String --> string
+//
 // Revision 1.1  1999/04/20 00:21:02  jimg
 // First version
 //
@@ -21,18 +24,18 @@
 #include <assert.h>
 #include <iostream.h>
 
-#include <String.h>
+#include <string>
 
 #include "WWWFloat32.h"
 #include "WWWOutput.h"
 
 Float32 *
-NewFloat32(const String &n)
+NewFloat32(const string &n)
 {
     return new WWWFloat32(n);
 }
 
-WWWFloat32::WWWFloat32(const String &n) : Float32(n)
+WWWFloat32::WWWFloat32(const string &n) : Float32(n)
 {
 }
 
@@ -43,14 +46,14 @@ WWWFloat32::ptr_duplicate()
 }
  
 bool
-WWWFloat32::read(const String &, int &)
+WWWFloat32::read(const string &, int &)
 {
     assert(false);
     return false;
 }
 
 void 
-WWWFloat32::print_val(ostream &os, String, bool print_decl_p)
+WWWFloat32::print_val(ostream &os, string, bool print_decl_p)
 {
-    write_simple_variable(os, (string)name().chars(), fancy_typename(this));
+    write_simple_variable(os, (string)name().c_str(), fancy_typename(this));
 }

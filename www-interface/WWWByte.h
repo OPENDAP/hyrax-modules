@@ -13,6 +13,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWByte.h,v $
+// Revision 1.2  1999/05/09 04:14:51  jimg
+// String --> string
+//
 // Revision 1.1  1999/04/20 00:21:02  jimg
 // First version
 //
@@ -28,14 +31,14 @@
 
 class WWWByte: public Byte {
 public:
-    WWWByte(const String &n = (char *)0);
+    WWWByte(const string &n = (char *)0);
     virtual ~WWWByte() {}
 
     virtual BaseType *ptr_duplicate();
 
-    virtual bool read(const String &dataset, int &error);
+    virtual bool read(const string &dataset, int &error);
 
-    virtual void print_val(ostream &os, String space = "", 
+    virtual void print_val(ostream &os, string space = "", 
 			   bool print_decl_p = true);
 };
 

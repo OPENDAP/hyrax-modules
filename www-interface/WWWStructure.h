@@ -12,6 +12,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWStructure.h,v $
+// Revision 1.2  1999/05/09 04:14:52  jimg
+// String --> string
+//
 // Revision 1.1  1999/04/20 00:21:05  jimg
 // First version
 //
@@ -31,14 +34,14 @@ private:
     void print_header(ostream &os);
 
 public:
-    WWWStructure(const String &n = (char *)0);
+    WWWStructure(const string &n = (char *)0);
     virtual ~WWWStructure();
 
     virtual BaseType *ptr_duplicate();
 
-    virtual bool read(const String &dataset, int &error);
+    virtual bool read(const string &dataset, int &error);
 
-    virtual void print_val(ostream &os, String space = "", 
+    virtual void print_val(ostream &os, string space = "", 
 			   bool print_decl_p = true);
 };
 

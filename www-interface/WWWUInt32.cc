@@ -10,6 +10,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWUInt32.cc,v $
+// Revision 1.2  1999/05/09 04:14:52  jimg
+// String --> string
+//
 // Revision 1.1  1999/04/20 00:21:05  jimg
 // First version
 //
@@ -23,18 +26,18 @@
 
 #include <Pix.h>
 #include <SLList.h>
-#include <String.h>
+#include <string>
 
 #include "WWWUInt32.h"
 #include "WWWOutput.h"
 
 UInt32 *
-NewUInt32(const String &n)
+NewUInt32(const string &n)
 {
     return new WWWUInt32(n);
 }
 
-WWWUInt32::WWWUInt32(const String &n) : UInt32(n)
+WWWUInt32::WWWUInt32(const string &n) : UInt32(n)
 {
 }
 
@@ -45,14 +48,14 @@ WWWUInt32::ptr_duplicate()
 }
 
 bool
-WWWUInt32::read(const String &, int &)
+WWWUInt32::read(const string &, int &)
 {
     assert(false);
     return false;
 }
 
 void 
-WWWUInt32::print_val(ostream &os, String, bool print_decl_p)
+WWWUInt32::print_val(ostream &os, string, bool print_decl_p)
 {
-    write_simple_variable(os, (string)name().chars(), fancy_typename(this));
+    write_simple_variable(os, (string)name().c_str(), fancy_typename(this));
 }

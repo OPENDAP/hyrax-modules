@@ -10,6 +10,9 @@
 //  4/7/99 jhrg
 
 // $Log: WWWArray.cc,v $
+// Revision 1.2  1999/05/09 04:14:50  jimg
+// String --> string
+//
 // Revision 1.1  1999/04/20 00:21:02  jimg
 // First version
 //
@@ -26,7 +29,7 @@
 
 #include <Pix.h>
 #include <SLList.h>
-#include <String.h>
+#include <string>
 
 #include "WWWArray.h"
 #include "WWWOutput.h"
@@ -36,7 +39,7 @@
 #endif
 
 Array *
-NewArray(const String &n, BaseType *v)
+NewArray(const string &n, BaseType *v)
 {
     return new WWWArray(n, v);
 }
@@ -47,7 +50,7 @@ WWWArray::ptr_duplicate()
     return new WWWArray(*this);
 }
 
-WWWArray::WWWArray(const String &n, BaseType *v) : Array(n, v)
+WWWArray::WWWArray(const string &n, BaseType *v) : Array(n, v)
 {
 }
 
@@ -56,14 +59,14 @@ WWWArray::~WWWArray()
 }
 
 bool
-WWWArray::read(const String &, int &)
+WWWArray::read(const string &, int &)
 {
     assert(false);
     return false;
 }
 
 void 
-WWWArray::print_val(ostream &os, String, bool print_decl_p)
+WWWArray::print_val(ostream &os, string, bool print_decl_p)
 {
     os << "<script type=\"text/javascript\">\n"
        << "<!--\n"
@@ -82,7 +85,7 @@ WWWArray::print_val(ostream &os, String, bool print_decl_p)
     Pix p = first_dim();
     for (int i = 0; p; ++i, next_dim(p)) {
 	int size = dimension_size(p, true);
-	string n = (const char *)dimension_name(p);
+	string n = dimension_name(p);
 	if (n != "")
 	    os << n << ":";
 	os << "<input type=\"text\" name=\"" << name() << "_" << i 

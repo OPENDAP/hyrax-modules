@@ -12,6 +12,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWUInt16.h,v $
+// Revision 1.2  1999/05/09 04:14:52  jimg
+// String --> string
+//
 // Revision 1.1  1999/04/20 00:21:05  jimg
 // First version
 //
@@ -28,14 +31,14 @@
 
 class WWWUInt16: public UInt16 {
 public:
-    WWWUInt16(const String &n = (char *)0);
+    WWWUInt16(const string &n = (char *)0);
     virtual ~WWWUInt16() {}
 
     virtual BaseType *ptr_duplicate();
     
-    virtual bool read(const String &dataset, int &error);
+    virtual bool read(const string &dataset, int &error);
     
-    void print_val(ostream &os, String space = "", bool print_decl_p = true);
+    void print_val(ostream &os, string space = "", bool print_decl_p = true);
 };
 
 #endif

@@ -10,6 +10,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWGrid.cc,v $
+// Revision 1.2  1999/05/09 04:14:51  jimg
+// String --> string
+//
 // Revision 1.1  1999/04/20 00:21:03  jimg
 // First version
 //
@@ -24,14 +27,14 @@
 
 #include <Pix.h>
 #include <SLList.h>
-#include <String.h>
+#include <string>
 
 #include "Array.h"
 #include "WWWGrid.h"
 #include "WWWOutput.h"
 
 Grid *
-NewGrid(const String &n)
+NewGrid(const string &n)
 {
     return new WWWGrid(n);
 }
@@ -42,7 +45,7 @@ WWWGrid::ptr_duplicate()
     return new WWWGrid(*this);
 }
 
-WWWGrid::WWWGrid(const String &n) : Grid(n)
+WWWGrid::WWWGrid(const string &n) : Grid(n)
 {
 }
 
@@ -51,14 +54,14 @@ WWWGrid::~WWWGrid()
 }
 
 bool
-WWWGrid::read(const String &, int &)
+WWWGrid::read(const string &, int &)
 {
     assert(false);
     return false;
 }
 
 void
-WWWGrid::print_val(ostream &os, String space, bool print_decl_p)
+WWWGrid::print_val(ostream &os, string space, bool print_decl_p)
 {
     os << "<script type=\"text/javascript\">\n"
        << "<!--\n"
@@ -83,7 +86,7 @@ WWWGrid::print_val(ostream &os, String space, bool print_decl_p)
     Pix p = a->first_dim();
     for (int i = 0; p; ++i, a->next_dim(p)) {
 	int size = a->dimension_size(p, true);
-	string n = (const char *)a->dimension_name(p);
+	string n = a->dimension_name(p);
 	if (n != "")
 	    os << n << ":";
 	os << "<input type=\"text\" name=\"" << name() << "_" << i 

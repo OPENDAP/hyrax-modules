@@ -10,6 +10,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWSequence.cc,v $
+// Revision 1.2  1999/05/09 04:14:51  jimg
+// String --> string
+//
 // Revision 1.1  1999/04/20 00:21:04  jimg
 // First version
 //
@@ -24,7 +27,7 @@
 
 #include <Pix.h>
 #include <SLList.h>
-#include <String.h>
+#include <string>
 
 #include "DAS.h"
 #include "WWWSequence.h"
@@ -34,7 +37,7 @@ extern DAS global_das;
 extern WWWOutput wo;
 
 Sequence *
-NewSequence(const String &n)
+NewSequence(const string &n)
 {
     return new WWWSequence(n);
 }
@@ -45,7 +48,7 @@ WWWSequence::ptr_duplicate()
     return new WWWSequence(*this);
 }
 
-WWWSequence::WWWSequence(const String &n) : Sequence(n)
+WWWSequence::WWWSequence(const string &n) : Sequence(n)
 {
 }
 
@@ -54,7 +57,7 @@ WWWSequence::~WWWSequence()
 }
 
 bool 
-WWWSequence::read(const String &, int &)
+WWWSequence::read(const string &, int &)
 {
     assert(false);
     return false;
@@ -87,7 +90,7 @@ WWWSequence::is_simple_sequence()
 // a sequence. 
 
 void 
-WWWSequence::print_val(ostream &os, String space, bool print_decls)
+WWWSequence::print_val(ostream &os, string space, bool print_decls)
 {
     os << "<b>Sequence " << name() << "</b><br>\n";
     os << "<dl><dd>\n";

@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.2 1999/05/06 16:36:43 jimg Exp $
+# $Id: Makefile.in,v 1.3 1999/05/09 04:14:50 jimg Exp $
 
 @SET_MAKE@
 
@@ -67,12 +67,12 @@ STRIP = strip
 
 CLIENTSRCS = WWWByte.cc WWWInt32.cc WWWFloat64.cc WWWStr.cc \
 	WWWUrl.cc WWWArray.cc WWWStructure.cc WWWList.cc \
-	WWWSequence.cc WWWFunction.cc WWWGrid.cc WWWUInt32.cc \
+	WWWSequence.cc WWWGrid.cc WWWUInt32.cc \
 	WWWInt16.cc WWWUInt16.cc WWWFloat32.cc WWWOutput.cc
 
 CLIENTOBJS = WWWByte.o WWWInt32.o WWWFloat64.o WWWStr.o \
 	WWWUrl.o WWWArray.o WWWStructure.o WWWList.o \
-	WWWSequence.o WWWFunction.o WWWGrid.o WWWUInt32.o \
+	WWWSequence.o WWWGrid.o WWWUInt32.o \
 	WWWInt16.o WWWUInt16.o WWWFloat32.o WWWOutput.o
 
 WWW_INT_SRCS = www_int.cc

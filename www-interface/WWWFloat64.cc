@@ -10,6 +10,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWFloat64.cc,v $
+// Revision 1.2  1999/05/09 04:14:51  jimg
+// String --> string
+//
 // Revision 1.1  1999/04/20 00:21:02  jimg
 // First version
 //
@@ -23,18 +26,18 @@
 
 #include <Pix.h>
 #include <SLList.h>
-#include <String.h>
+#include <string>
 
 #include "WWWFloat64.h"
 #include "WWWOutput.h"
 
 Float64 *
-NewFloat64(const String &n)
+NewFloat64(const string &n)
 {
     return new WWWFloat64(n);
 }
 
-WWWFloat64::WWWFloat64(const String &n) : Float64(n)
+WWWFloat64::WWWFloat64(const string &n) : Float64(n)
 {
 }
 
@@ -45,14 +48,14 @@ WWWFloat64::ptr_duplicate()
 }
  
 bool
-WWWFloat64::read(const String &, int &)
+WWWFloat64::read(const string &, int &)
 {
     assert(false);
     return false;
 }
 
 void 
-WWWFloat64::print_val(ostream &os, String, bool print_decl_p)
+WWWFloat64::print_val(ostream &os, string, bool print_decl_p)
 {
-    write_simple_variable(os, (string)name().chars(), fancy_typename(this));
+    write_simple_variable(os, (string)name().c_str(), fancy_typename(this));
 }

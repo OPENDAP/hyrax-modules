@@ -12,6 +12,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWArray.h,v $
+// Revision 1.2  1999/05/09 04:14:50  jimg
+// String --> string
+//
 // Revision 1.1  1999/04/20 00:21:02  jimg
 // First version
 //
@@ -28,15 +31,15 @@
 class WWWArray: public Array {
 
 public:
-    WWWArray(const String &n = (char *)0, BaseType *v = 0);
+    WWWArray(const string &n = (char *)0, BaseType *v = 0);
     virtual ~WWWArray();
 
     virtual BaseType *ptr_duplicate();
 
-    virtual bool read(const String &dataset, int &error);
+    virtual bool read(const string &dataset, int &error);
 
     /// Overload of BaseType mfunc. This prints arrays using commas and CRs.
-    virtual void print_val(ostream &os, String space = "", 
+    virtual void print_val(ostream &os, string space = "", 
 			   bool print_decl_p = true);
 };
 

@@ -3,6 +3,8 @@
 #include <iostream>
 #include <strstream.h>
 
+#include "Regex.h"
+
 #include "config_dap.h"
 #include "BaseType.h"
 #include "Array.h"
@@ -81,7 +83,7 @@ WWWOutput::write_global_attributes(DAS &das)
 << _attr_cols << ">\n";
 
     for (Pix p = das.first_var(); p; das.next_var(p)) {
-	string name = (const char *)das.get_name(p);
+	string name = das.get_name(p);
 
 	if (!name_in_kill_file(name) && name_is_global(name)) {
 	    AttrTable *attr = das.get_table(p);
@@ -162,7 +164,7 @@ fancy_typename(BaseType *v)
       case dods_float64_c:
 	return "64 bit Real";
       case dods_str_c:
-	return "String";
+	return "string";
       case dods_url_c:
 	return "URL";
       case dods_array_c: {
@@ -189,8 +191,6 @@ fancy_typename(BaseType *v)
 	return "Structure";
       case dods_sequence_c:
 	return "Sequence";
-      case dods_function_c:
-	return "Function";
       case dods_grid_c:
 	return "Grid";
       default:

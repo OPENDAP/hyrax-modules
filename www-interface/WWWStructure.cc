@@ -10,6 +10,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWStructure.cc,v $
+// Revision 1.2  1999/05/09 04:14:52  jimg
+// String --> string
+//
 // Revision 1.1  1999/04/20 00:21:04  jimg
 // First version
 //
@@ -23,7 +26,7 @@
 
 #include <Pix.h>
 #include <SLList.h>
-#include <String.h>
+#include <string>
 
 #include "DAS.h"
 #include "WWWStructure.h"
@@ -34,7 +37,7 @@ extern DAS global_das;
 extern WWWOutput wo;
 
 Structure *
-NewStructure(const String &n)
+NewStructure(const string &n)
 {
     return new WWWStructure(n);
 }
@@ -45,7 +48,7 @@ WWWStructure::ptr_duplicate()
     return new WWWStructure(*this);
 }
 
-WWWStructure::WWWStructure(const String &n) : Structure(n)
+WWWStructure::WWWStructure(const string &n) : Structure(n)
 {
 }
 
@@ -57,7 +60,7 @@ WWWStructure::~WWWStructure()
 // comprise the structure. 
 
 bool
-WWWStructure::read(const String &, int &)
+WWWStructure::read(const string &, int &)
 {
     assert(false);
     return false;
@@ -67,7 +70,7 @@ WWWStructure::read(const String &, int &)
 // a sequence. 
 
 void 
-WWWStructure::print_val(ostream &os, String space, bool print_decls)
+WWWStructure::print_val(ostream &os, string space, bool print_decls)
 {
     os << "<b>Structure " << name() << "</b><br>\n";
     os << "<dl><dd>\n";

@@ -10,6 +10,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWUInt16.cc,v $
+// Revision 1.2  1999/05/09 04:14:52  jimg
+// String --> string
+//
 // Revision 1.1  1999/04/20 00:21:05  jimg
 // First version
 //
@@ -20,18 +23,18 @@
 
 #include <iostream.h>
 
-#include <String.h>
+#include <string>
 
 #include "WWWUInt16.h"
 #include "WWWOutput.h"
 
 UInt16 *
-NewUInt16(const String &n)
+NewUInt16(const string &n)
 {
     return new WWWUInt16(n);
 }
 
-WWWUInt16::WWWUInt16(const String &n) : UInt16(n)
+WWWUInt16::WWWUInt16(const string &n) : UInt16(n)
 {
 }
 
@@ -42,14 +45,14 @@ WWWUInt16::ptr_duplicate()
 }
 
 bool
-WWWUInt16::read(const String &, int &)
+WWWUInt16::read(const string &, int &)
 {
     assert(false);
     return false;
 }
 
 void 
-WWWUInt16::print_val(ostream &os, String, bool print_decl_p)
+WWWUInt16::print_val(ostream &os, string, bool print_decl_p)
 {
-    write_simple_variable(os, (string)name().chars(), fancy_typename(this));
+    write_simple_variable(os, (string)name().c_str(), fancy_typename(this));
 }

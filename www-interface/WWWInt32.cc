@@ -10,6 +10,9 @@
 // 4/7/99 jhrg
 
 // $Log: WWWInt32.cc,v $
+// Revision 1.2  1999/05/09 04:14:51  jimg
+// String --> string
+//
 // Revision 1.1  1999/04/20 00:21:03  jimg
 // First version
 //
@@ -23,18 +26,18 @@
 
 #include <Pix.h>
 #include <SLList.h>
-#include <String.h>
+#include <string>
 
 #include "WWWInt32.h"
 #include "WWWOutput.h"
 
 Int32 *
-NewInt32(const String &n)
+NewInt32(const string &n)
 {
     return new WWWInt32(n);
 }
 
-WWWInt32::WWWInt32(const String &n) : Int32(n)
+WWWInt32::WWWInt32(const string &n) : Int32(n)
 {
 }
 
@@ -45,14 +48,14 @@ WWWInt32::ptr_duplicate()
 }
 
 bool
-WWWInt32::read(const String &, int &)
+WWWInt32::read(const string &, int &)
 {
     assert(false);
     return false;
 }
 
 void 
-WWWInt32::print_val(ostream &os, String, bool print_decl_p)
+WWWInt32::print_val(ostream &os, string, bool print_decl_p)
 {
-    write_simple_variable(os, (string)name().chars(), fancy_typename(this));
+    write_simple_variable(os, (string)name().c_str(), fancy_typename(this));
 }
