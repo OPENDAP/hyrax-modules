@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.76 2003/04/23 23:26:06 jimg Exp $
+# $Id: acinclude.m4,v 1.77 2003/05/02 19:08:13 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -93,13 +93,13 @@ AC_DEFUN(DODS_GET_DODS_ROOT, [dnl
 # NB: We have to add dods_root/lib to LDFLAGS so that various configure
 # macros will find the thrid-party libraries (e.g., AC_CHECK_LIBRARY).
 AC_DEFUN(DODS_FIND_PACKAGES_DIR, [dnl
-    AC_MSG_CHECKING("for the packages directory")
+    AC_MSG_CHECKING([for the packages directory])
     # Where does DODS live?
     AC_REQUIRE([DODS_GET_DODS_ROOT])
     DODS_PACKAGES_DIR=`ls -1d ${dods_relative}src/packages* 2> /dev/null`
     if test -z "$DODS_PACKAGES_DIR"
     then
-	AC_MSG_ERROR("Could not find the third-party packages!")
+	AC_MSG_ERROR([Could not find the third-party packages!])
     fi
     AC_MSG_RESULT($DODS_PACKAGES_DIR)
     LDFLAGS="$LDFLAGS -L${dods_relative}lib"
