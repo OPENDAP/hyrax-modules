@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.17 1997/04/19 00:55:35 jimg Exp $
+# $Id: Makefile.in,v 1.18 1997/05/01 22:43:27 jimg Exp $
 
 @SET_MAKE@
 
@@ -28,7 +28,7 @@ LFLAGS = -8
 YFLAGS = -d
 LIBS = -ldap++ -lwww @LIBS@
 TAGS_FLAGS = -b
-CMEXFLAGS = 
+CMEXFLAGS = -g
 MATLAB_ROOT = @MATLAB_ROOT@
 
 # Set the instalation directories; prefix can be set on the command line
@@ -151,7 +151,8 @@ depend:
 	> dependencies
 	@depend@ -m dependencies \
 	-- $(CPPFLAGS) -I@GPP_INC@ -- \
-	$(CLIENTSRCS) write_val.cc name_map.cc queue.c variable.c loaddods.c
+	$(CLIENTSRCS) write_val.cc name_map.cc queue.c variable.c \
+		loaddods.c extend.c
 
 .SUFFIXES:      .o .cc .c
 
