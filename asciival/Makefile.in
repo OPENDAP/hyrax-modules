@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.6 1996/11/13 22:57:26 jimg Exp $
+# $Id: Makefile.in,v 1.7 1996/11/22 23:55:24 jimg Exp $
 
 @SET_MAKE@
 
@@ -84,8 +84,9 @@ CLIENTOBJS = ClientByte.o ClientInt32.o ClientFloat64.o ClientStr.o \
 
 all: $(PROG)
 
-writeval: write_val.o $(CLIENTOBJS)
-	$(CXX) $(LDFLAGS) -o writeval write_val.o $(CLIENTOBJS) $(LIBS)
+writeval: write_val.o name_map.o $(CLIENTOBJS)
+	$(CXX) $(LDFLAGS) -o writeval write_val.o name_map.o \
+		$(CLIENTOBJS) $(LIBS)
 
 loaddods: loaddods.o variable.o startchild.o queue.o
 	$(CMEX) $(CMEXFLAGS) loaddods.o variable.o startchild.o queue.o
@@ -125,8 +126,11 @@ tar:
 tags:
 	$(TAGS) $(TAGS_FLAGS) *.cc *.h *.lex *.y
 
+.PHONY: depend
 depend: 
-	../../etc/depend.sh -- $(CPPFLAGS) -I/usr/local/lib/g++-include -I../../include -- $(CLIENTSRCS) write_val.cc
+        @depend@ -m dependencies \
+        -- $(CPPFLAGS) -I/usr/local/lib/g++-include -- \
+	$(CLIENTSRCS) write_val.cc name_map.cc
 
 .SUFFIXES:      .o .cc .c
 
@@ -136,6 +140,5 @@ depend:
 .cc.o:
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) -o $@ $<
 
-# DO NOT DELETE THIS LINE -- make depend depends on it.
-
+include dependencies
 
