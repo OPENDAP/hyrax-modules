@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.55 1999/08/09 18:35:37 jimg Exp $
+# $Id: acinclude.m4,v 1.56 1999/08/18 16:02:53 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -213,7 +213,7 @@ AC_DEFUN(DODS_RX_LIB, [dnl
 AC_DEFUN(DODS_WWW_LIB, [dnl
     AC_REQUIRE([DODS_PACKAGES_SUPPORT])
     DODS_FIND_WWW_ROOT
-    HAVE_WWW=1; LIBS="-lwwwcore -lwwwinit -lwwwstream $LIBS"
+    HAVE_WWW=1; LIBS="-lwww $LIBS"
     AC_DEFINE_UNQUOTED(HAVE_WWW, $HAVE_WWW)])
 
 # Because the www library is now included in the DODS_ROOT/packages-*/ 
