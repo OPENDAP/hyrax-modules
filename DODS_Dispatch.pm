@@ -22,6 +22,13 @@
 #      	       	       	      - Root name of the filter (e.g., *nc*_dods)
 #
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.11  1999/05/05 00:38:46  jimg
+# Fixed the help message so that it no longer says `Error'.
+# When a URL with no extension is used the help message, not the error message,
+# is printed.
+# Added use of the -v option to all calls to the server filter programs.
+# The .ver/version extension now uses the new -V option (see DODSFilter).
+#
 # Revision 1.10  1999/05/04 19:47:21  jimg
 # Fixed copyright statements. Removed more of the GNU classes.
 #
@@ -256,19 +263,20 @@ sub command {
     # catenating the script name, underscore and the ext.
     if ($ext eq "info") {
 	$server_pgm = $cgi_dir . "usage";
+	$server_pgm .= " -v " . $self->{'caller_revision'} . " ";
 	$full_script = $cgi_dir . $script;
 	$command = $server_pgm . " " . $filename . " " . $full_script;
     } elsif ($ext eq "ver" || $ext eq "/version") {
-#  	$script_rev = '$Revision: 1.10 $ ';
-#  	$script_rev =~ s@\$([A-z]*): (.*) \$@$2@;
 	$server_pgm = $cgi_dir . $script . "_dods";
-	$command = $server_pgm . " -v " . $self->{'caller_revision'} . " " . $filename;
-    } elsif ($ext eq "help" || $ext eq "/help") {
+	$server_pgm .= " -v " . $self->{'caller_revision'} . " ";
+	$command = $server_pgm . " -V " . $filename;
+    } elsif ($ext eq "help" || $ext eq "/help" || $ext eq "") {
 	$self->print_help_message();
 	exit(0);
     } elsif ($ext eq "das" || $ext eq "dds") {
 	my $query = $self->query();
 	$server_pgm = $cgi_dir . $script . "_" . $ext;
+	$server_pgm .= " -v " . $self->{'caller_revision'} . " ";
 	$command = $server_pgm . " " . $filename;
 	if ($query ne "") {
 	    $command .= " -e " . "\"" . $query . "\"";
@@ -282,6 +290,7 @@ sub command {
     } elsif ($ext eq "dods") {
 	my $query = $self->query();
 	$server_pgm = $cgi_dir . $script . "_" . $ext;
+	$server_pgm .= " -v " . $self->{'caller_revision'} . " ";
 	$command = $server_pgm . " " . $filename;
 	if ($query ne "") {
 	    $command .= " -e " . "\"" . $query . "\"";
@@ -298,6 +307,7 @@ sub command {
     } elsif ($ext eq "ascii" || $ext eq "asc") {
 	my $query = $self->query();
 	$server_pgm = $cgi_dir . $script . "_dods";
+	$server_pgm .= " -v " . $self->{'caller_revision'} . " ";
 	$command = $server_pgm . " " . $filename;
 	if ($query ne "") {
 	    $command .= " -e " . "\"" . $query . "\"";
@@ -306,8 +316,7 @@ sub command {
 	local($ascii_srvr) = $cgi_dir . "asciival";
 	$command .= " | " . $ascii_srvr . " -m -- -";
     } else {
-	$self->print_error_message($self->caller_revision(), 
-				   $self->maintainer());
+	$self->print_error_message();
 	exit(1);
     }
 
@@ -338,39 +347,41 @@ software re-linked with a DODS client-library). Generally, you only need to
 add these if you are typing a URL directly into a WWW browser.
 
 <p><b>Suggestion</b>: If you're typing this URL into a WWW browser and
-would like information about the dataset, use the `.info' extension";
+would like information about the dataset, use the `.info' extension\n";
 
 # This method takes three arguments; the object, a string which names the
 # script's version number and an address for mailing bug reports. If the last
 # parameter is not supplied, use the maintainer address from the environment
 # variables. 
+#
 # Note that this mfunc takes the script_rev and address information as
 # arguments for historical resons. That information is now part of the object.
 # 2/10/1998 jhrg
+#
+# Futher changed the dispatch script. The caller_revision and maintainer
+# fields are used explicitly and the args are ignored. 5/4/99 jhrg
+
 sub print_error_message {
     my $self = shift;
-    my $script_rev = shift;
-    my $address = shift;
     my $local_admin = 0;
 
-    if ($address eq "") {
-	$address = 'support@dods.gso.uri.edu';
-    } else {
+    if ($self->{'maintainer'} ne "support\@unidata.ucar.edu") {
 	$local_admin = 1;
     }
 
     # Note that 400 is the error code for `Bad Request'.
 
-    print "HTTP/1.0 400 Bad Request: DODS Server filter program not found.\n";
-    print "Server: ", $self->{'script'}, "/", $script_rev, "\n";
+    print "HTTP/1.0 400 DODS server filter program not found.\n";
+    print "XDODS-Server: ", $self->{'script'}, "/", 
+          $self->{'caller_revision'}, "\n";
     print "\n";
     print "<h3>Error in URL</h3>\n";
 
     print $DODS_Para1;
     if ($local_admin == 1) {
-	print $DODS_Local_Admin, $address;
+	print $DODS_Local_Admin, $self->{'maintainer'};
     } else {
-	print $DODS_Support, $address;
+	print $DODS_Support, $self->{'maintainer'};
     }
     print "<p>\n";
 
@@ -381,7 +392,7 @@ sub print_help_message {
     my $self = shift;
 
     print "HTTP/1.0 200 OK\n";
-    print "Server: ", $self->{'script'}, "/", $script_rev, "\n";
+    print "XDODS-Server: ", $self->{'script'}, "/", $self->{'caller_revision'}, "\n";
     print "\n";
 
     print "<h3>DODS Server Help</h3>\n";
