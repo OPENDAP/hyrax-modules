@@ -22,6 +22,11 @@
 #      	       	       	      - Root name of the filter (e.g., *nc*_dods)
 #
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.8  1999/02/20 01:36:52  jimg
+# Recognizes the XDODS-Accept-Types header (passed to the CGI using an
+# environment variable). Passes along the value to the _dds and _dods filters
+# using the -t option.
+#
 # Revision 1.7  1998/08/06 16:13:46  jimg
 # Added cache dir stuff (from jeh).
 #
@@ -102,9 +107,10 @@ sub initialize {
 
     # Look for the Accept-Encoding header. Does it exist? If so, store the
     # value. 
-    $encoding = $ENV{'HTTP_ACCEPT_ENCODING'};
+    $self->{'encoding'} = $ENV{'HTTP_ACCEPT_ENCODING'};
 
-    $self->{'encoding'} = $encoding;
+    # Look for the XDODS-Accept-Types header. If it exists, store its value.
+    $self->{'accept_types'} = $ENV{'HTTP_XDODS_ACCEPT_TYPES'};
 
     # If this is a `secure' server, add the pathname from the document root
     # to the CGI into PATH_TRANSLATED. Because CGI 1.1 does not pass DOCUMENT
@@ -238,6 +244,12 @@ sub encoding {
     return $self->{'encoding'};
 }
 
+sub accept_types {
+    my $self = shift;
+    
+    return $self->{'accept_types'};
+}
+
 sub command {
     my $self = shift;
 
@@ -246,6 +258,7 @@ sub command {
     my $cache_dir = $self->cache_dir();
     my $script = $self->script();
     my $filename = $self->filename();
+    my $accept_types = $self->accept_types();
 
     # If the user wants to see info, version of help information, provide
     # that. Otherwise, form the name of the filter program to run by
@@ -255,7 +268,7 @@ sub command {
 	$full_script = $cgi_dir . $script;
 	$command = $server_pgm . " " . $filename . " " . $full_script;
     } elsif ($ext eq "ver" || $ext eq "/version") {
-	$script_rev = '$Revision: 1.7 $ ';
+	$script_rev = '$Revision: 1.8 $ ';
 	$script_rev =~ s@\$([A-z]*): (.*) \$@$2@;
 	$server_pgm = $cgi_dir . $script . "_dods";
 	$command = $server_pgm . " -v " . $script_rev . " " . $filename;
@@ -272,6 +285,9 @@ sub command {
 	if ($cache_dir ne "") {
 	    $command .= " -r " . "\"" . $cache_dir . "\"";
 	}
+	if ($accept_types ne "") {
+	    $command .= " -t " . "\"" . $accept_types . "\"";
+	}
     } elsif ($ext eq "dods") {
 	my $query = $self->query();
 	$server_pgm = $cgi_dir . $script . "_" . $ext;
@@ -282,11 +298,11 @@ sub command {
 	if ($cache_dir ne "") {
 	    $command .= " -r " . "\"" . $cache_dir . "\"";
 	}
-	# Look for presence of the Accept-Encoding header and test to see if
-	# the value of that header contains `defalte'. If so, pipe the output
-        # of the data filter through the deflate program.
 	if ($self->encoding() =~ m/deflate/) {
 	    $command .= " -c";
+	}
+	if ($accept_types ne "") {
+	    $command .= " -t " . "\"" . $accept_types . "\"";
 	}
     } elsif ($ext eq "ascii" || $ext eq "asc") {
 	my $query = $self->query();
