@@ -22,6 +22,9 @@
 #      	       	       	      - Root name of the filter (e.g., *nc*_dods)
 #
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.7  1998/08/06 16:13:46  jimg
+# Added cache dir stuff (from jeh).
+#
 # Revision 1.6  1998/03/17 17:20:54  jimg
 # Added patch for the new ASCII filter. Use either the suffix .ascii or .asc
 # to get data back in ASCII form from a DODS server.
@@ -127,7 +130,10 @@ sub initialize {
 
 # Extract various environment variables used to pass `parameters' encoded in
 # URL. The two arguments to this ctor are the current revision of the caller
-# and an email adrress of the dataset/server maintainer.
+# and an email adrress of the dataset/server maintainer. 
+#
+# Note that the $type variable is used so that DODS_Dispatch my be
+# subclassed. See the perlobj man page for more information. 7/27/98 jhrg
 sub new {
     my $type = shift;
     my $caller_revision = shift;
@@ -201,6 +207,17 @@ sub cgi_dir {
     }
 }
 
+sub cache_dir {
+    my $self = shift;
+    my $cache_dir = shift;	# The second arg is optional
+
+    if ($cache_dir eq "") {
+	return $self->{'cache_dir'};
+    } else {
+	return $self->{'cache_dir'} = $cache_dir;
+    }
+}
+
 sub script {
     my $self = shift;
     my $script = shift;		# The second arg is optional
@@ -226,6 +243,7 @@ sub command {
 
     my $ext = $self->extension();
     my $cgi_dir = $self->cgi_dir();
+    my $cache_dir = $self->cache_dir();
     my $script = $self->script();
     my $filename = $self->filename();
 
@@ -237,7 +255,7 @@ sub command {
 	$full_script = $cgi_dir . $script;
 	$command = $server_pgm . " " . $filename . " " . $full_script;
     } elsif ($ext eq "ver" || $ext eq "/version") {
-	$script_rev = '$Revision: 1.6 $ ';
+	$script_rev = '$Revision: 1.7 $ ';
 	$script_rev =~ s@\$([A-z]*): (.*) \$@$2@;
 	$server_pgm = $cgi_dir . $script . "_dods";
 	$command = $server_pgm . " -v " . $script_rev . " " . $filename;
@@ -251,12 +269,18 @@ sub command {
 	if ($query ne "") {
 	    $command .= " -e " . "\"" . $query . "\"";
 	}
+	if ($cache_dir ne "") {
+	    $command .= " -r " . "\"" . $cache_dir . "\"";
+	}
     } elsif ($ext eq "dods") {
 	my $query = $self->query();
 	$server_pgm = $cgi_dir . $script . "_" . $ext;
 	$command = $server_pgm . " " . $filename;
 	if ($query ne "") {
 	    $command .= " -e " . "\"" . $query . "\"";
+	}
+	if ($cache_dir ne "") {
+	    $command .= " -r " . "\"" . $cache_dir . "\"";
 	}
 	# Look for presence of the Accept-Encoding header and test to see if
 	# the value of that header contains `defalte'. If so, pipe the output
