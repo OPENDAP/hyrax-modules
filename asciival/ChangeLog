@@ -1,3 +1,10 @@
+1998-11-11  James Gallagher  <jimg@dcz.cvo.oneworld.com>
+
+	* Patched the (in)famous crash under Linux. mexPutMatrix appears
+	to corrupt memory. It seems to be walking over the variables data
+	structure in extend.c. We patched this by changing the allocation
+	size from 5 to 500. Mathworks is looking at the problem.
+
 1998-11-05  James Gallagher  <jimg@dcz.cvo.oneworld.com>
 
 	* Fixed a bug where the output of structure members was hosed (see
