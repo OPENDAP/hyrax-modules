@@ -22,8 +22,20 @@
 #      	       	       	      - Root name of the filter (e.g., *nc*_dods)
 #
 # $Log: DODS_Dispatch.pm,v $
-# Revision 1.19  1999/07/22 03:08:46  jimg
-# Moved
+# Revision 1.20  1999/07/22 03:13:00  jimg
+# Undid a nasty mistake which wiped out the version 1.18 changes
+#
+# Revision 1.18  1999/06/12 00:00:26  jimg
+# Added server_name and request_uri procedure/fields.
+# Added code that translates the extension .html into a call to the www_int
+# filter. This uses the new server_name and request_uri information to run the
+# filter with a complete url, which might be wasteful but is quick and keeps
+# the server programs modular.
+# Fixed the call to asciival so that security features are no longer
+# circumvented. I used the same call-with-url technique that I used with
+# www_int.
+# Some of the help text was updated to include mention of the new .html
+# feature.
 #
 # Revision 1.17  1999/05/27 21:27:59  jimg
 # Moved the code that escapes the query into the section for asciival. Since
@@ -116,7 +128,6 @@
 # Revision 1.1  1997/06/02 21:04:35  jimg
 # First version
 #
-my $debug = 2;
 
 package DODS_Dispatch;
 
@@ -154,7 +165,7 @@ sub initialize {
     $self->{'cgi_dir'} = "./";
 
     $self->{'server_name'} = $ENV{'SERVER_NAME'};
-    print(STDERR "server name: " , $self->{'server_name'}, "\n") if $debug > 1;
+
     $query = $ENV{'QUERY_STRING'};
     $query =~ tr/+/ /;		# Undo escaping by client.
 
@@ -167,21 +178,16 @@ sub initialize {
     $ext =~ s@.*\.(.*)@$1@;
 
     if ($ext =~ /[^A-Za-z\/]+/) {
-	print(STDERR "DODS_Dispatch.pm: ext: ", $ext, "\n") if $debug > 1;
+	print(STDERR "DODS_Dispatch.pm: ext: ", $ext, "\n") if $debug >= 2;
 	send_error_object("Extension contains bad characters.");
 	exit(1);
     }
 
     $self->{'ext'} = $ext;
-    print(STDERR "ext: ", $ext, "\n") if $debug > 1;
 
     my $request = $ENV{'REQUEST_URI'};
     $request =~ s@(.*)\.$ext@$1@;
     $self->{'request_uri'} = $request;
-
-    my $path_info = $ENV{'PATH_INFO'};
-    $path_info =~ s@(.*)\.$ext@$1@;
-    $self->{'path_info'} = $path_info;
 
     # Strip the `nph-' off of the front of the dispatch program's name. Also 
     # remove the extraneous partial-pathname that HTTPD glues on to the
@@ -227,7 +233,7 @@ sub initialize {
     # contents of /etc/passwd. 5/18/99 jhrg
 
     $filename =~ s@([^ !%&()*+?<>]*)\.$ext(.*)@$1@;
-    printf(STDERR "filename: %s\n", $filename) if $debug > 1;
+    printf(STDERR "filename: %s\n", $filename) if $debug == 2;
 
     $self->{'filename'} = $filename;
 }
@@ -375,34 +381,9 @@ sub command {
 	$server_pgm = $self->cgi_dir() . $self->script() . "_dods";
 	@command = ($server_pgm, "-v", $self->caller_revision(), "-V",
 	            $self->filename());
-    } elsif ($ext eq "help" || $ext eq "/help" || $ext eq "/help/"
-	     || $ext eq "") {
+    } elsif ($ext eq "help" || $ext eq "/help" || $ext eq "" || $ext eq "/") {
 	$self->print_help_message();
 	exit(0);
-    } elsif ($ext =~ ".*/\$") {	# Does $ext end in a slash?
-	use LWP::Simple;
-	use FilterDirHTML;	# FilterDirHTML is a subclass of HTML::Filter
-
-	# PATH_INFO is wrong here!
-	# Build URL without CGI in it.
-	my $url = "http://" . $self->{'server_name'} . $self->{'path_info'};
-	if ($self->{'query'} ne "") {
-	    $url .= "?" . $self->{'query'};
-	}
-	my $directory_html = get($url);
-
-	# Parse the HTML directory page
-	# Build URL with CGI in it but remove ?M=A type query expression.
-	my $server_url = "http://" . $self->{'server_name'} 
-	                 . $self->{request_uri};
-	if ($self->{'query'} ne "") {
-	    ($server_url) = ($server_url =~ m@(.*)\?.*@);
-	}
-	my $filtered_dir_html = new FilterDirHTML('.*', $server_url); 
-
-	$filtered_dir_html->parse($directory_html);
-	$filtered_dir_html->eof;
-	exit(0);		# Leave without returning @command!
     } elsif ($ext eq "das" || $ext eq "dds") {
 	my $query = $self->query();
 	my $cache_dir = $self->cache_dir();
@@ -441,7 +422,7 @@ sub command {
     } elsif ($ext eq "ascii" || $ext eq "asc") {
 	my $dods_url = ("http://" . $self->{'server_name'} 
 			. $self->{'request_uri'});
-	@command=("./asciival",  "-m", "--", $dods_url);
+	@command=("./asciival",  "--", $dods_url);
     } elsif ($ext eq "html") {
 	my $dods_url = ("http://" . $self->{'server_name'} 
 			. $self->{'request_uri'});
@@ -470,6 +451,7 @@ one of the following a five suffixes to a URL: .das, .dds, .dods., .info,
 <dt> dds  <dd> data type object
 <dt> dods <dd> data object
 <dt> info <dd> info object (attributes, types and other information)
+<dt> html <dd> html form for this dataset
 <dt> ver  <dd> return the version number of the server
 <dt> help <dd> help information (this text)</dl>
 </dl>
@@ -487,7 +469,10 @@ filename. For example: http://dods.gso.uri.edu/cgi-bin/nph-nc/version will
 return the version number for the netCDF server used in the first example. 
 
 <p><b>Suggestion</b>: If you're typing this URL into a WWW browser and
-would like information about the dataset, use the `.info' extension\n";
+would like information about the dataset, use the `.info' extension.
+
+If you'd like to see a data values, use the `.html' extension and submit a
+query using the customized form.\n";
 
 # This method takes three arguments; the object, a string which names the
 # script's version number and an address for mailing bug reports. If the last
