@@ -1,3 +1,13 @@
+Sun Mar 23 16:58:43 1997  James Gallagher  <jimg@dcz.cvo.oneworld.com>
+
+	* Added option switch so users can use the fullnames option.
+
+	* Changed the way the catenate option works so that variables will
+	not be catenated unless that's what users want.
+
+	* Fixed loaddods help file: added examples, corrected examples,
+	hopefully fixed typos.
+
 Thu Mar  6 21:01:40 1997  James Gallagher  <jimg@dcz.cvo.oneworld.com>
 
 	* Added vector/matrix catenation. If two or more urls (given using
