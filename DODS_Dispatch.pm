@@ -70,6 +70,11 @@ my $unknown_p2 = ".'
 It maybe that the server has not been configured for this type of dataset.
 Please double check the URL for errors and, if you think that the URL is
 correct, please contact the "; 
+# Bad characters in the URL.
+my $bad_chars = "Bad characters in URL ($data). If you think this URL is
+correct, please contact the ";
+
+open(DBG_LOG, ">> /usr/local/tmp/dbg_log") if $debug > 0;
 
 # Test if variables are tainted.
 # From Programming Perl, p.258. 12/11/2000 jhrg
@@ -97,7 +102,7 @@ sub rfc822_to_time {
     my %mon = (Jan => 0, Feb => 1, Mar => 2, Apr => 3, May => 4, Jun => 5,
 	       Jul => 6, Aug => 7, Sep => 8, Oct => 9, Nov => 10, Dec => 11);
     
-    print(STDERR "In RFC822_to_time: $time_string.\n") if $debug >= 1;
+    print(DBG_LOG "In RFC822_to_time: $time_string.\n") if $debug >= 1;
 
     # Look for two common date strings, otherwise punt. 12/11/2001 jhrg
     if ($time_string =~ /[A-z]+ [A-z]+ [0-3][0-9] .*/) {
@@ -109,7 +114,7 @@ sub rfc822_to_time {
 	    = split /[:, ]+/, $time_string;
     }
     else {
-	print(STDERR "unrecognizable time string: ", $time_string, "\n")
+	print(DBG_LOG "unrecognizable time string: ", $time_string, "\n")
 	    if $debug > 0;
 	return -1;
     }
@@ -134,16 +139,14 @@ sub rfc822_to_time {
 # HTTP_ACCEPT_ENCODING: Used to indicate that the client can understand
 # compressed responses.
 # HTTP_IF_MODIFIED_SINCE: Used with conditional requests. 
-# HTTP_XDODS_ACCEPT_TYPES: A DAP-only header. Which DAP data types can the
-# server understand? *** This is obsolete. 10/21/02 jhrg
 
 sub initialize {
     my $self = shift;
     my $data; 			# temp used to hold data from %ENV
 
     if ($debug >= 1) {
-	print(STDERR "------------------------------------------------\n");
-	print(STDERR "DODS Server debug log: ", scalar localtime, "\n");
+	print(DBG_LOG "------------------------------------------------\n");
+	print(DBG_LOG "DODS Server debug log: ", scalar localtime, "\n");
     }
 
     $self->{cgi_dir} = "./";
@@ -153,9 +156,10 @@ sub initialize {
     if ($data =~ /^[~0-9]*([0-9]*)[~0-9]*$/) {
 	$self->{server_port} = $1;
     } else {
-	die "Bad data in port: `$data'";
+	$self->print_error_message($bad_chars, 0);
+	exit 1;
     }
-    print(STDERR "server port: " , $self->{server_port}, "\n") if $debug > 1;
+    print(DBG_LOG "server port: " , $self->{server_port}, "\n") if $debug > 1;
 
     # The HOST header may not be in the http request object, but if it is use
     # it. If the host is known by an IP number and not a name that number may
@@ -163,20 +167,22 @@ sub initialize {
     # <thaxter@gomoos.org>, see bug #336. 12/27/2001 jhrg
     $data = $ENV{HTTP_HOST} || $ENV{SERVER_NAME};
     # Sanitize.
-    if ($data =~ /^([-\@\w.]+)$/) {
+    if ($data =~ /^([-\@\w.]*)$/) {
 	$self->{server_name} = $1; # $data now untainted
     } else {
-	die "Bad data in host: `$data'";
+	$self->print_error_message($bad_chars, 0);
+	exit 1;
     }
-    print(STDERR "server name: " , $self->{server_name}, "\n") if $debug > 1;
+    print(DBG_LOG "server name: " , $self->{server_name}, "\n") if $debug > 1;
 
     $data = $ENV{SERVER_ADMIN};
     if ($data =~ /^([-\@\w.]*)$/) {
 	$self->{server_admin} = $1; # $data now untainted
     } else {
-	die "Bad data in server admin: `$data'";
+	$self->print_error_message($bad_chars, 0);
+	exit 1;
     }
-    print(STDERR "server admin: " , $self->{server_admin}, "\n") 
+    print(DBG_LOG "server admin: " , $self->{server_admin}, "\n") 
 	if $debug > 1;
 
     # This is a potential security hole! Our variable names allow a great
@@ -188,7 +194,8 @@ sub initialize {
     if ($data =~ /^(.*)$/) {
 	$self->{query} = $1; # $data now untainted
     } else {
-	die "Bad data in query: `$data'";
+	$self->print_error_message($bad_chars, 0);
+	exit 1;
     }
     $self->{query} =~ tr/+/ /;		# Undo escaping by client.
 
@@ -196,7 +203,7 @@ sub initialize {
     # will be something like `.dods' (for data) or `.dds' (for the DDS
     # object).
     $ext = $ENV{PATH_INFO};
-    print(STDERR "PATH_INFO: ", $ext, "\n") if $debug > 1;
+    print(DBG_LOG "PATH_INFO: ", $ext, "\n") if $debug > 1;
 
     # old comment (04/28/03 jhrg):
     # Using `s' does not untaint $ext, but using a pattern match followed
@@ -217,17 +224,17 @@ sub initialize {
     elsif (is_directory($ENV{PATH_TRANSLATED})) {
 	$ext = "/";
     }
-    elsif ($ext =~ /^.*\.([\w]+)$/) {
+    elsif ($ext =~ /^.*\.([\w]*)$/) {
 	$ext = $1;
     }
     else {
-	print(STDERR "DODS_Dispatch.pm: ext: ", $ext, "\n") if $debug > 1;
+	print(DBG_LOG "DODS_Dispatch.pm: ext: ", $ext, "\n") if $debug > 1;
     	$self->print_dods_error("Bad characters in the URL's extension.");
 	exit(1);
     }
 
     $self->{ext} = $ext;
-    print(STDERR "ext: ", $self->{ext}, "\n") if $debug > 1;
+    print(DBG_LOG "ext: ", $self->{ext}, "\n") if $debug > 1;
 
     # REQUEST_URI is a convenience supported by apache but not Netscape's
     # FastTrack server. See bug 111. 4/30/2001 jhrg
@@ -241,7 +248,7 @@ sub initialize {
 
     # Now extract the filename part of the path.
     my $path_info = $ENV{PATH_INFO};
-    print(STDERR "Second PATH_INFO access: ", $ENV{PATH_INFO}, "\n") if
+    print(DBG_LOG "Second PATH_INFO access: ", $ENV{PATH_INFO}, "\n") if
 	$debug > 1;
     # Sanitize.
     if ($ext eq "/") {
@@ -251,22 +258,22 @@ sub initialize {
 	# use pattern match and assignment to sanitze path_info. 01/28/03 jhrg
 	if ($path_info !~ m@^.*$ext$@) {
 	    $path_info .= $ext;
-	    print(STDERR "Hacked ext: ", $path_info, "\n") if $debug > 1;
+	    print(DBG_LOG "Hacked ext: ", $path_info, "\n") if $debug > 1;
 	}
 	$path_info =~ m@(.*)$ext@;
 	$path_info = $1;
-	print(STDERR "path_info fraction (re)assigned to the variable: ",
+	print(DBG_LOG "path_info fraction (re)assigned to the variable: ",
 	      $path_info, "\n") if $debug > 1;	
     }
     else {
 	$path_info =~ m@(.*)\.$ext@;
 	$path_info = $1;
-	print(STDERR "path_info fraction (re)assigned to the variable: ",
+	print(DBG_LOG "path_info fraction (re)assigned to the variable: ",
 	      $path_info, "\n") if $debug > 1;	
     }
     $self->{path_info} = $path_info;
 
-    print(STDERR "path_info: ", $self->{path_info}, "\n") if $debug > 1;
+    print(DBG_LOG "path_info: ", $self->{path_info}, "\n") if $debug > 1;
 
     # Figure out which type of handler to use when processing this request.
     # The config_file field is set in new(). Note that we only use the
@@ -281,10 +288,7 @@ sub initialize {
     # Slight modification: If the handler is null ("") and the extension is a
     # slash ("/"), that's OK. See Bug 334. 12/27/2001 jhrg
 
-    is_tainted($self->{path_info}) && die "path_info tainted.";
-    is_tainted($self->{config_file}) && die "config_file tainted.";
     $self->{script} = handler_name($self->{path_info}, $self->{config_file});
-    is_tainted($self->{script}) && die "script tainted.";
     if ($self->{ext} ne "/" && $self->{ext} ne "stats" 
 	&& $self->{ext} ne "version" && $self->{ext} ne "help"
 	&& $self->{script} eq "") {
@@ -292,35 +296,37 @@ sub initialize {
 	exit(1);
     }
 
-    print STDERR "Server type: $self->{script}\n" if $debug > 1;
+    print DBG_LOG "Server type: $self->{script}\n" if $debug > 1;
 
     # Look for the Accept-Encoding header. Does it exist? If so, store the
     # value. 
     $data = $ENV{HTTP_ACCEPT_ENCODING};
     if ($data =~ /^([\w]*)$/) {
-	$self->{encoding} = $1; # $data now untainted
+ 	$self->{encoding} = $1; # $data now untainted
     } else {
-	die "Bad data in encoding `$data'";
+	$self->print_error_message($bad_chars, 0);
+	exit 1;
     }
 
     # Look for the If-Modified-Since header. Does it exist? If so, get the
     # date and convert it to Unix time.
     if ($ENV{HTTP_IF_MODIFIED_SINCE} ne "") {
 	$data = $ENV{HTTP_IF_MODIFIED_SINCE};
-	if ($data =~ /^([\w0-9]+)$/) {
+	if ($data =~ /^([\w0-9,:\s\t]+)$/) {
 	    $self->{if_modified_since} = rfc822_to_time($1);
 	} else {
-	    die "Bad data in if modified since: `$data'";
+	    $self->print_error_message($bad_chars, 0);
+	    exit 1;
 	}
     } 
     else {
 	$self->{if_modified_since} = -1;
     }
 
-    print(STDERR "if modified since value: ", $self->{if_modified_since},
+    print(DBG_LOG "if modified since value: ", $self->{if_modified_since},
 	  "\n") if $debug > 1;
 
-    print (STDERR "PATH_TRANSLATED: ", $ENV{PATH_TRANSLATED}, "\n") 
+    print (DBG_LOG "PATH_TRANSLATED: ", $ENV{PATH_TRANSLATED}, "\n") 
 	if $debug > 1; 
 
     # Here's where we need to set $filename so that it's something that
@@ -342,7 +348,7 @@ sub initialize {
 	}
     }
 
-    print STDERR "filename(1): $filename\n" if $debug > 1;
+    print DBG_LOG "filename(1): $filename\n" if $debug > 1;
 
     # Simpler regex. 12/11/2000 jhrg
     if ($self->{ext} eq "help" || $self->{ext} eq "version" 
@@ -360,12 +366,12 @@ sub initialize {
 	$filename = $1;
     }
     else {
-	printf(STDERR "filename: %s\n", $filename) if $debug > 1;
-	$self->print_dods_error("Bad characters found in pathname.");
-	exit(1);
+	printf(DBG_LOG "filename: %s\n", $filename) if $debug > 1;
+	$self->print_error_message($bad_chars, 0);
+	exit 1;
     }
 
-    printf(STDERR "filename(2): %s\n", $filename) if $debug > 1;
+    printf(DBG_LOG "filename(2): %s\n", $filename) if $debug > 1;
 
     $self->{filename} = $filename;
 }
@@ -569,12 +575,6 @@ sub encoding {
     return $self->{encoding};
 }
 
-sub accept_types {
-    my $self = shift;
-    
-    return $self->{accept_types};
-}
-
 sub if_modified_since {
     my $self = shift;
     
@@ -635,7 +635,7 @@ sub command {
 	    @command = ($server_pgm, "-V", $self->filename());
 	}
     } elsif ($self->ext() eq "stats") {
-	print STDERR "Found stats\n" if $debug > 0;
+	print DBG_LOG "Found stats\n" if $debug > 0;
 	if ($self->is_stat_on()) {
 	    $self->send_dods_stats();
 	}
@@ -655,7 +655,7 @@ sub command {
  	          . $self->path_info();
 	# Make sure URL ends in a slash. 10/12/2001 jhrg
 	if ($self->path_info() !~ m@^.*/$@) {
-	    print(STDERR "In ext == `/', adding trailing slash.\n")
+	    print(DBG_LOG "In ext == `/', adding trailing slash.\n")
 		if $debug > 1;
 	    $url .= "/";
 	}
@@ -663,7 +663,7 @@ sub command {
 	    $url .= "?" . $self->query();
 	}
 
-	print(STDERR "Getting the directory listing using: $url\n")
+	print(DBG_LOG "Getting the directory listing using: $url\n")
 	    if $debug > 1;
 
 	my $directory_html = &get_url($url);
@@ -674,7 +674,7 @@ sub command {
                        . $self->request_uri();
 	# Make sure server_url ends in a slash. 10/12/2001 jhrg
 	if ($self->request_uri() !~ m@^.*/$@) {
-	    print(STDERR "In ext == `/', adding trailing slash(2).\n")
+	    print(DBG_LOG "In ext == `/', adding trailing slash(2).\n")
 		if $debug > 1;
 	    $server_url .= "/";
 	}
@@ -723,7 +723,7 @@ sub command {
 	exit(1);
     }
 
-    print(STDERR "DODS server command: @command\n") if $debug;
+    print(DBG_LOG "DODS server command: @command\n") if $debug;
     return @command;
 }
 
@@ -785,14 +785,14 @@ sub send_dods_stats {
     my $blessed = "unidata.ucar.edu|.*gso.uri.edu|.*dods.org";
     my $machine_names = $self->machine_names();
 
-    print STDERR "In send_dods_stats\n" if $debug > 0;
+    print DBG_LOG "In send_dods_stats\n" if $debug > 0;
     if ($self->server_name() =~ m@($blessed|$machine_names)@) {
 	print "HTTP/1.0 200 OK\n";
 	print "XDODS-Server: dods/$core_version\n";
 	print "Content-Type: text/plain\n\n";
 
 	print "Server: ", $self->server_name(), " (version: $core_version)\n";
-	print STDERR "Access log: ", $self->access_log(), "\n" if $debug > 0;
+	print DBG_LOG "Access log: ", $self->access_log(), "\n" if $debug > 0;
 	&print_log_info($self->access_log(), $self->error_log());
     }
 } 
@@ -828,6 +828,11 @@ sub print_error_message {
 
     print "HTTP/1.0 400 DODS server error.\n";
     print "XDODS-Server: $self->{script}/$self->{caller_revision}\n";
+    my $time = gmtime;
+    print "Date: $time GMT\n";
+    print "Last-Modified: $time GMT\n";
+    print "Content-type: text/html\n";
+    print "Cache-Control: no-cache\n\n";
     print "\n";
     print "<h3>DODS Server or URL Error</h3>\n";
 
@@ -840,6 +845,14 @@ sub print_error_message {
     print "<p>\n";
 
     print $DODS_Para2 if $print_help;
+
+    my $date = localtime;
+    print DBG_LOG "[$date] DODS Server error: ", $msg, "\n";
+    if ($local_admin == 1) {
+	print DBG_LOG $DODS_Local_Admin, $self->maintainer(), "\n";
+    } else {
+	print DBG_LOG $DODS_Support, $self->maintainer(), "\n";
+    }
 }
 
 sub print_dods_error {
@@ -874,7 +887,7 @@ sub print_dods_error {
     print "};";
 
     my $date = localtime;
-    print(STDERR "[$date] DODS Server error: ", $msg, "\n");
+    print(DBG_LOG "[$date] DODS Server error: ", $msg, "\n");
 }
 
 # Assumption: If this message is being shown, it is probably being shown in a
@@ -906,7 +919,6 @@ if ($test) {
     # 4/30/2001 jhrg.
     # $ENV{REQUEST_URI} = "http://dcz.dods.org/test-3.2/nph-dods/data/x.nc.dods";
     $ENV{HTTP_ACCEPT_ENCODING} = "deflate";
-    $ENV{HTTP_XDODS_ACCEPT_TYPES} = "!Sequence";
     $ENV{PATH_TRANSLATED} = "/home/httpd/html/htdocs/data/x.nc.dods";
 
     print "Simple file access\n";
@@ -1006,6 +1018,10 @@ if ($test) {
 1;
 
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.37  2003/05/02 16:28:45  jimg
+# Switched to a DODS-specific log for the diagnostic messages. Also, boosted
+# the filtering of environment variables so that taint mode works with perl 5.8.
+#
 # Revision 1.36  2003/04/28 23:56:08  jimg
 # Fixes for Perl 5.8.0 taint mode. 5.8 seems to be stricter about tainted
 # variables (which is good, I guess...).
@@ -1081,7 +1097,7 @@ if ($test) {
 #
 # Revision 1.25.2.30  2002/04/03 13:53:41  jimg
 # I added some instrumentation to the RFC_822 time string parsing code that
-# prints a message to STDERR when an unrecognized time string is sent. This was
+# prints a message to DBG_LOG when an unrecognized time string is sent. This was
 # to help debug a problem reported a while ago about Mozilla's time strings.
 # The problem seems to have gone away, but I thought the instrumentation was
 # useful in its own right.
