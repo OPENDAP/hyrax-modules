@@ -9,6 +9,9 @@
     @author: jhrg */
 
 // $Log: www_int.cc,v $
+// Revision 1.5  2000/10/02 22:42:06  jimg
+// Replaced DVR constant from config_dap.h with the dap_version function
+//
 // Revision 1.4  1999/11/05 00:12:23  jimg
 // Result of merge with 3-1-2
 //
@@ -27,7 +30,7 @@
 
 #include "config_dap.h"
 
-static char rcsid[] not_used = {"$Id: www_int.cc,v 1.4 1999/11/05 00:12:23 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: www_int.cc,v 1.5 2000/10/02 22:42:06 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -260,8 +263,11 @@ main(int argc, char * argv[])
 	  case 'm': regular_header = true; break;
 	  case 'n': nph_header = true; break;
 	  case 'v': verbose = true; break;
-	  case 'V': {cerr << "WWW Interface version: " << version << endl
-			  << "DAP version: " << DVR << endl; exit(0);}
+	  case 'V': {
+	    cerr << "WWW Interface version: " << version << endl
+		 << "DAP version: " << dap_version() << endl; 
+	    exit(0);
+	  }
 	  case 't':
 	    trace = true;
 	    topts = strlen(getopt.optarg);

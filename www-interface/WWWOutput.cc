@@ -5,12 +5,16 @@
 
 #include "Regex.h"
 
+#if 0
 #include "config_dap.h"
+#endif
 #include "BaseType.h"
 #include "Array.h"
 #include "List.h"
 #include "DAS.h"
 #include "DDS.h"
+#include "InternalErr.h"
+#include "util.h"
 
 #include "WWWOutput.h"
 
@@ -28,7 +32,7 @@ WWWOutput::write_html_header(bool nph_header)
 {
     if (nph_header)
 	_os << "HTTP/1.0 200 OK" << endl;
-    _os << "XDODS-Server: " << DVR << endl;
+    _os << "XDODS-Server: " << dap_version() << endl;
     _os << "Content-type: text/html" << endl; 
     _os << "Content-Description: dods_form" << endl;
     _os << endl;		// MIME header ends with a blank line
@@ -210,6 +214,7 @@ name_in_kill_file(const string &name)
     return dim.match(name.c_str(), name.length()) != -1;
 }
 
+#if 0
 static string 
 downcase(const string &s)
 {
@@ -219,12 +224,13 @@ downcase(const string &s)
 	d += tolower(*p++);
     return d;
 }
+#endif
 
 static bool
 name_is_global(string &name)
 {
     static Regex global("\\(.*global.*\\)\\|\\(.*dods.*\\)", 1);
-    name = downcase(name);
+    downcase(name);
     return global.match(name.c_str(), name.length()) != -1;
 }
 
