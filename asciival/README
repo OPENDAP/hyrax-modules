@@ -1,5 +1,5 @@
 
- $Id: README,v 1.16 1998/07/13 20:31:08 jimg Exp $
+ $Id: README,v 1.17 1998/11/19 20:53:59 jimg Exp $
 
 The following provides background technical information on the design of
 loaddods/writeval and asciival. For installation information, see the file
@@ -9,18 +9,17 @@ that the file loaddods.m is in the same directory as the loaddods.mex*
 program.
 
 Note that the configure script for this directory checks for Matlab but only
-issues a warning if its not found. Of the three programs loaddods, writeval
+issues a warning if it is not found. Of the three programs loaddods, writeval
 and asciival, only loaddods needs the Matlab libraries. 
 
-ASCIIVAL: 
-The program asciival is a filter that is similar to writeval (described later
-in conjunction with loaddods) that can function as both a client and a server
-filter program. asciival can be read data from a URL, a local filename or
-from standard input. The program prints to standard output an ASCII tabular
-version of the data where columns are separated by commas and rows separated
-by newlines. Users can request data in ASCII form using the suffix .ascii or
-.asc in place of .dods in a DODS URL. To see how the asciival program is used
-on the server side, look at the DODS_Dispatch.pm Perl module.
+ASCIIVAL: The program asciival is a filter that is similar to writeval
+(described later in conjunction with loaddods) that can function as both a
+client and a server filter program. asciival can read data from a URL, a
+local filename or from standard input. The program prints to standard output
+an ASCII version of the data where columns are separated by commas and rows
+separated by newlines. Users can request data from serves in ASCII form using
+the suffix .ascii or .asc in a DODS URL. To see how the asciival program is
+used on the server side, look at the DODS_Dispatch.pm Perl module.
 
 I think that asciival should be moved to the dap directory ASAP. 5/22/98 jhrg
 
@@ -120,9 +119,24 @@ terminated by a newline. A second newline follows the last string.
 
 <data request> :: <variable>*
 
-<string data> :: <string 0> '\n' <string 1> '\n' ... <string n> '\n'
+<variable> :: <simple variable>
+	   :: <vector variable>
+	   :: <constructor variable>
 
-<simple variable> :: <variable name> '\n'
+<simple variable> :: Byte '\n' <variable name> '\n' <data> '\n'
+		  :: Int32 '\n' <variable name> '\n' <data> '\n'
+		  :: Float64 '\n' <variable name> '\n'  <data> '\n'
+		  :: String '\n' <variable name> '\n' <string data> '\n'
+		  :: Url '\n' <variable name> '\n' <string data> '\n'
+
+<vector variable> :: Array '\n' <array variable> '\n' <data> [see note 1]
+		  :: List '\n' <list variable> '\n' <data>
+
+<constructor variable> :: Structure '\n' <struct variables> 
+		       :: Sequence '\n' <sequence variables>
+		       :: Grid '\n' <grid variables>
+
+<string data> :: <string 0> '\n' <string 1> '\n' ... <string n> '\n'
 
 <array variable> :: <variable type> ' ' <variable name> ' ' 
 		    <number of dims> '\n' <dim size>+ 
@@ -130,29 +144,27 @@ terminated by a newline. A second newline follows the last string.
 <list variable> :: <variable type> <variable name> <list size>
 
 <struct variables> :: <variable name> <num of elements> '\n' 
-		      (<variable> '\n' <data> '\n')+
+		      (<variable>)+
 
 <sequence variables> :: <variable name> <num of elements> '\n' 
-			(<variable> '\n' <data> '\n')+
+			(<variable>)+
 
-<grid variables> :: <variable name> '\n' 'array 1\n' <array variable>
+<grid variables> :: <variable name> '\n' 'array '\n' <array variable>
 		    'map <num of arrays>\n' (<array variable>)+ 
 
-<variable> :: Byte '\n' <simple variable> '\n' <data> '\n'
-	   :: Int32 '\n' <simple variable> '\n' <data> '\n'
-	   :: Float64 '\n' <simple variable> '\n'  <data> '\n'
-	   :: String '\n' <simple variable> '\n' <string data> '\n'
-	   :: Url '\n' <simple variable> '\n' <data> '\n'
-
-	   :: Array '\n' <array variable> '\n' <data> '\n'
-	   :: List '\n' <list variable> '\n' <data> '\n'
-
-	   :: Structure '\n' <struct variables>
-	   :: Sequence '\n' <sequence variables>
-	   :: Function '\n' <function variables>
-	   :: Grid '\n' <grid variables>
-
 <error> :: Error '\n' <message> '\n'
+
+Notes:
+
+1) The vector type's data is sent using the print_val() method of the
+vector's contained type. That is, for a vector of int32s, the contained type
+is int32 and the int32 class' print_val() is used to send the vector's
+values. This method writes binary values and terminates them with a `\n'.
+Thus, the vector variable's print_val() methods do not need to send the `\n'.
+Since we know that all vector and ctor types must ultimately `lead to' simple
+types, it is sufficient to have the simple types handle writing the `\n'
+separators. Having the ctors (and vectors) do this too just means more
+information for the recipient to parse.
 
 James Gallagher 10/4/96
 
