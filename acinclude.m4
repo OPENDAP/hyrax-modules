@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.21 1996/11/02 18:47:10 jimg Exp $
+# $Id: acinclude.m4,v 1.22 1996/11/04 22:09:10 jimg Exp $
 
 # Check for fill value usage.
 
@@ -530,4 +530,23 @@ AC_DEFUN(DODS_CHECK_EXCEPTIONS, [dnl
 	AC_MSG_RESULT(no)
 	AC_MSG_WARN(Compiling without exception handling. See README)
 	CFLAGS=$OLDCFLAGS],[AC_MSG_WARN(maybe...)])
+    ])
+
+#check for hdf libraries
+AC_DEFUN(DODS_HDF_LIBRARY, [dnl
+    AC_ARG_WITH(hdf,
+                [  --with-hdf=ARG          Where is the HDF libarry
+(directory)],
+                HDF_PATH=${withval}, HDF_PATH=/usr/local/hdf)
+    if test "$HDF_PATH"
+    then
+            LDFLAGS="$LDFLAGS -L${HDF_PATH}/lib"
+            AC_SUBST(LDFLAGS)
+            INCS="$INCS -I${HDF_PATH}/include"
+            AC_SUBST(INCS)
+    fi
+    AC_CHECK_LIB(z, inflate_flush, LIBS="-lz $LIBS", nohdf=1)
+    AC_CHECK_LIB(jpeg, jpeg_start_compress, LIBS="-ljpeg $LIBS", nohdf=1)
+    AC_CHECK_LIB(df, Hopen, LIBS="-ldf $LIBS" , nohdf=1)
+    AC_CHECK_LIB(mfhdf, SDstart, LIBS="-lmfhdf $LIBS" , nohdf=1)
     ])
