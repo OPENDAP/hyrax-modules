@@ -1,4 +1,3 @@
-
 # -*- perl -*-
 
 # This file is part of libdap, A C++ implmentation of the OPeNDAP Data
@@ -46,17 +45,19 @@
 #                                 |        - selects filter    
 #                                 \			    		     
 #      	       	       	           - File to open (arg 1)
+#
+# Shell meta characters: &;`'\"|*?~<>^()[]{}$\n\r
 
 package DODS_Dispatch;
 
 # No symbols are exported.
 
 use Env;
-use handler_name;
+use read_config;
 use dods_logging;
 use DODS_Cache;
 
-my $debug = 0;
+my $debug = 1;
 my $test = 0;
 
 # Error message for bad extensions.
@@ -65,14 +66,14 @@ server. Below is a list of the five extensions that are be recognized by
 all DODS servers. If you think that the server is broken (that the URL you
 submitted should have worked), then please contact the\n";
 # Bad file/dataset types.
-my $unknown_p1 = "This DODS server does not know how to serve the dataset `";
+my $unknown_p1 = "This DODS server does not know how to serve the dataset\n`";
 my $unknown_p2 = ".'
 It maybe that the server has not been configured for this type of dataset.
 Please double check the URL for errors and, if you think that the URL is
 correct, please contact the "; 
 # Bad characters in the URL.
-my $bad_chars = "Bad characters in URL ($data). If you think this URL is
-correct, please contact the ";
+my $bad_chars = "Bad characters in URL. If you think this URL is correct, 
+please contact the ";
 
 open(DBG_LOG, ">> /usr/local/tmp/dbg_log") if $debug > 0;
 
@@ -149,17 +150,42 @@ sub initialize {
 	print(DBG_LOG "DODS Server debug log: ", scalar localtime, "\n");
     }
 
+    # Read the configuration file.
+    my ($timeout, $cache_dir, $cache_size, $maintainer, @exclude) 
+	= get_params($self->{config_file});
+    $self->timeout($timeout);
+    $self->cache_dir($cache_dir);
+    $self->cache_size($cache_size);
+    $self->maintainer($maintainer);
+    $self->exclude(@exclude);
+
+    print(DBG_LOG "Timeout: ", $self->timeout(), "\n") if $debug > 1;
+    print(DBG_LOG "Cache Dir: ", $self->cache_dir(), "\n") if $debug > 1;
+    print(DBG_LOG "Cache Size: ", $self->cache_size(), "\n") if $debug > 1;
+    print(DBG_LOG "Maintainer: ", $self->maintainer(), "\n") if $debug > 1;
+    print(DBG_LOG "Exclude: ", $self->exclude(), "\n") if $debug > 1;
+
+    # Process values read from the CGI 1.1 environment variables.
+
     $self->{cgi_dir} = "./";
 
+    # it seems apache 2 does not use this; version 1 did. It may be that
+    # still other daemons put this information both here and in SERVER_NAME.
+    # We test for the port here and then again in SERVER_NAME (just below).
+    # The information in SERVER_PORT takes precedence over SERVER_NAME.
+    # 06/04/03 jhrg
     $data = $ENV{SERVER_PORT};
     # Sanitize.
     if ($data =~ /^[~0-9]*([0-9]*)[~0-9]*$/) {
 	$self->{server_port} = $1;
     } else {
-	$self->print_error_message($bad_chars, 0);
+	print(DBG_LOG "Error:SERVER_PORT '$ENV{SERVER_PORT}'\n");
+	$self->print_dods_error(
+"Bad characters in the SERVER_PORT header. This may be a problem with
+your client or with the OPeNDAP server software. If you think the probelm
+is not in your client, please contact the ", 0);
 	exit 1;
     }
-    print(DBG_LOG "server port: " , $self->{server_port}, "\n") if $debug > 1;
 
     # The HOST header may not be in the http request object, but if it is use
     # it. If the host is known by an IP number and not a name that number may
@@ -167,23 +193,22 @@ sub initialize {
     # <thaxter@gomoos.org>, see bug #336. 12/27/2001 jhrg
     $data = $ENV{HTTP_HOST} || $ENV{SERVER_NAME};
     # Sanitize.
-    if ($data =~ /^([-\@\w.]*)$/) {
+    if ($data =~ /^([-\@\w.]*):?([0-9]*)$/) {
 	$self->{server_name} = $1; # $data now untainted
+	if ($self->{server_port} eq "" && $2 ne "") {
+	    $self->{server_port} = $2;
+	}
     } else {
-	$self->print_error_message($bad_chars, 0);
+	$data = $ENV{HTTP_HOST} || $ENV{SERVER_NAME};
+	print(DBG_LOG "Error:HTTP_HOST or SERVER_NAME '$data'\n");
+	$self->print_dods_error(
+"Bad characters in the HOST or SERVER_NAME header. This may be a problem with
+your client or with the OPeNDAP server software. If you think the probelm
+is not in your client, please contact the ", 0);
 	exit 1;
     }
+    print(DBG_LOG "server port: " , $self->{server_port}, "\n") if $debug > 1;
     print(DBG_LOG "server name: " , $self->{server_name}, "\n") if $debug > 1;
-
-    $data = $ENV{SERVER_ADMIN};
-    if ($data =~ /^([-\@\w.]*)$/) {
-	$self->{server_admin} = $1; # $data now untainted
-    } else {
-	$self->print_error_message($bad_chars, 0);
-	exit 1;
-    }
-    print(DBG_LOG "server admin: " , $self->{server_admin}, "\n") 
-	if $debug > 1;
 
     # This is a potential security hole! Our variable names allow a great
     # many characters that should never be fed into script. Make sure that the
@@ -194,10 +219,12 @@ sub initialize {
     if ($data =~ /^(.*)$/) {
 	$self->{query} = $1; # $data now untainted
     } else {
-	$self->print_error_message($bad_chars, 0);
+	print(DBG_LOG "Error:QUERY_SRING '$ENV{QUERY_STRING}'\n");
+	$self->print_dods_error($bad_chars, 0);
 	exit 1;
     }
     $self->{query} =~ tr/+/ /;		# Undo escaping by client.
+    print(DBG_LOG "query: " , $self->{query}, "\n") if $debug > 1;
 
     # Get the filename's ext. This tells us which filter to run. It
     # will be something like `.dods' (for data) or `.dds' (for the DDS
@@ -224,12 +251,21 @@ sub initialize {
     elsif (is_directory($ENV{PATH_TRANSLATED})) {
 	$ext = "/";
     }
-    elsif ($ext =~ /^.*\.([\w]*)$/) {
+    elsif ($ext =~ /^.*\.(das|dds|dods|ascii|asc|version|ver|info|html)$/) {
 	$ext = $1;
     }
     else {
-	print(DBG_LOG "DODS_Dispatch.pm: ext: ", $ext, "\n") if $debug > 1;
-    	$self->print_dods_error("Bad characters in the URL's extension.");
+	print(DBG_LOG "DODS_Dispatch.pm: ext: ", $ext, "\n");
+	# I spiffed up this error message as per Dan's bug report #680.
+    	$self->print_dods_error(
+
+"Bad characters in the URL's suffix. The server expects the filename part of
+the URL to end in one of das, dds, dods, ascii, info, html or version. These
+suffixes select different responses from the server. To ask the server for a
+directory listing, end the URL with a slash; See the DODS/OPeNDAP User Guide
+or ask the server for help (append '/help' or '.help' to any URL) to get more
+information. If you think this is a server problem please contanct the\n");
+
 	exit(1);
     }
 
@@ -239,9 +275,30 @@ sub initialize {
     # REQUEST_URI is a convenience supported by apache but not Netscape's
     # FastTrack server. See bug 111. 4/30/2001 jhrg
     # my $request = $ENV{REQUEST_URI};
+    # Note that we must differentiate between URLs for directories and those
+    # for DODS responses. 05/07/03 jhrg
     my $request = $ENV{SCRIPT_NAME} . $ENV{PATH_INFO};
+<<<<<<< DODS_Dispatch.pm
     $request =~ m@(.*)\.$self->{ext}@;
     $self->{request_uri} = $1;
+=======
+    if ($ENV{QUERY_STRING} ne "") {
+	$request .= "?" . $ENV{QUERY_STRING};
+    }
+    if ($self->{ext} eq "/") {
+	if ($request !~ m@^.*$ext$@) {
+	    $request .= $ext;
+	    print(DBG_LOG "Hacked request ext: ", $request, "\n")
+		if $debug > 1;
+	}
+	$request =~ m@(.*)$self->{ext}@;
+	$self->{request_uri} = $1 # Assignment must be right after match.
+    } else {
+	$request =~ m@(.*)\.$self->{ext}@;
+	$self->{request_uri} = $1
+    }
+    print(DBG_LOG "Request URI: $self->{request_uri}\n") if $debug > 1;
+>>>>>>> 1.37.2.15
 
     # Now we can set the full_uri.
     $self->{full_uri} = "http://" . $self->server_name() . $self->port()
@@ -302,21 +359,24 @@ sub initialize {
     # Look for the Accept-Encoding header. Does it exist? If so, store the
     # value. 
     $data = $ENV{HTTP_ACCEPT_ENCODING};
-    if ($data =~ /^([\w]*)$/) {
- 	$self->{encoding} = $1; # $data now untainted
+    if ($data =~ /^.*(deflate).*$/) {
+ 	$self->{encoding} = "deflate"; # $data now untainted
     } else {
-	$self->print_error_message($bad_chars, 0);
-	exit 1;
+	$self->{encoding} = "";
     }
 
     # Look for the If-Modified-Since header. Does it exist? If so, get the
     # date and convert it to Unix time.
     if ($ENV{HTTP_IF_MODIFIED_SINCE} ne "") {
 	$data = $ENV{HTTP_IF_MODIFIED_SINCE};
-	if ($data =~ /^([\w0-9,:\s\t]+)$/) {
+	if ($data =~ /^([-\w0-9\s\t,;:.=]+)$/) {
 	    $self->{if_modified_since} = rfc822_to_time($1);
 	} else {
-	    $self->print_error_message($bad_chars, 0);
+	    print(DBG_LOG "Error:IF_MODIFIED_SINCE '$ENV{HTTP_IF_MODIFIED_SINCE}'\n");
+	    $self->print_dods_error(
+"Bad characters in the IF_MODIFIED_SINCE header. This may be a problem with
+your client or with the OPeNDAP server software. If you think the probelm
+is not in your client, please contact the ", 0);
 	    exit 1;
 	}
     } 
@@ -368,7 +428,7 @@ sub initialize {
     }
     else {
 	printf(DBG_LOG "filename: %s\n", $filename) if $debug > 1;
-	$self->print_error_message($bad_chars, 0);
+	$self->print_dods_error($bad_chars, 0);
 	exit 1;
     }
 
@@ -388,31 +448,29 @@ sub initialize {
 # names' (see the dods.rc file) that have regular expressions which should
 # NOT be rerouted through the DODS server's HTML form generator. Often this
 # is the case because their regexes are something like `.*'. 5/9/2001 jhrg
+# The 'exclude' stuff is now handled by a setting in the dods.rc file.
+# 11/19/03 jhrg
 #
 # At some point a fourth param was added so that it would be possible to pass
-# into this object the name of the configuration file. 10/21/02 jhrg
+# into this object the name of the configuration file. 10/21/02 jhrg 
+# Now the dods.rc handles the parameters and so the other two arguments went
+# away. 11/19/03 jhrg
 sub new {
     my $type = shift;
     my $caller_revision = shift;
-    my $maintainer = shift;
     my $server_config_file = shift;
-    my @exclude = @_;		# See comments above. 5/9/2001 jhrg
 
     my $self = {};  
     bless $self, $type;
 
     $self->{caller_revision} = $caller_revision;
-    $self->{maintainer} = $maintainer;
     $self->{config_file} = $server_config_file;
-    $self->{exclude} = \@exclude;
 
     $self->initialize();
 
     return $self;
 }
 
-# Note that caller_revision and maintainer are read only fields. 2/10/1998
-# jhrg
 sub caller_revision {
     my $self = shift;
     return $self->{caller_revision};
@@ -428,10 +486,11 @@ sub server_port {
     return $self->{server_port};
 }
 
-# A smart version of `server_port'.
+# A smart version of `server_port'. Curl barfs on urls that have the colon
+# without any port number. 05/07/03 jhrg
 sub port {
     my $self = shift;
-    if ($self->{server_port} == 80) {
+    if ($self->{server_port} == 80 || $self->{server_port} == "") {
 	return "";
     }
     else {
@@ -464,7 +523,24 @@ sub full_uri {
 
 sub maintainer {
     my $self = shift;
-    return $self->{maintainer};
+    my $value = shift; 		# Optional, use to set.
+
+    if ($value eq "") {
+	return $self->{maintainer};
+    } else {
+	return $self->{maintainer} = $value;
+    }
+}
+
+sub exclude {
+    my $self = shift;
+    my $values = @_;
+
+    if ($#value == 0) {
+	return $self->{exclude}
+    } else {
+	return $self->{exclude} = $values;
+    }
 }
 
 # Return the query string given with the URL.
@@ -521,6 +597,28 @@ sub cache_dir {
 	return $self->{cache_dir};
     } else {
 	return $self->{cache_dir} = $cache_dir;
+    }
+}
+
+sub cache_size {
+    my $self = shift;
+    my $cache_size = shift;	# The second arg is optional
+
+    if ($cache_size == 0) {
+	return $self->{cache_size};
+    } else {
+	return $self->{cache_size} = $cache_size;
+    }
+}
+
+sub timeout {
+    my $self = shift;
+    my $timeout = shift;	# The second arg is optional
+
+    if ($timeout eq "") {
+	return $self->{timeout};
+    } else {
+	return $self->{timeout} = $timeout;
     }
 }
 
@@ -598,17 +696,20 @@ sub if_modified_since {
 # Private. Get the remote thing. The param $url should be scanned for shell
 # meta-characters. 
 sub get_url {
+    my $self = shift;
     my $url = shift;
 
-    # If curl is in our bin directory, use it. Otherwise try to find it on
-    # $PATH. 
-    my $curl = "curl";
-    $curl = "../bin/curl" if (-e "../bin/curl");
+    my $curl = "./curl";
 
     my $transfer = $curl . " --silent " . $url . " |";
     my $buf;
+    print(DBG_LOG "About to run curl: $transfer\n") if $debug > 1;
+    # Use the HTML error message format since this is only used via a web
+    # browser, never a client built with our library. 11/21/03 jhrg
     open CURL, $transfer 
-	or return ("", "Could not transfer $url: Unable to open the transfer utility (curl).");
+	or print_error_message($self, "Could not transfer $url: \n\
+Unable to open the transfer utility (curl).\n", 0);
+    print(DBG_LOG "Back from curl\n") if $debug > 1;
     my $offset = 0;
     my $bytes;
     while ($bytes = read CURL, $buf, 20, $offset) {
@@ -659,8 +760,6 @@ sub command {
 	$self->print_help_message();
 	exit(0);
     } elsif ($self->ext() eq "/") {
-	# use CGI;
-	# use LWP::Simple;
 	use FilterDirHTML;	# FilterDirHTML is a subclass of HTML::Filter
 
 	# Build URL without CGI in it and use that to get the directory
@@ -681,7 +780,10 @@ sub command {
 	print(DBG_LOG "Getting the directory listing using: $url\n")
 	    if $debug > 1;
 
-	my $directory_html = &get_url($url);
+	my $directory_html = &get_url($self, $url);
+
+	print(DBG_LOG "Raw directory HTML:\n$directory_html\n\n") 
+	    if $debug > 1;
 
 	# Parse the HTML directory page
 	my $server_url = $self->full_uri();
@@ -692,8 +794,15 @@ sub command {
 		if $debug > 1;
 	    $server_url .= "/";
 	}
+<<<<<<< DODS_Dispatch.pm
 
 	my $excludes = $self->{exclude}; # it's an array reference.
+=======
+	if ($self->query() ne "") {
+	    ($server_url) = ($server_url =~ m@(.*)\?.*@);
+	}
+	my $excludes = $self->exclude();
+>>>>>>> 1.37.2.15
 	my $filtered_dir_html 
 	    = new FilterDirHTML($server_url, $url,
 				dataset_regexes("./dods.rc", @$excludes)); 
@@ -719,17 +828,32 @@ sub command {
   	if ($self->encoding() =~ /deflate/) {
   	    @command = (@command, "-c");
   	}
+  	if ($self->timeout() != 0) {
+  	    @command = (@command, "-t", $self->timeout());
+  	}
     } elsif ($self->ext() eq "ascii" || $self->ext() eq "asc") {
+<<<<<<< DODS_Dispatch.pm
 	@command = ("./asciival", "-m", "--", 
 		    $self->full_uri() . "?" . $self->query());
+=======
+	my $dods_url = "http://" . $self->server_name() . $self->port()
+                     . $self->request_uri() . "?" . $self->query();
+	@command = ("./asciival", "-m", "--", $dods_url);
+>>>>>>> 1.37.2.15
     } elsif ($self->ext() eq "netcdf") {
+<<<<<<< DODS_Dispatch.pm
 	@command = ("./dods2ncdf", "-m", "-p", "--",
 		    $self->full_uri() . "?" . $self->query());
+=======
+	my $dods_url = "http://" . $self->server_name() . $self->port()
+                     . $self->request_uri() . "?" . $self->query();
+	@command = ("./dods2ncdf", "-m", "-p", "--", $dods_url);
+>>>>>>> 1.37.2.15
     } elsif ($self->ext() eq "html") {
 	@command = ("./www_int", "-m", "-n", "--",
 		    $self->full_uri() . "?" . $self->query());
     } else {
-	$self->print_error_message($unknown_ext, 1);
+	$self->print_dods_error($unknown_ext, 1);
 	exit(1);
     }
 
@@ -792,7 +916,7 @@ sub send_dods_version {
 sub send_dods_stats {
     my $self = shift;
     my $core_version = $self->caller_revision();
-    my $blessed = "unidata.ucar.edu|.*gso.uri.edu|.*dods.org";
+    my $blessed = "unidata.ucar.edu|.*gso.uri.edu|.*dods.org|.*opendap.org";
     my $machine_names = $self->machine_names();
 
     print DBG_LOG "In send_dods_stats\n" if $debug > 0;
@@ -830,7 +954,7 @@ sub print_error_message {
     my $print_help = shift;
     my $local_admin = 0;
 
-    if ($self->{maintainer} ne "support\@unidata.ucar.edu") {
+    if ($self->maintainer() ne "support\@unidata.ucar.edu") {
 	$local_admin = 1;
     }
 
@@ -870,17 +994,19 @@ sub print_dods_error {
     my $msg = shift;
     my $local_admin = 0;
 
-    if ($self->{maintainer} ne "support\@unidata.ucar.edu") {
+    if ($self->maintainer() ne "support\@unidata.ucar.edu") {
 	$local_admin = 1;
     }
 
     my $whole_msg;
     my $contact = $self->maintainer();
     if ($local_admin == 1) {
-	$whole_msg = "${msg} ${DODS_Local_Admin}${contact}";
+	$whole_msg = "${msg}${DODS_Local_Admin}${contact}";
     } else {
-	$whole_msg = "${msg} ${DODS_Support}${contact}";
+	$whole_msg = "${msg}${DODS_Support}${contact}";
     }
+
+    print DBG_LOG "Whole message: $whole_msg\n";
 
     print "HTTP/1.0 200 OK\n";
     print "XDODS-Server: $self->{script}/$self->{caller_revision}\n";
@@ -897,7 +1023,7 @@ sub print_dods_error {
     print "};";
 
     my $date = localtime;
-    print(DBG_LOG "[$date] DODS Server error: ", $msg, "\n");
+    print(DBG_LOG "[$date] DODS Server error: ", $whole_msg, "\n");
 }
 
 # Assumption: If this message is being shown, it is probably being shown in a
@@ -933,7 +1059,7 @@ if ($test) {
 
     print "Simple file access\n";
     my $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc");
-    $dd->extension() eq "dods" || die;
+    $dd->ext() eq "dods" || die;
     $dd->script() eq "nc" || die;
 
     print "Files with extra dots on their names\n";
@@ -941,7 +1067,8 @@ if ($test) {
     $ENV{PATH_INFO} = "/data/tmp.x.nc.dods";
     $ENV{PATH_TRANSLATED} = "/home/httpd/html/htdocs/data/tmp.x.nc.dods";
     $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc");
-    $dd->extension() eq "dods" || die;
+
+    $dd->ext() eq "dods" || die;
     $dd->script() eq "nc" || die;
 
     print "Directory names ending in a slash\n";
@@ -950,7 +1077,7 @@ if ($test) {
     $ENV{PATH_INFO} = "/data/";
     $ENV{PATH_TRANSLATED} = "/var/www/html/data/";
     $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc");
-    $dd->extension() eq "/" || die;
+    $dd->ext() eq "/" || die;
     $dd->script() eq "" || die; # a weird anomaly of handler.pm
 
     print "Directory names ending in a slash with a M=A query\n";
@@ -959,14 +1086,14 @@ if ($test) {
     $ENV{PATH_INFO} = "/data/";
     $ENV{PATH_TRANSLATED} = "/var/www/html/data/";
     $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc");
-    $dd->extension() eq "/" || die;
+    $dd->ext() eq "/" || die;
 
     print "Directory names not ending in a slash\n";
     # Directory, not ending in a slash
     $ENV{PATH_INFO} = "/data";
     $ENV{PATH_TRANSLATED} = "/var/www/html/data";
     $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc");
-    $dd->extension() eq "/" || die;
+    $dd->ext() eq "/" || die;
 
     print "Directory names not ending in a slash with a M=A query\n";
     # Directory, not ending in a slash with a M=A query
@@ -974,7 +1101,7 @@ if ($test) {
     $ENV{PATH_INFO} = "/data";
     $ENV{PATH_TRANSLATED} = "/var/www/html/data";
     $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc");
-    $dd->extension() eq "/" || die;
+    $dd->ext() eq "/" || die;
 
     # Test the RFC822_to_time function.
     use POSIX;
@@ -1019,7 +1146,7 @@ if ($test) {
     $ENV{PATH_TRANSLATED} = "/var/www/html$ENV{PATH_INFO}";
     $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc");
     # print "DODSter filename: $dd->filename() \n";
-    # $dd->extension() eq "/" || die;
+    # $dd->ext() eq "/" || die;
     # $dd->script() eq "" || die; # a weird anomaly of handler.pm
 
     print "All tests successful\n";
@@ -1028,9 +1155,84 @@ if ($test) {
 1;
 
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.39  2003/12/08 18:04:06  edavis
+# Merge release-3-4 into trunk
+#
+<<<<<<< DODS_Dispatch.pm
 # Revision 1.38  2003/05/27 21:39:02  jimg
 # Added test for 'ddx' extension.
 #
+=======
+# Revision 1.37.2.15  2003/11/25 18:57:41  jimg
+# Oops... Forgot to escape the '@' in a string.
+#
+# Revision 1.37.2.14  2003/11/21 20:12:05  jimg
+# Fixed the error message produced when there's no valid URL suffix. See bug 680.
+#
+# Revision 1.37.2.13  2003/11/21 19:43:47  jimg
+# Fixed the fix for the deflate bug (673). If the value of ACCEPT_ENCODING is
+# not deflate, that's OK.
+#
+# Revision 1.37.2.12  2003/11/21 18:38:00  jimg
+# Fixed the test for ACCEPT_ENCODING so that it'll work with string sent by
+# Safari. I also made the error messages returned for malformed request headers
+# more verbose and changed them from Web/HTML messages to OPeNDAP Error object
+# responses (Which can be displayed as text and interpreted by the dap++
+# library). See bug 673.
+#
+# Revision 1.37.2.11  2003/11/19 22:47:47  jimg
+# I cleaned up the new() subroutine, removing some extraneous comments.
+#
+# Revision 1.37.2.10  2003/07/24 00:15:35  jimg
+# Now uses the new/enhanced dods.rc configuration file (read via
+# read_config.pm).
+#
+# Revision 1.37.2.9  2003/06/24 16:32:08  jimg
+# Fixed bug 628. ACCPET_ENCODING needed to allow '-' because Konqueror uses
+# x-gzip as one value.
+#
+# Revision 1.37.2.8  2003/06/23 23:29:36  jimg
+# Fixed bug 625. When directory indexes were made using a URL that lacked a
+# trailing slash, the filtered HTML was missing the last component of the
+# pathname for filename links. Really odd. The initialize() function needs to be
+# broken out into separate functions and probably so does comment(). There are
+# too many places where initialize() depends on the value of a variable set
+# twenty of more lines previously while computing some unrelated value.
+#
+# Revision 1.37.2.7  2003/06/18 20:11:43  jimg
+# Completed(!) the fix for the curl-not-found-bug. Previously I patched
+# installServers and fixed up the target that builds the server-tools tarball,
+# but I forgot to actually fix the code... This script now assumes that curl
+# has been installed in the server's directory.
+#
+# Revision 1.37.2.6  2003/06/18 06:00:01  jimg
+# Added a note about characters that are shell meta characters. This might help
+# writing patterns that sanitize environment variables, et cetera. Also added
+# opendap.org to the list of domains that can access stats info. NB: bug 510
+# was fixed in this file earlier; I completed the fix in dods_logging.pm today.
+#
+# Revision 1.37.2.5  2003/06/14 00:00:40  jimg
+# Fix for bug 613; removed the SERVER_ADMIN code because that information is
+# actually not used (maybe it should be, but it's not) and the way we sanitize
+# that variable causes problems.
+#
+# Revision 1.37.2.4  2003/06/05 00:17:44  jimg
+# Fixed (I Hope, it's hard to test and may depend on a particular httpd
+# implementation and/or version) bug 610. The server port appeared twice in the
+# URL asciival used to request data.
+#
+# Revision 1.37.2.3  2003/05/30 18:58:47  edavis
+# Added $self as first parameter to several method calls that use $self
+# but were not called with $self->xxx() form. Also corrected some method
+# calls in test section, i.e., changed extension() to ext().
+#
+# Revision 1.37.2.2  2003/05/08 01:36:06  jimg
+# Turned off debugging...
+#
+# Revision 1.37.2.1  2003/05/07 23:34:09  jimg
+# Fixes for curl and dids_dir/html/ascii responses.
+#
+>>>>>>> 1.37.2.15
 # Revision 1.37  2003/05/02 16:28:45  jimg
 # Switched to a DODS-specific log for the diagnostic messages. Also, boosted
 # the filtering of environment variables so that taint mode works with perl 5.8.
