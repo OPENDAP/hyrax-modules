@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.34 1998/11/11 18:56:37 jimg Exp $
+# $Id: Makefile.in,v 1.35 1999/03/29 21:23:14 jimg Exp $
 
 @SET_MAKE@
 
@@ -78,19 +78,23 @@ CMEX = $(MATLAB_ROOT)/bin/cmex
 
 CLIENTSRCS = ClientByte.cc ClientInt32.cc ClientFloat64.cc ClientStr.cc \
 	ClientUrl.cc ClientArray.cc ClientStructure.cc ClientList.cc \
-	ClientSequence.cc ClientFunction.cc ClientGrid.cc ClientUInt32.cc
+	ClientSequence.cc ClientFunction.cc ClientGrid.cc ClientUInt32.cc \
+	ClientInt16.cc ClientUInt16.cc ClientFloat32.cc
 
 CLIENTOBJS = ClientByte.o ClientInt32.o ClientFloat64.o ClientStr.o \
 	ClientUrl.o ClientArray.o ClientStructure.o ClientList.o \
-	ClientSequence.o ClientFunction.o ClientGrid.o ClientUInt32.o
+	ClientSequence.o ClientFunction.o ClientGrid.o ClientUInt32.o \
+	ClientInt16.o ClientUInt16.o ClientFloat32.o
 
 ASCIISRCS = AsciiByte.cc AsciiInt32.cc AsciiFloat64.cc AsciiStr.cc \
 	AsciiUrl.cc AsciiArray.cc AsciiStructure.cc AsciiList.cc \
-	AsciiSequence.cc AsciiFunction.cc AsciiGrid.cc AsciiUInt32.cc
+	AsciiSequence.cc AsciiFunction.cc AsciiGrid.cc AsciiUInt32.cc \
+	AsciiInt16.cc AsciiUInt16.cc AsciiFloat32.cc
 
 ASCIIOBJS = AsciiByte.o AsciiInt32.o AsciiFloat64.o AsciiStr.o \
 	AsciiUrl.o AsciiArray.o AsciiStructure.o AsciiList.o \
-	AsciiSequence.o AsciiFunction.o AsciiGrid.o AsciiUInt32.o
+	AsciiSequence.o AsciiFunction.o AsciiGrid.o AsciiUInt32.o \
+	AsciiInt16.o AsciiUInt16.o AsciiFloat32.o
 
 WV_SRCS = write_val.cc name_map.cc attributes.cc
 
