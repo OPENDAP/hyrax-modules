@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.63 2000/03/31 21:42:44 jimg Exp $
+# $Id: acinclude.m4,v 1.64 2000/06/16 18:47:58 jimg Exp $
 #
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -258,7 +258,7 @@ AC_DEFUN(DODS_GUILIBS, [dnl
     AC_REQUIRE([DODS_TCL_LIB])
     AC_REQUIRE([DODS_FIND_PACKAGES_DIR])
     . ${DODS_PACKAGES_DIR}/lib/tkConfig.sh
-    GUILIBS="$GUILIBS $TK_XLIBSW -lm"
+    GUILIBS="$GUILIBS $TK_LIBS"
     AC_SUBST(GUILIBS)])
 
 # Electric fence and dbnew are used to debug malloc/new and free/delete.
@@ -353,7 +353,7 @@ AC_DEFUN(DODS_PROG_BISON, [dnl
     AC_CHECK_PROG(YACC,bison,bison)
     case "$YACC" in
 	*bison)
-	    bison_ver1=`bison -V 2>&1 | sed 's/[[^0-9]]*\(.*\)/\1/'`
+	    bison_ver1=`$YACC -V 2>&1 | sed 's/[[^0-9]]*\(.*\)/\1/'`
 	    bison_ver2=`echo $bison_ver1 | sed 's/\.//g'`
 	    AC_DEFINE_UNQUOTED(DODS_BISON_VER, $bison_ver2)
 	    if test -n "$bison_ver2" && test $bison_ver2 -ge 125
@@ -487,7 +487,7 @@ AC_DEFUN(DODS_MATLAB, [dnl
     then
         AC_MSG_CHECKING(for matlab root)
 
-	MATLAB_ROOT=`cmex -v 2>&1 | awk '/MATLAB *= / {print}'`
+	MATLAB_ROOT=`mex -v 2>&1 | awk '/MATLAB *= / {print}'`
 	MATLAB_ROOT=`echo $MATLAB_ROOT | sed 's@[[^/]]*\(/.*\)@\1@'`
 
 	if test -z "$MATLAB_ROOT"
