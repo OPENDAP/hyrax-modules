@@ -1,4 +1,13 @@
-	
+Thu Mar  6 21:01:40 1997  James Gallagher  <jimg@dcz.cvo.oneworld.com>
+
+	* Added vector/matrix catenation. If two or more urls (given using
+	the multi-url option of loaddods) retrieve the same variable,
+	those values are catenated to the same variable name. So, if one
+	URL retrieves a 3 column 5 row array and a second URL gets a 3
+	column 7 row array of the same name, loaddods will intern a single
+	3 column 12 row array. Note that this is a loaddods feature -
+	writeval knows nothing of this.
+
 Thu Feb  6 12:33:28 1997  James Gallagher  <jimg@dcz.cvo.oneworld.com>
 
 	* Changed the way writeval handles translation of String values to
