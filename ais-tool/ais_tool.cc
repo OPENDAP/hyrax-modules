@@ -31,7 +31,7 @@
 
 #include "config_ais_tool.h"
 
-static char rcsid[] not_used = {"$Id: ais_tool.cc,v 1.1 2003/03/13 23:37:32 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: ais_tool.cc,v 1.2 2003/03/14 17:22:55 jimg Exp $"};
 
 #include <stdio.h>
 
@@ -69,9 +69,6 @@ int
 main(int argc, char * argv[])
 {
     DBG(cerr << "Entering main... " << endl);
-#if 0
-    putenv("_POSIX_OPTION_ORDER=1"); // Suppress GetOpt's argv[] permutation.
-#endif
 
     // Put all the options for DODSFilter *and* this tool here, that way
     // DODSFilter's options won't get flagged as errors. It's OK to process
@@ -116,6 +113,10 @@ In the DODS server script (nph-ais), set the name of the AIS database.");
 	  case dods_data: {
 	    DataDDS dds;
 	    url->request_data(dds);
+	    // Before sending, mark all the variables as read so that the
+	    // read() methods don't get called by serialize().
+	    for (DDS::Vars_iter i = dds.var_begin(); i != dds.var_end(); ++i)
+		(*i)->set_read_p(true);
 	    df.send_data(dds, stdout);
 	    break;
 	  }
@@ -138,6 +139,10 @@ In the DODS server script (nph-ais), set the name of the AIS database.");
 }
 
 // $Log: ais_tool.cc,v $
+// Revision 1.2  2003/03/14 17:22:55  jimg
+// Added call to set_read_p() for all the variables in a DataDDS before the call
+// to send_data(). This prevents the read() methods from being called.
+//
 // Revision 1.1  2003/03/13 23:37:32  jimg
 // Added.
 //
