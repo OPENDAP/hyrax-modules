@@ -1,0 +1,18 @@
+
+	$Id: INSTALL,v 1.1 1999/07/28 23:20:05 jimg Exp $
+
+To build and install asciival, type:
+
+   ./configure
+   make
+   make install
+
+To run the tests, type:
+
+   make check
+
+Note that you should do this after first building the core parts of the DODS
+system, specifically the third-party softwre packages and the core C++ class
+library. See the generall documentation files for DODS and/or the README and
+INSTALL files in $(DODS_ROOT)/packages and $(DODS_ROOT)/src/dap.
+
