@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.32 1997/10/04 00:00:19 jimg Exp $
+# $Id: acinclude.m4,v 1.33 1997/10/04 00:47:03 jimg Exp $
 
 # Check for fill value usage.
 
@@ -281,10 +281,10 @@ AC_DEFUN(DODS_WWW_ROOT, [dnl
     then
         AC_MSG_CHECKING(for the WWW library root directory)
 
-	for p in /usr/local/src/WWW /usr/local/WWW \
+	for p in ${DODS_ROOT}/packages/src/w3c-libwww \
+	         /usr/local/src/WWW /usr/local/WWW \
 		 /usr/local/src/w3c-libwww /usr/local/w3c-libwww \
-		 /usr/contrib/src/w3c-libwww /usr/contrib/w3c-libwww \
-		 $DODS_ROOT/third-party/w3c-libwww
+		 /usr/contrib/src/w3c-libwww /usr/contrib/w3c-libwww
 	do
 	    if test "$WWW_ROOT"
 	    then
@@ -362,9 +362,8 @@ AC_DEFUN(DODS_MATLAB, [dnl
     fi
 
     dnl Find the lib directory (which is named according to machine type).
-
-    matlab_lib_dir=`find $MATLAB_ROOT -name 'libmat*' -print \
-		    | sed 's@\(.*\)/libmat.*@\1@'`
+    matlab_lib_dir=`find $MATLAB_ROOT -name 'libmat.a' -print \
+		    | sed 's@\(.*\)/libmat\.a\1@'`
     if test "$matlab_lib_dir"
     then
 	LDFLAGS="$LDFLAGS -L$matlab_lib_dir"
@@ -536,7 +535,10 @@ AC_DEFUN(DODS_HDF_LIBRARY, [dnl
             INCS="$INCS -I${HDF_PATH}/include"
             AC_SUBST(INCS)
     fi
-    AC_CHECK_LIB(z, inflate_flush, LIBS="-lz $LIBS", nohdf=1)
+
+dnl None of this works with HDF 4.1 r1. jhrg 8/2/97
+
+    AC_CHECK_LIB(z, deflate, LIBS="-lz $LIBS", nohdf=1)
     AC_CHECK_LIB(jpeg, jpeg_start_compress, LIBS="-ljpeg $LIBS", nohdf=1)
     AC_CHECK_LIB(df, Hopen, LIBS="-ldf $LIBS" , nohdf=1)
     AC_CHECK_LIB(mfhdf, SDstart, LIBS="-lmfhdf $LIBS" , nohdf=1)])
