@@ -3,13 +3,23 @@
 #define _DODS_CONFIG_WV_H_
 
 /* $Log: config_asciival.h.in,v $
-/* Revision 1.1  1996/10/25 23:21:27  jimg
-/* Added.
-/* */
+/* Revision 1.2  1997/02/06 19:40:02  jimg
+/* Added DODS_ROOT and {BIG,LITTLE}_ENDIAN.
+/*
+ * Revision 1.1  1996/10/25 23:21:27  jimg
+ * Added.
+ * */
 
 #ifdef HAVE_CONFIG_H
 
-#define MAX_QUEUE_LEN 2048
+/* *** CHANGE THIS CONSTANT IN config_writeval.h.in !!! */
+#define MAX_QUEUE_LEN 8192
+
+/* One of these must be defined! */
+#undef BIG_ENDIAN
+#undef LITTLE_ENDIAN
+
+#undef DODS_ROOT
 
 #endif /* HAVE_CONFIG_H */
 
