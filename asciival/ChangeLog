@@ -1,3 +1,12 @@
+1999-11-04  James Gallagher  <jimg@dcz.dods.org>
+
+	* Merged: cvs update -j release-3-1-0 -j release-3-1,the next
+	merge should use -j release-3-1-1 -j release-3-1
+
+1999-11-03  James Gallagher  <jimg@dcz.dods.org>
+
+	* Fixed up the Makefile and configure script.
+
 1999-07-28  James Gallagher  <jimg@dcz.dods.org>
 
 	* Moved asciival from $(DODS_ROOT)/src/writeval to src/tools/asciival
