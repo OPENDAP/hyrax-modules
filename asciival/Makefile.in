@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.21 1997/10/09 22:19:58 jimg Exp $
+# $Id: Makefile.in,v 1.22 1997/12/16 00:58:52 jimg Exp $
 
 @SET_MAKE@
 
@@ -30,7 +30,7 @@ LFLAGS = -8
 YFLAGS = -d
 LIBS = -ldap++ -lwww @MATLIBS@ @LIBS@
 TAGS_FLAGS = -b
-CMEXFLAGS = -g -V4
+CMEXFLAGS = -g @MAT_VERSION_FLAG@
 
 # Set the instalation directories; prefix can be set on the command line
 # during Makefile construction with `./configure --prefix /my/choice'
@@ -115,9 +115,9 @@ extend:
 install: install-client
 
 install-client: urlqueue writeval loaddods
-	$(INSTALL_PROGRAM) urlqueue $(etcdir)
+	$(INSTALL_PROGRAM) urlqueue $(bindir)
 	$(INSTALL_PROGRAM) posturl.pl $(etcdir)
-	$(INSTALL_PROGRAM) -s writeval $(etcdir)
+	$(INSTALL_PROGRAM) -s writeval $(bindir)
 	$(INSTALL_PROGRAM) loaddods.mex* $(bindir)
 	$(INSTALL_PROGRAM) loaddods.m $(bindir)
 	$(INSTALL_PROGRAM) whodods.m $(bindir)
