@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.40 1998/07/30 17:23:44 jimg Exp $
+# $Id: acinclude.m4,v 1.41 1998/08/11 17:49:36 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -455,10 +455,19 @@ AC_DEFUN(DODS_GCC_VERSION, [dnl
     dnl g++ 2.8.0 and greater does not automatically link with -lg++, so we 
     dnl supply it here.
     case $GCC_VER in
-	2.8*) 	AC_MSG_RESULT(Found gcc/g++ version ${GCC_VER} adding -lg++.)
-		LIBS="$LIBS -lg++ -lstdc++" ;;
+        *egcs*) AC_MSG_RESULT(Found egcs version ${GCC_VER}.) ;;
+        2.8*)   AC_MSG_RESULT(Found gcc/g++ version ${GCC_VER}) ;;
         2.7*)   AC_MSG_RESULT(Found gcc/g++ version ${GCC_VER}) ;;
-	*)      AC_MSG_ERROR(must be at least version 2.7.x) ;;
+        *)      AC_MSG_ERROR(must be at least version 2.7.x) ;;
+
+dnl This old code was replaced witht he above which adds support for egcs and 
+dnl removes -lg++ (since the libg++ code is now in the dap directory). It
+dnl may be that soon the libg++ code will vanish... 7/28/98 jhrg
+dnl
+dnl	2.8*) 	AC_MSG_RESULT(Found gcc/g++ version ${GCC_VER} adding -lg++.)
+dnl		LIBS="$LIBS -lg++ -lstdc++" ;;
+dnl        2.7*)   AC_MSG_RESULT(Found gcc/g++ version ${GCC_VER}) ;;
+dnl	*)      AC_MSG_ERROR(must be at least version 2.7.x) ;;
     esac])
 
 
