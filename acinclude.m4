@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.45 1999/03/29 21:42:24 edavis Exp $
+# $Id: acinclude.m4,v 1.46 1999/04/22 00:48:24 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -535,7 +535,7 @@ AC_DEFUN(DODS_MATLAB, [dnl
     fi
 
     dnl Find the lib directory (which is named according to machine type).
-    matlab_lib_dir=`find $MATLAB_ROOT -name 'libmat*' -print \
+    matlab_lib_dir=`find ${MATLAB_ROOT}/extern -name 'libmat*' -print \
 		    | sed 's@\(.*\)/libmat.*@\1@'`
     if test "$matlab_lib_dir"
     then
