@@ -1,5 +1,5 @@
 
- $Id: README,v 1.10 1997/04/30 22:00:14 jimg Exp $
+ $Id: README,v 1.11 1997/06/23 18:31:52 jimg Exp $
 
 The following provides background technical information on the design of
 loaddods/writeval. For installation information, see the file
@@ -60,6 +60,10 @@ example a user could save binary data to a file with writeval. Note that with
 the `-f' option writeval translates all simple types to either Float64 or
 String.
 
+writeval can also be used to read from standard input, write ASCII output and
+access the DDS for a given dataset. See the online help for information about
+these options. 
+
 3) urlqueue; A helper application for Netscape (or other WWW browser) which
 passes information from a browser to another program such as loaddods. 
 
@@ -90,7 +94,7 @@ writeval very simple to parse.
 
 <simple variable> :: <variable name> '\n'
 
-<array variable> :: <variable type> ' ' <variable name> <number of dims> '\n'
+<array variable> :: <variable type> ' ' <variable name> ' ' <number of dims> '\n'
 		    <dim size>+ 
 
 <list variable> :: <variable type> <variable name> <list size>
@@ -107,7 +111,7 @@ writeval very simple to parse.
 <variable> :: Byte '\n' <simple variable> '\n' <data> '\n'
 	   :: Int32 '\n' <simple variable> '\n' <data> '\n'
 	   :: Float64 '\n' <simple variable> '\n'  <data> '\n'
-	   :: Str '\n' <simple variable> '\n' <data> '\n'
+	   :: String '\n' <simple variable> '\n' <data> '\n'
 	   :: Url '\n' <simple variable> '\n' <data> '\n'
 
 	   :: Array '\n' <array variable> '\n' <data> '\n'
