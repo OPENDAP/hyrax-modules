@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.1 1996/09/30 23:59:27 jimg Exp $
+# $Id: Makefile.in,v 1.2 1996/10/07 16:52:29 jimg Exp $
 
 @SET_MAKE@
 
@@ -14,18 +14,21 @@
 # a url. In addition it can read and process DAS and DDS objects, displaying
 # the print representation on the screen.
 
-PROG= libdap++.a geturl
+PROG= writeval loaddods urlqueue
 DODS_ROOT = ../..
 
-INCS = -I. -IMap -IStack -IPlex -IVec @INCS@
+INCS = -I. -I$(DODS_ROOT)/include -I$(MATLAB_ROOT)/extern/include @INCS@
 DEFS = @DEFS@ -DUSE_LIBGXX_INLINES
 CPPFLAGS = @CPPFLAGS@ $(DEFS) $(INCS)
+CFLAGS = @CFLAGS@ -Wall
 CXXFLAGS = @CXXFLAGS@ -Wall
 LDFLAGS = @LDFLAGS@ -L. -L$(DODS_ROOT)/lib
 LFLAGS = -8
 YFLAGS = -d
 LIBS = -ldap++ -lwww @LIBS@
 TAGS_FLAGS = -b
+CMEXFLAGS = 
+MATLAB_ROOT = @MATLAB_ROOT@
 
 # Set the instalation directories; prefix can be set on the command line
 # during Makefile construction with `./configure --prefix /my/choice'
@@ -45,7 +48,7 @@ INSTALLMAN = man
 
 SHELL = /bin/sh
 srcdir = @srcdir@
-VPATH = @srcdir@:Map:Stack:Plex:Vec
+# VPATH = 
 dir = @dir@
 
 # testsuite specifics
@@ -68,243 +71,48 @@ INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 STRIP = strip
+CMEX = $(MATLAB_ROOT)/bin/cmex
 
-NETIOSRCS = Connect.cc Connections.cc cgi_util.cc Gui.cc
-NETIOOBJS = Connect.o Connections.o cgi_util.o Gui.o
-NETIOHDRS = Connect.h Connections.h Connections.cc cgi_util.h Gui.h
+CLIENTSRCS = ClientByte.cc ClientInt32.cc ClientFloat64.cc ClientStr.cc \
+	ClientUrl.cc ClientArray.cc ClientStructure.cc ClientList.cc \
+	ClientSequence.cc ClientFunction.cc ClientGrid.cc
 
-DAS_GRAM_OBJS = lex.das.o das.tab.o parser-util.o
-DDS_GRAM_OBJS = lex.dds.o dds.tab.o parser-util.o
-EXPR_GRAM_OBJS = lex.expr.o expr.tab.o expr.o
-ERROR_GRAM_OBJS = lex.Error.o Error.tab.o
-
-DASHDRS = AttrTable.h DAS.h 
-DASSRCS = AttrTable.cc DAS.cc
-DASOBJS = AttrTable.o DAS.o $(DAS_GRAM_OBJS)
-
-DDSHDRS = DDS.h
-DDSSRCS = DDS.cc
-DDSOBJS = DDS.o $(TYPEOBJS) $(DDS_GRAM_OBJS) $(EXPR_GRAM_OBJS)
-
-EXPRHDRS = expr.h Clause.h
-EXPRSRCS = expr.cc Clause.cc
-EXPROBJS = expr.o Clause.o $(TYPEOBJS) $(EXPR_GRAM_OBJS)
-
-ERRORHDRS = Error.h
-ERROROBJS = Error.o $(ERROR_GRAM_OBJS)
-ERRORSRCS = Error.cc
-
-TYPEHDRS = BaseType.h Byte.h Int32.h Float64.h Str.h Url.h \
-	   Vector.h List.h Array.h Structure.h Sequence.h Function.h Grid.h \
-	   util.h
-
-TYPESRCS = BaseType.cc Byte.cc Int32.cc Float64.cc Str.cc Url.cc \
-	   Vector.cc List.cc Array.cc Structure.cc Sequence.cc Function.cc \
-	   Grid.cc util.cc
-
-TYPEOBJS = BaseType.o Byte.o Int32.o Float64.o Str.o Url.o \
-	   Vector.o List.o Array.o Structure.o Sequence.o Function.o Grid.o \
-	   util.o
-
-# These object files are built using source code generated from the GNU
-# libg++ source with `genclass'. They are part of the the DAP library.
-
-GNUOBJS = BaseTypeVec.o String.Plex.o String.XPlex.o BTPlex.o BTStack.o \
-	  BTXPStack.o BTXPlex.o AttrMap.o AttrVHMap.o DASMap.o DASVHMap.o
-
-GNUHDRS = Map/AttrMap.h        Plex/String.Plex.h   Stack/BTXPlex.h \
-	  Map/AttrVHMap.h      Plex/String.XPlex.h  Stack/BTdefs.h \
-	  Map/Attrdefs.h       Plex/String.defs.h   Vec/BaseTypeVec.h \
-	  Map/DASMap.h         Stack/BTPlex.h       Vec/BaseTypedefs.h \
-	  Map/DASVHMap.h       Stack/BTStack.h	    Map/DASdefs.h \
-	  Stack/BTXPStack.h
-
-TESTSRCS = TestByte.cc TestInt32.cc TestFloat64.cc TestStr.cc TestUrl.cc \
-	   TestArray.cc TestStructure.cc TestList.cc TestSequence.cc \
-	   TestFunction.cc TestGrid.cc
-
-TESTOBJS = TestByte.o TestInt32.o TestFloat64.o TestStr.o TestUrl.o \
-	   TestArray.o TestStructure.o TestList.o TestSequence.o \
-	   TestFunction.o TestGrid.o
-
-TESTPROGSRCS = das-test.cc dds-test.cc expr-test.cc error-test.cc geturl.cc
+CLIENTOBJS = ClientByte.o ClientInt32.o ClientFloat64.o ClientStr.o \
+	ClientUrl.o ClientArray.o ClientStructure.o ClientList.o \
+	ClientSequence.o ClientFunction.o ClientGrid.o
 
 all: $(PROG)
 
-libdap++.a: $(DASOBJS) $(DDSOBJS) $(TYPEOBJS) $(GNUOBJS) $(ERROROBJS)\
-	    $(EXPROBJS) $(NETIOOBJS)
-	    $(AR) -cru $@ $?
-	    $(RANLIB) $@
+writeval: write_val.o $(CLIENTOBJS)
+	$(CXX) $(LDFLAGS) -o writeval write_val.o $(CLIENTOBJS) $(LIBS)
 
-# geturl is really a test driver, but it is so useful in other contexts that
-# I have decided to build it as part of the `all' target. jhrg 7/11/96
+loaddods: loaddods.o startchild.o
+	$(CMEX) $(CMEXFLAGS) loaddods.o startchild.o
 
-geturl: libdap++.a $(TESTOBJS) geturl.o
-	$(CXX) $(LDFLAGS) -o geturl geturl.o $(TESTOBJS) $(LIBS)
 
-# Build the test drivers
-
-test-drivers: das-test dds-test expr-test error-test cgi-util-test www-test
-
-das-test: libdap++.a das-test.o das.tab.h
-	$(CXX) $(LDFLAGS) -o das-test das-test.o $(LIBS)
-
-dds-test: libdap++.a $(TESTOBJS) dds-test.o dds.tab.h
-	$(CXX) $(LDFLAGS) -o dds-test $(TESTOBJS) dds-test.o $(LIBS)
-
-# trans-test: libdap++.a $(TESTOBJS) trans-test.o
-#	$(CXX) $(LDFLAGS) -o trans-test $(TESTOBJS) trans-test.o $(LIBS)
-
-expr-test: libdap++.a $(TESTOBJS) expr-test.o expr.tab.h
-	$(CXX) $(LDFLAGS) -o expr-test $(TESTOBJS) expr-test.o \
-	       $(LIBS)
-
-error-test: error-test.o Error.tab.h
-	$(CXX) $(LDFLAGS) -o error-test error-test.o 
-
-cgi-util-test: libdap++.a cgi_util.o $(TESTOBJS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -DTEST_CGI_UTIL -c cgi_util.cc
-	$(CXX) $(LDFLAGS) -o cgi-util-test cgi_util.o $(TESTOBJS) $(LIBS)
-	-rm -f cgi_util.o
-
-www-test: www-test.o
-	$(CC) $(LDFLAGS) -o www-test www-test.o -lwww
-
-# Build the DAS scanner (a C source module compiled with C++)
-
-lex.das.c: das.lex das.tab.c das.tab.h
-	$(LEX) $(LFLAGS) -Pdas das.lex
-
-lex.das.o: lex.das.c
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c lex.das.c -o lex.das.o
-
-# Build the DAS parser
-# Note that awk is used to add a param to dasparse().
-
-das.tab.c das.tab.h: das.y DAS.h munge-bison.awk
-	$(YACC) $(YFLAGS) -p das das.y
-	$(AWK) -f munge-bison.awk das.tab.c > tmp
-	mv tmp das.tab.c
-
-das.tab.o: das.tab.c		# build using C++ compiler
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c das.tab.c -o das.tab.o
-
-# Build the DDS Scanner.
-
-lex.dds.c: dds.lex dds.tab.c dds.tab.h
-	$(LEX) $(LFLAGS) -Pdds dds.lex
-
-lex.dds.o: lex.dds.c
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c lex.dds.c -o lex.dds.o
-
-# Build the DDS parser
-
-dds.tab.c dds.tab.h: dds.y munge-bison.awk
-	$(YACC) $(YFLAGS) -p dds dds.y
-	$(AWK) -f munge-bison.awk dds.tab.c > tmp
-	mv tmp dds.tab.c
-
-dds.tab.o: dds.tab.c		# build using C++ compiler
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c dds.tab.c -o dds.tab.o
-
-# Build the CE Scanner.
-
-lex.expr.c: expr.lex expr.tab.c expr.tab.h
-	$(LEX) $(LFLAGS) -Pexpr expr.lex
-
-lex.expr.o: lex.expr.c
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c lex.expr.c -o lex.expr.o
-
-# Build the CE parser
-
-expr.tab.c expr.tab.h: expr.y munge-bison.awk
-	$(YACC) $(YFLAGS) -p expr expr.y
-	$(AWK) -f munge-bison.awk expr.tab.c > tmp
-	mv tmp expr.tab.c
-
-expr.tab.o: expr.tab.c		# build using C++ compiler
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c expr.tab.c -o expr.tab.o
-
-# Build the Error object scanner.
-
-lex.Error.c: Error.lex Error.tab.c Error.tab.h
-	$(LEX) $(LFLAGS) -PError Error.lex
-
-lex.Error.o: lex.Error.c
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c lex.Error.c -o lex.Error.o
-
-# Build the Error object parser.
-
-Error.tab.c Error.tab.h: Error.y munge-bison.awk
-	$(YACC) $(YFLAGS) -p Error Error.y
-	$(AWK) -f munge-bison.awk Error.tab.c > tmp
-	mv tmp Error.tab.c
-
-Error.tab.o: Error.tab.c	# build using C++ compiler
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c Error.tab.c -o Error.tab.o
+urlqueue: urlqueue.o
+	$(CC) $(LDFLAGS) -o urlqueue urlqueue.o 
 
 # Standard targets with some customization for das-test and dds-test
 
-install: all install-headers install-geturl
-	$(INSTALL_DATA) libdap++.a $(libdir)
-	$(RANLIB) $(libdir)/libdap++.a
+install: install-urlqueue
 
-install-headers:
-	$(INSTALL_DATA) config_dap.h $(includedir)
-	$(INSTALL_DATA) debug.h $(includedir)
-	$(INSTALL_DATA) dods-limits.h $(includedir)
-	for h in $(ERRORHDRS) $(EXPRHDRS) $(TYPEHDRS) $(DDSHDRS) $(DASHDRS) \
-		 $(GNUHDRS) $(NETIOHDRS); \
-	    do $(INSTALL_DATA) $$h $(includedir); done
-
-install-geturl:
-	$(INSTALL_PROGRAM) geturl $(etcdir)
-	$(STRIP) $(etcdir)/geturl
+install-urlqueue: urlqueue
+	$(INSTALL_PROGRAM) urlqueue $(etcdir)
 
 Makefile: ${srcdir}/Makefile.in
 	${SHELL} ./config.status
 
-check: libdap++.a das-check dds-check expr-check
+check:
 
 # these tests all fail when das-test is linked with -lnew_debug.
 
-das-check: das-test
-	-rootme=`pwd` && export rootme && \
-	${RUNTEST} ${RUNTESTFLAGS} --tool das-test --srcdir das-testsuite
-
-dds-check: dds-test
-	-rootme=`pwd` && export rootme && \
-	${RUNTEST} ${RUNTESTFLAGS} --tool dds-test --srcdir dds-testsuite
-
-expr-check: dds-test
-	-rootme=`pwd` && export rootme && \
-	${RUNTEST} ${RUNTESTFLAGS} --tool expr-test --srcdir expr-testsuite
-
-# trans-check: trans-test
-#	-rootme=`pwd`; export rootme; \
-#	${RUNTEST} ${RUNTESTFLAGS} --tool trans-test --srcdir trans-testsuite
-
-error-check: error-test
-	echo "No tests for the Error object"
-
 clean:	
 	-rm -f *.o *.sum *.log *~ core
-	-rm -f $(PROG) das-test dds-test expr-test error-test geturl \
-	       cgi-util-test
+	-rm -f $(PROG) loaddods.mex*
 
 distclean: clean
 	-rm -f config.status config.log config.cache
-
-# I added this so that distclean will not wipe these files out. Thus people
-# without GNU bison/flex (e.g., Dec Alphas which have a scanner generator
-# called `flex' which is definately not a recent GNU flex) can still build
-# the DAP software. Few people should want to hack these grammar files.
-
-grammarclean: clean
-	-rm -f lex.das.c das.tab.c das.tab.h 
-	-rm -f lex.dds.c dds.tab.c dds.tab.h
-	-rm -f lex.expr.c expr.tab.c expr.tab.h 
-	-rm -f lex.Error.c Error.tab.c Error.tab.h
 
 tar:
 	cd .. && tar --exclude $(dir)/old --gzip -c -f $(dir).tar.gz $(dir) &&\
@@ -314,16 +122,7 @@ tags:
 	$(TAGS) $(TAGS_FLAGS) *.cc *.h *.lex *.y
 
 depend: 
-	@depend@ -- $(CPPFLAGS) -I/usr/local/lib/g++-include -- \
-	$(NETIOSRCS) $(DASSRCS) $(DDSSRCS) $(EXPRSRCS) $(TYPESRCS) \
-	$(ERRORSRCS) $(TESTSRCS) $(TESTPROGSRCS)
-
-dds.tab.o: dds.tab.c dds.tab.h DDS.h BaseType.h Byte.h Int32.h Float64.h \
-  Str.h Url.h Array.h List.h Structure.h Sequence.h Function.h \
-  Grid.h Stack/BTXPStack.h Stack/BTXPlex.h Stack/BTPlex.h Stack/BTdefs.h \
-  Stack/BTStack.h 
-
-das.tab.c: DAS.h
+	../../etc/depend.sh -- $(CPPFLAGS) -I/usr/local/lib/g++-include -I../../include -- $(CLIENTSRCS) write_val.cc
 
 .SUFFIXES:      .o .cc .c
 
