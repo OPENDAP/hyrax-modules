@@ -18,12 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.43 1998/10/29 00:07:11 jimg Exp $
-
-# 0. Disable config.cache files
-
-define([AC_CACHE_LOAD], )dnl
-define([AC_CACHE_SAVE], )dnl
+# $Id: acinclude.m4,v 1.44 1999/01/19 17:46:19 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -389,11 +384,11 @@ AC_DEFUN(DODS_PROG_BISON, [dnl
 	    bison_ver1=`bison -V 2>&1 | sed 's/[[^0-9]]*\(.*\)/\1/'`
 	    bison_ver2=`echo $bison_ver1 | sed 's/\.//g'`
 	    AC_DEFINE_UNQUOTED(DODS_BISON_VER, $bison_ver2)
-	    if test -n "$bison_ver2" && test $bison_ver2 -ge 124
+	    if test -n "$bison_ver2" && test $bison_ver2 -ge 125
 	    then
 		AC_MSG_RESULT(Found bison version ${bison_ver1}.)
 	    else
-		AC_MSG_ERROR(Bison version: found ${bison_ver1} should be at least 1.24)
+		AC_MSG_ERROR(Bison version: found ${bison_ver1} should be at least 1.25)
 	    fi
 	    ;;
 	*)
