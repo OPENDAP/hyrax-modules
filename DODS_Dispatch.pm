@@ -22,6 +22,16 @@
 #      	       	       	      - Root name of the filter (e.g., *nc*_dods)
 #
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.5  1998/02/11 22:05:59  jimg
+# Added tests and an accessor function for the Accept-Encoding header (which
+# CGI 1.1 passes to the cgi program using the environment variable
+# HTTP_ACCEPT_ENCODING). When found with the value `deflate' the data filter
+# (nc_dods, ...) is called with the -c flag which causes DODSFilter::send_data
+# to try to compress the data stream using deflate (LZW from zlib 1.0.4).
+# Also added a help message (activated with /help or /help).
+# Fixed the error text (but it is often blocked by clients because of the http
+# 400 code).
+#
 # Revision 1.4  1997/08/27 17:19:56  jimg
 # Fixed error in -e option when requesting the DAS.
 #
@@ -83,6 +93,12 @@ sub initialize {
 	$secure = 0;
     }
 
+    # Look for the Accept-Encoding header. Does it exist? If so, store the
+    # value. 
+    $encoding = $ENV{'HTTP_ACCEPT_ENCODING'};
+
+    $self->{'encoding'} = $encoding;
+
     # If this is a `secure' server, add the pathname from the document root
     # to the CGI into PATH_TRANSLATED. Because CGI 1.1 does not pass DOCUMENT
     # ROOT into the CGI we must extract it from PATH_TRANSLATED using
@@ -106,13 +122,33 @@ sub initialize {
 }
 
 # Extract various environment variables used to pass `parameters' encoded in
-# URL. 
+# URL. The two arguments to this ctor are the current revision of the caller
+# and an email adrress of the dataset/server maintainer.
 sub new {
     my $type = shift;
+    my $caller_revision = shift;
+    my $maintainer = shift;
+
     my $self = {};  
     bless $self, $type;
     $self->initialize();
+
+    $self->{'caller_revision'} = $caller_revision;
+    $self->{'maintainer'} = $maintainer;
+
     return $self;
+}
+
+# Note that caller_revision and maintainer are read only fields. 2/10/1998
+# jhrg
+sub caller_revision {
+    my $self = shift;
+    return $self->{'caller_revision'};
+}
+
+sub maintainer {
+    my $self = shift;
+    return $self->{'maintainer'};
 }
 
 # Return the query string given with the URL.
@@ -172,6 +208,15 @@ sub script {
     }
 }
     
+# Unlike the other accessor functions you *cannot* set the value encoding. It
+# can only be set by the request header.
+
+sub encoding {
+    my $self = shift;
+
+    return $self->{'encoding'};
+}
+
 sub command {
     my $self = shift;
 
@@ -180,29 +225,45 @@ sub command {
     my $script = $self->script();
     my $filename = $self->filename();
 
+    # If the user wants to see info, version of help information, provide
+    # that. Otherwise, form the name of the filter program to run by
+    # catenating the script name, underscore and the ext.
     if ($ext eq "info") {
-	# If the user wants to run the usage filter ($ext is `.html'),
-	# then select that filter and send the cgi directory and API prefix
-	# as the second argument (which is passed using $query).
 	$server_pgm = $cgi_dir . "usage";
 	$full_script = $cgi_dir . $script;
 	$command = $server_pgm . " " . $filename . " " . $full_script;
     } elsif ($ext eq "ver" || $ext eq "/version") {
-	$script_rev = '$Revision: 1.4 $ ';
+	$script_rev = '$Revision: 1.5 $ ';
 	$script_rev =~ s@\$([A-z]*): (.*) \$@$2@;
 	$server_pgm = $cgi_dir . $script . "_dods";
 	$command = $server_pgm . " -v " . $script_rev . " " . $filename;
-    } elsif ($ext eq "das" || $ext eq "dds" || $ext eq "dods") {
+    } elsif ($ext eq "help" || $ext eq "/help") {
+	$self->print_help_message();
+	exit(0);
+    } elsif ($ext eq "das" || $ext eq "dds") {
 	my $query = $self->query();
-	# Otherwise, form the name of the filter program to run by catenating
-	# the script name, underscore and the ext.
 	$server_pgm = $cgi_dir . $script . "_" . $ext;
 	$command = $server_pgm . " " . $filename;
 	if ($query ne "") {
 	    $command .= " -e " . "\"" . $query . "\"";
 	}
+    } elsif ($ext eq "dods") {
+	my $query = $self->query();
+	$server_pgm = $cgi_dir . $script . "_" . $ext;
+	$command = $server_pgm . " " . $filename;
+	if ($query ne "") {
+	    $command .= " -e " . "\"" . $query . "\"";
+	}
+	# Look for presence of the Accept-Encoding header and test to see if
+	# the value of that header contains `defalte'. If so, pipe the output
+        # of the data filter through the deflate program.
+	if ($self->encoding() =~ m/deflate/) {
+	    $command .= " -c";
+	}
     } else {
-	$command = "";
+	$self->print_error_message($self->caller_revision(), 
+				   $self->maintainer());
+	exit(1);
     }
 
     return $command;
@@ -216,23 +277,32 @@ submitted should have worked), then please contact the\n";
 my $DODS_Local_Admin = "administrator of this site at: ";
 my $DODS_Support = "DODS user support coordinator at: ";
 
-my $DODS_Para2 = "\nThe URL you sent must include one of the following five
-file extensions: .das, .dds, .dods, .info or .ver.
+my $DODS_Para2 = "\nThe URL sent to the server must include one of the
+following six file extensions: .das, .dds, .dods, .info, .ver or .help.
 The extensions tell the DODS server which object to return:<dl>
 <dt> das  <dd> attribute object
 <dt> dds  <dd> data type object
 <dt> dods <dd> data object
 <dt> info <dd> info object (attributes, types and other information)
-<dt> ver  <dd> return the version number of the server</dl>
+<dt> ver  <dd> return the version number of the server
+(dt> help <dd> help information (this text)</dl>
 
-<p>Suggestion: If you're typing this URL into a WWW browser and
+<p><b>Note</b>: Many DODS clients supply these extensions for you so you don't
+need to append them (for example when using interfaces supplied by us or
+software re-linked with a DODS client-library). Generally, you only need to
+add these if you are typing a URL directly into a WWW browser.
+
+<p><b>Suggestion</b>: If you're typing this URL into a WWW browser and
 would like information about the dataset, use the `.info' extension";
 
-# This method takes three arguments; the object,a string which names the
+# This method takes three arguments; the object, a string which names the
 # script's version number and an address for mailing bug reports. If the last
 # parameter is not supplied, use the maintainer address from the environment
 # variables. 
-sub print_error_msg {
+# Note that this mfunc takes the script_rev and address information as
+# arguments for historical resons. That information is now part of the object.
+# 2/10/1998 jhrg
+sub print_error_message {
     my $self = shift;
     my $script_rev = shift;
     my $address = shift;
@@ -258,6 +328,18 @@ sub print_error_msg {
 	print $DODS_Support, $address;
     }
     print "<p>\n";
+
+    print $DODS_Para2;
+}
+
+sub print_help_message {
+    my $self = shift;
+
+    print "HTTP/1.0 200 OK\n";
+    print "Server: ", $self->{'script'}, "/", $script_rev, "\n";
+    print "\n";
+
+    print "<h3>DODS Server Help</h3>\n";
 
     print $DODS_Para2;
 }
