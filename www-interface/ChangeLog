@@ -1,3 +1,7 @@
+1999-06-22  James Gallagher  <jimg@dcz.dods.org>
+
+	* FilterDirHTML is now called from DODS_Dispatch.pm.
+
 1999-05-05  James Gallagher  <jimg@dcz.dods.org>
 
 	* Added test-coverage target to Makefile.in
