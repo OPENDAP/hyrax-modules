@@ -18,7 +18,12 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.42 1998/09/10 18:51:03 jehamby Exp $
+# $Id: acinclude.m4,v 1.43 1998/10/29 00:07:11 jimg Exp $
+
+# 0. Disable config.cache files
+
+define([AC_CACHE_LOAD], )dnl
+define([AC_CACHE_SAVE], )dnl
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
