@@ -19,7 +19,7 @@
 # 5. Macros used to test things about the computer/OS/hardware
 #
 
-# $Id: acinclude.m4,v 1.59 2000/01/11 00:05:18 jimg Exp $
+# $Id: acinclude.m4,v 1.60 2000/01/21 01:48:27 edavis Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -115,7 +115,7 @@ AC_DEFUN(DODS_DEFAULT, [$1=${$1-"$2"}; AC_SUBST([$1])])
 
 AC_DEFUN(DODS_GET_DODS_ROOT, [dnl
     fullpath=`pwd`
-    dir=`basename ${fulldir}`
+    dir=`basename ${fullpath}`
     AC_SUBST(dir)
     dods_root=`echo $fullpath | sed 's@\(.*DODS[[-.0-9a-z]]*\).*@\1@'`
     echo "dods root: $dods_root"
