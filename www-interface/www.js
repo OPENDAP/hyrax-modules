@@ -1,13 +1,35 @@
 
-// $Id: www.js,v 1.3 2001/09/28 23:51:32 jimg Exp $
+// -*- mode: c++; c-basic-offset:4 -*-
 
-// $Id: www.js,v 1.3 2001/09/28 23:51:32 jimg Exp $
+// This file is part of www_int, software which returns an HTML form which
+// can be used to build a URL to access data from a DAP data server.
+
+// Copyright (c) 2002,2003 OPeNDAP, Inc.
+// Author: James Gallagher <jgallagher@opendap.org>
+//
+// asciival is free software; you can redistribute it and/or modify it under
+// the terms of the GNU General Public License as published by the Free
+// Software Foundation; either version 2, or (at your option) any later
+// version.
+// 
+// asciival is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+// more details.
+// 
+// You should have received a copy of the GNU General Public License along
+// with GCC; see the file COPYING. If not, write to the Free Software
+// Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+// 
+// You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
 
 // (c) COPYRIGHT URI/MIT 1999
-// Please read the full copyright statement in the file COPYRIGHT.
+// Please read the full copyright statement in the file COPYRIGHT_URI.
 //
 // Authors:
-//	jhrg,jimg	James Gallagher (jgallagher@gso.uri.edu)
+//	jhrg,jimg	James Gallagher <jgallagher@gso.uri.edu>
+
+// $Id: www.js,v 1.4 2003/01/27 23:53:55 jimg Exp $
 
 var reflection_cgi = "http://unidata.ucar.edu/cgi-bin/dods/posturl.pl";
 
@@ -35,16 +57,16 @@ function ascii_button() {
    is binary, Netscape will ask the user for a filename and save the data
    to that file. */
 
-function binary_button() {
+function binary_button(ext) {
     var url = new String(document.forms[0].url.value);
 
     var url_parts = url.split("?");
     /* handle case where constraint is null. */
     if (url_parts[1] != null) {
-        var binary_url = url_parts[0] + ".dods?" + url_parts[1];
+        var binary_url = url_parts[0] + "." + ext + "?" + url_parts[1];
     }
     else {
-        var binary_url = url_parts[0] + ".dods?";
+        var binary_url = url_parts[0] + "." + ext + "?";
     }
 
     window.location = binary_url;
@@ -55,7 +77,9 @@ function binary_button() {
    be fedd into Matlab which must, in addition, be running loaddods.
 
    Note that reflection_cgi is a global JavaScript variable set at the 
-   begining of this `file'. */
+   begining of this `file'. 
+
+   DEPRECATED */
 
 function program_button() {
     var program_url = new String(document.forms[0].url.value);
@@ -95,8 +119,15 @@ function write_help_contents() {
 "<li>To select a variable click on the checkbox to its left. " +
 "<li>To constrain a variable that you've selected, edit the information " +
 "that appears in the text boxes below the variable. " +
-"<li>To get ASCII or binary values for the variables you've selected, " +
-"click on the <em>Get ASCII</em> or <em>Get Binary</em> buttons. " +
+"When entering values for selections on String variables, you may need " +
+"to quote those values. " +
+"<li>To get data in ASCII, various common formats or DODS binary objects, click on " +
+"one of the buttons labeled <em>Get ...</em>. The <em>Get ASCII</em> and " +
+"<em>Get DODS Data Object</em> buttons will always be present. Other buttons " +
+"may be present providing access other types of return formats such as NetCDF, " +
+"HDF, et cetera. Note that in order to use the DODS Data Objects, you'll need " +
+"to download software from the <a href=\"http://unidata.ucar.edu/packages/dods/\">DODS web site</a> " +
+"to decode them. " +
 //  "<li>To use the <em>Send to Program</em> feature you must install a web " +
 //  "helper application that can route the DODS URL built by this form to a " +
 //  "client. Look on the <a " +
@@ -104,7 +135,7 @@ function write_help_contents() {
 //  "DODS home page (http://unidata.ucar.edu/packages/dods/)</a> " +
 //  "for a suitable client. " +
 //  "</ul>" +
-"Note that the URL displayed in the <em>DataURL</em> field is updated " +
+"Also note that the URL displayed in the <em>DataURL</em> field is updated " +
 "as you select and/or constrain variables. The URL in this field can be " +
 "cut and pasted in various DODS clients such as the Matlab and IDL " +
 "command extensions. See the <a " +
@@ -129,7 +160,7 @@ function describe_index() {
 }
 
 function describe_selection() {
-   defaultStatus = "Enter a relational expression (e.g., <20).";
+   defaultStatus = "Enter a relational expression (e.g., <20). String variables may need values to be quoted";
 }
 
 function describe_operator() {
@@ -321,6 +352,15 @@ function get_selection() {
 }    
 
 // $Log: www.js,v $
+// Revision 1.4  2003/01/27 23:53:55  jimg
+// Merged with release-3-2-7.
+//
+// Revision 1.1.2.4 2002/02/04 17:28:45 jimg Updated the binary_button
+// function so that it can be used with many different extensions. This is a
+// simple way to provide support for several different binary return formats
+// (DataDDS, NetCDF, ...). Updated the online help to explain that other
+// buttons besides GET ASCII and GET DODS... might be present.
+//
 // Revision 1.3  2001/09/28 23:51:32  jimg
 // Merged with 3.2.4.
 //

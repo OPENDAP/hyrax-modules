@@ -1,9 +1,33 @@
 
+// -*- mode: c++; c-basic-offset:4 -*-
+
+// This file is part of www_int, software which returns an HTML form which
+// can be used to build a URL to access data from a DAP data server.
+
+// Copyright (c) 2002,2003 OPeNDAP, Inc.
+// Author: James Gallagher <jgallagher@opendap.org>
+//
+// asciival is free software; you can redistribute it and/or modify it under
+// the terms of the GNU General Public License as published by the Free
+// Software Foundation; either version 2, or (at your option) any later
+// version.
+// 
+// asciival is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+// more details.
+// 
+// You should have received a copy of the GNU General Public License along
+// with GCC; see the file COPYING. If not, write to the Free Software
+// Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+// 
+// You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
+
 // (c) COPYRIGHT URI/MIT 1999,2000
-// Please read the full copyright statement in the file COPYRIGHT.
+// Please read the full copyright statement in the file COPYRIGHT_URI.
 //
 // Authors:
-//      jhrg,jimg       James Gallagher (jgallagher@gso.uri.edu)
+//      jhrg,jimg       James Gallagher <jgallagher@gso.uri.edu>
 
 #ifdef __GNUG__
 #pragma implementation
@@ -11,7 +35,7 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.9 2001/09/28 23:51:32 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.10 2003/01/27 23:53:54 jimg Exp $"};
 
 #include <string>
 #include <iostream>
@@ -78,11 +102,29 @@ WWWOutput::write_disposition(string url)
     // use some JavaScript code to generate the HTML. C++ --> JS --> HTML.
     // 4/8/99 jhrg
 
-    _os << \
-"<tr>
-<td align=\"right\"><h3><a href=\"dods_form_help.html#disposition\" valign=\"bottom\">Action:</a></h3>
-<td><input type=\"button\" value=\"Get ASCII\" onclick=\"ascii_button()\">
-<input type=\"button\" value=\"Get Binary\" onclick=\"binary_button()\">
+    _os << "<tr>
+<td align=\"right\"><h3><a href=\"dods_form_help.html#disposition\" valign=\"bottom\">Action:</a></h3>\n";
+    _os << "<td>";
+
+    if (access("./asciival", X_OK) == 0)
+	_os << "<input type=\"button\" value=\"Get ASCII\" onclick=\"ascii_button()\">\n";
+
+    if (access("./dods2ncdf", X_OK) == 0)
+	_os << "<input type=\"button\" value=\"Get netCDF\" onclick=\"binary_button('netcdf')\">\n";
+
+    if (access("./dods2hdf4", X_OK) == 0)
+	_os << "<input type=\"button\" value=\"Get HDF 4\" onclick=\"binary_button('hdf4')\">\n";
+
+    if (access("./dods2hdf5", X_OK) == 0)
+	_os << "<input type=\"button\" value=\"Get HDF 5\" onclick=\"binary_button('hdf5')\">\n";
+
+    if (access("./dods2mat", X_OK) == 0)
+	_os << "<input type=\"button\" value=\"Get MatLAB\" onclick=\"binary_button('mat')\">\n";
+
+    if (access("./dods2idl", X_OK) == 0)
+	_os << "<input type=\"button\" value=\"Get IDL\" onclick=\"binary_button('idl')\">\n";
+
+    _os << "<input type=\"button\" value=\"Get DODS Data Object \" onclick=\"binary_button('dods')\">\n
 <input type=\"button\" value=\"Show Help\" onclick=\"help_button()\">
 
 <tr>
@@ -98,17 +140,25 @@ WWWOutput::write_disposition(string url)
 #endif
 
 void
-WWWOutput::write_attributes(AttrTable *attr)
+WWWOutput::write_attributes(AttrTable *attr, const string prefix)
 {
     if (attr) {
 	for (Pix a = attr->first_attr(); a; attr->next_attr(a)) {
-	    int num_attr = attr->get_attr_num(a);
+	    if (attr->is_container(a))
+		write_attributes(attr->get_attr_table(a), 
+				 (prefix == "") ? attr->get_name(a) 
+				 : prefix + string(".") + attr->get_name(a));
+	    else {
+		if (prefix != "")
+		    _os << prefix << "." << attr->get_name(a) << ": ";
+		else
+		    _os << attr->get_name(a) << ": ";
 
-	    _os << attr->get_name(a) << ": ";
-	    for (int i = 0; i < num_attr; 
-		 ++i, (void)(i<num_attr && _os << ", "))
-		_os << attr->get_attr(a, i);
-	    _os << endl;
+		int num_attr = attr->get_attr_num(a) - 1 ;
+		for (int i = 0; i < num_attr; ++i)
+		    _os << attr->get_attr(a, i) << ", ";
+		_os << attr->get_attr(a, num_attr) << endl;
+	    }
 	}
     }
 }
@@ -302,6 +352,16 @@ write_simple_variable(ostream &os, const string &name, const string &type)
 }
 
 // $Log: WWWOutput.cc,v $
+// Revision 1.10  2003/01/27 23:53:54  jimg
+// Merged with release-3-2-7.
+//
+// Revision 1.6.2.6  2002/03/27 14:54:45  jimg
+// Changed write_attributes so that nested attribtues `work.' The names of
+// nested attribtues are printed using the dot notation (cont1.cont2.attr).
+//
+// Revision 1.6.2.5  2002/02/04 17:11:07  jimg
+// Added code that checks for several `file out' tools in the CWD. If found, extra buttons are displayed. These buttons route the URL built in the form through the tool and ultimately return data to the client in the given file type. NB: The DODS server dispatch script (DODS_Dispatch.pm) must be modified also.
+//
 // Revision 1.9  2001/09/28 23:51:32  jimg
 // Merged with 3.2.4.
 //

@@ -1,60 +1,161 @@
+/* config_www_int.h.in.  Generated from configure.in by autoheader.  */
 
-#ifndef _config_www_int_h_in
-#define _config_www_int_h_in 1
+#ifndef _config_www_int_h
+#define _config_www_int_h
 
-/* config_www_int.h.in.  Generated automatically from configure.in by autoheader.  */
+/* dbyte */
+#undef DBYTE
 
-/* Define to empty if the keyword does not work.  */
-#undef const
+/* dfloat32 */
+#undef DFLOAT32
 
-/* Define if you don't have vprintf but do have _doprnt.  */
+/* dfloat64 */
+#undef DFLOAT64
+
+/* dint16 */
+#undef DINT16
+
+/* int32 */
+#undef DINT32
+
+/* Set instrumentation to level 1 (see debug.h) */
+#undef DODS_DEBUG
+
+/* Set instrumentation to level 2 */
+#undef DODS_DEBUG2
+
+/* The relative path to the root of the DODS source tree */
+#undef DODS_RELATIVE
+
+/* The full path to the root of the DODS source tree */
+#undef DODS_ROOT
+
+/* uint16 */
+#undef DUINT16
+
+/* uint32 */
+#undef DUINT32
+
+/* Define to 1 if you don't have `vprintf' but do have `_doprnt.' */
 #undef HAVE_DOPRNT
 
-/* Define if you have the vprintf function.  */
-#undef HAVE_VPRINTF
-
-/* Define to `long' if <sys/types.h> doesn't define.  */
-#undef off_t
-
-/* Define if you need to in order for stat and other things to work.  */
-#undef _POSIX_SOURCE
-
-/* Define to `unsigned' if <sys/types.h> doesn't define.  */
-#undef size_t
-
-/* Define if you have the ANSI C header files.  */
-#undef STDC_HEADERS
-
-/* Define if you have the strerror function.  */
-#undef HAVE_STRERROR
-
-/* Define if you have the strtol function.  */
-#undef HAVE_STRTOL
-
-/* Define if you have the <fcntl.h> header file.  */
+/* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
-/* Define if you have the <limits.h> header file.  */
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
 
-/* Define if you have the <unistd.h> header file.  */
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the `strerror' function. */
+#undef HAVE_STRERROR
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* Define to 1 if you have the `strtol' function. */
+#undef HAVE_STRTOL
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* GNU gcc/g++ provides a way to mark variables, etc. as unused */
+/* Define to 1 if you have the `vprintf' function. */
+#undef HAVE_VPRINTF
 
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* The size of a `char', as computed by sizeof. */
+#undef SIZEOF_CHAR
+
+/* The size of a `double', as computed by sizeof. */
+#undef SIZEOF_DOUBLE
+
+/* The size of a `float', as computed by sizeof. */
+#undef SIZEOF_FLOAT
+
+/* The size of a `int', as computed by sizeof. */
+#undef SIZEOF_INT
+
+/* The size of a `long', as computed by sizeof. */
+#undef SIZEOF_LONG
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
+
+/* Use the dbnew library to trace bew/delete calls */
+#undef TRACE_NEW
+
+/* xdr float32 */
+#undef XDR_FLOAT32
+
+/* xdr float64 */
+#undef XDR_FLOAT64
+
+/* xdr int16 */
+#undef XDR_INT16
+
+/* xdr int32 */
+#undef XDR_INT32
+
+/* xdr uint16 */
+#undef XDR_UINT16
+
+/* xdr uint32 */
+#undef XDR_UINT32
+
+/* Define to 1 if `lex' declares `yytext' as a `char *' by default, not a
+   `char[]'. */
+#undef YYTEXT_POINTER
+
+/* Define this if linking with pthreads */
+#undef _REENTRANT
+
+/* Define to empty if `const' does not conform to ANSI C. */
+#undef const
+
+/* Define to `long' if <sys/types.h> does not define. */
+#undef off_t
+
+/* Define to `unsigned' if <sys/types.h> does not define. */
+#undef size_t
+
+/* Shorthand for gcc's unused attribute feature */
 #if defined(__GNUG__) || defined(__GNUC__)
 #define not_used __attribute__ ((unused))
 #else
 #define not_used 
-#endif
+#endif /* __GNUG__ || __GNUC__ */
 
-/*
-  $Log: config_www_int.h.in,v $
-  Revision 1.2  2001/01/26 19:17:36  jimg
-  Merged with release-3-2.
-
-  Revision 1.1.2.1  2000/11/09 21:37:44  jimg
-  Added
- */
-
-#endif /* _config_www_int_h_in */
+#endif /* _config_www_int_h */

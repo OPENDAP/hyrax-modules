@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.12 2001/10/14 01:56:09 jimg Exp $
+# $Id: Makefile.in,v 1.13 2003/01/27 23:53:54 jimg Exp $
 
 @SET_MAKE@
 
@@ -20,7 +20,6 @@ LDFLAGS = @LDFLAGS@ -L.
 LFLAGS = -8
 YFLAGS = -d
 LIBS = -ldap++ @LIBS@
-XTRALIBS = @XTRALIBS@
 TEST_COV_FLAGS = -ftest-coverage -fprofile-arcs
 TAGS_FLAGS = --include=../../dap/TAGS
 
@@ -89,8 +88,7 @@ javascript.h: www.js
 	./js2h.pl $< > $@
 
 www_int: $(WWW_INT_OBJS) $(CLIENTOBJS)
-	$(CXX) $(LDFLAGS) -o www_int $(WWW_INT_OBJS) $(CLIENTOBJS) \
-		$(LIBS) $(XTRALIBS)
+	$(CXX) $(LDFLAGS) -o www_int $(WWW_INT_OBJS) $(CLIENTOBJS) $(LIBS)
 
 # Standard targets with some customization for das-test and dds-test
 
@@ -176,7 +174,7 @@ tar:
 	-rm -r config.cache config.log config.status
 	cd $(DODS_ROOT).. && \
 	$(TAR) --exclude 'old' --exclude '.#*' --exclude 'CVS' \
-	    --exclude '.flc' --exclude '.snprj' \
+	    --exclude '.flc' --exclude '.snprj' --exclude 'Makefile' \
 	    --gzip --create --dereference --file DODS-$(dir).tar.gz \
 	    DODS/src/tools/$(dir)
 

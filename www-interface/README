@@ -1,5 +1,5 @@
 
-$Id: README,v 1.2 1999/06/22 17:42:03 jimg Exp $
+$Id: README,v 1.3 2003/01/27 23:53:54 jimg Exp $
 
 The www_int (WWW Interface) program is a simple HTML form interface for DODS
 datasets. The program is now designed to be run as part of a regular DODS
@@ -18,3 +18,11 @@ Milkowski. Qi Zhang worked out certain problems with complex datasets. The
 current C++ version was implemented by James Gallagher. Both www_int and the
 `directory hack' were integrated into the basic DODS servers in the Spring of
 1999.
+
+COPYRIGHT INFORMATION
+
+  The OPeNDAP www_int software is copyrighted using the GNU GPL. See the
+  file COPYING or contact the Free Software Foundation, Inc., at 59 Temple
+  Place, Suite 330, Boston, MA 02111-1307 USA. Older versions of the software
+  were copyrighted by the University of Rhode Island and Massachusetts
+  Institute of Technology; see the file COPYRIGHT_URI.

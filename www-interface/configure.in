@@ -2,7 +2,7 @@
 dnl -*- m4 -*-
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.in,v 1.8 2001/06/16 00:00:05 jimg Exp $)
+AC_REVISION($Id: configure.in,v 1.9 2003/01/27 23:53:55 jimg Exp $)
 AC_INIT(www_int.cc)
 AC_CONFIG_HEADER(config_www_int.h)
 AC_CONFIG_AUX_DIR(../../../etc)
@@ -26,6 +26,7 @@ CXXFLAGS="-gstabs -O2 $CXXFLAGS"
 dnl Checks for programs.
 
 AC_PROG_CC
+AC_PROG_CXX
 AC_ISC_POSIX
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
@@ -51,6 +52,11 @@ AC_C_CONST
 AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
 
+dnl Checks for specific libraries
+AC_CHECK_LIB(pthread, pthread_testcancel, 
+	[LIBS="$LIBS -lpthread"
+	 AC_DEFINE(_REENTRANT, , [Define this if linking with pthreads])])
+
 dnl Checks for library functions.
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(strerror strtol)
@@ -61,12 +67,8 @@ DODS_COMPRESSION_LIB
 DODS_RX_LIB
 DODS_WWW_LIB
 
-DODS_XTRALIBS
-
 DODS_EFENCE
-
 DODS_DBNEW
-
 DODS_DEBUG_OPTION
 
 if test $ac_cv_sizeof_long -eq 4 
@@ -80,5 +82,19 @@ then
 else
 	AC_MSG_ERROR(Could not determine architecture size - 32 or 64 bits)
 fi
+
+dnl autoheader macros; tack some text at the top and bottom of config_dap.h.in
+
+AH_TOP([#ifndef _config_www_int_h
+#define _config_www_int_h])
+
+AH_BOTTOM([/* Shorthand for gcc's unused attribute feature */
+#if defined(__GNUG__) || defined(__GNUC__)
+#define not_used __attribute__ ((unused))
+#else
+#define not_used 
+#endif /* __GNUG__ || __GNUC__ */
+
+#endif /* _config_www_int_h */])
 
 AC_OUTPUT(Makefile js2h.pl, [chmod 775 js2h.pl])

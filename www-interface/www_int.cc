@@ -1,15 +1,39 @@
+
+// -*- mode: c++; c-basic-offset:4 -*-
+
+// This file is part of www_int, software which returns an HTML form which
+// can be used to build a URL to access data from a DAP data server.
+
+// Copyright (c) 2002,2003 OPeNDAP, Inc.
+// Author: James Gallagher <jgallagher@opendap.org>
+//
+// asciival is free software; you can redistribute it and/or modify it under
+// the terms of the GNU General Public License as published by the Free
+// Software Foundation; either version 2, or (at your option) any later
+// version.
+// 
+// asciival is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+// more details.
+// 
+// You should have received a copy of the GNU General Public License along
+// with GCC; see the file COPYING. If not, write to the Free Software
+// Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+// 
+// You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
 // (c) COPYRIGHT URI/MIT 1999
-// Please read the full copyright statement in the file COPYRIGHT.
+// Please read the full copyright statement in the file COPYRIGHT_URI.
 //
 // Authors:
-//	jhrg,jimg	James Gallagher (jgallagher@gso.uri.edu)
+//	jhrg,jimg	James Gallagher <jgallagher@gso.uri.edu>
 
 /** 
     @author: jhrg */
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: www_int.cc,v 1.11 2001/10/14 01:56:09 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: www_int.cc,v 1.12 2003/01/27 23:53:55 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -20,7 +44,6 @@ static char rcsid[] not_used = {"$Id: www_int.cc,v 1.11 2001/10/14 01:56:09 jimg
 
 #include <GetOpt.h>
 #include <Pix.h>
-#include <SLList.h>
 #include <string>
 
 #include "BaseType.h"
@@ -50,129 +73,10 @@ usage(string name)
 	 << "h|?: This meassage.\n";
 }
 
-/** Look for the override file by taking the dataset name and appending
-    `.ovr' to it. If such a file exists, then read it in and store the
-    contents in #doc#. Note that the file contents are not checked to see if
-    they are valid HTML (which they must be). 
-
-    @return True if the `override file' is present, false otherwise. In the
-    later case #doc#'s contents are undefined.
-*/
-
-bool
-found_override(string name, string &doc)
-{
-    ifstream ifs((name + ".ovr").c_str());
-    if (!ifs)
-	return false;
-
-    char tmp[256];
-    doc = "";
-    while (!ifs.eof()) {
-	ifs.getline(tmp, 255);
-	strcat(tmp, "\n");
-	doc += tmp;
-    }
-
-    return true;
-}
-
-/** Read the input stream #in# and discard the MIME header. The MIME header
-    is separated from the body of the document by a single blank line. If no
-    MIME header is found, then the input stream is `emptied' and will contain
-    nothing.
-
-    @memo Read and discard the MIME header of the stream #in#.
-    @return True if a MIME header is found, false otherwise.
-*/
-
-bool
-remove_mime_header(FILE *in)
-{
-    char tmp[256];
-    while (!feof(in)) {
-	fgets(tmp, 255, in);
-	if (tmp[0] == '\n')
-	    return true;
-    }
-
-    return false;
-}    
-
-/** Look in the CGI directory (given by #cgi#) for a per-cgi HTML* file. Also
-    look for a dataset-specific HTML* document. Catenate the documents and
-    return them in a single string variable.
-
-    The #cgi# path must include the `API' prefix at the end of the path. For
-    example, for the NetCDF server whose prefix is `nc' and resides in the
-    DODS_ROOT/etc directory of my computer, #cgi# is
-    `/home/dcz/jimg/src/DODS/etc/nc'. This function then looks for the file
-    named #cgi#.html.
-
-    Similarly, to locate the dataset-specific HTML* file it catenates `.html'
-    to #name#, where #name# is the name of the dataset. If the filename part
-    of #name# is of the form [A-Za-z]+[0-9]*.* then this function also looks
-    for a file whose name is [A-Za-z].html For example, if #name# is
-    .../data/fnoc1.nc this function first looks for .../data/fnoc1.nc.html.
-    However, if that does not exist it will look for .../data/fnoc.html. This
-    allows one `per-dataset' file to be used for a collection of files with
-    the same root name.
-
-    NB: An HTML* file contains HTML without the <html>, <head> or <body> tags
-    (my own notation).
-
-    @memo Look for the user supplied CGI- and dataset-specific HTML* documents.
-    @return A string which contains these two documents catenated. Documents
-    that don't exist are treated as `empty'.
-*/
-
-string
-get_user_supplied_docs(string name, string cgi)
-{
-    char tmp[256];
-    ostrstream oss;
-    ifstream ifs((cgi + ".html").c_str());
-
-    if (ifs) {
-	while (!ifs.eof()) {
-	    ifs.getline(tmp, 255);
-	    oss << tmp << "\n";
-	}
-	ifs.close();
-	
-	oss << "<hr>";
-    }
-
-    ifs.open((name + ".html").c_str());
-
-    // If name.html cannot be opened, look for basename.html
-    if (!ifs) {
-	unsigned int slash = name.find_last_of('/');
-	string pathname = name.substr(0, slash);
-	string filename = name.substr(slash+1);
-	// filename = filename.at(RXalpha); // XXX can't do this with string
-	string new_name = pathname + "/" + filename; // XXX + ".html"
-	ifs.open(new_name.c_str());
-    }
-
-    if (ifs) {
-	while (!ifs.eof()) {
-	    ifs.getline(tmp, 255);
-	    oss << tmp << "\n";
-	}
-	ifs.close();
-    }
-
-    oss << ends;
-    string html = oss.str();
-    oss.rdbuf()->freeze(0);
-
-    return html;
-}
-
 static void
 process_trace_options(char *tcode) 
 {
+#if 0
     char c;
     while ((c = *tcode++))
 	switch (c) {
@@ -197,6 +101,7 @@ process_trace_options(char *tcode)
 		 << endl;
 	    break;
 	}
+#endif
 }
 
 /** Write out the given error object. If the Error object #e# is empty, don't
@@ -284,6 +189,8 @@ main(int argc, char * argv[])
     try {
 	url = new Connect(argv[getopt.optind], trace);
 
+	url->disable_cache();	// Server components should not cache...
+
 	if (url->is_local()) {
 	    string msg = "Error: URL `";
 	    msg += string(argv[getopt.optind]) + "' is local.\n";
@@ -357,6 +264,31 @@ main(int argc, char * argv[])
 }
 
 // $Log: www_int.cc,v $
+// Revision 1.12  2003/01/27 23:53:55  jimg
+// Merged with release-3-2-7.
+//
+// Revision 1.8.2.8  2002/09/05 22:27:29  pwest
+// Removed includes to SLList and DLList. These are not necessary and no longer
+// supported.
+//
+// Revision 1.8.2.7  2002/06/21 00:31:42  jimg
+// I changed many files throughout the source so that the 'make World' build
+// works with the new versions of Connect and libdap++ that use libcurl.
+// Most of these changes are either to Makefiles, configure scripts or to
+// the headers included by various C++ files. In a few places the oddities
+// of libwww forced us to hack up code and I've undone those and some of the
+// clients had code that supported libwww's generous tracing capabilities
+// (that's one part of libwww I'll miss); I had to remove support for that.
+// Once this code compiles and more work is done on Connect, I'll return to
+// each of these changes and polish them.
+//
+// Revision 1.8.2.6  2002/02/04 17:30:41  jimg
+// I removed a lot of code that was duplicated from src/dap/usage.cc. I moved that code into cgi_util.cc/h.
+//
+// Revision 1.8.2.5  2002/01/17 06:35:55  jimg
+// Added a call to Connect::disable_cache() so that this tool won't cache
+// responses.
+//
 // Revision 1.11  2001/10/14 01:56:09  jimg
 // Merged with release-3-2-5.
 //
