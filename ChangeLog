@@ -1,3 +1,35 @@
+2004-07-07  James Gallagher  <jimg@comet.dods.org>
+
+	* Merged with release-3-4-8FCS.
+
+2004-07-06  James Gallagher  <jimg@comet.dods.org>
+
+	* nightly_dods_build.sh: Modified so that CVS is updated only when
+	UPDATE_CVS is set to "Yes". This should get things going again in
+	the face of the recent CVS break in. Added OPTION_N, other
+	changes, see the file's log.  
+
+	* nightly_dods_build.conf.example: Added UPDATE_CVS so that it
+	will be on by default. Edits so the example will work with old sh
+	implementations. 
+
+	* common_tests.exp: Two changes/fixes: The char-by-char break down
+	of how comp and expected output differ is printed on if $verbose
+	is >= 3. Also, the second 'fail ...' call has been removed. this
+	caused tests to FAIL with $verbose was >=1 even though they really
+	passed. 
+
+	* aclocal.m4: Modified the test for librx so it's effectively not
+	used. The regex code is now included in libdap++. Fixed a bug in
+	the DODS_MAT macro. 
+
+	* FilterDirHTML.pm: Fixed bug 702: HREFed URLs in the return
+	document were not quoted. This code worked with most browsers but
+	failed for some HTML parsers.
+
+	* Added HTTP response status line and Content-Type header for the
+	directory response to DODS_Dispatch.pm.
+
 2004-02-18  James Gallagher  <jimg@comet.dods.org>
 
 	* Merged with release-3-4-2FCS. The next merge should use update
@@ -5,7 +37,7 @@
 
 2004-02-16  James Gallagher  <jimg@comet.dods.org>
 
-	* Several fixes to teh nightly_build.sh script.
+	* Several fixes to the nightly_build.sh script.
 
 	* Added a test to see if the access and error logs are readable.
 	This will work only when this script is used to install the

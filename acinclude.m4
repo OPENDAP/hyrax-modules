@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.80 2004/01/28 16:21:29 jimg Exp $
+# $Id: acinclude.m4,v 1.81 2004/07/07 21:17:54 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -115,11 +115,13 @@ AC_DEFUN(DODS_COMPRESSION_LIB, [dnl
     AC_SUBST(packages)])
 
 AC_DEFUN(DODS_RX_LIB, [dnl
-    AC_REQUIRE([DODS_PACKAGES_SUPPORT])
-    AC_CHECK_LIB(rx, rx_version_string,
-		 HAVE_RX=1; LIBS="$LIBS -lrx",
-		 packages="$packages librx"; HAVE_RX=1; LIBS="$LIBS -lrx")
-    AC_SUBST(packages)])
+    ])
+
+dnl    AC_REQUIRE([DODS_PACKAGES_SUPPORT])
+dnl    AC_CHECK_LIB(rx, rx_version_string,
+dnl		 HAVE_RX=1; LIBS="$LIBS -lrx",
+dnl		 packages="$packages librx"; HAVE_RX=1; LIBS="$LIBS -lrx")
+dnl    AC_SUBST(packages)])
 
 # Look for the curl library. Right now we don't support using the general 
 # distribution because most places won't have the version (7.10) that 
@@ -369,10 +371,11 @@ AC_DEFUN(DODS_MATLAB, [dnl
     fi
 
     dnl Find the lib directory (which is named according to machine type).
+    dnl The test was using -z; I changed it to -n to fix a problem withthe 
+    dnl matlab server build. The build did not find the libraries with the
+    dnl env var MATLAB_LIB was not set. 04/12/04 jhrg
     AC_MSG_CHECKING(for matlab library dir)
-
-    dnl I have no idea how this can be non-zero... 01/28/04 jhrg
-    if test "$MATLAB_LIB"  
+    if test -n "$MATLAB_LIB"
     then
         matlab_lib_dir=${MATLAB_LIB}
     else

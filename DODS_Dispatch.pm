@@ -798,6 +798,10 @@ sub command {
 	    = new FilterDirHTML($server_url, $url,
 				dataset_regexes("./dods.rc", @$excludes)); 
 
+	# Print HTTP response headers. 06/25/04 jhrg
+	print(STDOUT "HTTP/1.1 200 OK\n");
+	print(STDOUT "Content-Type: text/html\n\n");
+
 	$filtered_dir_html->parse($directory_html);
 	$filtered_dir_html->eof;
 	exit(0);		# Leave without returning @command!
@@ -1136,6 +1140,13 @@ if ($test) {
 1;
 
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.42  2004/07/07 21:17:54  jimg
+# Merged with release-3-4-8FCS
+#
+# Revision 1.37.2.17  2004/06/25 19:50:12  jimg
+# Added HTTP response status line and Content-Type header for the directory
+# response.
+#
 # Revision 1.41  2004/01/22 17:29:13  jimg
 # Merged with release-3-4.
 #

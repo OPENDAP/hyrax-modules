@@ -235,31 +235,31 @@ sub output {
 	    # root. 
 	    if (!$self->{first_anchor_processed}) {
 		my ($parent, $child) = ($self->{server} =~ m@(.*/)(.*/)$@);
-		$new_anchor = "<A HREF=" . $parent . ">";
+		$new_anchor = "<A HREF=\"" . $parent . "\">";
 		$self->{first_anchor_processed} = 1;
 	    }
 	    else {
-		$new_anchor = "<A HREF=" . $self->{server}
-		              . $self->{anchor_href} . ">"; 
+		$new_anchor = "<A HREF=\"" . $self->{server}
+		              . $self->{anchor_href} . "\">"; 
 	    }
 	}
 	# These are anchors that are not datasets but still should be passed
 	# through the DODS server when dereferenced. 5/9/2001 jhrg
 	elsif (grep { $self->{anchor_href} =~ $_ } @pass_through_patterns) {
- 	    $new_anchor = "<A HREF=" . $self->{anchor_href} . ">"; 
+ 	    $new_anchor = "<A HREF=\"" . $self->{anchor_href} . "\">"; 
 	    print STDERR "Anchor matches a pass through pattern: $self->{anchor_href}\n" if $debug > 0;
 	}
 	# Is the href a data file? If so append .html to the file name after
 	# building a full URL.
 	elsif (grep {$self->{anchor_href} =~ $_} @$dataset_regexes) {
-	    $new_anchor = "<A HREF=" . $self->{server} . $self->{anchor_href}
-	                  . ".html>"; 
+	    $new_anchor = "<A HREF=\"" . $self->{server} . $self->{anchor_href}
+	                  . ".html\">"; 
 	    print STDERR "Anchor matches extension pattern ($self->{dataset_regexes}): $self->{anchor_href}\n" if $debug > 0;
 	}
 	# Is it a regular file?
 	else {
- 	    $new_anchor = "<A HREF=" . $self->{directory} 
-	                  . $self->{anchor_href} . ">"; 
+ 	    $new_anchor = "<A HREF=\"" . $self->{directory} 
+	                  . $self->{anchor_href} . "\">"; 
 	    print STDERR "Anchor is a regular file: $self->{directory}$self->{anchor_href}\n" if $debug > 0;
 	}
 
@@ -273,6 +273,13 @@ sub output {
 1;
 
 # $Log: FilterDirHTML.pm,v $
+# Revision 1.11  2004/07/07 21:17:54  jimg
+# Merged with release-3-4-8FCS
+#
+# Revision 1.10.4.1  2004/03/04 19:14:03  jimg
+# Fixed bug 702: HREFed URLs in the return document were not quoted. This code
+# worked with most browsers but failed for some HTML parsers.
+#
 # Revision 1.10  2003/01/23 00:44:34  jimg
 # Updated the copyrights on various source files. OPeNDAP is adopting the
 # GNU Lesser GPL.
