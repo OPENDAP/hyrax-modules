@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.5 1996/10/29 21:44:01 jimg Exp $
+# $Id: Makefile.in,v 1.6 1996/11/13 22:57:26 jimg Exp $
 
 @SET_MAKE@
 
@@ -17,6 +17,7 @@
 PROG= writeval loaddods urlqueue
 DODS_ROOT = ../..
 
+WWW_ROOT=@WWW_ROOT@
 INCS = -I. -I$(DODS_ROOT)/include -I$(MATLAB_ROOT)/extern/include @INCS@
 DEFS = @DEFS@ -DUSE_LIBGXX_INLINES
 CPPFLAGS = @CPPFLAGS@ $(DEFS) $(INCS)
@@ -75,11 +76,11 @@ CMEX = $(MATLAB_ROOT)/bin/cmex
 
 CLIENTSRCS = ClientByte.cc ClientInt32.cc ClientFloat64.cc ClientStr.cc \
 	ClientUrl.cc ClientArray.cc ClientStructure.cc ClientList.cc \
-	ClientSequence.cc ClientFunction.cc ClientGrid.cc
+	ClientSequence.cc ClientFunction.cc ClientGrid.cc ClientUInt32.cc
 
 CLIENTOBJS = ClientByte.o ClientInt32.o ClientFloat64.o ClientStr.o \
 	ClientUrl.o ClientArray.o ClientStructure.o ClientList.o \
-	ClientSequence.o ClientFunction.o ClientGrid.o
+	ClientSequence.o ClientFunction.o ClientGrid.o ClientUInt32.o
 
 all: $(PROG)
 
@@ -95,10 +96,13 @@ urlqueue: urlqueue.o queue.o
 
 # Standard targets with some customization for das-test and dds-test
 
-install: install-urlqueue
+install: install-client
 
-install-urlqueue: urlqueue
+install-client: urlqueue writeval loaddods
 	$(INSTALL_PROGRAM) urlqueue $(etcdir)
+	$(INSTALL_PROGRAM) posturl.pl $(etcdir)
+	$(INSTALL_PROGRAM) writeval $(bindir)
+	$(INSTALL_PROGRAM) loaddods.mex* $(bindir)
 
 Makefile: ${srcdir}/Makefile.in
 	${SHELL} ./config.status

@@ -1,7 +1,7 @@
 
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.in,v 1.1 1996/10/25 23:21:30 jimg Exp $)
+AC_REVISION($Id: configure.in,v 1.2 1996/11/13 22:57:31 jimg Exp $)
 AC_INIT(write_val.cc)
 AC_CONFIG_HEADER(config_writeval.h)
 AC_CONFIG_AUX_DIR(../../etc)
@@ -91,9 +91,9 @@ dnl Checks for library functions.
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(strerror strtol)
 
-DODS_WWW_LIBRARY
+DODS_LIBS
 
-DODS_FIND_WWW_INCLUDES
+DODS_WWW_ROOT
 
 DODS_FIND_EXPECT
 
@@ -103,26 +103,7 @@ DODS_DBNEW
 
 DODS_DEBUG_OPTION
 
-dnl Look at the size of a long; if it is 64 bits, set ARCHFLAG to ARCH_64BIT
-dnl otherwise, if long is 32 bits set it to ARCH_32BIT.
-
-AC_CANONICAL_HOST
-AC_C_CROSS
-
-if test "$cross_compiling" = yes
-then
-	dnl $host is set in AC_CONONICAL_HOST.
-	case "$host" in
-	     *alpha*) AC_DEFINE(SIZEOF_LONG, 8) 
-		      ac_cv_sizeof_long=8;;
-	     *) AC_DEFINE(SIZEOF_LONG, 4)
-		ac_cv_sizeof_long=4
-		AC_MSG_RESULT(Guessing that your targetmachine is 32 bits);;
-	esac
-else
-	dnl Ignore the warning about AC_TRY_RUN.
-	AC_CHECK_SIZEOF(long)
-fi
+DODS_CHECK_SIZES
 
 if test $ac_cv_sizeof_long -eq 4 
 then
