@@ -1,5 +1,9 @@
 
-# $Id: Makefile.in,v 1.19 1997/08/18 23:53:10 jimg Exp $
+<<<<<<< Makefile.in
+# $Id: Makefile.in,v 1.20 1997/10/04 00:33:38 jimg Exp $
+=======
+# $Id: Makefile.in,v 1.20 1997/10/04 00:33:38 jimg Exp $
+>>>>>>> 1.18.6.1
 
 @SET_MAKE@
 
@@ -15,9 +19,11 @@
 # the print representation on the screen.
 
 PROG= writeval loaddods urlqueue
-DODS_ROOT = ../..
 
+DODS_ROOT = ../..
+MATLAB_ROOT = @MATLAB_ROOT@
 WWW_ROOT=@WWW_ROOT@
+
 INCS = -I. -I$(DODS_ROOT)/include -I$(MATLAB_ROOT)/extern/include @INCS@
 DEFS = @DEFS@ -DUSE_LIBGXX_INLINES
 CPPFLAGS = @CPPFLAGS@ $(DEFS) $(INCS)
@@ -26,10 +32,9 @@ CXXFLAGS = @CXXFLAGS@
 LDFLAGS = @LDFLAGS@ -L. -L$(DODS_ROOT)/lib
 LFLAGS = -8
 YFLAGS = -d
-LIBS = -ldap++ -lwww @LIBS@
+LIBS = -ldap++ -lwww @MATLIBS@ @LIBS@
 TAGS_FLAGS = -b
-CMEXFLAGS = -g
-MATLAB_ROOT = @MATLAB_ROOT@
+CMEXFLAGS = -g -V4
 
 # Set the instalation directories; prefix can be set on the command line
 # during Makefile construction with `./configure --prefix /my/choice'
