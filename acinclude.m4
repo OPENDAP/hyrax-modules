@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.18 1996/10/11 00:05:25 jimg Exp $
+# $Id: acinclude.m4,v 1.19 1996/10/31 22:26:38 jimg Exp $
 
 # Check for fill value usage.
 
@@ -250,6 +250,8 @@ AC_DEFUN(DODS_DEBUG_OPTION, [dnl
       ;;
     esac])
 
+dnl depricated
+
 AC_DEFUN(DODS_FIND_WWW_INCLUDES, [dnl
 
     AC_MSG_CHECKING(for the WWW library include files)
@@ -276,6 +278,8 @@ AC_DEFUN(DODS_FIND_WWW_INCLUDES, [dnl
 	AC_MSG_ERROR(not found!)
     fi])
 
+dnl depricated
+
 AC_DEFUN(DODS_WWW_LIBRARY, [dnl
 
     AC_ARG_WITH(www,
@@ -286,6 +290,56 @@ AC_DEFUN(DODS_WWW_LIBRARY, [dnl
     then
 	    LDFLAGS="$LDFLAGS -L${WWW_LIB}"
 	    AC_SUBST(LDFLAGS)
+    fi])
+
+AC_DEFUN(DODS_FIND_WWW_ROOT, [dnl
+
+    AC_MSG_CHECKING(for the WWW library root directory)
+
+    WWW_ROOT=
+
+    for p in /usr/local/src/WWW /usr/local/WWW \
+	     /usr/local/src/w3c-libwww /usr/local/w3c-libwww \
+	     /usr/contrib/src/w3c-libwww /usr/contrib/w3c-libwww \
+	     $DODS_ROOT/third-party/w3c-libwww
+    do
+        if test "$WWW_ROOT"
+	then
+	    break
+	fi
+	dnl `ls -dr' lists dirs without descending and reverses ordering
+	for d in `ls -dr ${p}[[-.0-9]]* 2>/dev/null`
+	do
+	    if test -f ${d}/Library/src/WWWCore.h
+	    then
+	        WWW_ROOT=${d}
+	        break
+	    fi
+	done
+    done
+
+    if test "$WWW_ROOT"
+    then
+	AC_MSG_RESULT($WWW_ROOT)
+	AC_SUBST(WWW_ROOT)
+	INCS="$INCS -I$(WWW_ROOT) -I$(WWW_ROOT)/Library/src"
+	AC_SUBST(INCS)
+    else
+	AC_MSG_WARN(not found!)
+    fi])
+
+AC_DEFUN(DODS_WWW_ROOT, [dnl
+
+    AC_ARG_WITH(www,
+		[  --with-www=DIR          Directory containing the W3C software],
+		WWW_ROOT=${withval}, WWW_ROOT=)
+
+    if test "$WWW_ROOT"
+    then
+	AC_SUBST(WWW_ROOT)
+	AC_MSG_RESULT(Set WWW root directory to $WWW_ROOT) 
+    else
+	DODS_FIND_WWW_ROOT
     fi])
 
 AC_DEFUN(DODS_SEM, [dnl
@@ -448,3 +502,24 @@ AC_DEFUN(DODS_MACHINE, [dnl
     AC_SUBST(MACHINE)
     AC_MSG_RESULT($MACHINE)])
 
+# Check for exceptions handling support. From Todd.
+AC_DEFUN(DODS_CHECK_EXCEPTIONS, [dnl
+    AC_LANG_CPLUSPLUS
+    AC_MSG_CHECKING(for exception handling support in C++ compiler)
+    OLDCFLAGS=$CFLAGS
+    if test CXX = "g++"; then
+       CFLAGS="$OLDCFLAGS -fhandle-exceptions"
+    fi
+    EXCEPTION_CHECK_PRG="int foo(void) {
+		              throw int;
+	                 }
+			 main() {
+			      try { foo(); }
+			      catch(int) {}
+			      exit(0);
+	                 }"
+    AC_TRY_RUN([${EXCEPTION_CHECK_PRG}], AC_MSG_RESULT(yes), [dnl
+	AC_MSG_RESULT(no)
+	AC_MSG_WARN(Compiling without exception handling. See README)
+	CFLAGS=$OLDCFLAGS],[AC_MSG_WARN(maybe...)])
+    ])
