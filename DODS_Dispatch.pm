@@ -208,7 +208,7 @@ sub initialize {
     # handlers to generate the DAP objects and ver and info responses; 
     # everything else is passed off to a helper or taken care of by this
     # script. However, we ask for the handler for all of the extensions to
-    # make sure that the server (via dods.ini) is configured for the
+    # make sure that the server (via dods.rc) is configured for the
     # particular type of URL. If we don't do that then an errant request for
     # .html, for example, will loop forever (since it's a subordinate request
     # that accesses the dataset and that's what fails). 9/19/2001 jhrg
@@ -310,7 +310,7 @@ sub initialize {
 # sub-classed. See the perlobj man page for more information. 7/27/98 jhrg
 #
 # Added @exclude to the list of ctor params. This is a list of `handler
-# names' (see the dods.ini file) that have regular expressions which should
+# names' (see the dods.rc file) that have regular expressions which should
 # NOT be rerouted through the DODS server's HTML form generator. Often this
 # is the case because their regexes are something like `.*'. 5/9/2001 jhrg
 #
@@ -616,7 +616,7 @@ sub command {
 	my $excludes = $self->{exclude}; # it's an array reference.
 	my $filtered_dir_html 
 	    = new FilterDirHTML($server_url, $url,
-				dataset_regexes("./dods.ini", @$excludes)); 
+				dataset_regexes("./dods.rc", @$excludes)); 
 
 	$filtered_dir_html->parse($directory_html);
 	$filtered_dir_html->eof;
@@ -863,7 +863,7 @@ if ($test) {
     $ENV{PATH_TRANSLATED} = "/home/httpd/html/htdocs/data/x.nc.dods";
 
     print "Simple file access\n";
-    my $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.ini");
+    my $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc");
     $dd->extension() eq "dods" || die;
     $dd->script() eq "nc" || die;
 
@@ -871,7 +871,7 @@ if ($test) {
     # Test files which have more than one dot in their names.
     $ENV{PATH_INFO} = "/data/tmp.x.nc.dods";
     $ENV{PATH_TRANSLATED} = "/home/httpd/html/htdocs/data/tmp.x.nc.dods";
-    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.ini");
+    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc");
     $dd->extension() eq "dods" || die;
     $dd->script() eq "nc" || die;
 
@@ -880,7 +880,7 @@ if ($test) {
     # NOTE: The directory must really exist!
     $ENV{PATH_INFO} = "/data/";
     $ENV{PATH_TRANSLATED} = "/var/www/html/data/";
-    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.ini");
+    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc");
     $dd->extension() eq "/" || die;
     $dd->script() eq "" || die; # a weird anomaly of handler.pm
 
@@ -889,14 +889,14 @@ if ($test) {
     $ENV{QUERY_STRING} = "M=A";
     $ENV{PATH_INFO} = "/data/";
     $ENV{PATH_TRANSLATED} = "/var/www/html/data/";
-    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.ini");
+    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc");
     $dd->extension() eq "/" || die;
 
     print "Directory names not ending in a slash\n";
     # Directory, not ending in a slash
     $ENV{PATH_INFO} = "/data";
     $ENV{PATH_TRANSLATED} = "/var/www/html/data";
-    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.ini");
+    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc");
     $dd->extension() eq "/" || die;
 
     print "Directory names not ending in a slash with a M=A query\n";
@@ -904,7 +904,7 @@ if ($test) {
     $ENV{QUERY_STRING} = "M=A";
     $ENV{PATH_INFO} = "/data";
     $ENV{PATH_TRANSLATED} = "/var/www/html/data";
-    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.ini");
+    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc");
     $dd->extension() eq "/" || die;
 
     # Test the RFC822_to_time function.
@@ -948,7 +948,7 @@ if ($test) {
     
     $ENV{PATH_INFO} = "/http://dcz.dods.org/dods-3.2/nph-dods/data/nc/fnoc1.nc.das";
     $ENV{PATH_TRANSLATED} = "/var/www/html$ENV{PATH_INFO}";
-    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.ini");
+    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc");
     # print "DODSter filename: $dd->filename() \n";
     # $dd->extension() eq "/" || die;
     # $dd->script() eq "" || die; # a weird anomaly of handler.pm
@@ -959,6 +959,9 @@ if ($test) {
 1;
 
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.32  2003/01/22 00:41:47  jimg
+# Changed dods.ini to dods.rc.
+#
 # Revision 1.31  2003/01/22 00:12:05  jimg
 # Added/Updated from release-3-2 branch.
 #

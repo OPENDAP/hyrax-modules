@@ -30,7 +30,7 @@ require HTML::Filter;
 # The ctor takes three arguments, the server's URL, the directory's URL (both
 # scalars) and a list of regexs that define that types of files this server
 # recognizes as datasets (or comprising datasets). The later is probably
-# derived from the dods.ini file. Note that the directory URL is used to
+# derived from the dods.rc file. Note that the directory URL is used to
 # build references to files found in the data directories that should not be
 # routed through the DODS server. For example, it's an error to run a regulat
 # html file through a DODS server. 5/9/2001 jhrg
@@ -249,6 +249,9 @@ sub output {
 1;
 
 # $Log: FilterDirHTML.pm,v $
+# Revision 1.9  2003/01/22 00:41:47  jimg
+# Changed dods.ini to dods.rc.
+#
 # Revision 1.8  2001/06/15 23:38:36  jimg
 # Merged with release-3-2-4.
 #

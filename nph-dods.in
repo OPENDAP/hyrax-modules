@@ -21,7 +21,7 @@
 #
 # Options: -T: use Perl's taint mode.
 #
-# $Id: nph-dods.in,v 1.4 2002/12/31 22:28:45 jimg Exp $
+# $Id: nph-dods.in,v 1.5 2003/01/22 00:41:47 jimg Exp $
 
 # Force PATH. This should work for most UNIXs. Forcing PATH means that -T
 # (taint) won't complain about running programs. Perl will consider any
@@ -51,7 +51,7 @@ this should work, please contact the ";
 # and builds up a command based on the format of a DODS URL. 
 $dispatch = new DODS_Dispatch("DAP/@DAP_VERSION@",
 			      "support\@unidata.ucar.edu",
-			      "./dods.ini", ("jg"));
+			      "./dods.rc", ("jg"));
 
 # If gzip or compress are used to compress files, cache_dir should point to a
 # place where uncompressed copies of those files can be stored. The cache
@@ -127,6 +127,9 @@ if ($command[0] ne "") {		# if no error...
 }
 
 # $Log: nph-dods.in,v $
+# Revision 1.5  2003/01/22 00:41:47  jimg
+# Changed dods.ini to dods.rc.
+#
 # Revision 1.4  2002/12/31 22:28:45  jimg
 # Merged with release 3.2.10.
 #
