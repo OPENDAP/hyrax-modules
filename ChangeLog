@@ -1,3 +1,28 @@
+2004-02-18  James Gallagher  <jimg@comet.dods.org>
+
+	* Merged with release-3-4-2FCS. The next merge should use update
+	-j release-3-4-2FCS -j release-3-4
+
+2004-02-16  James Gallagher  <jimg@comet.dods.org>
+
+	* Several fixes to teh nightly_build.sh script.
+
+	* Added a test to see if the access and error logs are readable.
+	This will work only when this script is used to install the
+	servers. I've also added tests in the dods_logging.pm module to
+	report to us when the files are not readable. 
+
+	* Added error reporting so we can tell if a site has turned stats
+	on but blocked access to the actual log files. 
+
+	* I modified the DODS_MATLAB macro: it was not setting the
+	matlab_lib-dir correctly because the wrong test was used when
+	initially checking the value of MATLAB_LIB. In fact I cannot see
+	hoe MATLAB_LIB can ever be non-zero, but I've left it alone
+	because these macros are so inter-woven. 
+
+	* Added information about the .dodsrc configuration file and the AIS.
+
 2004-01-22  James Gallagher  <jimg@dcz.dods.org>
 
 	* Merged with release-3-4. The next merge should use update -j

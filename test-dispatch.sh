@@ -7,7 +7,7 @@
 #
 # SERVER_SOFTWARE
 #      NCSA/1.5.2 
-export SERVER_NAME=dcz.dods.org
+export SERVER_NAME=comet.dods.org
 
 #      dcz.cvo.oneworld.com 
 # GATEWAY_INTERFACE
@@ -36,21 +36,23 @@ export SERVER_PORT=80
 #      Mozilla/3.01 (X11; I; SunOS 4.1.3 sun4c) 
 
 #PATH_INFO="/version"
-
 #PATH_INFO="/data/"
 #PATH_INFO="/data/hdf/S3096277.HDF.Z.dds"
 
-PATH_INFO="/data/nc/fnoc1.nc.ddx"
-
-#PATH_INFO="/data/nc/fnoc1.nc.dods"
-
+PATH_INFO="/data/ff/1998-6-avhrr.dat.dods"
 export PATH_INFO
 
-SCRIPT_NAME="/dods-3.4/nph-dods"
+SCRIPT_NAME="/dods-3.2/nph-dods"
 export SCRIPT_NAME
 
-QUERY_STRING="u"
+QUERY_STRING="year,day_num"
 export QUERY_STRING
 
 PATH_TRANSLATED="/var/www/html${PATH_INFO}"
 export PATH_TRANSLATED
+
+HTTP_XDODS_ACCEPT_TYPES=All
+export HTTP_XDODS_ACCEPT_TYPES
+
+HTTP_ACCEPT_ENCODING="gzip, deflate;q=1.0, identity;q=0.5, *;q=0"
+export HTTP_ACCEPT_ENCODING

@@ -1,3 +1,11 @@
+2004-02-18  James Gallagher  <jimg@comet.dods.org>
+
+	* Merged release-3-4-2FCS.
+
+2004-02-16  James Gallagher  <jimg@comet.dods.org>
+
+	* Added support for GCC-3.3 builds on AlphaEV56 platforms. (dan)
+
 2003-01-27    <jimg@dcz.dods.org>
 
 	* Examined the versions on the 3.2 branch and tagged the code at
