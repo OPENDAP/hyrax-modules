@@ -1,7 +1,14 @@
 
- $Id: README,v 1.8 1997/02/06 20:33:20 jimg Exp $
+ $Id: README,v 1.9 1997/04/11 19:38:20 jimg Exp $
 
-There are two programs that comprise the DODS-Matlab interface; loaddods ad
+The following provides background technical information on the design of
+loaddods/writeval. For installation information, see the file
+INSTALL-matlab-client and for help using the matlab command `loaddods', see
+the on-line help for that command (in Matlab type `help loaddods'). Make sure
+that the file loaddods.m is in the same directory as the loaddods.mex*
+program.
+
+There are two programs that comprise the DODS-Matlab interface; loaddods and
 whodods. They are analogous to Matlab's load and who commands. However, they
 accept DODS URLs rather than Matlab files. On-line help is available for both
 commands - make sure that you have the loaddods.m, loaddods.mex* and
