@@ -7,7 +7,7 @@
 #
 # jhrg 3/27/95
 #
-# $Id: acinclude.m4,v 1.1 1995/10/31 00:49:10 jimg Exp $
+# $Id: acinclude.m4,v 1.2 1995/10/31 01:06:16 jimg Exp $
 
 # Check for fill value usage.
 
@@ -77,17 +77,20 @@ AC_DEFUN(DODS_NETLONG, [dnl
 
 AC_DEFUN(DODS_DEFAULT, [$1=${$1-"$2"}; AC_SUBST([$1])])
 
-# Look for Flex version 2.5.2 or greater
+# Look for Flex version 2.5.2 or greater. 
+# NB: on some machines `flex -V' writes to stderr *not* stdout while `|'
+# connects only stdout to stdin. Thus for portability, stderr must be
+# connected to stdout manually (This is true for IRIX-5.2).
 
 AC_DEFUN(DODS_PROG_LEX, [dnl
     AC_PROG_LEX
     case "$LEX" in
 	flex)
-	    flex_ver1=`flex -V | sed 's/flex version \(.*\)/\1/'`
+	    flex_ver1=`flex -V 2>&1 | sed 's/flex version \(.*\)/\1/'`
 	    flex_ver2=`echo $flex_ver1 | sed 's/\.//g'`
 	    if test $flex_ver2 -lt 252
 	    then
-		AC_MSG_WARN(Flex version should be at least 2.5.2);
+		AC_MSG_WARN(Flex version should be at least 2.5.2)
 	    else
 		AC_MSG_RESULT(Found flex version ${flex_ver1}.)
 	    fi
@@ -103,11 +106,11 @@ AC_DEFUN(DODS_PROG_BISON, [dnl
     AC_CHECK_PROG(YACC,bison,bison)
     case "$YACC" in
 	bison)
-	    bison_ver1=`bison -V | sed 's/GNU Bison version \(.*\)/\1/'`
+	    bison_ver1=`bison -V 2>&1 | sed 's/GNU Bison version \(.*\)/\1/'`
 	    bison_ver2=`echo $bison_ver1 | sed 's/\.//g'`
 	    if test $bison_ver2 -lt 122
 	    then
-		AC_MSG_WARN(Bison version should be at least 1.22);
+		AC_MSG_WARN(Bison version should be at least 1.22)
 	    else
 		AC_MSG_RESULT(Found bison version ${bison_ver1}.)
 	    fi
