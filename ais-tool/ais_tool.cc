@@ -31,7 +31,7 @@
 
 #include "config_ais_tool.h"
 
-static char rcsid[] not_used = {"$Id: ais_tool.cc,v 1.2 2003/03/14 17:22:55 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: ais_tool.cc,v 1.3 2003/03/14 19:59:56 jimg Exp $"};
 
 #include <stdio.h>
 
@@ -81,17 +81,11 @@ main(int argc, char * argv[])
 The AIS proxy server has not been configured correctly.\n\
 In the DODS server script (nph-ais), set the name of the AIS database.");
 
-	string url_name = df.get_dataset_name();
-	AISConnect *url = new AISConnect(url_name, df.get_ais_db());
+	AISConnect *url = new AISConnect(df.get_dataset_name(), 
+					 df.get_ais_db());
 	
-	cerr << "url: " << hex << url << dec << endl;
-	cerr << "url_name from Connect: " << url->URL() << endl;
-	cerr << "is cache enabled: " << url->is_cache_enabled() << endl;
-
+	// *** Set accept_deflate ???
 	url->set_cache_enabled(false);
-
-	DBG(cerr << "Built AISConnect instance; url: " << url_name
-	    << ", AIS: " << df.get_ais_db() << endl);
 
 	switch(df.get_object()) {
 	  case dods_das: {
@@ -112,11 +106,17 @@ In the DODS server script (nph-ais), set the name of the AIS database.");
 
 	  case dods_data: {
 	    DataDDS dds;
-	    url->request_data(dds);
+	    DBG(cerr << "URL: " << url->URL(false) << endl);
+	    DBG(cerr << "CE: " << df.get_ce() << endl);
+	    url->request_data(dds, df.get_ce()); // other requests ignore this
+	    DBG(cerr << "Successfully got data from the server..." << endl);
+	    
 	    // Before sending, mark all the variables as read so that the
 	    // read() methods don't get called by serialize().
 	    for (DDS::Vars_iter i = dds.var_begin(); i != dds.var_end(); ++i)
 		(*i)->set_read_p(true);
+	    df.set_ce("");	// zero CE to avoid re-applying
+
 	    df.send_data(dds, stdout);
 	    break;
 	  }
@@ -126,7 +126,7 @@ In the DODS server script (nph-ais), set the name of the AIS database.");
 	}
     }
     catch (Error &e) {
-	DBG(cerr << "Caught and Error object: " << e.get_error_message() 
+	DBG(cerr << "Caught an Error: " << e.get_error_message() 
 	    << endl);
 	set_mime_text(cout, dods_error, df.get_cgi_version());
 	e.print(stdout);
@@ -139,6 +139,11 @@ In the DODS server script (nph-ais), set the name of the AIS database.");
 }
 
 // $Log: ais_tool.cc,v $
+// Revision 1.3  2003/03/14 19:59:56  jimg
+// Once the client part of the gateway has a full DataDDS, the AISDODSFilter
+// object's constraint expression must be zeroed before calling
+// DODSFilter::send_data().
+//
 // Revision 1.2  2003/03/14 17:22:55  jimg
 // Added call to set_read_p() for all the variables in a DataDDS before the call
 // to send_data(). This prevents the read() methods from being called.
