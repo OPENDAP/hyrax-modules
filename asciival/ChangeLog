@@ -1,3 +1,11 @@
+1998-11-19  James Gallagher  <jimg@dcz.cvo.oneworld.com>
+
+	* Updated the grammar in README. Note the stuff about the newline
+	separators! 
+
+	* Fixed a bug which caused multiple variable requests to writeval
+	to generate bogus output (which loaddods could not parse).
+
 1998-11-11  James Gallagher  <jimg@dcz.cvo.oneworld.com>
 
 	* Patched the (in)famous crash under Linux. mexPutMatrix appears
