@@ -1,5 +1,5 @@
 
- $Id: README,v 1.9 1997/04/11 19:38:20 jimg Exp $
+ $Id: README,v 1.10 1997/04/30 22:00:14 jimg Exp $
 
 The following provides background technical information on the design of
 loaddods/writeval. For installation information, see the file
@@ -8,57 +8,60 @@ the on-line help for that command (in Matlab type `help loaddods'). Make sure
 that the file loaddods.m is in the same directory as the loaddods.mex*
 program.
 
-There are two programs that comprise the DODS-Matlab interface; loaddods and
-whodods. They are analogous to Matlab's load and who commands. However, they
-accept DODS URLs rather than Matlab files. On-line help is available for both
-commands - make sure that you have the loaddods.m, loaddods.mex* and
-whodods.m file in a directory that Matlab will search for binaries.
+There are two programs that comprise the DODS-Matlab command line interface;
+loaddods and whodods. They are analogous to Matlab's load and who commands.
+However, they accept DODS URLs rather than Matlab files. On-line help is
+available for both commands - make sure that you have the loaddods.m,
+loaddods.mex* and whodods.m file in a directory that Matlab will search for
+binaries.
 
 Here is a summary of the software in the entire DODS Matlab client (including
-parts that users don't see and option parts):
+parts that users don't see and optional parts):
 
-1) loaddods; A cmex program run by Matlab. This program must be accessible to
-Matlab. It can be placed in either a user's directory for scripts and
-extensions or in a system-wide directory. 
+1) loaddods; A cmex program run by Matlab. This program must be on a
+directory Matlab search when looking for command files. It can be placed in
+either a user's directory for scripts and extensions or in a system-wide
+directory.
 
-loaddods accepts several command line switches:
+loaddods accepts several command line switches some of which are listed below:
    -V to get the version of loaddods. 
    -g to activate the GUI.
    +v to turn off verbose mode (it is on by default). 
 
 When called with a command switch, you must give that switch first and it
-must be quoted. E.G.: loaddods('-g', 'http://...')
+must be quoted. E.G.: loaddods('-g', 'http://...'). See the online help file
+for the complete list of switches.
 
 loaddods can be used in four ways:
 
-a) when run with a URL as its argument the program assumes that the URL is a
+a) When run with a URL as its argument the program assumes that the URL is a
 fully qualified DODS URL and invokes writeval to get the associated data,
 
-b) if loaddods is run with `*' or '?' as its argument, the program will start
+b) If loaddods is run with `*' or '?' as its argument, the program will start
 Netscape and open the DODS locator main page,
 
-c) a URL prefixed by a `*' or `?' will be passed to netscape and used as an
-alternative data locator page, and
+c) A URL prefixed by a `*' or `?' will be passed to netscape and used as an
+alternative data locator page.
 
-d) with no argument at all, loaddods waits for a URL to be sent via a WWW
+d) With no argument at all, loaddods waits for a URL to be sent via a WWW
 browser.
 
 loaddods is a very flexible program since you can use it with a URL
 saved or cut from some other source, with the HTML interface we have built,
 with some other interface or after you have found some data with the browser.
 
-2) writeval; Dereferences a DODS URL and returns a binary stream of data.
-This can be installed anywhere on the system, but its path is hard coded into
-the loaddods program so unless you want to modify the loaddods source code it
-should be placed in the same directory as loaddods. While this program is
-used by loaddods, it could be used for other purposes as well. For example a
-user could save binary data to a file with writeval. Note that with the `-f'
-option writeval translates all simple types to either Float64 or String.
+2) writeval; Dereferences a DODS URL and returns a mixed ASCII and binary
+stream of data. loaddods calls writeval to perform the actual data fetch so
+this program must be in a directory on the user's PATH or in DODS_ROOT/etc.
+Note that you can set DODS_ROOT as a shell variable *or* use the value
+compiled into the software. While this program was originally intended to be
+used with loaddods, it can also be used for other purposes as well. For
+example a user could save binary data to a file with writeval. Note that with
+the `-f' option writeval translates all simple types to either Float64 or
+String.
 
 3) urlqueue; A helper application for Netscape (or other WWW browser) which
-passes information from a browser to another program such as loaddods. The
-file `mailcap' contains a sample mailcap file entry for the helper
-application.
+passes information from a browser to another program such as loaddods. 
 
 4) posturl.pl; Users do not need to have this on their system. It is included
 here for completeness. However, if users want to write their own HTML forms
@@ -73,17 +76,21 @@ don't need to leave Matlab to use that either...).
 ------------
 
 Here is a pseudo grammar describing the output of writeval. I used * as the
-Kleene closure (zero or more) and + a one or more. Basically, the idea is
-simple; write the type and name of the variable on one line and data for it
-on the next. For ctor types it becomes more complex, but not much. For arrays
-write Array, the type, the name, the number of dimensions and a list of
-dimension sizes on one line and the data on the next line. 
+Kleene closure (zero or more) and + as one or more. The idea is simple; write
+the type and name of the variable each on one line and data for it on the
+following line. For ctor types it becomes more complex, but not much. For
+arrays write Array, newline, the type, the name, the number of dimensions,
+newline, a list of dimension sizes, newline and the data. Finish by writing a
+newline.
+
+While this means sending out some extra charaters it makes the output of
+writeval very simple to parse.
 
 <data request> :: <variable>*
 
 <simple variable> :: <variable name> '\n'
 
-<array variable> :: <variable type> <variable name> <number of dims> 
+<array variable> :: <variable type> ' ' <variable name> <number of dims> '\n'
 		    <dim size>+ 
 
 <list variable> :: <variable type> <variable name> <list size>
@@ -97,18 +104,18 @@ dimension sizes on one line and the data on the next line.
 <grid variables> :: <variable name> '\n' 'array 1\n' <array variable>
 		    'map <num of arrays>\n' (<array variable>)+ 
 
-<variable> :: Byte ' ' <simple variable> '\n' <data> '\n'
-	   :: Int32 ' ' <simple variable> '\n' <data> '\n'
-	   :: Float64 ' ' <simple variable> '\n'  <data> '\n'
-	   :: Str ' ' <simple variable> '\n' <data> '\n'
-	   :: Url ' ' <simple variable> '\n' <data> '\n'
+<variable> :: Byte '\n' <simple variable> '\n' <data> '\n'
+	   :: Int32 '\n' <simple variable> '\n' <data> '\n'
+	   :: Float64 '\n' <simple variable> '\n'  <data> '\n'
+	   :: Str '\n' <simple variable> '\n' <data> '\n'
+	   :: Url '\n' <simple variable> '\n' <data> '\n'
 
-	   :: Array ' ' <array variable> '\n' <data> '\n'
-	   :: List ' ' <list variable> '\n' <data> '\n'
+	   :: Array '\n' <array variable> '\n' <data> '\n'
+	   :: List '\n' <list variable> '\n' <data> '\n'
 
-	   :: Structure ' ' <struct variables>
-	   :: Sequence ' ' <sequence variables>
-	   :: Function ' ' <function variables>
-	   :: Grid ' ' <grid variables>
+	   :: Structure '\n' <struct variables>
+	   :: Sequence '\n' <sequence variables>
+	   :: Function '\n' <function variables>
+	   :: Grid '\n' <grid variables>
 
 James Gallagher 10/4/96
