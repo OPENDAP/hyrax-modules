@@ -7,6 +7,11 @@
 # Fixed link to parent directory. 8/12/98 jhrg
 
 # $Log: FilterDirHTML.pm,v $
+# Revision 1.2  1998/08/12 18:20:31  jimg
+# Added the `server' param to those that are passed to sub query_dir.pl
+# calls. This fixes a bug where going into nested directories caused dataset
+# URLs to be built without server information.
+#
 # Revision 1.1  1998/08/12 18:11:13  jimg
 # Initial revision.
 #
@@ -37,7 +42,9 @@ sub new {
 
     # URL of the directory CGI. Route URLs that reference directories through
     # this. 
-    $self->{dir_cgi} = $dir_cgi . "?ext=" . $ext . "&url=";
+    $self->{dir_cgi} = $dir_cgi . "?ext=" . $ext . "&server=" . $server .
+	"&url=";
+
 
     # URL of the query form CGI. Route URLs for datasets through this.
     $self->{query_cgi} = $query_cgi . "?Dataurl=";
