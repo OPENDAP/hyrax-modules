@@ -13,6 +13,15 @@
 # print "cache now occupies $cache_size bytes\n";
 #
 # $Log: DODS_Cache.pm,v $
+# Revision 1.3  1999/05/28 05:37:11  jimg
+# Merge with alpha-3-0-0
+#
+# Revision 1.2.26.1  1999/05/27 19:59:53  rmorris
+# Refer to cache files using the full path instead a relative path so that
+# failure to "be in" the right directory during purging of cache files
+# doesn't make cache purging fail and bring down the server when the
+# filesystem fills.   This only effects the hdf server.
+#
 # Revision 1.2  1997/10/09 22:19:17  jimg
 # Resolved conflicts in merge of 2.14c to trunk.
 #
@@ -57,6 +66,7 @@ sub main::purge_cache {
 
     local(%links, %sizes, %times, $nlink, $size, $atime);
     foreach $file (@files) {
+	$file = "$cache\/$file";
 	# $d is a dummy placeholder
 	($d, $d, $d, $nlink, $d, $d, $d, $size, $atime) = stat($file);
 	$links{$file} = $nlink;
