@@ -13,6 +13,9 @@
     @author: jhrg */
 
 // $Log: ascii_val.cc,v $
+// Revision 1.6  1998/09/16 23:30:26  jimg
+// Change process_data() so that it calls print_all_vals() for Structure.
+//
 // Revision 1.5  1998/08/01 01:31:36  jimg
 // Fixed a bug in process_data() where deserialize() was not called before the
 // call to print_all_vals().
@@ -33,7 +36,7 @@
 
 #include "config_dap.h"
 
-static char rcsid[] __unused__ = {"$Id: ascii_val.cc,v 1.5 1998/08/01 01:31:36 jimg Exp $"};
+static char rcsid[] __unused__ = {"$Id: ascii_val.cc,v 1.6 1998/09/16 23:30:26 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -156,12 +159,24 @@ static void
 process_data(XDR *src, DDS *dds)
 {
     for (Pix q = dds->first_var(); q; dds->next_var(q)) {
-	if (dds->var(q)->type() == dods_sequence_c) {
-	    ((AsciiSequence *)dds->var(q))->deserialize(src, dds);
-	    ((AsciiSequence *)dds->var(q))->print_all_vals(cout, src, dds);
-	}
-	else
+	switch(dds->var(q)->type()) {
+	  case dods_sequence_c:
+	    (dynamic_cast<AsciiSequence *>
+	     (dds->var(q)))->deserialize(src, dds);
+	    (dynamic_cast<AsciiSequence *>
+	     (dds->var(q)))->print_all_vals(cout, src, dds);
+	    break;
+
+	  case dods_structure_c:
+	    (dynamic_cast<AsciiStructure *>
+	     (dds->var(q)))->print_all_vals(cout, src, dds);
+	    break;
+		
+	  default:
 	    dds->var(q)->print_val(cout);
+	    break;
+	}
+
 	cout << endl;
     }
 }
@@ -171,7 +186,7 @@ process_data(XDR *src, DDS *dds)
 
     @author jhrg */
 
-void
+static void
 output_error_object(Error e)
 {
     if (e.OK())
