@@ -35,14 +35,11 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.12 2003/12/08 18:08:02 edavis Exp $"};
+static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.13 2004/01/26 18:58:48 jimg Exp $"};
 
 #include <string>
 #include <iostream>
 #include <sstream>
-#if 0
-#include <strstream.h>
-#endif
 
 #include <unistd.h>
 
@@ -50,7 +47,6 @@ static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.12 2003/12/08 18:08:02 ed
 
 #include "BaseType.h"
 #include "Array.h"
-#include "List.h"
 #include "DAS.h"
 #include "DDS.h"
 #include "InternalErr.h"
@@ -352,6 +348,9 @@ write_simple_variable(ostream &os, const string &name, const string &type)
 }
 
 // $Log: WWWOutput.cc,v $
+// Revision 1.13  2004/01/26 18:58:48  jimg
+// Build fixes
+//
 // Revision 1.12  2003/12/08 18:08:02  edavis
 // Merge release-3-4 into trunk
 //

@@ -39,7 +39,7 @@
 //#include "config_dap.h"
 #include "config_asciival.h"
 
-static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.1 2003/03/13 23:37:32 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.2 2004/01/26 18:58:48 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -59,7 +59,6 @@ static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.1 2003/03/13 23:37:32 jim
 #include "AsciiFloat64.h"
 #include "AsciiStr.h"
 #include "AsciiUrl.h"
-#include "AsciiList.h"
 #include "AsciiArray.h"
 #include "AsciiStructure.h"
 #include "AsciiSequence.h"
@@ -247,6 +246,9 @@ main(int argc, char * argv[])
 }
 
 // $Log: ascii_val.cc,v $
+// Revision 1.2  2004/01/26 18:58:48  jimg
+// Build fixes
+//
 // Revision 1.1  2003/03/13 23:37:32  jimg
 // Added.
 //
