@@ -22,6 +22,12 @@
 #      	       	       	      - Root name of the filter (e.g., *nc*_dods)
 #
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.22  1999/11/04 23:59:57  jimg
+# Result of merge with 3-1-3
+#
+# Revision 1.21.2.1  1999/10/19 17:35:33  jimg
+# Read the server admin environment variable and pass its value to www_int.
+#
 # Revision 1.21  1999/07/30 19:59:08  jimg
 # Added directory code from non-cvs version
 #
@@ -171,6 +177,10 @@ sub initialize {
 
     $self->{'server_name'} = $ENV{'SERVER_NAME'};
     print(STDERR "server name: " , $self->{'server_name'}, "\n") if $debug > 1;
+
+    $self->{'server_admin'} = $ENV{'SERVER_ADMIN'};
+    print(STDERR "server admin: " , $self->{'server_admin'}, "\n") 
+	if $debug > 1;
 
     $query = $ENV{'QUERY_STRING'};
     $query =~ tr/+/ /;		# Undo escaping by client.
@@ -463,7 +473,7 @@ sub command {
     } elsif ($ext eq "html") {
 	my $dods_url = ("http://" . $self->{'server_name'} 
 			. $self->{'request_uri'});
-	@command=("./www_int",  "--", $dods_url);
+	@command=("./www_int", "-a", $self->{'server_admin'}, "--", $dods_url);
     } else {
 	$self->print_error_message();
 	exit(1);

@@ -18,7 +18,8 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.57 1999/09/03 22:22:26 jimg Exp $
+
+# $Id: acinclude.m4,v 1.58 1999/11/04 23:59:58 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -114,8 +115,10 @@ AC_DEFUN(DODS_DEFAULT, [$1=${$1-"$2"}; AC_SUBST([$1])])
 
 AC_DEFUN(DODS_GET_DODS_ROOT, [dnl
     fullpath=`pwd`
+    dir=`basename ${fulldir}`
+    AC_SUBST(dir)
     dods_root=`echo $fullpath | sed 's@\(.*DODS[[-.0-9a-z]]*\).*@\1@'`
-echo "dods root: $dods_root"
+    echo "dods root: $dods_root"
     AC_DEFINE_UNQUOTED(DODS_ROOT, "$dods_root")
     AC_SUBST(dods_root)])
 
@@ -155,7 +158,11 @@ AC_DEFUN(DODS_FIND_PACKAGES_DIR, [dnl
     AC_MSG_CHECKING("for the packages directory")
     # Where does DODS live?
     AC_REQUIRE([DODS_GET_DODS_ROOT])
-    DODS_PACKAGES_DIR=`ls -1d $dods_root/packages*`
+    DODS_PACKAGES_DIR=`ls -1d $dods_root/packages* 2> /dev/null`
+    if test -z "$DODS_PACKAGES_DIR"
+    then
+	AC_MSG_ERROR("Could not find the third-party packages!")
+    fi
     AC_MSG_RESULT("found it at $DODS_PACKAGES_DIR")
     AC_SUBST(DODS_PACKAGES_DIR)])
 
@@ -202,14 +209,6 @@ AC_DEFUN(DODS_RX_LIB, [dnl
 # Look for the web library. Then look for the include files. If the library
 # cannot be found, then build the version in packages. jhrg 2/3/98
 
-# AC_DEFUN(DODS_WWW_LIB, [dnl
-#     AC_REQUIRE([DODS_PACKAGES_SUPPORT])
-#     DODS_FIND_WWW_ROOT
-#     AC_CHECK_LIB(www, HTLibInit,
-# 		 HAVE_WWW=1; LIBS="-lwww $LIBS",
-# 		 packages="$packages libwww"; HAVE_WWW=1; LIBS="-lwww $LIBS")
-#     AC_SUBST(packages)])
-
 AC_DEFUN(DODS_WWW_LIB, [dnl
     AC_REQUIRE([DODS_PACKAGES_SUPPORT])
     DODS_FIND_WWW_ROOT
@@ -237,54 +236,6 @@ AC_DEFUN(DODS_FIND_WWW_ROOT, [dnl
 
 # Check for the Tcl and Tk libraries. These are required. 8/3/99 jhrg
 
-# AC_DEFUN(DODS_TCL_LIB, [dnl
-#     AC_REQUIRE([DODS_PACKAGES_SUPPORT])
-
-#     # Use the path supplied using --with if given.
-#     AC_ARG_WITH(tcl,
-#         [  --with-tcl=ARG       What is the tcl prefix directory],
-#         TCL_PATH=${withval}, TCL_PATH="")
-
-#     if test ! -z "$TCL_PATH"
-#     then
-#       	INCS="$INCS -I${TCL_PATH}/include"
-#       	LDFLAGS="$LDFLAGS -L${TCL_PATH}/lib"
-# 	HAVE_TCL=1
-#       	AC_MSG_RESULT("Set the Tcl root directory to $TCL_PATH")
-#     else
-#         AC_CHECK_LIB(tcl8.1, TtyInit, HAVE_TCL=1; tcl=tcl8.1, HAVE_TCL=0)
-#     fi 
-
-#     if test $HAVE_TCL -eq 1; then
-# 	LIBS="$LIBS -l${tcl}"
-#     fi
-
-#     AC_DEFINE_UNQUOTED(HAVE_TCL, $HAVE_TCL)])
-    
-# AC_DEFUN(DODS_TK_LIB, [dnl
-#     AC_REQUIRE([DODS_PACKAGES_SUPPORT])
-
-#     # Use the path supplied using --with if given.
-#     AC_ARG_WITH(tk,
-#         [  --with-tk=ARG       What is the tk prefix directory],
-#         TK_PATH=${withval}, TK_PATH="")
-
-#     if test ! -z "$TK_PATH"
-#     then
-#       	INCS="$INCS -I${TK_PATH}/include"
-#       	LDFLAGS="$LDFLAGS -L${TK_PATH}/lib"
-# 	HAVE_TK=1
-#       	AC_MSG_RESULT("Set the Tk root directory to $TK_PATH")
-#     else
-#         AC_CHECK_LIB(tk8.1, Tk_Init, HAVE_TK=1; tk=tk8.1, HAVE_TK=0, -ltcl8.1)
-#     fi 
-
-#     if test $HAVE_TK -eq 1; then
-# 	LIBS="$LIBS -l${tk}"
-#     fi
-
-#     AC_DEFINE_UNQUOTED(HAVE_TK, $HAVE_TK)])
-
 AC_DEFUN(DODS_TCL_LIB, [dnl
     AC_REQUIRE([DODS_PACKAGES_SUPPORT])
     LIBS="$LIBS -ltcl8.1"
@@ -294,88 +245,6 @@ AC_DEFUN(DODS_TK_LIB, [dnl
     AC_REQUIRE([DODS_PACKAGES_SUPPORT])
     LIBS="$LIBS -ltk8.1"
     AC_DEFINE_UNQUOTED(HAVE_TK, $HAVE_TK)])
-     
-
-# Note that this macro looks for Tcl in addition to Expect since expect 
-# requires tcl. 2/3/98 jhrg
-
-AC_DEFUN(DODS_EXPECT_LIB, [dnl
-    AC_REQUIRE([DODS_PACKAGES_SUPPORT])
-
-    # Use the path supplied using --with if given.
-    AC_ARG_WITH(expect,
-        [  --with-expect=ARG       What is the Expect prefix directory],
-        EXPECT_PATH=${withval}, EXPECT_PATH="")
-
-    if test -n "$EXPECT_PATH"
-    then
-      	INCS="$INCS -I${EXCEPT_PATH}/include"
-      	LDFLAGS="$LDFLAGS -L${EXCEPT_PATH}/lib"
-      	AC_MSG_RESULT("Set the Expect root directory to $EXPECT_PATH")
-    fi
-
-    # Look for the tcl library. Note that we have to check for both SYSV and 
-    # SunOS 4 style version numbers. 
-    AC_CHECK_LIB(tcl7.6, Tcl_SetPanicProc, HAVE_TCL=1; tcl=tcl7.6, HAVE_TCL=0)
-    if test $HAVE_TCL -eq 0; then
-    	AC_CHECK_LIB(tcl76, Tcl_SetPanicProc, HAVE_TCL=1; tcl=tcl76, 
-		     HAVE_TCL=0)
-    fi
-
-    # Look for expect
-    AC_CHECK_LIB(expect5.21, Expect_Init,
-		 HAVE_EXPECT=1; expect=expect5.21,
-		 HAVE_EXPECT=0, -l${tcl} -ldl -lm)
-    if test $HAVE_EXPECT -eq 0; then
-    	AC_CHECK_LIB(expect521, Expect_Init,
-		     HAVE_EXPECT=1; expect=expect521,
-		     HAVE_EXPECT=0, -l${tcl})
-    fi
-
-    # Now set up LIBS
-    if test $HAVE_EXPECT -eq 1; then
-	LIBS="$LIBS -l${expect}"
-    else
-	packages="$packages libexpect"
-    fi
-    if test $HAVE_TCL -eq 1; then
-	LIBS="$LIBS -l${tcl}"
-    else
-	packages="$packages libtcl"
-    fi
-
-    # Part two: Once we have found expect (and tcl), locate the tcl include
-    # directory. Assume that all the tcl includes live where tclRegexp.h
-    # does.
-    AC_CHECK_HEADER(tclRegexp.h, found=1, found=0)
-
-    # Look some other places if not in the standard ones.
-    if test $found -eq 0
-    then
-    	tcl_include_paths="/usr/local/src/tcl7.6/generic \
-		       $EXCEPT_PATH/src/tcl7.6/generic \
-		       $DODS_PACKAGES_DIR/src/tcl7.6/generic"
-
-	AC_MSG_CHECKING(for tclRegex.h in some more places)
-
-	for d in $tcl_include_paths
-	do
-	    if test -f ${d}/tclRegexp.h
-	    then
-		INCS="$INCS -I${d}"
-		AC_MSG_RESULT($d)
-		found=1
-		break
-	    fi
-	done
-
-	if test $found -eq 0 
-	then
-	    AC_MSG_WARN(not found)
-	fi
-    fi
-
-    AC_DEFINE_UNQUOTED(HAVE_EXPECT, $HAVE_EXPECT)])
 
 # Electric fence and dbnew are used to debug malloc/new and free/delete.
 # I assume that if you use these switches you know enough to build the 
@@ -410,7 +279,7 @@ AC_DEFUN(DODS_DBNEW, [dnl
       ;;
     esac])
 
-#check for hdf libraries
+# check for hdf libraries
 # cross-compile problem with test option -d
 AC_DEFUN(DODS_HDF_LIBRARY, [dnl
     AC_ARG_WITH(hdf,
@@ -447,8 +316,8 @@ dnl None of this works with HDF 4.1 r1. jhrg 8/2/97
 AC_DEFUN(DODS_PROG_LEX, [dnl
     AC_PROG_LEX
     case "$LEX" in
-	flex)
-	    flex_ver1=`flex -V 2>&1 | sed 's/[[^0-9]]*\(.*\)/\1/'`
+	*flex)
+	    flex_ver1=`$LEX -V 2>&1 | sed 's/[[^0-9]]*\(.*\)/\1/'`
 	    flex_ver2=`echo $flex_ver1 | sed 's/\.//g'`
 	    if test -n "$flex_ver2" && test $flex_ver2 -ge 252
 	    then
@@ -484,19 +353,22 @@ AC_DEFUN(DODS_PROG_BISON, [dnl
 	    ;;
     esac])
 
-# Check for support of `-g' by gcc (SGI does not support it unless your using
-# gas (and maybe ld).
+# Check for support of `-gstabs' by gcc (SGI does not support it unless your 
+# using gas (and maybe ld).
 
 NULL_PROGRAM="mail() {}"
 
 AC_DEFUN(DODS_CHECK_GCC_DEBUG, [dnl
     AC_MSG_CHECKING(for gcc debugging support)
-    msgs=`gcc -g /dev/null 2>&1`
-    if echo $msgs | egrep "\`-g' option not supported"
+    msgs=`gcc -gstabs /dev/null 2>&1`
+    if echo $msgs | egrep "\`-gstabs' option not supported"
     then		
-	CFLAGS=`echo $CFLAGS | sed 's/-g//'`;
-	CXXFLAGS=`echo $CXXFLAGS | sed 's/-g//'`;
-	LDFLAGS=`echo $LDFLAGS | sed 's/-g//'`;
+	CFLAGS=`echo $CFLAGS | sed 's/-gstabs//'`;
+	CXXFLAGS=`echo $CXXFLAGS | sed 's/-gstabs//'`;
+	dnl I think -gstabs should NOT ever be sent to ld since it is likely
+	dnl many pplaces won't use Gnu ld even with g++. However, this line
+	dnl is pretty innocuous since it only removes -gstabs. 11/3/99 jhrg
+	LDFLAGS=`echo $LDFLAGS | sed 's/-gstabs//'`;
 	AC_MSG_RESULT(not supported)
     else
 	AC_MSG_RESULT(supported)
@@ -510,12 +382,12 @@ AC_DEFUN(DODS_FIND_GPP_INC, [dnl
 
     GPP_INC=""
     case $GCC_VER in
-	2.8*) specs=`gcc -v 2>&1`;
+	2.[0-9]*) specs=`gcc -v 2>&1`;
            dir=`echo $specs | sed 's@Reading specs from \(.*\)lib\/gcc-lib.*@\1@'`;
            GPP_INC="${dir}include/g++";;
-	*) specs=`gcc -v 2>&1`;
-           dir=`echo $specs | sed 's@Reading specs from \(.*\)gcc-lib.*@\1@'`;
-           GPP_INC="${dir}g++include";;
+	2.*) specs=`gcc -v 2>&1`;
+           dir=`echo $specs | sed 's@Reading specs from \(.*\)lib\/gcc-lib.*@\1@'`;
+           GPP_INC="${dir}include/g++";;
     esac
 
     if test -z "$GPP_INC"
@@ -546,25 +418,11 @@ AC_DEFUN(DODS_GCC_VERSION, [dnl
     dnl to three digits
     GCC_VER=`echo $GCC_VER | sed 's@[[a-z ]]*\([[0-9.]]\)@\1@'`
 
-    dnl g++ 2.8.0 and greater does not automatically link with -lg++, so we 
-    dnl supply it here.
     case $GCC_VER in
         *egcs*) AC_MSG_RESULT(Found egcs version ${GCC_VER}.) ;;
 	2.[[7-9]]*)   AC_MSG_RESULT(Found gcc/g++ version ${GCC_VER}) ;;
-        dnl 2.8*)   AC_MSG_RESULT(Found gcc/g++ version ${GCC_VER}) ;;
-        dnl 2.7*)   AC_MSG_RESULT(Found gcc/g++ version ${GCC_VER}) ;;
         *)      AC_MSG_ERROR(must be at least version 2.7.x) ;;
-
-dnl This old code was replaced witht he above which adds support for egcs and 
-dnl removes -lg++ (since the libg++ code is now in the dap directory). It
-dnl may be that soon the libg++ code will vanish... 7/28/98 jhrg
-dnl
-dnl	2.8*) 	AC_MSG_RESULT(Found gcc/g++ version ${GCC_VER} adding -lg++.)
-dnl		LIBS="$LIBS -lg++ -lstdc++" ;;
-dnl        2.7*)   AC_MSG_RESULT(Found gcc/g++ version ${GCC_VER}) ;;
-dnl	*)      AC_MSG_ERROR(must be at least version 2.7.x) ;;
     esac])
-
 
 dnl Check for exceptions handling support. From Todd.
 
@@ -573,7 +431,7 @@ AC_DEFUN(DODS_CHECK_EXCEPTIONS, [dnl
     AC_LANG_CPLUSPLUS
     AC_MSG_CHECKING("for exception handling support in C++ compiler")
     OLDCXXFLAGS="$CXXFLAGS"
-    if test $CXX = "g++"; then
+    if test "$CXX" = "g++"; then
        CXXFLAGS="$OLDCXXFLAGS -fhandle-exceptions"
     fi
     EXCEPTION_CHECK_PRG="int foo(void) {
@@ -698,6 +556,35 @@ AC_DEFUN(DODS_DSP_ROOT, [dnl
     else
         AC_MSG_WARN(not found!)
     fi])
+
+# Find IDL. 9/23/99 jhrg
+
+AC_DEFUN(DODS_IDL, [dnl
+    AC_REQUIRE([AC_CANONICAL_HOST])
+
+    # Find IDL's root directory by looking at the exectuable and then 
+    # finding where that symbolic link points.
+    AC_MSG_CHECKING(for the IDL root directory)
+    idl_loc=`which idl`
+    idl_loc=`ls -l $idl_loc | sed 's/.*->[ ]*\(.*\)$/\1/'`
+    IDL_ROOT=`echo $idl_loc | sed 's/\(.*\)\/bin.*/\1/'`
+    AC_MSG_RESULT($IDL_ROOT)
+    AC_SUBST(IDL_ROOT)
+
+    # Now find where the IDL 5.2 or later sharable libraries live.
+    # NB: This won't work if libraries for several architecutures are 
+    # installed for several machines.
+    AC_MSG_CHECKING(for the IDL sharable library directory)
+    # cd to the IDL root because it is likely a symbolic link and find 
+    # won't normally follow symbolic links.
+    IDL_LIBS=`(cd $IDL_ROOT; find . -name 'libidl.so' -print)`
+    # Strip off the leading `.' (it's there because we ran find in the CWD) 
+    # and the name of the library used to find the directory.
+    IDL_LIBS=`echo $IDL_LIBS | sed 's/\.\(.*\)\/libidl.so/\1/'`
+    IDL_LIBS=${IDL_ROOT}${IDL_LIBS}
+    AC_MSG_RESULT($IDL_LIBS)
+    AC_SUBST(IDL_LIBS)])
+
 
 # 5. Misc stuff
 #---------------------------------------------------------------------------
@@ -848,6 +735,19 @@ AC_DEFUN(DODS_MACHINE, [dnl
                     ;;
             esac
             ;;
+	ultrix*)
+	    case $MACHINE in
+		vax*)
+		     case "$CC" in
+        		/bin/cc*|cc*)
+echo "changing C compiler to \`vcc' because \`cc' floating-point is broken"
+            		CC=vcc
+            		;;
+		     esac
+		     ;;
+	    esac
+	    ;;
+
     esac
     fi
 

@@ -7,6 +7,15 @@
 # Fixed link to parent directory. 8/12/98 jhrg
 
 # $Log: FilterDirHTML.pm,v $
+# Revision 1.7  1999/11/04 23:59:58  jimg
+# Result of merge with 3-1-3
+#
+# Revision 1.6.2.1  1999/09/20 20:18:56  jimg
+# Changed map to grep in the code the evaluates the `pass_through_patterns'.
+# This fixes a bug that showed up on Linux in Perl 5.004*.
+# Added to the pass_through_patterns so that .das, .dds and .ovr* files don't
+# get .html appended.
+#
 # Revision 1.6  1999/06/22 17:08:10  jimg
 # Added comments to describe what the overloads do.
 # Reduced the number of parameters given to the ctor.
@@ -39,7 +48,8 @@ my $debug = 0;
 # Add here patterns that describe files that should *not* be treated as data
 # files (and thus should not be routed through the DODS HTML form generator).
 # 6/15/99 jhrg
-my @pass_through_patterns = ('README', '.*\.html', '.*\?[A-Z]=[A-Z]');
+my @pass_through_patterns = ('README', '.*\.html', '.*\.d[da]s', 
+			     '.*\.ovr.*', '.*\?[A-Z]=[A-Z]');
 
 package FilterDirHTML;
 require HTML::Filter;
@@ -131,7 +141,7 @@ sub end {
 
     my ($tag, $origtext) = @_;
 
-    print "tag: " . $tag . "\n" if $debug > 0;
+    print "tag: $tag \n" if $debug > 0;
 
     $self->SUPER::end(@_);
     if ($tag eq "title") {
@@ -221,18 +231,21 @@ sub output {
 	}
 	# Test special case files which will pass the extension test is the
 	# extension is `.*'
-	elsif (map { $self->{anchor_href} =~ $_ } @pass_through_patterns) {
+	elsif (grep { $self->{anchor_href} =~ $_ } @pass_through_patterns) {
  	    $new_anchor = "<A HREF=" . $self->{anchor_href} . ">"; 
+	    print "Anchor matches a pass through pattern: $self->{anchor_href}\n" if $debug > 0;
 	}
 	# Is the href a data file? If so append .html to the file name after
 	# building a full URL.
 	elsif ($self->{anchor_href} =~ /.*$self->{ext}$/) {
 	    $new_anchor = "<A HREF=" . $self->{server} . $self->{anchor_href}
 	                  . ".html>"; 
+	    print "Anchor matches extension pattern ($self->{ext}): $self->{anchor_href}\n" if $debug > 0;
 	}
 	# Is it a regular file?
 	else {
  	    $new_anchor = "<A HREF=" . $self->{anchor_href} . ">"; 
+	    print "Anchor is a regular file: $self->{anchor_href}\n" if $debug > 0;
 	}
 
 	$self->SUPER::output($new_anchor);
