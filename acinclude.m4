@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.77 2003/05/02 19:08:13 jimg Exp $
+# $Id: acinclude.m4,v 1.78 2003/05/02 21:04:20 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -441,8 +441,13 @@ AC_DEFUN(DODS_IDL, [dnl
         # Find IDL's root directory by looking at the exectuable and then 
         # finding where that symbolic link points.
         # !!! Doesn't work if idl isn't a symbolic link - erd !!!
+	# I think that the following 'if' fixes the symbolic link problem. 
+	# 05/02/03 jhrg 
         idl_loc=`which idl`
-        idl_loc=`ls -l $idl_loc | sed 's/.*->[ ]*\(.*\)$/\1/'`
+	if echo $idl_loc | grep '.*->.*'
+	then
+            idl_loc=`ls -l $idl_loc | sed 's/.*->[ ]*\(.*\)$/\1/'`
+	fi
         IDL_ROOT=`echo $idl_loc | sed 's/\(.*\)\/bin.*/\1/'`
     fi
 
