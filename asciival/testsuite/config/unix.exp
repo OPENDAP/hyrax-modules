@@ -1,7 +1,7 @@
 
 # Tcl/Expect code for the writeval test.
 # 
-# $Id: unix.exp,v 1.7 1999/07/28 23:00:55 jimg Exp $
+# $Id: unix.exp,v 1.8 2001/08/27 17:46:58 jimg Exp $
 
 # Compare $expected to the global $comp_output. Run `pass' if they match,
 # `fail' otherwise unless `xfailp' is true in which case run `xfail' if they
@@ -34,13 +34,13 @@ proc asciival_start { {switches ""} {urls ""} {file ""}} {
 	    send_user "Testing asciival $switches -- $urls ...\n"
 	    exp_internal 1
 	}
-	catch "exec asciival $switches -- $urls" comp_output
+	catch "exec ./asciival $switches -- $urls" comp_output
     } else {
 	if {$verbose >= 1} {
 	    send_user "Testing asciival $switches -- $urls >& $file ...\n"
 	    exp_internal 1
 	}
-	catch "exec asciival $switches -- $urls > $file" comp_output
+	catch "exec ./asciival $switches -- $urls > $file" comp_output
     }
 }
 
@@ -52,6 +52,6 @@ proc asciival_exit {} {
 }
 
 proc asciival_version {} {
-    send_user "asciival test suite 0.00\n"
+    send_user "asciival test suite 1.0.0\n"
 }
 

@@ -1,3 +1,10 @@
+2001-08-27  James Gallagher  <jimg@dcz.dods.org>
+
+	* Release 3.2.1 contained some fixes to the test suite.
+
+	* Merged release-3-2-1. The next update should use -j
+	release-3-2-1 -j release-3-2.
+
 2001-06-15  James Gallagher  <jimg@dcz.dods.org>
 
 	* Merged with release-3-2. The next merge should use -j
