@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.24 1996/11/13 23:39:05 jimg Exp $
+# $Id: acinclude.m4,v 1.25 1996/12/06 05:21:01 jimg Exp $
 
 # Check for fill value usage.
 
@@ -199,6 +199,7 @@ AC_DEFUN(DODS_FIND_EXPECT, [dnl
 	    if test -f ${d}/tclRegexp.h
 	    then
 		INCS="$INCS -I${d}"
+		AC_SUBST(INCS)
 		AC_MSG_RESULT($d)
 		found=1
 	        break
@@ -265,58 +266,46 @@ AC_DEFUN(DODS_DEBUG_OPTION, [dnl
 
 dnl depricated
 
-AC_DEFUN(DODS_FIND_WWW_ROOT, [dnl
-
-    AC_MSG_CHECKING(for the WWW library root directory)
-
-    WWW_ROOT=
-
-    for p in /usr/local/src/WWW /usr/local/WWW \
-	     /usr/local/src/w3c-libwww /usr/local/w3c-libwww \
-	     /usr/contrib/src/w3c-libwww /usr/contrib/w3c-libwww \
-	     $DODS_ROOT/third-party/w3c-libwww
-    do
-        if test "$WWW_ROOT"
-	then
-	    break
-	fi
-	dnl `ls -dr' lists dirs without descending and reverses ordering
-	for d in `ls -dr ${p}[[-.0-9]]* 2>/dev/null`
-	do
-	    if test -f ${d}/Library/src/WWWCore.h
-	    then
-	        WWW_ROOT=${d}
-	        break
-	    fi
-	done
-    done
-
-    if test "$WWW_ROOT"
-    then
-	AC_MSG_RESULT($WWW_ROOT)
-	AC_SUBST(WWW_ROOT)
-	INCS="$INCS -I$(WWW_ROOT) -I$(WWW_ROOT)/Library/src"
-	AC_SUBST(INCS)
-    else
-	AC_MSG_WARN(not found!)
-    fi])
-
 AC_DEFUN(DODS_WWW_ROOT, [dnl
 
     AC_ARG_WITH(www,
 	[  --with-www=DIR          Directory containing the W3C software],
 	WWW_ROOT=${withval}, WWW_ROOT=)
 
+    AC_MSG_CHECKING(for the WWW library root directory)
+
+    if test -z "$WWW_ROOT"
+    then
+	for p in /usr/local/src/WWW /usr/local/WWW \
+		 /usr/local/src/w3c-libwww /usr/local/w3c-libwww \
+		 /usr/contrib/src/w3c-libwww /usr/contrib/w3c-libwww \
+		 $DODS_ROOT/third-party/w3c-libwww
+	do
+	    if test "$WWW_ROOT"
+	    then
+		break
+	    fi
+	    dnl `ls -dr' lists dirs without descending and reverses ordering
+	    for d in `ls -dr ${p}[[-.0-9]]* 2>/dev/null`
+	    do
+		if test -f ${d}/Library/src/WWWCore.h
+		then
+		    WWW_ROOT=${d}
+		    break
+		fi
+	    done
+	done
+    fi
+
     if test "$WWW_ROOT"
     then
 	AC_SUBST(WWW_ROOT)
 	INCS="$INCS -I$(WWW_ROOT) -I$(WWW_ROOT)/Library/src"
 	AC_SUBST(INCS)
-	LIBS="$LIBS -L$(WWW_ROOT)/Library/src"
-	AC_SUBST(LIBS)
+	LDFLAGS="$LDFLAGS -L$(WWW_ROOT)/Library/src"
 	AC_MSG_RESULT(Set WWW root directory to $WWW_ROOT) 
     else
-	DODS_FIND_WWW_ROOT
+	AC_MSG_WARN(not found!)
     fi])
 
 AC_DEFUN(DODS_SEM, [dnl
@@ -502,7 +491,6 @@ AC_DEFUN(DODS_HDF_LIBRARY, [dnl
     if test "$HDF_PATH"
     then
             LDFLAGS="$LDFLAGS -L${HDF_PATH}/lib"
-            AC_SUBST(LDFLAGS)
             INCS="$INCS -I${HDF_PATH}/include"
             AC_SUBST(INCS)
     fi
@@ -511,58 +499,46 @@ AC_DEFUN(DODS_HDF_LIBRARY, [dnl
     AC_CHECK_LIB(df, Hopen, LIBS="-ldf $LIBS" , nohdf=1)
     AC_CHECK_LIB(mfhdf, SDstart, LIBS="-lmfhdf $LIBS" , nohdf=1)])
 
-AC_DEFUN(DODS_FIND_DSP_ROOT, [dnl
-
-    AC_MSG_CHECKING(for the DSP library root directory)
-
-    DSP_ROOT=
-
-    for p in /usr/local/src/DSP /usr/local/DSP \
-	     /usr/local/src/dsp /usr/local/dsp \
-	     /usr/contrib/src/dsp /usr/contrib/dsp \
-	     $DODS_ROOT/third-party/dsp /usr/dsp
-    do
-        if test "$DSP_ROOT"; then
-	    break
-	fi
-	dnl `ls -dr' lists dirs without descending and reverses ordering
-	for d in `ls -dr ${p}[[-.0-9]]* 2>/dev/null`
-	do
-	    if test -f ${d}/inc/dsplib.h; then
-	        DSP_ROOT=${d}
-	        break
-	    fi
-	done
-    done
-
-    if test "$DSP_ROOT"
-    then
-	AC_MSG_RESULT($DSP_ROOT)
-	AC_SUBST(DSP_ROOT)
-	INCS="$INCS -I$(DSP_ROOT)/inc"
-	AC_SUBST(INCS)
-	LIBS="$LIBS -L$(DSP_ROOT)/lib -L$(DSP_ROOT)/shlib"
-	AC_SUBST(LIBS)
-    else
-	AC_MSG_WARN(not found!)
-    fi])
-
 AC_DEFUN(DODS_DSP_ROOT, [dnl
 
     AC_ARG_WITH(dsp,
 		[  --with-dsp=DIR          Directory containing DSP software from U of Miami],
 		DSP_ROOT=${withval}, DSP_ROOT=)
 
+    if test -z "$DSP_ROOT"
+    then
+	AC_MSG_CHECKING(for the DSP library root directory)
+
+	for p in /usr/local/src/DSP /usr/local/DSP \
+		 /usr/local/src/dsp /usr/local/dsp \
+		 /usr/contrib/src/dsp /usr/contrib/dsp \
+		 $DODS_ROOT/third-party/dsp /usr/dsp /data1/dsp
+	do
+	    if test "$DSP_ROOT"
+	    then
+		break
+	    fi
+	    dnl `ls -dr' lists dirs without descending and reverses ordering
+	    for d in `ls -dr ${p}[[-.0-9]]* 2>/dev/null`
+	    do
+		if test -f ${d}/inc/dsplib.h
+		then
+		    DSP_ROOT=${d}
+		    break
+		fi
+	    done
+	done
+    fi
+
     if test "$DSP_ROOT"
     then
 	AC_SUBST(DSP_ROOT)
-	INCS="$INCS -I$(DSP_ROOT)/inc"
-	AC_SUBST(INCS)
-	LIBS="$LIBS -L$(DSP_ROOT)/lib -L$(DSP_ROOT)/shlib"
-	AC_SUBST(LIBS)
+	dnl Only add this path to gcc's options... jhrg 11/15/96
+	CFLAGS="$CFLAGS -I$(DSP_ROOT)/inc"
+	LDFLAGS="$LDFLAGS -L$(DSP_ROOT)/lib -L$(DSP_ROOT)/shlib"
 	AC_MSG_RESULT(Set DSP root directory to $DSP_ROOT) 
     else
-	DODS_FIND_DSP_ROOT
+        AC_MSG_WARN(not found!)
     fi])
 
 AC_DEFUN(DODS_CHECK_SIZES, [dnl
@@ -610,10 +586,37 @@ AC_DEFUN(DODS_CHECK_SIZES, [dnl
 
     fi])
 
-dnl Check for -lsocket and -lnsl for sockets and xdr code. Needed for
-dnl Solaris. 
+
+#--------------------------------------------------------------------
+#       Check for the existence of the -lsocket and -lnsl libraries.
+#       The order here is important, so that they end up in the right
+#       order in the command line generated by make.  Here are some
+#       special considerations:
+#       1. Use "connect" and "accept" to check for -lsocket, and
+#          "gethostbyname" to check for -lnsl.
+#       2. Use each function name only once:  can't redo a check because
+#          autoconf caches the results of the last check and won't redo it.
+#       3. Use -lnsl and -lsocket only if they supply procedures that
+#          aren't already present in the normal libraries.  This is because
+#          IRIX 5.2 has libraries, but they aren't needed and they're
+#          bogus:  they goof up name resolution if used.
+#       4. On some SVR4 systems, can't use -lsocket without -lnsl too.
+#          To get around this problem, check for both libraries together
+#          if -lsocket doesn't work by itself.
+#--------------------------------------------------------------------
+#
+# From Tcl7.6 configure.in. jhrg 11/18/96
 
 AC_DEFUN(DODS_LIBS, [dnl
-    AC_CHECK_LIB(socket, bind)
-    AC_CHECK_LIB(nsl, xdr_int)])
-
+    tcl_checkBoth=0
+    AC_CHECK_FUNC(connect, tcl_checkSocket=0, tcl_checkSocket=1)
+    if test "$tcl_checkSocket" = 1; then
+	AC_CHECK_LIB(socket, main, LIBS="$LIBS -lsocket", tcl_checkBoth=1)
+    fi
+    if test "$tcl_checkBoth" = 1; then
+	tk_oldLibs=$LIBS
+	LIBS="$LIBS -lsocket -lnsl"
+	AC_CHECK_FUNC(accept, tcl_checkNsl=0, [LIBS=$tk_oldLibs])
+    fi
+    AC_CHECK_FUNC(gethostbyname, , AC_CHECK_LIB(nsl, main, 
+		  [LIBS="$LIBS -lnsl"]))])
