@@ -1,7 +1,7 @@
 
 # Tcl/Expect code for the writeval test.
 # 
-# $Id: unix.exp,v 1.1 1997/08/11 20:31:40 jimg Exp $
+# $Id: unix.exp,v 1.2 1998/11/21 01:31:22 jimg Exp $
 
 # Make sure the global var WRITEVAL is set correctly.
 
@@ -18,7 +18,7 @@ if ![info exists WRITEVAL] then {
 # NB: $expected may be either a string or a file name. If it is the latter,
 # read the file and compare its contents to $comp_output.
 
-proc compare_stdout {expected msg {xfailp 0}} {
+proc compare_stdout {expected msg {xfailp 0} {str_test compare}} {
     global comp_output
     global verbose
 
@@ -39,7 +39,7 @@ proc compare_stdout {expected msg {xfailp 0}} {
     set expected [string trim $expected]
     set comp_output [string trim $comp_output]
 
-    if ![string compare $expected $comp_output] {
+    if ![string $str_test $expected $comp_output] {
 	pass "$msg"
 	send_user "PASS: $msg\n"
     } elseif {$xfailp == 1} {
