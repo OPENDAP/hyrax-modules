@@ -13,6 +13,9 @@
     @author: jhrg */
 
 // $Log: ascii_val.cc,v $
+// Revision 1.10  1999/05/25 18:47:11  jimg
+// Merged Nathan's fixes for the -t option and some debugging instrumentation.
+//
 // Revision 1.9  1999/05/18 20:59:32  jimg
 // Removed name_from_url(...) since int is never used.
 //
@@ -45,7 +48,7 @@
 
 #include "config_dap.h"
 
-static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.9 1999/05/18 20:59:32 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.10 1999/05/25 18:47:11 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -128,7 +131,7 @@ process_per_url_options(int &i, int argc, char *argv[], bool verbose = false)
 static void
 process_trace_options(char *tcode) 
 {
-    while (tcode++)
+    while (*tcode){
 	switch (*tcode) {
 	  case 'a': WWWTRACE |= SHOW_ANCHOR_TRACE; break;
 	  case 'A': WWWTRACE |= SHOW_APP_TRACE; break;
@@ -151,6 +154,8 @@ process_trace_options(char *tcode)
 		 << endl;
 	    break;
 	}
+	tcode++;
+    }
 }
 
 static void
@@ -241,16 +246,25 @@ main(int argc, char * argv[])
 	if (url)
 	    delete url;
 	
-	if (strcmp(argv[i], "-") == 0)
+	if (strcmp(argv[i], "-") == 0){
 	    url = new Connect("stdin", trace, false);
-	else
-	    url = new Connect(argv[i], trace);
+	    DBG(cerr << "Instantiated Connect object using stdin." << endl);
 
+	}
+	else{
+	    url = new Connect(argv[i], trace);
+	    DBG(cerr << endl << "Instantiated Connect object using " \
+		<< argv[i] << endl << endl);
+	}
 	DBG2(cerr << "argv[" << i << "] (of " << argc << "): " << argv[i] \
 	     << endl);
 
 	if (verbose) {
 	    string source_name;
+
+		DBG(cerr << "URL->is_local(): " << url->is_local() << endl);
+		DBG(cerr << "argv[" << i << "]: \"" << argv[i] << "\"" << endl);
+
 	    if (url->is_local() && (strcmp(argv[i], "-") == 0))
 		source_name = "standard input";
 	    else if (url->is_local())
