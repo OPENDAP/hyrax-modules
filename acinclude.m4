@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.19 1996/10/31 22:26:38 jimg Exp $
+# $Id: acinclude.m4,v 1.20 1996/11/01 22:24:46 jimg Exp $
 
 # Check for fill value usage.
 
@@ -145,26 +145,26 @@ AC_DEFUN(DODS_CHECK_GCC_DEBUG, [dnl
 	AC_MSG_RESULT(supported)
     fi])
 
-dnl look for expect 5.20 *or* 5.19. NB: 5.19 has a bug that DODS exercises
-dnl but there are patched version of the library out so many will work even
-dnl though the official release won't.
+dnl look for expect 5.21, 5.20 *or* 5.19. NB: 5.19 has a bug that DODS
+dnl exercises but there are patched version of the library out so many will
+dnl work even though the official release won't.
 
 AC_DEFUN(DODS_FIND_EXPECT, [dnl
     HAVE_EXPECT=0
 
-    AC_CHECK_LIB(expect5.20, main, 
-	HAVE_EXPECT=1;expect=expect5.20;tcl=tcl7.5, , -ltcl7.5)
+    AC_CHECK_LIB(expect521, main, HAVE_EXPECT=1;expect=expect521;tcl=tcl76;\
+	LIBS="$LIBS -l${expect} -l${tcl}", , -ltcl76)
 
-    if test $HAVE_EXPECT = "1"
-    then
-	LIBS="$LIBS -l${expect} -l${tcl}"
-    else
-	AC_CHECK_LIB(expect, main, \
-	    HAVE_EXPECT=1;expect=expect;tcl=tcl7.4, , -ltcl7.4)
-	if test $HAVE_EXPECT = "1"
-	then
-	    LIBS="$LIBS -l${expect} -l${tcl}"
-	fi
+    if test $HAVE_EXPECT -eq 0; then
+        AC_CHECK_LIB(expect520, main, \
+		HAVE_EXPECT=1;expect=expect520;tcl=tcl75;\
+		LIBS="$LIBS -l${expect} -l${tcl}", , -ltcl75)
+    fi
+
+    if test $HAVE_EXPECT -eq 0; then
+        AC_CHECK_LIB(expect, main, \
+		HAVE_EXPECT=1;expect=expect;tcl=tcl7.4;\
+		LIBS="$LIBS -l${expect} -l${tcl}", , -ltcl7.4)
     fi
 
     dnl Part two: Once we have found expect (and tcl), locate the tcl include
@@ -175,7 +175,8 @@ AC_DEFUN(DODS_FIND_EXPECT, [dnl
 
     dnl Look some other places if not in the standard ones.
    
-    tcl_include_paths="/usr/local/src/tcl7.4/ /usr/local/src/tcl7.5/generic"
+    tcl_include_paths="$DODS_ROOT/third_party/tcl7.6/generic \
+			/usr/local/src/tcl7.5/generic /usr/local/src/tcl7.4/"
 
     if test $found -eq 0
     then
@@ -502,7 +503,8 @@ AC_DEFUN(DODS_MACHINE, [dnl
     AC_SUBST(MACHINE)
     AC_MSG_RESULT($MACHINE)])
 
-# Check for exceptions handling support. From Todd.
+dnl Check for exceptions handling support. From Todd.
+
 AC_DEFUN(DODS_CHECK_EXCEPTIONS, [dnl
     AC_LANG_CPLUSPLUS
     AC_MSG_CHECKING(for exception handling support in C++ compiler)
