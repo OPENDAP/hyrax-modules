@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.79 2004/01/22 17:29:37 jimg Exp $
+# $Id: acinclude.m4,v 1.80 2004/01/28 16:21:29 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -370,7 +370,9 @@ AC_DEFUN(DODS_MATLAB, [dnl
 
     dnl Find the lib directory (which is named according to machine type).
     AC_MSG_CHECKING(for matlab library dir)
-    if test -z "$MATLAB_LIB"
+
+    dnl I have no idea how this can be non-zero... 01/28/04 jhrg
+    if test "$MATLAB_LIB"  
     then
         matlab_lib_dir=${MATLAB_LIB}
     else
