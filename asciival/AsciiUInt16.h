@@ -1,7 +1,7 @@
 
 // -*- C++ -*-
 
-// (c) COPYRIGHT URI/MIT 1999
+// (c) COPYRIGHT URI/MIT 1999,2000
 // Please read the full copyright statement in the file COPYRIGHT.
 //
 // Authors:
@@ -11,19 +11,8 @@
 //
 // 3/12/98 jhrg
 
-// $Log: AsciiUInt16.h,v $
-// Revision 1.2  1999/04/30 17:06:54  jimg
-// Merged with no-gnu and release-2-24
-//
-// Revision 1.1  1999/03/29 21:22:55  jimg
-// Added
-//
-// Revision 1.1  1998/03/13 21:25:25  jimg
-// Added
-//
-
-#ifndef _AsciiUInt16_h
-#define _AsciiUInt16_h 1
+#ifndef _asciiuint16_h
+#define _asciiuint16_h 1
 
 #ifdef __GNUG__
 #pragma interface
@@ -38,10 +27,24 @@ public:
 
     virtual BaseType *ptr_duplicate();
     
-    virtual bool read(const string &dataset, int &error);
+    virtual bool read(const string &dataset);
     
     void print_val(ostream &os, string space = "", bool print_decl_p = true);
 };
+
+// $Log: AsciiUInt16.h,v $
+// Revision 1.3  2000/10/02 20:09:52  jimg
+// Moved Log entries to the end of the files
+//
+// Revision 1.2  1999/04/30 17:06:54  jimg
+// Merged with no-gnu and release-2-24
+//
+// Revision 1.1  1999/03/29 21:22:55  jimg
+// Added
+//
+// Revision 1.1  1998/03/13 21:25:25  jimg
+// Added
+//
 
 #endif
 

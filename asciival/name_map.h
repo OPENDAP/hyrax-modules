@@ -1,43 +1,14 @@
 
 // -*- C++ -*-
 
-// (c) COPYRIGHT URI/MIT 1996
-// Please read the full copyright statement in the file COPYRIGH.  
+// (c) COPYRIGHT URI/MIT 1996,2000
+// Please read the full copyright statement in the file COPYRIGHT.
 //
 // Authors:
 //	jhrg,jimg	James Gallagher (jgallagher@gso.uri.edu)
 
-// $Log: name_map.h,v $
-// Revision 1.8  1999/07/24 00:10:07  jimg
-// Repaired the munge function and removed SLList.
-//
-// Revision 1.7  1999/04/30 17:06:58  jimg
-// Merged with no-gnu and release-2-24
-//
-// Revision 1.6  1999/03/24 06:40:48  brent
-// convert String.h to std lib <string>, convert to packages regex -- B^2
-//
-// Revision 1.5.18.1  1999/03/30 20:26:02  jimg
-// Added include of SLList
-//
-// Revision 1.5  1998/03/13 21:24:26  jimg
-// Fixed up comments
-//
-// Revision 1.4  1997/02/06 20:44:52  jimg
-// Fixed log messages
-//
-// Revision 1.3  1997/01/10 06:50:32  jimg
-// Added to lookup mfunc the ability to map non-alphanmerics to underscore.
-//
-// Revision 1.2  1996/11/23 05:17:56  jimg
-// Added name_map().
-//
-// Revision 1.1  1996/11/22 23:50:21  jimg
-// Created.
-//
-
-#ifndef _NAME_MAP_H
-#define _NAME_MAP_H
+#ifndef _name_map_h
+#define _name_map_h
 
 #ifdef __GNUG__
 #pragma interface
@@ -111,4 +82,36 @@ public:
     void delete_all();
 };
 
-#endif // _NAME_MAP_H
+// $Log: name_map.h,v $
+// Revision 1.9  2000/10/02 20:09:52  jimg
+// Moved Log entries to the end of the files
+//
+// Revision 1.8  1999/07/24 00:10:07  jimg
+// Repaired the munge function and removed SLList.
+//
+// Revision 1.7  1999/04/30 17:06:58  jimg
+// Merged with no-gnu and release-2-24
+//
+// Revision 1.6  1999/03/24 06:40:48  brent
+// convert String.h to std lib <string>, convert to packages regex -- B^2
+//
+// Revision 1.5.18.1  1999/03/30 20:26:02  jimg
+// Added include of SLList
+//
+// Revision 1.5  1998/03/13 21:24:26  jimg
+// Fixed up comments
+//
+// Revision 1.4  1997/02/06 20:44:52  jimg
+// Fixed log messages
+//
+// Revision 1.3  1997/01/10 06:50:32  jimg
+// Added to lookup mfunc the ability to map non-alphanmerics to underscore.
+//
+// Revision 1.2  1996/11/23 05:17:56  jimg
+// Added name_map().
+//
+// Revision 1.1  1996/11/22 23:50:21  jimg
+// Created.
+//
+
+#endif // _name_map_h

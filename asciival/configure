@@ -21,7 +21,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: configure,v 1.36 2000/08/15 00:11:08 jimg Exp $
+# $Id: configure,v 1.37 2000/10/02 20:09:52 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------

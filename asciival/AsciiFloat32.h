@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// (c) COPYRIGHT URI/MIT 1999
+// (c) COPYRIGHT URI/MIT 1999,2000
 // Please read the full copyright statement in the file COPYRIGHT.
 //
 // Authors:
@@ -10,19 +10,8 @@
 //
 // 3/12/98 jhrg
 
-// $Log: AsciiFloat32.h,v $
-// Revision 1.2  1999/04/30 17:06:54  jimg
-// Merged with no-gnu and release-2-24
-//
-// Revision 1.1  1999/03/29 21:22:55  jimg
-// Added
-//
-// Revision 1.1  1998/03/13 21:25:22  jimg
-// Added
-//
-
-#ifndef _AsciiFloat32_h
-#define _AsciiFloat32_h 1
+#ifndef _asciifloat32_h
+#define _asciifloat32_h 1
 
 #ifdef __GNUG__
 #pragma interface
@@ -37,11 +26,25 @@ public:
 
     virtual BaseType *ptr_duplicate();
     
-    virtual bool read(const string &dataset, int &error);
+    virtual bool read(const string &dataset);
 
     virtual void print_val(ostream &os, string space = "", 
 			   bool print_decl_p = true);
 };
+
+// $Log: AsciiFloat32.h,v $
+// Revision 1.3  2000/10/02 20:09:52  jimg
+// Moved Log entries to the end of the files
+//
+// Revision 1.2  1999/04/30 17:06:54  jimg
+// Merged with no-gnu and release-2-24
+//
+// Revision 1.1  1999/03/29 21:22:55  jimg
+// Added
+//
+// Revision 1.1  1998/03/13 21:25:22  jimg
+// Added
+//
 
 #endif
 

@@ -1,29 +1,9 @@
 
-// (c) COPYRIGHT URI/MIT 1996
-// Please read the full copyright statement in the file COPYRIGH.  
+// (c) COPYRIGHT URI/MIT 1996,2000
+// Please read the full copyright statement in the file COPYRIGHT.
 //
 // Authors:
 //	jhrg,jimg	James Gallagher (jgallagher@gso.uri.edu)
-
-// $Log: name_map.cc,v $
-// Revision 1.6  1999/07/24 00:10:07  jimg
-// Repaired the munge function and removed SLList.
-//
-// Revision 1.5  1999/03/24 06:23:43  brent
-// convert String.h to std lib <string>, convert to packages regex -- B^2
-//
-// Revision 1.4  1997/02/06 20:44:51  jimg
-// Fixed log messages
-//
-// Revision 1.3  1997/01/10 06:50:30  jimg
-// Added to lookup mfunc the ability to map non-alphanmerics to underscore.
-//
-// Revision 1.2  1996/11/23 05:17:39  jimg
-// Added name_map() because g++ wants it.
-//
-// Revision 1.1  1996/11/22 23:52:01  jimg
-// Created.
-//
 
 #ifdef __GNUG__
 #pragma implementation
@@ -31,7 +11,7 @@
 
 #include "config_dap.h"
 
-static char rcsid[] not_used = {"$Id: name_map.cc,v 1.6 1999/07/24 00:10:07 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: name_map.cc,v 1.7 2000/10/02 20:09:52 jimg Exp $"};
 
 using namespace std;
 
@@ -97,3 +77,24 @@ name_map::delete_all()
     _names.erase(_names.begin(), _names.end());
 }
 
+// $Log: name_map.cc,v $
+// Revision 1.7  2000/10/02 20:09:52  jimg
+// Moved Log entries to the end of the files
+//
+// Revision 1.6  1999/07/24 00:10:07  jimg
+// Repaired the munge function and removed SLList.
+//
+// Revision 1.5  1999/03/24 06:23:43  brent
+// convert String.h to std lib <string>, convert to packages regex -- B^2
+//
+// Revision 1.4  1997/02/06 20:44:51  jimg
+// Fixed log messages
+//
+// Revision 1.3  1997/01/10 06:50:30  jimg
+// Added to lookup mfunc the ability to map non-alphanmerics to underscore.
+//
+// Revision 1.2  1996/11/23 05:17:39  jimg
+// Added name_map() because g++ wants it.
+//
+// Revision 1.1  1996/11/22 23:52:01  jimg
+// Created.

@@ -1,5 +1,5 @@
 
-// (c) COPYRIGHT URI/MIT 1998,1999
+// (c) COPYRIGHT URI/MIT 1998-2000
 // Please read the full copyright statement in the file COPYRIGHT.  
 //
 // Authors:
@@ -12,49 +12,9 @@
     
     @author: jhrg */
 
-// $Log: ascii_val.cc,v $
-// Revision 1.12  1999/07/28 23:00:54  jimg
-// Separated from the writeval directory, moved to tools
-//
-// Revision 1.11  1999/07/24 00:10:28  jimg
-// Merged the release-3-0-2 branch
-//
-// Revision 1.10  1999/05/25 18:47:11  jimg
-// Merged Nathan's fixes for the -t option and some debugging instrumentation.
-//
-// Revision 1.9  1999/05/18 20:59:32  jimg
-// Removed name_from_url(...) since int is never used.
-//
-// Revision 1.8  1999/04/30 17:06:56  jimg
-// Merged with no-gnu and release-2-24
-//
-// Revision 1.7  1999/03/24 06:23:43  brent
-// convert String.h to std lib <string>, convert to packages regex -- B^2
-//
-// Revision 1.6  1998/09/16 23:30:26  jimg
-// Change process_data() so that it calls print_all_vals() for Structure.
-//
-// Revision 1.5  1998/08/01 01:31:36  jimg
-// Fixed a bug in process_data() where deserialize() was not called before the
-// call to print_all_vals().
-//
-// Revision 1.4  1998/07/30 19:05:54  jimg
-// Fixed the call to usage; passing a char * invoked cgi-util.cc:usage which
-// was not what we wanted. Also added help about the -m option.
-//
-// Revision 1.3  1998/03/19 23:26:03  jimg
-// Added code to write out error messages read from the server.
-//
-// Revision 1.2  1998/03/16 19:45:09  jimg
-// Added mime header output. See -m.
-//
-// Revision 1.1  1998/03/16 18:30:19  jimg
-// Added
-//
-
 #include "config_dap.h"
 
-static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.12 1999/07/28 23:00:54 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.13 2000/10/02 20:09:52 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -194,10 +154,10 @@ process_data(XDR *src, DDS *dds)
     @author jhrg */
 
 static void
-output_error_object(Error e)
+output_error_object(const Error &e)
 {
     if (e.OK())
-	cout << "Error: " << e.error_message() << endl;
+	cout << "Error: " << e.get_error_message() << endl;
 }
 
 // Read a DODS data object. The object maybe specified by a URL (which will
@@ -247,6 +207,7 @@ main(int argc, char * argv[])
     Connect *url = 0;
 
     for (int i = getopt.optind; i < argc; ++i) {
+      try {
 	if (url)
 	    delete url;
 	
@@ -298,6 +259,10 @@ main(int argc, char * argv[])
 	else {
 	    output_error_object(url->error());
 	}
+      }
+      catch (Error &e) {
+	output_error_object(e);
+      }
     }
 
     cout.flush();
@@ -305,3 +270,45 @@ main(int argc, char * argv[])
 
     return 0;
 }
+
+// $Log: ascii_val.cc,v $
+// Revision 1.13  2000/10/02 20:09:52  jimg
+// Moved Log entries to the end of the files
+//
+// Revision 1.12  1999/07/28 23:00:54  jimg
+// Separated from the writeval directory, moved to tools
+//
+// Revision 1.11  1999/07/24 00:10:28  jimg
+// Merged the release-3-0-2 branch
+//
+// Revision 1.10  1999/05/25 18:47:11  jimg
+// Merged Nathan's fixes for the -t option and some debugging instrumentation.
+//
+// Revision 1.9  1999/05/18 20:59:32  jimg
+// Removed name_from_url(...) since int is never used.
+//
+// Revision 1.8  1999/04/30 17:06:56  jimg
+// Merged with no-gnu and release-2-24
+//
+// Revision 1.7  1999/03/24 06:23:43  brent
+// convert String.h to std lib <string>, convert to packages regex -- B^2
+//
+// Revision 1.6  1998/09/16 23:30:26  jimg
+// Change process_data() so that it calls print_all_vals() for Structure.
+//
+// Revision 1.5  1998/08/01 01:31:36  jimg
+// Fixed a bug in process_data() where deserialize() was not called before the
+// call to print_all_vals().
+//
+// Revision 1.4  1998/07/30 19:05:54  jimg
+// Fixed the call to usage; passing a char * invoked cgi-util.cc:usage which
+// was not what we wanted. Also added help about the -m option.
+//
+// Revision 1.3  1998/03/19 23:26:03  jimg
+// Added code to write out error messages read from the server.
+//
+// Revision 1.2  1998/03/16 19:45:09  jimg
+// Added mime header output. See -m.
+//
+// Revision 1.1  1998/03/16 18:30:19  jimg
+// Added
