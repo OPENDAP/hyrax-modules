@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.46 2000/10/02 20:09:52 jimg Exp $
+# $Id: Makefile.in,v 1.47 2001/06/15 23:55:14 jimg Exp $
 
 @SET_MAKE@
 
@@ -9,19 +9,19 @@
 
 PROG = asciival
 
-DODS_ROOT = ../../..
-WWW_ROOT=@WWW_ROOT@
+DODS_ROOT = @dods_relative@
 
-INCS = -I. -I$(DODS_ROOT)/include @INCS@
+INCS = -I. @INCS@
 DEFS = @DEFS@ -DDODS_VERSION=\"@VERSION@\"
 CPPFLAGS = @CPPFLAGS@ $(DEFS) $(INCS)
 CFLAGS = @CFLAGS@
 CXXFLAGS = @CXXFLAGS@
-LDFLAGS = @LDFLAGS@ -L. -L$(DODS_ROOT)/lib
+LDFLAGS = @LDFLAGS@ -L.
 LFLAGS = -8
 YFLAGS = -d
 LIBS = -ldap++ @LIBS@
-TAGS_FLAGS = --include=../dap/TAGS
+XTRALIBS = @XTRALIBS@
+TAGS_FLAGS = --include=../../dap/TAGS
 TEST_COV_FLAGS = -ftest-coverage -fprofile-arcs
 
 # Set the instalation directories; prefix can be set on the command line
@@ -29,14 +29,14 @@ TEST_COV_FLAGS = -ftest-coverage -fprofile-arcs
 
 prefix = @prefix@
 exec_prefix = $(prefix)
-bindir = $(exec_prefix)/bin
-libdir = $(exec_prefix)/lib
-includedir = $(prefix)/include
+bindir = $(exec_prefix)bin
+libdir = $(exec_prefix)lib
+includedir = $(prefix)include
 manext = 1
-mandir = $(prefix)/man/man$(manext)
+mandir = $(prefix)man/man$(manext)
 
-src = $(DODS_ROOT)/src
-etcdir = $(DODS_ROOT)/etc
+src = $(DODS_ROOT)src
+etcdir = $(DODS_ROOT)etc
 
 INSTALLMAN = man
 
@@ -88,7 +88,8 @@ ALLSRCS = $(ASCIISRCS) $(AV_SRCS)
 all: $(PROG)
 
 asciival: $(AV_OBJS) $(ASCIIOBJS)
-	$(CXX) $(LDFLAGS) -o asciival $(AV_OBJS) $(ASCIIOBJS) $(LIBS)
+	$(CXX) $(LDFLAGS) -o asciival $(AV_OBJS) $(ASCIIOBJS) \
+		$(LIBS) $(XTRALIBS)
 
 # Standard targets with some customization for das-test and dds-test
 
@@ -134,7 +135,7 @@ docs:
 	doc++ -d docs -f $(ASCIISRCS) $(AV_SRCS)
 
 configure: configure.in
-	autoconf --localdir=$(DODS_ROOT)/etc
+	autoconf --localdir=$(DODS_ROOT)etc
 
 Makefile: Makefile.in
 	if [ -x ./config.status ]; \
@@ -156,22 +157,25 @@ depend:
 tar:
 	-rm -r config.cache config.log config.status
 	cd $(DODS_ROOT)/.. && \
-	$(TAR) --exclude '*/old' --exclude '*/.#*' --exclude '*/CVS' \
+	$(TAR) --exclude 'old' --exclude '.#*' --exclude 'CVS' \
 	    --gzip --create --dereference --file DODS-$(dir).tar.gz \
 	    DODS/src/tools/$(dir)
+
+binary-tar:
+	@echo "This program's binary-tar is made by the src/dap Makefile"
 
 .PHONY: update-version
 update-version: check-version
 	@echo "Version is: `cat version.h`"
 	mv ../asciival* ../asciival-$(version)
-	touch $(DODS_ROOT)/VERSION; cat $(DODS_ROOT)/VERSION | \
+	touch $(DODS_ROOT)VERSION; cat $(DODS_ROOT)VERSION | \
 	  $(AWK) ' \
 	    BEGIN { found = 0 } \
 	    { if ( $$0 ~ /^$(COMPONENT_NAME):/) \
 	        { print "$(COMPONENT_NAME): $(version)"; found = 1 } \
 	      else { print $$0 } } \
 	    END { if ( ! found) { print "$(COMPONENT_NAME): $(version)" } \
-	        }' > $(DODS_ROOT)/VERSION
+	        }' > $(DODS_ROOT)VERSION
 
 # Compare the version encoded in this Makefile (set by configure) with the
 # version in version.h. The version make variable is set up near the top of
@@ -268,9 +272,9 @@ AsciiFloat32.o: AsciiFloat32.cc config_asciival.h \
 ascii_val.o: ascii_val.cc ../../../include/config_dap.h \
  ../../../include/BaseType.h ../../../include/Connect.h \
  ../../../include/DAS.h ../../../include/AttrTable.h \
- ../../../include/DDS.h ../../../include/Clause.h \
- ../../../include/expr.h ../../../include/RValue.h \
- ../../../include/debug.h ../../../include/Error.h \
+ ../../../include/Error.h ../../../include/DDS.h \
+ ../../../include/Clause.h ../../../include/expr.h \
+ ../../../include/RValue.h ../../../include/debug.h \
  ../../../include/util.h ../../../include/Byte.h \
  ../../../include/dods-datatypes.h ../../../include/Int16.h \
  ../../../include/UInt16.h ../../../include/Int32.h \
