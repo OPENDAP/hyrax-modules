@@ -1,0 +1,3 @@
+1999-05-05  James Gallagher  <jimg@dcz.dods.org>
+
+	* Added test-coverage target to Makefile.in

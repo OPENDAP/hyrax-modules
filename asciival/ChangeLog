@@ -1,3 +1,7 @@
+1999-05-05  James Gallagher  <jimg@dcz.dods.org>
+
+	* Added test-coverage target to Makefile.in
+
 1999-03-29  James Gallagher  <jimg@dcz.dods.org>
 
 	* Added support for the new datatypes.
