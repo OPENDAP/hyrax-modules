@@ -6,6 +6,9 @@
 //	jhrg,jimg	James Gallagher (jgallagher@gso.uri.edu)
 
 // $Log: name_map.cc,v $
+// Revision 1.6  1999/07/24 00:10:07  jimg
+// Repaired the munge function and removed SLList.
+//
 // Revision 1.5  1999/03/24 06:23:43  brent
 // convert String.h to std lib <string>, convert to packages regex -- B^2
 //
@@ -28,21 +31,21 @@
 
 #include "config_dap.h"
 
-static char rcsid[] not_used = {"$Id: name_map.cc,v 1.5 1999/03/24 06:23:43 brent Exp $"};
+static char rcsid[] not_used = {"$Id: name_map.cc,v 1.6 1999/07/24 00:10:07 jimg Exp $"};
 
-#include <Pix.h>
-#include <SLList.h>
+using namespace std;
+
+#include <vector>
 #include <string>
 
-#include "name_map.h"
+#include <Regex.h>
 
-extern "C" {
-#include "rx.h"
-}
+#include "escaping.h"
+#include "name_map.h"
 
 name_map::name_map(char *raw_equiv) 
 {
-    _names.append(name_equiv(raw_equiv));
+    _names.push_back(name_equiv(raw_equiv));
 }
 
 name_map::name_map()
@@ -53,82 +56,32 @@ void
 name_map::add(char *raw_equiv) 
 {
     name_equiv equiv(raw_equiv);
-    _names.append(equiv);
+    _names.push_back(equiv);
 }
 
 static string
 munge(string name)
 {
-
-	regex_t bad, hex;		// compiled regular expressions 
-	regmatch_t p_match;		// search results 
-	char target[260];		// temporay buffer where we work 
-	int i, j, error, len, offset = 0;	// assorted counters 
-	int org_len;
-
-	org_len = name.size();		 
-	name.copy(target, org_len);;	// C++ to C copy 
-	target[org_len] = 0;		// append a NULL 
-
-	regcomp(&hex, "%[0-9][0-9A-Fa-f]", REG_EXTENDED);
-	regcomp(&bad, "[^A-z0-9_]", REG_EXTENDED);
-
-	// substitute the hex characters with an '_' 
-	error = regexec (&hex, &target[0], 1, &p_match, 0);
-	while ((error == 0) && (offset < org_len)) {     
-		// while match found -- the match is always some hex number 
-		len = p_match.rm_eo - p_match.rm_so;
-		for (i = offset + p_match.rm_so, j = 0; j < len; ++j, ++i)
-			target[i] = '_';
-		offset += p_match.rm_eo;
-		error = regexec (&hex, target + offset, 1, 
-			&p_match, REG_NOTBOL);
-	}
-
-	// substitute the non-bad characters with an '_' 
-	offset = 0;
-	error = regexec (&bad, &target[0], 1, &p_match, 0);
-	while ((error == 0) && (offset < org_len)) {     
-		// while match found -- the match is always a single char 
-		target[offset + p_match.rm_so] = '_';
-		offset += p_match.rm_eo;
-		error = regexec (&bad, target + offset, 1, 
-			&p_match, REG_NOTBOL);
-	}
-	regfree(&bad);	// let go of the space
-	regfree(&hex);
-	// put result back in string object -- leave the NULL behind
-	name.replace(0, org_len, target);	
-	
-	return name;
+    name = esc2underscore(name);
+    return esc2underscore(name, "[^A-z0-9_]");
 }
 
 string
 name_map::lookup(string name, const bool canonical_names = false) 
 {
-    regex_t ident;
-    regmatch_t pm;
-    int rc, len;
-    char target[260];
-
-    for (Pix p = _names.first(); p; _names.next(p))
-	if (name == _names(p).from) {
+    // NEItor is the name_eqiv const interator. 7/23/99 jhrg
+    for (NEItor p = _names.begin(); p != _names.end(); ++p)
+	if (name == p->from) {
 	    if (!canonical_names) {
-		return _names(p).to;
+		return p->to;
 	    }
 	    else {
-		string tmp_name = _names(p).to;
-		// don't need the RE, except for this case, so do it all here
-		len = tmp_name.size();
-		tmp_name.copy(target, len);
-		target[len] = 0;
-		regcomp(&ident, "[A-Za-z_][A-Za-z0-9_]*", REG_EXTENDED);
-		rc = regexec(&ident, &target[0], 1, &pm, 0);
-		regfree(&ident);
-		if (rc == 0)
-		    return tmp_name;
+		static Regex ident("[A-Za-z_][A-Za-z0-9_]*", 1);
+		string tmp_n = p->to;
+		if (ident.match(tmp_n.c_str(), tmp_n.length())) 
+		    return munge(tmp_n);
 		else
-		    return munge(tmp_name);
+		    return tmp_n;
 	    }
 	}
 
@@ -141,6 +94,6 @@ name_map::lookup(string name, const bool canonical_names = false)
 void 
 name_map::delete_all() 
 {
-    _names.clear();
+    _names.erase(_names.begin(), _names.end());
 }
 

@@ -8,6 +8,9 @@
 //	jhrg,jimg	James Gallagher (jgallagher@gso.uri.edu)
 
 // $Log: name_map.h,v $
+// Revision 1.8  1999/07/24 00:10:07  jimg
+// Repaired the munge function and removed SLList.
+//
 // Revision 1.7  1999/04/30 17:06:58  jimg
 // Merged with no-gnu and release-2-24
 //
@@ -40,7 +43,7 @@
 #pragma interface
 #endif
 
-#include <SLList.h>
+#include <vector>
 
 /** This class can be used to build up a simple thesaurus which maps names from
     one string to another. The thesaurus is built by calling the #add# mfunc
@@ -76,7 +79,8 @@ private:
 	}
     };
 
-    SLList<name_equiv> _names;
+    vector<name_equiv> _names;
+    typedef vector<name_equiv>::const_iterator NEItor;
 
 public:
     /** Create a new instance of the thesaurus and add the first equivalence
