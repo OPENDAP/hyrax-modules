@@ -743,7 +743,7 @@ sub command {
 	    exit(0);
 	} else {
 	    $server_pgm = $self->cgi_dir() . $self->script() . "_handler";
-	    @command = ($server_pgm, "-o", "Version", "-u", $self->fule_uri(),
+	    @command = ($server_pgm, "-o", "Version", "-u", $self->full_uri(),
 			$self->filename());
 	}
     } elsif ($self->ext() eq "stats") {
@@ -1140,6 +1140,9 @@ if ($test) {
 1;
 
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.43  2004/10/22 17:54:38  jimg
+# fule_uri() --> full_uri() when getting the version info. See bug 821.
+#
 # Revision 1.42  2004/07/07 21:17:54  jimg
 # Merged with release-3-4-8FCS
 #
