@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.69 2000/10/19 23:51:33 jimg Exp $
+# $Id: acinclude.m4,v 1.70 2000/10/30 17:17:48 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -47,10 +47,10 @@ AC_DEFUN(DODS_PACKAGES_SUPPORT, [dnl
     # Find the full name of the packages directory
     AC_REQUIRE([DODS_FIND_PACKAGES_DIR])
     # Assume that we always search the packages/lib directory for libraries.
-    LDFLAGS="$LDFLAGS -L$DODS_PACKAGES_DIR/lib"
+    # LDFLAGS="$LDFLAGS -L$DODS_PACKAGES_DIR/lib"
     # Assume that we can always search packages/include directory for include 
     # files. 
-    INCS="$INCS -I$DODS_PACKAGES_DIR/include"
+    # INCS="$INCS -I$DODS_PACKAGES_DIR/include"
     # Initialize $packages to null.
     packages=""
     AC_SUBST(packages)])
@@ -71,13 +71,14 @@ AC_DEFUN(DODS_GET_DODS_ROOT, [dnl
     AC_MSG_RESULT($dods_root)
     AC_DEFINE_UNQUOTED(DODS_ROOT, "$dods_root")
     AC_SUBST(dir)
+    AC_SUBST(fullpath)
     AC_SUBST(dods_root)])
 
 AC_DEFUN(DODS_FIND_PACKAGES_DIR, [dnl
     AC_MSG_CHECKING("for the packages directory")
     # Where does DODS live?
     AC_REQUIRE([DODS_GET_DODS_ROOT])
-    DODS_PACKAGES_DIR=`ls -1d $dods_root/packages* 2> /dev/null`
+    DODS_PACKAGES_DIR=`ls -1d $dods_root/src/packages* 2> /dev/null`
     if test -z "$DODS_PACKAGES_DIR"
     then
 	AC_MSG_ERROR("Could not find the third-party packages!")
@@ -98,7 +99,8 @@ AC_DEFUN(DODS_FIND_WWW_ROOT, [dnl
 
     AC_ARG_WITH(www,
 	[  --with-www=DIR          Directory containing the W3C header files],
-	WWW_ROOT=${withval}, WWW_ROOT=$DODS_PACKAGES_DIR/include/w3c-libwww)
+	WWW_ROOT=${withval}, WWW_ROOT=$DODS_ROOT/include/w3c-libwww)
+dnl	WWW_ROOT=${withval}, WWW_ROOT=$DODS_PACKAGES_DIR/include/w3c-libwww)
 
     AC_SUBST(WWW_ROOT)
     INCS="$INCS -I\$(WWW_ROOT)"
@@ -131,12 +133,12 @@ AC_DEFUN(DODS_WWW_LIB, [dnl
 
 AC_DEFUN(DODS_TCL_LIB, [dnl
     AC_REQUIRE([DODS_PACKAGES_SUPPORT])
-    GUILIBS="$GUILIBS -ltcl8.1"
+    GUILIBS="$GUILIBS -ltcl8.3"
     AC_DEFINE_UNQUOTED(HAVE_TCL, $HAVE_TCL)])
      
 AC_DEFUN(DODS_TK_LIB, [dnl
     AC_REQUIRE([DODS_PACKAGES_SUPPORT])
-    GUILIBS="$GUILIBS -ltk8.1"
+    GUILIBS="$GUILIBS -ltk8.3"
     AC_DEFINE_UNQUOTED(HAVE_TK, $HAVE_TK)])
 
 AC_DEFUN(DODS_GUILIBS, [dnl
@@ -144,7 +146,8 @@ AC_DEFUN(DODS_GUILIBS, [dnl
     AC_REQUIRE([DODS_TK_LIB])
     AC_REQUIRE([DODS_TCL_LIB])
 
-    . ${DODS_PACKAGES_DIR}/lib/tkConfig.sh
+    . ${DODS_ROOT}/lib/tkConfig.sh
+dnl    . ${DODS_PACKAGES_DIR}/lib/tkConfig.sh
     GUILIBS="$GUILIBS $TK_LIBS"
     AC_SUBST(GUILIBS)])
 
