@@ -18,8 +18,8 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.64 2000/06/16 18:47:58 jimg Exp $
-#
+# $Id: acinclude.m4,v 1.65 2000/08/02 22:20:23 jimg Exp $
+
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
 
@@ -503,7 +503,7 @@ AC_DEFUN(DODS_MATLAB, [dnl
     fi
 
     dnl Find the lib directory (which is named according to machine type).
-    matlab_lib_dir=`find ${MATLAB_ROOT}/extern -name 'libmat*' -print \
+    matlab_lib_dir=`find ${MATLAB_ROOT}/extern/lib -name 'libmat*' -print \
 		    | sed 's@\(.*\)/libmat.*@\1@'`
     if test "$matlab_lib_dir"
     then
@@ -782,47 +782,96 @@ AC_DEFUN(DODS_CHECK_SIZES, [dnl
 
     AC_REQUIRE([AC_PROG_CC])
 
-    if test "$cross_compiling" = "yes"
-    then
-	    case "$host" in
-	    *alpha*) ac_cv_sizeof_long=8
-		     AC_DEFINE(SIZEOF_CHAR, 1)
-		     AC_DEFINE(SIZEOF_DOUBLE, 8)
-		     AC_DEFINE(SIZEOF_FLOAT, 4)
-		     AC_DEFINE(SIZEOF_INT, 4)
-		     AC_DEFINE(SIZEOF_LONG, 8)
-		     ;;
-	    *)	AC_MSG_WARN(Assuming that your target is a 32bit machine)
-		    ac_cv_sizeof_long=4
-		    AC_DEFINE(SIZEOF_CHAR, 1)
-		    AC_DEFINE(SIZEOF_DOUBLE, 8)
-		    AC_DEFINE(SIZEOF_FLOAT, 4)
-		    AC_DEFINE(SIZEOF_INT, 4)
-		    AC_DEFINE(SIZEOF_LONG, 4)
-		    ;;
-	    esac
-    else
+    # When do we ever cross compile? Remove this and send a note to Dan and 
+    # Ethan. 8/2/2000 jhrg
+    # if test "$cross_compiling" = "yes"
+    # then
+	# case "$host" in
+	# *alpha*) ac_cv_sizeof_long=8
+	   #  AC_DEFINE(SIZEOF_CHAR, 1)
+	   #  AC_DEFINE(SIZEOF_DOUBLE, 8)
+	   #  AC_DEFINE(SIZEOF_FLOAT, 4)
+	   #  AC_DEFINE(SIZEOF_INT, 4)
+	   #  AC_DEFINE(SIZEOF_LONG, 8)
+	   #  ;;
+	# *) AC_MSG_WARN(Assuming that your target is a 32bit machine)
+	   #  ac_cv_sizeof_long=4
+	   #  AC_DEFINE(SIZEOF_CHAR, 1)
+	   #  AC_DEFINE(SIZEOF_DOUBLE, 8)
+	   #  AC_DEFINE(SIZEOF_FLOAT, 4)
+	   #  AC_DEFINE(SIZEOF_INT, 4)
+	   #  AC_DEFINE(SIZEOF_LONG, 4)
+	   #  ;;
+	# esac
+    # else
 	    AC_CHECK_SIZEOF(int)
 	    AC_CHECK_SIZEOF(long)
 	    AC_CHECK_SIZEOF(char)
 	    AC_CHECK_SIZEOF(double)
 	    AC_CHECK_SIZEOF(float)
-    fi])
-	
-#     if test $ac_cv_sizeof_long -eq 4 
-#     then
-# 	ARCHFLAG=ARCH_32BIT
-# 	AC_SUBST(ARCHFLAG)
-# 	CPPFLAGS="-DARCH_32BIT $CPPFLAGS"
-#     elif test $ac_cv_sizeof_long -eq 8
-#     then
-# 	ARCHFLAG=ARCH_64BIT
-# 	AC_SUBST(ARCHFLAG)
-# 	CPPFLAGS="-DARCH_64BIT $CPPFLAGS"
-#     else
-# 	AC_MSG_ERROR(Could not determine architecture size - 32 or 64 bits)
-#     fi])
+    # fi
 
+    # Now generate symbols that define the dods_int32, ..., types
+    # based on this machine's notion of an int, etc. See dods-datatypes.h.in.
+    # I've separated the typedefs from the config_dap.h header because other
+    # projects which use the DAP were getting conflicts with their includes,
+    # or the includes of still other libraries, and config_dap.h. The 
+    # config_dap.h header is now included only by .cc and .c files and headers
+    # that need the typedefs use dods-datatypes.h. The code below makes 
+    # dods-datatypes.h stand on its own. 8/2/2000 jhrg
+
+    if test $ac_cv_sizeof_long -eq 4 
+    then
+	DODS_INT32=long
+	DODS_UINT32="unsigned long"
+	XDR_INT32=xdr_long
+	XDR_UINT32=xdr_u_long
+    elif test $ac_cv_sizeof_int -eq 4
+    then
+	DODS_INT32=int
+	DODS_UINT32="unsigned int"
+	XDR_INT32=xdr_int
+	XDR_UINT32=xdr_u_int
+    else
+	AC_MSG_ERROR(How do I get a 32 bit integer on this machine?)
+    fi
+    AC_SUBST(DODS_INT32)
+    AC_SUBST(DODS_UINT32)
+    AC_SUBST(XDR_INT32)
+    AC_SUBST(XDR_UINT32)
+
+    # Assume nobody's hosed the 16-bit types...
+    DODS_INT16=short
+    DODS_UINT16="unsigned short"
+    XDR_INT16=xdr_short
+    XDR_UINT16=xdr_u_short
+    AC_SUBST(DODS_INT16)
+    AC_SUBST(DODS_UINT16)
+    AC_SUBST(XDR_INT16)
+    AC_SUBST(XDR_UINT16)
+
+    if test $ac_cv_sizeof_char -eq 1
+    then
+	DODS_BYTE="unsigned char"
+    else
+	AC_MSG_ERROR(How do I get an 8 bit unsigned integer on this machine?)
+    fi
+    AC_SUBST(DODS_BYTE)
+
+    if test $ac_cv_sizeof_double -eq 8
+    then
+	DODS_FLOAT64=double
+	DODS_FLOAT32=float
+	XDR_FLOAT64=xdr_double
+	XDR_FLOAT32=xdr_float
+    else
+	AC_MSG_ERROR(How do I get floating point types on this machine?)
+    fi
+    AC_SUBST(DODS_FLOAT64)
+    AC_SUBST(DODS_FLOAT32)
+    AC_SUBST(XDR_FLOAT64)
+    AC_SUBST(XDR_FLOAT32)])
+	
 # Added by Ethan, 1999/06/21
 # Look for perl.
 # 

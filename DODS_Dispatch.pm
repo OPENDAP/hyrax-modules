@@ -22,6 +22,26 @@
 #      	       	       	      - Root name of the filter (e.g., *nc*_dods)
 #
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.24  2000/08/02 22:20:23  jimg
+# Merged with 3.1.8
+#
+# Revision 1.21.2.6  2000/06/01 21:24:43  jimg
+# Added path_info method.
+#
+# Revision 1.21.2.5  2000/05/05 16:22:19  jimg
+# Fixed a bug in port()
+#
+# Revision 1.21.2.4  2000/05/05 16:21:38  jimg
+# Corrected some comments
+#
+# Revision 1.21.2.3  2000/05/02 22:46:05  jimg
+# Fixed a bug (#18) where URLs with port numbers were mangled by the ASCII
+# and html form options. The port number would be stripped of the URL when
+# asciival or www_int fetched the DAS, DDS or DataDDS. To fix this I added
+# a new field (server_port) and two new accessor functions. server_port()
+# returns the port number; port() returns a null string if the port is 80 or
+# ":<port num>" for any other number.
+#
 # Revision 1.23  2000/01/27 17:54:03  jimg
 # Merged with release-3-1-4
 #
@@ -173,34 +193,42 @@ Error {
 # otherwise sure that embedded shell commands will never be run. The
 # environment variables used are: 
 #
+# SERVER_NAME
+# SERVER_ADMIN
 # QUERY_STRING: Contains the DODS CE
+# REQUEST_URI
 # PATH_INFO: Used to extract the extension from the filename which is used to
 # choose the server's filter program (.das --> nc_das, etc.)
 # SCRIPT_NAME: Used to build the `basename' part of the server's fileter
 # program (nc --> nc_das, etc.).
 # PATH_TRANSLATED: Used to get the file/dataset name.
+# HTTP__ACCEPT_ENCODING
+# HTTP_XDODS_ACCEPT_TYPES
 
 sub initialize {
     my $self = shift;
 
-    $self->{'cgi_dir'} = "./";
+    $self->{cgi_dir} = "./";
 
-    $self->{'server_name'} = $ENV{'SERVER_NAME'};
-    print(STDERR "server name: " , $self->{'server_name'}, "\n") if $debug > 1;
+    $self->{server_port} = $ENV{SERVER_PORT};
+    print(STDERR "server port: " , $self->{server_port}, "\n") if $debug > 1;
 
-    $self->{'server_admin'} = $ENV{'SERVER_ADMIN'};
-    print(STDERR "server admin: " , $self->{'server_admin'}, "\n") 
+    $self->{server_name} = $ENV{SERVER_NAME};
+    print(STDERR "server name: " , $self->{server_name}, "\n") if $debug > 1;
+
+    $self->{server_admin} = $ENV{SERVER_ADMIN};
+    print(STDERR "server admin: " , $self->{server_admin}, "\n") 
 	if $debug > 1;
 
-    $query = $ENV{'QUERY_STRING'};
+    $query = $ENV{QUERY_STRING};
     $query =~ tr/+/ /;		# Undo escaping by client.
 
-    $self->{'query'} = $query;
+    $self->{query} = $query;
 
     # Get the filename's ext. This tells us which filter to run. It
     # will be something like `.dods' (for data) or `.dds' (for the DDS
     # object).
-    $ext = $ENV{'PATH_INFO'};
+    $ext = $ENV{PATH_INFO};
     $ext =~ s@.*\.(.*)@$1@;
 
     # If the extension ($ext) ends in a slash, then we have a request for a
@@ -214,21 +242,21 @@ sub initialize {
 	exit(1);
     }
 
-    $self->{'ext'} = $ext;
+    $self->{ext} = $ext;
     print(STDERR "ext: ", $ext, "\n") if $debug > 1;
 
-    my $request = $ENV{'REQUEST_URI'};
+    my $request = $ENV{REQUEST_URI};
     $request =~ s@(.*)\.$ext@$1@;
-    $self->{'request_uri'} = $request;
+    $self->{request_uri} = $request;
 
-    my $path_info = $ENV{'PATH_INFO'};
+    my $path_info = $ENV{PATH_INFO};
     $path_info =~ s@(.*)\.$ext@$1@;
-    $self->{'path_info'} = $path_info;
+    $self->{path_info} = $path_info;
 
     # Strip the `nph-' off of the front of the dispatch program's name. Also 
     # remove the extraneous partial-pathname that HTTPD glues on to the
     # script name. 
-    $script = $ENV{'SCRIPT_NAME'};
+    $script = $ENV{SCRIPT_NAME};
     $script =~ s@.*nph-(.*)@$1@;
 
     # Look for an ext on the script name; if one is present assume we
@@ -244,22 +272,22 @@ sub initialize {
   	send_error_object("Script name contains bad characters.");
   	exit(1);
     }
-    $self->{'script'} = $script;
+    $self->{script} = $script;
 
     # Look for the Accept-Encoding header. Does it exist? If so, store the
     # value. 
-    $self->{'encoding'} = $ENV{'HTTP_ACCEPT_ENCODING'};
+    $self->{encoding} = $ENV{HTTP_ACCEPT_ENCODING};
 
     # Look for the XDODS-Accept-Types header. If it exists, store its value.
-    $self->{'accept_types'} = $ENV{'HTTP_XDODS_ACCEPT_TYPES'};
+    $self->{accept_types} = $ENV{HTTP_XDODS_ACCEPT_TYPES};
 
 
     if ($script eq "jg") {
-	$filename = $ENV{'PATH_INFO'};
+	$filename = $ENV{PATH_INFO};
 	$filename =~ s@.*/(.*)@$1@
     }
     else {
-	$filename = $ENV{'PATH_TRANSLATED'};
+	$filename = $ENV{PATH_TRANSLATED};
     }
 
     # This odd regexp excludes shell metacharacters, spaces and %-escapes
@@ -271,7 +299,7 @@ sub initialize {
     $filename =~ s@([^ !%&()*+?<>]*)\.$ext(.*)@$1@;
     printf(STDERR "filename: %s\n", $filename) if $debug > 1;
 
-    $self->{'filename'} = $filename;
+    $self->{filename} = $filename;
 }
 
 # Extract various environment variables used to pass `parameters' encoded in
@@ -289,32 +317,54 @@ sub new {
     bless $self, $type;
     $self->initialize();
 
-    $self->{'caller_revision'} = $caller_revision;
-    $self->{'maintainer'} = $maintainer;
+    $self->{caller_revision} = $caller_revision;
+    $self->{maintainer} = $maintainer;
 
     return $self;
 }
 
-# Note that caller_revision and maintainer are read only fields. 2/10/1998
+# Read only fields. 2/10/1998
 # jhrg
 sub caller_revision {
     my $self = shift;
-    return $self->{'caller_revision'};
+    return $self->{caller_revision};
+}
+
+sub path_info {
+    my $self = shift;
+    return $self->{path_info};
+    
+}
+
+sub server_port {
+    my $self = shift;
+    return $self->{server_port};
+}
+
+# A smart version of `server_port'.
+sub port {
+    my $self = shift;
+    if ($self->{server_port} == 80) {
+	return "";
+    }
+    else {
+	return ":$self->{server_port}";
+    }
 }
 
 sub server_name {
     my $self = shift;
-    return $self->{'server_name'};
+    return $self->{server_name};
 }
 
 sub request_uri {
     my $self = shift;
-    return $self->{'request_uri'};
+    return $self->{request_uri};
 }
 
 sub maintainer {
     my $self = shift;
-    return $self->{'maintainer'};
+    return $self->{maintainer};
 }
 
 # Return the query string given with the URL.
@@ -323,9 +373,9 @@ sub query {
     my $query = shift;		# The second arg is optional
 
     if ($query eq "") {
-	return $self->{'query'};
+	return $self->{query};
     } else {
-	return $self->{'query'} = $query;
+	return $self->{query} = $query;
     }
 }    
 
@@ -335,9 +385,9 @@ sub filename {
     my $filename = shift;	# The second arg is optional
 
     if ($filename eq "") {
-	return $self->{'filename'};
+	return $self->{filename};
     } else {
-	return $self->{'filename'} = $filename;
+	return $self->{filename} = $filename;
     }
 }
 
@@ -346,9 +396,9 @@ sub extension {
     my $extension = shift;	# The second arg is optional
 
     if ($extension eq "") {
-	return $self->{'ext'};
+	return $self->{ext};
     } else {
-	return $self->{'ext'} = $extension;
+	return $self->{ext} = $extension;
     }
 }
 
@@ -357,9 +407,9 @@ sub cgi_dir {
     my $cgi_dir = shift;	# The second arg is optional
 
     if ($cgi_dir eq "") {
-	return $self->{'cgi_dir'};
+	return $self->{cgi_dir};
     } else {
-	return $self->{'cgi_dir'} = $cgi_dir;
+	return $self->{cgi_dir} = $cgi_dir;
     }
 }
 
@@ -368,9 +418,9 @@ sub cache_dir {
     my $cache_dir = shift;	# The second arg is optional
 
     if ($cache_dir eq "") {
-	return $self->{'cache_dir'};
+	return $self->{cache_dir};
     } else {
-	return $self->{'cache_dir'} = $cache_dir;
+	return $self->{cache_dir} = $cache_dir;
     }
 }
 
@@ -379,9 +429,9 @@ sub script {
     my $script = shift;		# The second arg is optional
 
     if ($script eq "") {
-	return $self->{'script'};
+	return $self->{script};
     } else {
-	return $self->{'script'} = $script;
+	return $self->{script} = $script;
     }
 }
     
@@ -391,13 +441,13 @@ sub script {
 sub encoding {
     my $self = shift;
 
-    return $self->{'encoding'};
+    return $self->{encoding};
 }
 
 sub accept_types {
     my $self = shift;
     
-    return $self->{'accept_types'};
+    return $self->{accept_types};
 }
 
 sub command {
@@ -410,7 +460,7 @@ sub command {
 	$server_pgm = $self->cgi_dir() . "usage";
 	# usage does not support the version flag like the other filter
 	# programs. 5/19/99 jhrg
-	# $server_pgm .= " -v " . $self->{'caller_revision'} . " ";
+	# $server_pgm .= " -v " . $self->{caller_revision} . " ";
 	$full_script = $self->cgi_dir() . $self->script();
 	@command = ($server_pgm, $self->filename(), $full_script);
     } elsif ($ext eq "ver" || $ext eq "/version" || $ext eq "/version/") {
@@ -426,19 +476,20 @@ sub command {
 	use LWP::Simple;
 	use FilterDirHTML;	# FilterDirHTML is a subclass of HTML::Filter
 
-	# PATH_INFO is wrong here!
-	# Build URL without CGI in it.
-	my $url = "http://" . $self->{'server_name'} . $self->{'path_info'};
-	if ($self->{'query'} ne "") {
-	    $url .= "?" . $self->{'query'};
+	# Build URL without CGI in it and use that to get the directory
+	# listing from the web server.
+	my $url = "http://" . $self->server_name() . $self->port()
+	          . $self->path_info();
+	if ($self->{query} ne "") {
+	    $url .= "?" . $self->query();
 	}
 	my $directory_html = get($url);
 
 	# Parse the HTML directory page
 	# Build URL with CGI in it but remove ?M=A type query expression.
-	my $server_url = "http://" . $self->{'server_name'} 
-	                 . $self->{request_uri};
-	if ($self->{'query'} ne "") {
+	my $server_url = "http://" . $self->server_name() . $self->port()
+                       . $self->request_uri();
+	if ($self->{query} ne "") {
 	    ($server_url) = ($server_url =~ m@(.*)\?.*@);
 	}
 	my $filtered_dir_html = new FilterDirHTML('.*', $server_url); 
@@ -451,7 +502,7 @@ sub command {
 	my $cache_dir = $self->cache_dir();
 	my $accept_types = $self->accept_types();
 	$server_pgm = $self->cgi_dir() . $self->script() . "_" . $ext;
-	@command = ($server_pgm, "-v", $self->{'caller_revision'}, 
+	@command = ($server_pgm, "-v", $self->caller_revision(), 
 		    $self->filename());
 	if ($query ne "") {
 	    @command = (@command, "-e", $query);
@@ -467,7 +518,7 @@ sub command {
 	my $cache_dir = $self->cache_dir();
 	my $accept_types = $self->accept_types();
 	$server_pgm = $self->cgi_dir() . $self->script() . "_" . $ext;
-	@command = ($server_pgm, "-v", $self->{'caller_revision'}, 
+	@command = ($server_pgm, "-v", $self->caller_revision(), 
 		    $self->filename());
 	if ($query ne "") {
 	    @command = (@command, "-e", $query);
@@ -482,13 +533,13 @@ sub command {
 	    @command = (@command, "-t", $accept_types);
 	}
     } elsif ($ext eq "ascii" || $ext eq "asc") {
-	my $dods_url = ("http://" . $self->{'server_name'} 
-			. $self->{'request_uri'});
+	my $dods_url = "http://" . $self->server_name() . $self->port()
+                     . $self->request_uri();
 	@command=("./asciival", "-m", "--", $dods_url);
     } elsif ($ext eq "html") {
-	my $dods_url = ("http://" . $self->{'server_name'} 
-			. $self->{'request_uri'});
-	@command=("./www_int", "-a", $self->{'server_admin'}, "--", $dods_url);
+	my $dods_url = "http://" . $self->server_name() . $self->port()
+                     . $self->request_uri();
+	@command=("./www_int", "-a", $self->{server_admin}, "--", $dods_url);
     } else {
 	$self->print_error_message();
 	exit(1);
@@ -552,23 +603,22 @@ sub print_error_message {
     my $self = shift;
     my $local_admin = 0;
 
-    if ($self->{'maintainer'} ne "support\@unidata.ucar.edu") {
+    if ($self->{maintainer} ne "support\@unidata.ucar.edu") {
 	$local_admin = 1;
     }
 
     # Note that 400 is the error code for `Bad Request'.
 
     print "HTTP/1.0 400 DODS server filter program not found.\n";
-    print "XDODS-Server: ", $self->{'script'}, "/", 
-          $self->{'caller_revision'}, "\n";
+    print "XDODS-Server: $self->{script}/$self->{caller_revision}\n";
     print "\n";
     print "<h3>Error in URL</h3>\n";
 
     print $DODS_Para1;
     if ($local_admin == 1) {
-	print $DODS_Local_Admin, $self->{'maintainer'};
+	print $DODS_Local_Admin, $self->maintainer();
     } else {
-	print $DODS_Support, $self->{'maintainer'};
+	print $DODS_Support, $self->maintainer();
     }
     print "<p>\n";
 
@@ -579,7 +629,7 @@ sub print_help_message {
     my $self = shift;
 
     print "HTTP/1.0 200 OK\n";
-    print "XDODS-Server: ", $self->{'script'}, "/", $self->{'caller_revision'}, "\n";
+    print "XDODS-Server: $self->{script}/$self->{caller_revision}\n";
     print "\n";
 
     print "<h3>DODS Server Help</h3>\n";

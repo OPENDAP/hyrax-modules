@@ -1,3 +1,13 @@
+2000-08-02  James Gallagher  <jimg@dcz.dods.org>
+
+	* Merged with 3.1.8. The next merge should use -j release-3-18 -j
+	release-3-1.
+
+2000-06-16  James Gallagher  <jimg@dcz.dods.org>
+
+	* Merged with 3.1.7 (skipped 3.1.6) The next merge should use -j
+	release-3-1-7 -j -release-3-1.
+
 2000-03-31  James Gallagher  <jimg@dcz.dods.org>
 
 	* Merged: The next merge should use -j release-3-1-5 -j
@@ -7,6 +17,11 @@
 
 	* Merged: cvs update -j release-3-1, The next merge should use -j
 	release-3-1-3 -j release-3-1
+
+2000-05-02  James Gallagher  <jimg@dcz.dods.org>
+
+	* DODS_Dispatch.pm (command): The ASCII and html form features no
+	longer loose port numbers.
 
 1998-10-28  James Gallagher  <jimg@dcz.cvo.oneworld.com>
 
