@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.28 1998/03/16 19:43:38 jimg Exp $
+# $Id: Makefile.in,v 1.29 1998/03/21 00:17:38 jimg Exp $
 
 @SET_MAKE@
 
@@ -174,6 +174,11 @@ tar:
 
 tags:
 	$(TAGS) $(TAGS_FLAGS) *.cc *.h *.lex *.y
+
+.PHONY: docs
+docs:
+	doc++ -d docs -f $(CLIENTSRCS) $(ASCIISRCS) $(WV_SRCS) $(AV_SRCS) \
+		$(LD_SRCS) $(URLQ_SRCS)
 
 .PHONY: depend
 depend: 
