@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.4 1996/02/12 19:54:03 jimg Exp $
+# $Id: acinclude.m4,v 1.5 1996/02/12 21:42:51 jimg Exp $
 
 # Check for fill value usage.
 
@@ -93,7 +93,7 @@ AC_DEFUN(DODS_PROG_LEX, [dnl
 	flex)
 	    flex_ver1=`flex -V 2>&1 | sed 's/[[^0-9]]*\(.*\)/\1/'`
 	    flex_ver2=`echo $flex_ver1 | sed 's/\.//g'`
-	    if test $flex_ver2 -lt 252
+	    if test -z $flex_ver2 -a $flex_ver2 -lt 252
 	    then
 		AC_MSG_WARN(Flex version: found ${flex_venr1} should be at least 2.5.2)
 	    else
@@ -113,7 +113,7 @@ AC_DEFUN(DODS_PROG_BISON, [dnl
 	bison)
 	    bison_ver1=`bison -V 2>&1 | sed 's/[[^0-9]]*\(.*\)/\1/'`
 	    bison_ver2=`echo $bison_ver1 | sed 's/\.//g'`
-	    if test $bison_ver2 -lt 122
+	    if test -z $bison_ver2 -a $bison_ver2 -lt 122
 	    then
 		AC_MSG_WARN(Bison version: found ${bison_ver1} should be at least 1.22)
 	    else
