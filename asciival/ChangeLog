@@ -1,0 +1,7 @@
+Mon Dec 23 11:31:48 1996  James Gallagher  <jimg@dcz.cvo.oneworld.com>
+
+	* Fixed a nasty bug in the do_array function where single
+	dimension arrays were sometimes created as two dimension arrays.
+	The errant 2D arrays would be huge (billions and billions...) and
+	cause Matlab to complain about not having enough memory.
+
