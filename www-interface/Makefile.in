@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.6 2000/10/02 22:08:05 jimg Exp $
+# $Id: Makefile.in,v 1.7 2000/10/30 17:28:12 jimg Exp $
 
 
 @SET_MAKE@
@@ -191,108 +191,126 @@ tags:
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) -o $@ $<
 
 # DO NOT DELETE; depend depends on this line.
-WWWByte.o: WWWByte.cc WWWByte.h ../../../include/Byte.h \
- ../../../include/BaseType.h ../../../include/config_dap.h WWWOutput.h \
- ../../../include/DDS.h ../../../include/Clause.h \
+WWWByte.o: WWWByte.cc config_www_int.h ../../../include/InternalErr.h \
+ ../../../include/Error.h WWWByte.h ../../../include/Byte.h \
+ ../../../include/dods-datatypes.h ../../../include/BaseType.h \
+ WWWOutput.h ../../../include/DDS.h ../../../include/Clause.h \
  ../../../include/expr.h ../../../include/RValue.h \
  ../../../include/debug.h ../../../include/DAS.h \
  ../../../include/AttrTable.h
-WWWInt32.o: WWWInt32.cc WWWInt32.h ../../../include/Int32.h \
- ../../../include/BaseType.h ../../../include/config_dap.h WWWOutput.h \
- ../../../include/DDS.h ../../../include/Clause.h \
- ../../../include/expr.h ../../../include/RValue.h \
- ../../../include/debug.h ../../../include/DAS.h \
- ../../../include/AttrTable.h
-WWWFloat64.o: WWWFloat64.cc WWWFloat64.h ../../../include/Float64.h \
- ../../../include/BaseType.h ../../../include/config_dap.h WWWOutput.h \
- ../../../include/DDS.h ../../../include/Clause.h \
- ../../../include/expr.h ../../../include/RValue.h \
- ../../../include/debug.h ../../../include/DAS.h \
- ../../../include/AttrTable.h
-WWWStr.o: WWWStr.cc WWWStr.h ../../../include/dods-limits.h \
- ../../../include/Str.h ../../../include/BaseType.h \
- ../../../include/config_dap.h WWWOutput.h ../../../include/DDS.h \
+WWWInt32.o: WWWInt32.cc config_www_int.h \
+ ../../../include/InternalErr.h ../../../include/Error.h WWWInt32.h \
+ ../../../include/Int32.h ../../../include/dods-datatypes.h \
+ ../../../include/BaseType.h WWWOutput.h ../../../include/DDS.h \
  ../../../include/Clause.h ../../../include/expr.h \
  ../../../include/RValue.h ../../../include/debug.h \
  ../../../include/DAS.h ../../../include/AttrTable.h
-WWWUrl.o: WWWUrl.cc WWWUrl.h WWWStr.h ../../../include/dods-limits.h \
- ../../../include/Str.h ../../../include/BaseType.h \
- ../../../include/config_dap.h WWWOutput.h ../../../include/DDS.h \
+WWWFloat64.o: WWWFloat64.cc config_www_int.h \
+ ../../../include/InternalErr.h ../../../include/Error.h WWWFloat64.h \
+ ../../../include/Float64.h ../../../include/dods-datatypes.h \
+ ../../../include/BaseType.h WWWOutput.h ../../../include/DDS.h \
  ../../../include/Clause.h ../../../include/expr.h \
  ../../../include/RValue.h ../../../include/debug.h \
  ../../../include/DAS.h ../../../include/AttrTable.h
-WWWArray.o: WWWArray.cc ../../../include/config_dap.h WWWArray.h \
+WWWStr.o: WWWStr.cc config_www_int.h ../../../include/InternalErr.h \
+ ../../../include/Error.h WWWStr.h ../../../include/dods-limits.h \
+ ../../../include/Str.h ../../../include/BaseType.h WWWOutput.h \
+ ../../../include/DDS.h ../../../include/Clause.h \
+ ../../../include/expr.h ../../../include/RValue.h \
+ ../../../include/debug.h ../../../include/DAS.h \
+ ../../../include/AttrTable.h
+WWWUrl.o: WWWUrl.cc config_www_int.h WWWUrl.h WWWStr.h \
+ ../../../include/dods-limits.h ../../../include/Str.h \
+ ../../../include/BaseType.h WWWOutput.h ../../../include/DDS.h \
+ ../../../include/Clause.h ../../../include/expr.h \
+ ../../../include/RValue.h ../../../include/debug.h \
+ ../../../include/DAS.h ../../../include/AttrTable.h
+WWWArray.o: WWWArray.cc config_www_int.h ../../../include/config_dap.h \
+ ../../../include/InternalErr.h ../../../include/Error.h WWWArray.h \
  ../../../include/Array.h ../../../include/dods-limits.h \
  ../../../include/Vector.h ../../../include/BaseType.h \
  ../../../include/DDS.h ../../../include/Clause.h \
  ../../../include/expr.h ../../../include/RValue.h \
  ../../../include/debug.h WWWOutput.h ../../../include/DAS.h \
  ../../../include/AttrTable.h
-WWWStructure.o: WWWStructure.cc ../../../include/DAS.h \
- ../../../include/AttrTable.h ../../../include/config_dap.h \
+WWWStructure.o: WWWStructure.cc config_www_int.h \
+ ../../../include/DAS.h ../../../include/AttrTable.h \
+ ../../../include/InternalErr.h ../../../include/Error.h \
  WWWStructure.h ../../../include/Structure.h \
  ../../../include/BaseType.h ../../../include/DDS.h \
  ../../../include/Clause.h ../../../include/expr.h \
  ../../../include/RValue.h ../../../include/debug.h WWWSequence.h \
  ../../../include/Sequence.h WWWOutput.h
-WWWList.o: WWWList.cc WWWList.h ../../../include/List.h \
+WWWList.o: WWWList.cc config_www_int.h ../../../include/InternalErr.h \
+ ../../../include/Error.h WWWList.h ../../../include/List.h \
  ../../../include/dods-limits.h ../../../include/Vector.h \
- ../../../include/BaseType.h ../../../include/config_dap.h \
- ../../../include/DDS.h ../../../include/Clause.h \
- ../../../include/expr.h ../../../include/RValue.h \
- ../../../include/debug.h
-WWWSequence.o: WWWSequence.cc ../../../include/DAS.h \
- ../../../include/AttrTable.h ../../../include/config_dap.h \
- WWWSequence.h ../../../include/Sequence.h ../../../include/BaseType.h \
- WWWOutput.h ../../../include/DDS.h ../../../include/Clause.h \
- ../../../include/expr.h ../../../include/RValue.h \
- ../../../include/debug.h
-WWWGrid.o: WWWGrid.cc ../../../include/Array.h \
+ ../../../include/BaseType.h ../../../include/DDS.h \
+ ../../../include/Clause.h ../../../include/expr.h \
+ ../../../include/RValue.h ../../../include/debug.h
+WWWSequence.o: WWWSequence.cc config_www_int.h ../../../include/DAS.h \
+ ../../../include/AttrTable.h ../../../include/InternalErr.h \
+ ../../../include/Error.h WWWSequence.h ../../../include/Sequence.h \
+ ../../../include/BaseType.h WWWOutput.h ../../../include/DDS.h \
+ ../../../include/Clause.h ../../../include/expr.h \
+ ../../../include/RValue.h ../../../include/debug.h
+WWWGrid.o: WWWGrid.cc config_www_int.h ../../../include/Array.h \
  ../../../include/dods-limits.h ../../../include/Vector.h \
- ../../../include/BaseType.h ../../../include/config_dap.h \
- ../../../include/DDS.h ../../../include/Clause.h \
- ../../../include/expr.h ../../../include/RValue.h \
- ../../../include/debug.h WWWGrid.h ../../../include/Grid.h \
- WWWOutput.h ../../../include/DAS.h ../../../include/AttrTable.h
-WWWUInt32.o: WWWUInt32.cc WWWUInt32.h ../../../include/UInt32.h \
- ../../../include/BaseType.h ../../../include/config_dap.h WWWOutput.h \
- ../../../include/DDS.h ../../../include/Clause.h \
- ../../../include/expr.h ../../../include/RValue.h \
- ../../../include/debug.h ../../../include/DAS.h \
- ../../../include/AttrTable.h
-WWWInt16.o: WWWInt16.cc WWWInt16.h ../../../include/Int16.h \
- ../../../include/BaseType.h ../../../include/config_dap.h WWWOutput.h \
- ../../../include/DDS.h ../../../include/Clause.h \
- ../../../include/expr.h ../../../include/RValue.h \
- ../../../include/debug.h ../../../include/DAS.h \
- ../../../include/AttrTable.h
-WWWUInt16.o: WWWUInt16.cc WWWUInt16.h ../../../include/UInt16.h \
- ../../../include/BaseType.h ../../../include/config_dap.h WWWOutput.h \
- ../../../include/DDS.h ../../../include/Clause.h \
- ../../../include/expr.h ../../../include/RValue.h \
- ../../../include/debug.h ../../../include/DAS.h \
- ../../../include/AttrTable.h
-WWWFloat32.o: WWWFloat32.cc WWWFloat32.h ../../../include/Float32.h \
- ../../../include/BaseType.h ../../../include/config_dap.h WWWOutput.h \
- ../../../include/DDS.h ../../../include/Clause.h \
- ../../../include/expr.h ../../../include/RValue.h \
- ../../../include/debug.h ../../../include/DAS.h \
- ../../../include/AttrTable.h
-WWWOutput.o: WWWOutput.cc ../../../include/Regex.h \
- ../../../include/config_dap.h ../../../include/BaseType.h \
- ../../../include/Array.h ../../../include/dods-limits.h \
- ../../../include/Vector.h ../../../include/DDS.h \
+ ../../../include/BaseType.h ../../../include/DDS.h \
  ../../../include/Clause.h ../../../include/expr.h \
  ../../../include/RValue.h ../../../include/debug.h \
- ../../../include/List.h ../../../include/DAS.h \
- ../../../include/AttrTable.h WWWOutput.h
-www_int.o: www_int.cc ../../../include/config_dap.h \
- ../../../include/BaseType.h ../../../include/Connect.h \
- ../../../include/DAS.h ../../../include/AttrTable.h \
+ ../../../include/InternalErr.h ../../../include/Error.h WWWGrid.h \
+ ../../../include/Grid.h WWWOutput.h ../../../include/DAS.h \
+ ../../../include/AttrTable.h
+WWWUInt32.o: WWWUInt32.cc config_www_int.h \
+ ../../../include/InternalErr.h ../../../include/Error.h WWWUInt32.h \
+ ../../../include/UInt32.h ../../../include/dods-datatypes.h \
+ ../../../include/BaseType.h WWWOutput.h ../../../include/DDS.h \
+ ../../../include/Clause.h ../../../include/expr.h \
+ ../../../include/RValue.h ../../../include/debug.h \
+ ../../../include/DAS.h ../../../include/AttrTable.h
+WWWInt16.o: WWWInt16.cc config_www_int.h \
+ ../../../include/InternalErr.h ../../../include/Error.h WWWInt16.h \
+ ../../../include/Int16.h ../../../include/dods-datatypes.h \
+ ../../../include/BaseType.h WWWOutput.h ../../../include/DDS.h \
+ ../../../include/Clause.h ../../../include/expr.h \
+ ../../../include/RValue.h ../../../include/debug.h \
+ ../../../include/DAS.h ../../../include/AttrTable.h
+WWWUInt16.o: WWWUInt16.cc config_www_int.h \
+ ../../../include/InternalErr.h ../../../include/Error.h WWWUInt16.h \
+ ../../../include/UInt16.h ../../../include/dods-datatypes.h \
+ ../../../include/BaseType.h WWWOutput.h ../../../include/DDS.h \
+ ../../../include/Clause.h ../../../include/expr.h \
+ ../../../include/RValue.h ../../../include/debug.h \
+ ../../../include/DAS.h ../../../include/AttrTable.h
+WWWFloat32.o: WWWFloat32.cc config_www_int.h \
+ ../../../include/InternalErr.h ../../../include/Error.h WWWFloat32.h \
+ ../../../include/Float32.h ../../../include/dods-datatypes.h \
+ ../../../include/BaseType.h WWWOutput.h ../../../include/DDS.h \
+ ../../../include/Clause.h ../../../include/expr.h \
+ ../../../include/RValue.h ../../../include/debug.h \
+ ../../../include/DAS.h ../../../include/AttrTable.h
+WWWOutput.o: WWWOutput.cc config_www_int.h ../../../include/Regex.h \
+ ../../../include/BaseType.h ../../../include/Array.h \
+ ../../../include/dods-limits.h ../../../include/Vector.h \
  ../../../include/DDS.h ../../../include/Clause.h \
  ../../../include/expr.h ../../../include/RValue.h \
- ../../../include/debug.h ../../../include/Error.h \
+ ../../../include/debug.h ../../../include/List.h \
+ ../../../include/DAS.h ../../../include/AttrTable.h \
+ ../../../include/InternalErr.h ../../../include/Error.h \
  ../../../include/util.h ../../../include/Byte.h \
+ ../../../include/dods-datatypes.h ../../../include/Int16.h \
+ ../../../include/UInt16.h ../../../include/Int32.h \
+ ../../../include/UInt32.h ../../../include/Float32.h \
+ ../../../include/Float64.h ../../../include/Str.h \
+ ../../../include/Url.h ../../../include/Structure.h \
+ ../../../include/Sequence.h ../../../include/Grid.h WWWOutput.h
+www_int.o: www_int.cc config_www_int.h ../../../include/BaseType.h \
+ ../../../include/Connect.h ../../../include/DAS.h \
+ ../../../include/AttrTable.h ../../../include/DDS.h \
+ ../../../include/Clause.h ../../../include/expr.h \
+ ../../../include/RValue.h ../../../include/debug.h \
+ ../../../include/Error.h ../../../include/util.h \
+ ../../../include/Byte.h ../../../include/dods-datatypes.h \
  ../../../include/Int16.h ../../../include/UInt16.h \
  ../../../include/Int32.h ../../../include/UInt32.h \
  ../../../include/Float32.h ../../../include/Float64.h \
@@ -300,5 +318,5 @@ www_int.o: www_int.cc ../../../include/config_dap.h \
  ../../../include/Url.h ../../../include/Array.h \
  ../../../include/Vector.h ../../../include/List.h \
  ../../../include/Structure.h ../../../include/Sequence.h \
- ../../../include/Grid.h WWWOutput.h ../../../include/cgi_util.h \
+ ../../../include/Grid.h ../../../include/cgi_util.h WWWOutput.h \
  javascript.h
