@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.18 1997/05/01 22:43:27 jimg Exp $
+# $Id: Makefile.in,v 1.19 1997/08/18 23:53:10 jimg Exp $
 
 @SET_MAKE@
 
@@ -82,17 +82,28 @@ CLIENTOBJS = ClientByte.o ClientInt32.o ClientFloat64.o ClientStr.o \
 	ClientUrl.o ClientArray.o ClientStructure.o ClientList.o \
 	ClientSequence.o ClientFunction.o ClientGrid.o ClientUInt32.o
 
+WV_SRCS = write_val.cc name_map.cc attributes.cc
+
+WV_OBJS = write_val.o name_map.o attributes.o
+
+LD_SRCS = loaddods.c variable.c queue.c extend.c
+
+LD_OBJS = loaddods.o variable.o queue.o extend.o
+
+URLQ_SRCS = urlqueue.c queue.c
+
+URLQ_OBJS = urlqueue.o queue.o
+
 all: $(PROG)
 
-writeval: write_val.o name_map.o $(CLIENTOBJS)
-	$(CXX) $(LDFLAGS) -o writeval write_val.o name_map.o \
-		$(CLIENTOBJS) $(LIBS)
+writeval: $(WV_OBJS) $(CLIENTOBJS)
+	$(CXX) $(LDFLAGS) -o writeval $(WV_OBJS) $(CLIENTOBJS) $(LIBS)
 
-loaddods: loaddods.o variable.o queue.o extend.o
-	$(CMEX) $(CMEXFLAGS) loaddods.o variable.o queue.o extend.o
+loaddods: $(LD_OBJS)
+	$(CMEX) $(CMEXFLAGS) $(LD_OBJS)
 
-urlqueue: urlqueue.o queue.o
-	$(CC) $(LDFLAGS) -o urlqueue urlqueue.o queue.o
+urlqueue: $(URLQ_OBJS)
+	$(CC) $(LDFLAGS) -o urlqueue $(URLQ_OBJS)
 
 extend: 
 	$(CC) -DTEST $(CFLAGS) $(CPPFLAGS) -c extend.c
@@ -151,8 +162,7 @@ depend:
 	> dependencies
 	@depend@ -m dependencies \
 	-- $(CPPFLAGS) -I@GPP_INC@ -- \
-	$(CLIENTSRCS) write_val.cc name_map.cc queue.c variable.c \
-		loaddods.c extend.c
+	$(CLIENTSRCS) $(WV_SRCS) $(LD_SRCS) $(URLQ_SRCS)
 
 .SUFFIXES:      .o .cc .c
 
