@@ -10,7 +10,7 @@
 # Added some of my own macros (don't blame Unidata for them!) starting with
 # DODS_PROG_LEX and down in the file. jhrg 2/11/96
 #
-# $Id: acinclude.m4,v 1.11 1996/09/10 18:23:02 jimg Exp $
+# $Id: acinclude.m4,v 1.12 1996/09/17 21:35:45 jimg Exp $
 
 # Check for fill value usage.
 
@@ -242,7 +242,7 @@ AC_DEFUN(DODS_DEBUG_OPTION, [dnl
 
 AC_DEFUN(DODS_FIND_WWW_INCLUDES, [dnl
 
-    AC_MSG_CHECKING(Looking for the WWW library include files)
+    AC_MSG_CHECKING(for the WWW library include files)
 
     dods_www_includes=
     for d in /usr/local/src/WWW /usr/local/WWW ${dods_root}/includes/WWW \
@@ -283,7 +283,7 @@ AC_DEFUN(DODS_SEM, [dnl
     AC_CHECK_HEADERS(sys/sem.h, found=1, found=0)
     if test $found -eq 1
     then
-        AC_CHECKING(Looking at semaphore features in sem.h)
+        AC_CHECKING(semaphore features in sem.h)
         if grep 'extern int  *semctl.*(' /usr/include/sys/sem.h >/dev/null 2>&1
         then
             AC_DEFINE(HAVE_SEM_PROTO, 1)
@@ -299,9 +299,31 @@ AC_DEFUN(DODS_SEM, [dnl
         fi
     fi])
 
+# Find the matlab root directory
+
+AC_DEFUN(DODS_MATLAB, [dnl
+    AC_MSG_CHECKING(for matlab root)
+
+    MATLAB_ROOT=`cmex -v 2>&1 | awk '/MATLAB *= / {print}'`
+    MATLAB_ROOT=`echo $MATLAB_ROOT | sed 's@[[^/]]*\(/.*\)@\1@'`
+    
+    AC_SUBST(MATLAB_ROOT)
+    AC_MSG_RESULT($MATLAB_ROOT)])
+
+# Find the root directory of the current rev of gcc
+
+AC_DEFUN(DODS_GCC, [dnl
+    AC_MSG_CHECKING(for gcc's libgcc.a)
+
+    GCC_ROOT=`gcc -v 2>&1 | awk '/specs/ {print}'`
+    GCC_ROOT=`echo $GCC_ROOT | sed 's@[[^/]]*\(/.*\)/specs@\1@'` 
+    
+    AC_SUBST(GCC_ROOT)
+    AC_MSG_RESULT($GCC_ROOT)])
+
 
 AC_DEFUN(DODS_OS, [dnl
-    AC_MSG_CHECKING(checking type of operating system)
+    AC_MSG_CHECKING(type of operating system)
     if test -z "$OS"; then
       OS=`uname -s | tr '[A-Z]' '[a-z]' | sed 's;/;;g'`
       if test -z "$OS"; then
@@ -310,30 +332,30 @@ AC_DEFUN(DODS_OS, [dnl
     fi
     case $OS in
         aix)
-            OS_NAME=`uname -s`
-            OS_MAJOR=`uname -v | sed 's/[^0-9]*\([0-9]*\)\..*/\1/'`
+dnl            OS_NAME=`uname -s`
+dnl            OS_MAJOR=`uname -v | sed 's/[^0-9]*\([0-9]*\)\..*/\1/'`
             ;;
         hp-ux)
             OS=hpux`uname -r | sed 's/[A-Z.0]*\([0-9]*\).*/\1/'`
-            OS_NAME=HPUX
-            OS_MAJOR=`uname -r | sed 's/[A-Z.0]*\([0-9]*\).*/\1/'`
+dnl            OS_NAME=HPUX
+dnl            OS_MAJOR=`uname -r | sed 's/[A-Z.0]*\([0-9]*\).*/\1/'`
             ;;
         irix)
             OS=${OS}`uname -r | sed 's/\..*//'`
-            OS_NAME=IRIX
-            OS_MAJOR=`uname -r | sed 's/\..*//'`
+dnl            OS_NAME=IRIX
+dnl            OS_MAJOR=`uname -r | sed 's/\..*//'`
             ;;
         osf*)
-            OS_NAME=OSF1
-            OS_MAJOR=`uname -r | sed 's/[^0-9]*\([0-9]*\)\..*/\1/'`
+dnl            OS_NAME=OSF1
+dnl            OS_MAJOR=`uname -r | sed 's/[^0-9]*\([0-9]*\)\..*/\1/'`
             ;;
         sn*)
             OS=unicos
-            OS_NAME=UNICOS
-            OS_MAJOR=`uname -r | sed 's/[^0-9]*\([0-9]*\)\..*/\1/'`
+dnl            OS_NAME=UNICOS
+dnl            OS_MAJOR=`uname -r | sed 's/[^0-9]*\([0-9]*\)\..*/\1/'`
             ;;
         sunos)
-            OS_NAME=SunOS
+dnl            OS_NAME=SunOS
             OS_MAJOR=`uname -r | sed 's/\..*//'`
             OS=$OS$OS_MAJOR
             ;;
@@ -343,19 +365,19 @@ AC_DEFUN(DODS_OS, [dnl
                 OS=vax-ultrix
                 ;;
             esac
-            OS_NAME=ULTRIX
-            OS_MAJOR=`uname -r | sed 's/\..*//'`
+dnl           OS_NAME=ULTRIX
+dnl            OS_MAJOR=`uname -r | sed 's/\..*//'`
             ;;
         *)
             # On at least one UNICOS system, 'uname -s' returned the
             # hostname (sigh).
             if uname -a | grep CRAY >/dev/null; then
                 OS=unicos
-                OS_NAME=UNICOS
-            else
-                OS_NAME=`uname -s | sed 's/[^A-Za-z0-9_]//g'`
+dnl               OS_NAME=UNICOS
+dnl            else
+dnl               OS_NAME=`uname -s | sed 's/[^A-Za-z0-9_]//g'`
             fi
-            OS_MAJOR=`uname -r | sed 's/[^0-9]*\([0-9]*\)\..*/\1/'`
+dnl            OS_MAJOR=`uname -r | sed 's/[^0-9]*\([0-9]*\)\..*/\1/'`
             ;;
     esac
 
@@ -373,14 +395,14 @@ AC_DEFUN(DODS_OS, [dnl
     esac
 
     AC_SUBST(OS)
-    AC_DEFINE(OS_NAME, $OS_NAME)
-    AC_DEFINE(OS_MAJOR, $OS_MAJOR)
+dnl    AC_DEFINE(OS_NAME, $OS_NAME)
+dnl    AC_DEFINE(OS_MAJOR, $OS_MAJOR)
 
     AC_MSG_RESULT($OS)])
 
 
 AC_DEFUN(DODS_MACHINE, [dnl
-    AC_MSG_CHECKING(checking type of machine)
+    AC_MSG_CHECKING(type of machine)
 
     if test -z "$MACHINE"; then
     MACHINE=`uname -m | tr [A-Z] [a-z]`
