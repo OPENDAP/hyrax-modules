@@ -9,7 +9,7 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: www_int.cc,v 1.10 2001/09/28 23:51:32 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: www_int.cc,v 1.11 2001/10/14 01:56:09 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -242,7 +242,7 @@ main(int argc, char * argv[])
 
     putenv("_POSIX_OPTION_ORDER=1"); // Suppress GetOpt's argv[] permutation.
 
-    while ((option_char = getopt()) != EOF)
+    while ((option_char = getopt()) != EOF) {
 	switch (option_char) {
 	  case 'm': regular_header = true; break;
 	  case 'H': help_location = getopt.optarg; break;
@@ -269,43 +269,35 @@ main(int argc, char * argv[])
 	  default:
 	    usage((string)argv[0]); exit(1); break;
 	}
+    }
 
     Connect *url = 0;
 
-    // This program only works with one URL; I'm using a processing loop
-    // because I ripped this code from asciival. Ignore i > getopt.optind and
-    // print a warning. Maybe in the future this will be able to do something
-    // sensible (build a combined document?) for multiple URLs. 4/7/99 jhrg
-    for (int i = getopt.optind; i < argc; ++i) {
-      DBG(cerr << "argv[" << i << "] (of " << argc << "): " << argv[i] \
-	  << endl);
+    // Only process one URL; throw an Error object if more than one is given.
+    // 10/8/2001 jhrg
+    if (argc > getopt.optind+1) {
+	string msg = 
+	    "Error: more than one URL was supplied to www_int.\n";
+	throw Error(msg);
+    }
 
-      if (i > getopt.optind) {
-	cerr << "Warning: URL `" << argv[i] << "' ignored" << endl;
-	continue;
-      }
-	    
-      if (url)
-	delete url;
-	
-      try {
-	url = new Connect(argv[i], trace);
+    try {
+	url = new Connect(argv[getopt.optind], trace);
 
 	if (url->is_local()) {
-	  cerr << "Error: URL `" << argv[i] << "' is local." << endl;
-	  continue;
+	    string msg = "Error: URL `";
+	    msg += string(argv[getopt.optind]) + "' is local.\n";
+	    throw Error(msg);
 	}
 
-	if (!url->request_das() || !url->request_dds()) {
-	  cerr << "Error: URL `" << argv[i] << "' could not be accessed."
-	       << endl;
-	  continue;
-	}
+	url->request_das();	// These throw on error.
+	url->request_dds();
+
 	global_das = url->das();
 	DDS dds = url->dds();
 
 	if (regular_header || nph_header)
-	  wo.write_html_header(nph_header);
+	    wo.write_html_header(nph_header);
 
 	cout << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n"
 	     << "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n"
@@ -313,9 +305,9 @@ main(int argc, char * argv[])
 	     << "<base href=\"" << help_location << "\">\n"
 	     << "<script type=\"text/javascript\">\n"
 	     << "<!--\n"
-	     // Javascript code here
+	    // Javascript code here
 	     << java_code << "\n"
-	     << "DODS_URL = new dods_url(\"" << argv[i] << "\");\n"
+	     << "DODS_URL = new dods_url(\"" << argv[getopt.optind] << "\");\n"
 	     << "// -->\n"
 	     << "</script>\n"
 	     << "</head>\n" 
@@ -326,7 +318,7 @@ main(int argc, char * argv[])
 	     << "<hr>\n"
 	     << "<form action=\"\">\n"
 	     << "<table>\n";
-	wo.write_disposition(argv[i]);
+	wo.write_disposition(argv[getopt.optind]);
 	cout << "<tr><td><td><hr>\n\n";
 	wo.write_global_attributes(global_das);
 	cout << "<tr><td><td><hr>\n\n";
@@ -341,11 +333,11 @@ main(int argc, char * argv[])
 		 << "http://unidata.ucar.edu/packages/dods/</a></address>\n\n";
 	}
 	else {
-	     cout << "<address>Send questions or comments to: <a href=\"mailto:support@unidata.ucar.edu\">support@unidata.ucar.edu</a></address>"
-		  << "</body></html>\n";
+	    cout << "<address>Send questions or comments to: <a href=\"mailto:support@unidata.ucar.edu\">support@unidata.ucar.edu</a></address>"
+		 << "</body></html>\n";
 	}
-      }
-      catch (Error &e) {
+    }
+    catch (Error &e) {
 	string error_msg = e.get_error_message();
 	cout << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n"
 	     << "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n"
@@ -356,17 +348,24 @@ main(int argc, char * argv[])
 	     << "<h3>Error building the DODS dataset query form</h3>:\n"
 	     << error_msg
 	     << "<hr>\n";
-	     
-      }
-    }
 
-    cout.flush();
-    cerr.flush();
+	return 1;
+	     
+    }
 
     return 0;
 }
 
 // $Log: www_int.cc,v $
+// Revision 1.11  2001/10/14 01:56:09  jimg
+// Merged with release-3-2-5.
+//
+// Revision 1.8.2.4  2001/10/09 00:57:24  jimg
+// Now returns 1 on error. Uses catch statements to grab error returns from
+// methods of Connect. This fixes bug 300 (at least for www_int). A future
+// version of the dispatch mechanism might actually use the error messages from
+// this program...
+//
 // Revision 1.10  2001/09/28 23:51:32  jimg
 // Merged with 3.2.4.
 //
