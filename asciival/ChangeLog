@@ -1,3 +1,14 @@
+1998-11-24  James Gallagher  <jimg@dcz.cvo.oneworld.com>
+
+	* Added identifier name truncation. All ids are truncated to 19
+	chars. Once I figure out a good way to get the version number (of
+	matlab) I'll set this so that its version dependent.
+
+	* Added a new feature, -w, to writeval (loaddods can use it too).
+	This activates warning messages. Currently limited to messages
+	about string conversion that fail when using -F, this can be
+	expanded to include other things. By default, -w is off.
+
 1998-11-20  James Gallagher  <jimg@dcz.cvo.oneworld.com>
 
 	* Fixed the fix for multiple newline separators. The code for
