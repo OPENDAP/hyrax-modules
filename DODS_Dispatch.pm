@@ -23,14 +23,22 @@
 
 package DODS_Dispatch;
 
-# No symbols are exported since this package defines a class.
+# No symbols are exported.
 
-use lib (".");
 use Env;
 use handler_name;
 
-my $debug = 1;
+my $debug = 0;
 my $test = 0;
+
+# Test if variables are tainted.
+# From Programming Perl, p.258. 12/11/2000 jhrg
+sub is_tainted {
+    not eval {
+	join("",@_), kill 0;
+	1;
+    };
+}
 
 sub send_error_object {
     my $msg = shift;
@@ -89,16 +97,22 @@ sub initialize {
     # will be something like `.dods' (for data) or `.dds' (for the DDS
     # object).
     $ext = $ENV{PATH_INFO};
-    $ext =~ s@.*\.(.*)@$1@;
 
-    # If the extension ($ext) ends in a slash, then we have a request for a
-    # directory listing. In this case make $ext == "/".
-    if ($ext =~ /.*\/$/) {
-  	$ext = "/";
-    } 
-    elsif ($ext =~ /[^A-Za-z\/]+/) {
+    # Using `s' does not untaint $ext, but using a patern match followed
+    # substring assignment does (see Programming Perl, p.358.). $ext needs to
+    # be sanitized because that is used further down to sanitize $filename
+    # which is passed to system() under some conditions. 12/11/2000 jhrg
+
+    # Special case URLs for directories. 1/3/2001 jhrg
+    if ($ext =~ /^.*\.(.*)$/) {
+	$ext = $1;
+    }
+    elsif ($ext =~ /\//) {
+	$ext = "/";
+    }
+    else {
 	print(STDERR "DODS_Dispatch.pm: ext: ", $ext, "\n") if $debug > 1;
-	send_error_object("Extension contains bad characters.");
+    	send_error_object("Bad characters in the extension.");
 	exit(1);
     }
 
@@ -138,10 +152,33 @@ sub initialize {
     # http://.../nph-nc/a.ver%3Bcat%20/etc/passwd%20.ver would return the
     # contents of /etc/passwd. 5/18/99 jhrg
 
-#   $filename =~ s@[^ !%&()\/\.\-*+?<>a-zA-Z]*\.$ext(.*)@@g; # sixth.pl
-    $filename =~ s@[^ !%&()\/\.\-\:*+?<>a-zA-Z]*\.$ext(.*)@@g; # this works better.
+    # $filename =~ s@[^ !%&()\/\.\-*+?<>a-zA-Z]*\.$ext(.*)@@g; 
+
+    # Simpler regex. 12/11/2000 jhrg
+    if ($filename =~ /^([-\/.\w]+)\.$ext.*$/) {
+	$filename = $1;
+    }
+    elsif ($ext eq "/" && $filename =~ /^([-\/.\w]+$ext).*$/) {
+	$filename = $1;
+    }
+    else {
+	printf(STDERR "filename: %s\n", $filename) if $debug > 1;
+	send_error_object("Bad characters found in pathname.");
+	exit(1);
+    }
 
     printf(STDERR "filename: %s\n", $filename) if $debug > 1;
+
+    if ($test) {
+	is_tainted($ext)
+	    && die("In DODS_Dispatch::initialize, ext ($ext) is tainted\n");
+
+	is_tainted($1)
+	    && die("In DODS_Dispatch::initialize, 1 ($1) is tainted\n");
+
+	is_tainted($filename)
+	    && die("In DODS_Dispatch::initialize, filename is tainted\n");
+    }
 
     $self->{filename} = $filename;
 }
@@ -329,6 +366,10 @@ sub command {
 	if ($self->{query} ne "") {
 	    $url .= "?" . $self->query();
 	}
+
+	print(STDERR "Getting the directory listing using: $url\n")
+	    if $debug > 1;
+
 	my $directory_html = get($url);
 
 	# Parse the HTML directory page
@@ -511,6 +552,22 @@ if ($test) {
 1;
 
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.26  2001/01/26 19:18:14  jimg
+# Merged with release-3-2.
+#
+# Revision 1.25.2.3  2001/01/05 18:26:04  jimg
+# Consolidated the regexps that sanitize $ext and $filename.
+# Made error messages about bad a extention or filename exit the script.
+#
+# Revision 1.25.2.2  2001/01/04 17:43:28  jimg
+# Added to the regexps that `sanitize' the filename and extension. These
+# now correctly process directory requests.
+#
+# Revision 1.25.2.1  2000/12/11 20:40:08  jimg
+# Added the is_tainted() subroutine; tests is a variable is tainted.
+# Fixed $filename and $ext so that they are no longer tainted. See comments in
+# the source.
+#
 # Revision 1.25  2000/10/19 23:50:37  jimg
 # Moved the CVS Log to t eh end of the file.
 # Added Shekhar's changes.

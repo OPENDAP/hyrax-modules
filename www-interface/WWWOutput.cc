@@ -11,7 +11,7 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.6 2000/11/09 21:04:37 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.7 2001/01/26 19:17:36 jimg Exp $"};
 
 #include <string>
 #include <iostream>
@@ -31,7 +31,15 @@ static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.6 2000/11/09 21:04:37 jim
 
 static bool name_is_global(string &name);
 static bool name_in_kill_file(const string &name);
+#if 0
 static string downcase(const string &s);
+#endif
+
+string
+name_for_js_code(const string &dods_name)
+{
+    return "dods_" + dods_name;
+}
 
 WWWOutput::WWWOutput(ostream &os, int rows, int cols):
     _os(os), _attr_rows(rows), _attr_cols(cols)
@@ -251,19 +259,22 @@ write_simple_variable(ostream &os, const string &name, const string &type)
 {
     os << "<script type=\"text/javascript\">\n"
        << "<!--\n"
-       << name << " = new dods_var(\"" << name << "\", 0);\n"
-       << "DODS_URL.add_dods_var(" << name << ");\n"
+       << name_for_js_code(name) <<" = new dods_var(\"" << name << "\", \"" 
+       << name_for_js_code(name) << "\", 0);\n"
+       << "DODS_URL.add_dods_var(" << name_for_js_code(name) << ");\n"
        << "// -->\n"
        << "</script>\n";
 
     os << "<b>" 
-       << "<input type=\"checkbox\" name=\"get_" << name << "\"\n"
-       << "onclick=\"" << name << ".handle_projection_change(get_"
-       << name << ")\">\n" 
+       << "<input type=\"checkbox\" name=\"get_" << name_for_js_code(name) 
+       << "\"\n"
+       << "onclick=\"" 
+       << name_for_js_code(name) << ".handle_projection_change(get_"
+       << name_for_js_code(name) << ")\">\n" 
        << "<font size=\"+1\">" << name << "</font>" 
        << ": " << type << "</b><br>\n\n";
 
-    os << name << " <select name=\"" << name << "_operator\""
+    os << name << " <select name=\"" << name_for_js_code(name)<< "_operator\""
        << " onfocus=\"describe_operator()\""
        << " onchange=\"DODS_URL.update_url()\">\n"
        << "<option value=\"=\" selected>=\n"
@@ -275,7 +286,8 @@ write_simple_variable(ostream &os, const string &name, const string &type)
        << "<option value=\"-\">--\n"
        << "</select>\n";
 
-    os << "<input type=\"text\" name=\"" << name << "_selection"
+    os << "<input type=\"text\" name=\"" << name_for_js_code(name)
+       << "_selection"
        << "\" size=12 onFocus=\"describe_selection()\" "
        << "onChange=\"DODS_URL.update_url()\">\n";
     
@@ -283,6 +295,14 @@ write_simple_variable(ostream &os, const string &name, const string &type)
 }
 
 // $Log: WWWOutput.cc,v $
+// Revision 1.7  2001/01/26 19:17:36  jimg
+// Merged with release-3-2.
+//
+// Revision 1.6.2.1  2001/01/26 04:04:33  jimg
+// Fixed a bug in the JavaScript code. Now the name of the JS variables
+// are prefixed by `dods_'. This means that DODS variables whose names are
+// also reserved words in JS work break the JS code.
+//
 // Revision 1.6  2000/11/09 21:04:37  jimg
 // Merged changes from release-3-1. There was a goof and a bunch of the
 // changes never made it to the branch. I merged the entire branch.

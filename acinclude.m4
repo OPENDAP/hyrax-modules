@@ -18,7 +18,7 @@
 # 4. Macros for locating various systems (Matlab, etc.)
 # 5. Macros used to test things about the computer/OS/hardware
 #
-# $Id: acinclude.m4,v 1.70 2000/10/30 17:17:48 jimg Exp $
+# $Id: acinclude.m4,v 1.71 2001/01/26 19:18:14 jimg Exp $
 
 # 1. Unidata's macros
 #-------------------------------------------------------------------------
@@ -29,28 +29,26 @@ builtin(include, ud_aclocal.m4)
 #
 # To use these in DODS software, in the Makefile.in use LIBS XTRALIBS for 
 # non-gui and LIBS GUILIBS XTRALIBS for the clients that link with the 
-# gui DAP++ library. These should be set by line like LIBS=@LIBS@, etc.
+# gui DAP++ library. These should be set by a line like LIBS=@LIBS@, etc.
 # Then the group should be used on the link line. 10/16/2000 jhrg
 #--------------------------------------------------------------------------
 
+# This macro sets four symbols (they are both defined as shell variables so
+# that configure can use them and substituted in to generated files using the
+# @<symbol>@ scheme. It also creates a C preprocessor define. The symbols
+# are: dir: The current working directory name.
+#      fullpath: The full pathname of the CWD.
+#      dods_root: The full pathname to the DODS root directory.
+#      DODS_PACKAGES_DIR: The full pathname to the root of the DODS pacakges
+#      source code.
+# The CPP symbol is DODS_ROOT and it is set to the value of dods_root.
 AC_DEFUN(DODS_PACKAGES_SUPPORT, [dnl
-    # Where does DODS live?
-    AC_REQUIRE([DODS_GET_DODS_ROOT])
     # Find a good C compiler (hopefully gcc).
     AC_REQUIRE([AC_PROG_CC])
-    # Find out about -lns and -lsocket
-    # I removed the following line because DODS_LIBS includes libraries that 
-    # TK also uses. Since We can get those libraries from the TK Script
-    # (which should be run in configure) there's no need to look for the
-    # libraries here, too. 1/10/2000 jhrg
-    # AC_REQUIRE([DODS_LIBS])
+    # Where does DODS live?
+    AC_REQUIRE([DODS_GET_DODS_ROOT])
     # Find the full name of the packages directory
     AC_REQUIRE([DODS_FIND_PACKAGES_DIR])
-    # Assume that we always search the packages/lib directory for libraries.
-    # LDFLAGS="$LDFLAGS -L$DODS_PACKAGES_DIR/lib"
-    # Assume that we can always search packages/include directory for include 
-    # files. 
-    # INCS="$INCS -I$DODS_PACKAGES_DIR/include"
     # Initialize $packages to null.
     packages=""
     AC_SUBST(packages)])
@@ -62,7 +60,12 @@ AC_DEFUN(DODS_PACKAGES_SUPPORT, [dnl
 # of the DODS tree (e.g., /usr/local/DODS-2.15). Also substitute that string
 # for @dods_root@ and @dir@ and set it to the shell variable $dods_root. Thus
 # Makefile.in files can use the path as can configure.in files.
-
+#
+# Look for the DODS root directory.
+# Sets: `fullpath' to the full pathname of the cwd.
+#       `dir' to the name of the cwd.
+#       `dods_root' to the pathname of the root directory.
+# Defines `DODS_ROOT' to be the same as dods_root.
 AC_DEFUN(DODS_GET_DODS_ROOT, [dnl
     AC_MSG_CHECKING([for the DODS root pathanme])
     fullpath=`pwd`
@@ -74,6 +77,11 @@ AC_DEFUN(DODS_GET_DODS_ROOT, [dnl
     AC_SUBST(fullpath)
     AC_SUBST(dods_root)])
 
+# Sets: `DODS_PACKAGES_DIR' to the full pathname of the directory which
+#	contains the third-party packages software. 
+#
+# NB: We have to add dods_root/lib to LDFLAGS so that various configure
+# macros will find the thrid-party libraries (e.g., AC_CHECK_LIBRARY).
 AC_DEFUN(DODS_FIND_PACKAGES_DIR, [dnl
     AC_MSG_CHECKING("for the packages directory")
     # Where does DODS live?
@@ -84,6 +92,8 @@ AC_DEFUN(DODS_FIND_PACKAGES_DIR, [dnl
 	AC_MSG_ERROR("Could not find the third-party packages!")
     fi
     AC_MSG_RESULT($DODS_PACKAGES_DIR)
+    LDFLAGS="$LDFLAGS -L${dods_root}/lib"
+    INCS="$INCS -I${dods_root}/include"
     AC_SUBST(DODS_PACKAGES_DIR)])
 
 # Because the www library is now included in the DODS_ROOT/packages-*/ 
@@ -94,14 +104,12 @@ AC_DEFUN(DODS_FIND_PACKAGES_DIR, [dnl
 # configure.in files. Instead use DODS_WWW_LIB. jhrg 2/3/98
 
 AC_DEFUN(DODS_FIND_WWW_ROOT, [dnl
-    AC_MSG_CHECKING([for the libwww root])
+    AC_MSG_CHECKING([for the libwww headers])
     AC_REQUIRE([DODS_PACKAGES_SUPPORT])
 
     AC_ARG_WITH(www,
 	[  --with-www=DIR          Directory containing the W3C header files],
-	WWW_ROOT=${withval}, WWW_ROOT=$DODS_ROOT/include/w3c-libwww)
-dnl	WWW_ROOT=${withval}, WWW_ROOT=$DODS_PACKAGES_DIR/include/w3c-libwww)
-
+	WWW_ROOT=${withval}, WWW_ROOT=$dods_root/include/w3c-libwww)
     AC_SUBST(WWW_ROOT)
     INCS="$INCS -I\$(WWW_ROOT)"
     AC_SUBST(INCS)
@@ -118,7 +126,7 @@ AC_DEFUN(DODS_RX_LIB, [dnl
     AC_REQUIRE([DODS_PACKAGES_SUPPORT])
     AC_CHECK_LIB(rx, rx_version_string,
 		 HAVE_RX=1; LIBS="$LIBS -lrx",
-		 packages="$packages libz"; HAVE_RX=1; LIBS="$LIBS -lrx")
+		 packages="$packages librx"; HAVE_RX=1; LIBS="$LIBS -lrx")
     AC_SUBST(packages)])
 
 # Look for the web library.
@@ -146,8 +154,7 @@ AC_DEFUN(DODS_GUILIBS, [dnl
     AC_REQUIRE([DODS_TK_LIB])
     AC_REQUIRE([DODS_TCL_LIB])
 
-    . ${DODS_ROOT}/lib/tkConfig.sh
-dnl    . ${DODS_PACKAGES_DIR}/lib/tkConfig.sh
+    . ${dods_root}/lib/tkConfig.sh
     GUILIBS="$GUILIBS $TK_LIBS"
     AC_SUBST(GUILIBS)])
 
@@ -223,6 +230,7 @@ AC_DEFUN(DODS_HDF_LIBRARY, [dnl
     AC_ARG_WITH(hdf,
         [  --with-hdf=ARG          Where is the HDF library (directory)],
         HDF_PATH=${withval}, HDF_PATH="$HDF_PATH")
+    AC_REQUIRE([DODS_XTRALIBS])
     if test ! -d "$HDF_PATH"
     then
         HDF_PATH="/usr/local/hdf"
@@ -239,7 +247,7 @@ dnl None of this works with HDF 4.1 r1. jhrg 8/2/97
     AC_CHECK_LIB(z, deflate, LIBS="-lz $LIBS", nohdf=1)
     AC_CHECK_LIB(jpeg, jpeg_start_compress, LIBS="-ljpeg $LIBS", nohdf=1)
     AC_CHECK_LIB(df, Hopen, LIBS="-ldf $LIBS" , nohdf=1)
-    AC_CHECK_LIB(mfhdf, SDstart, LIBS="-lmfhdf $LIBS" , nohdf=1)])
+    AC_CHECK_LIB(mfhdf, SDstart, LIBS="-lmfhdf $LIBS" , nohdf=1, $XTRALIBS)])
 
 # 3. Compiler test macros
 #--------------------------------------------------------------------------

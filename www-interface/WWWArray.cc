@@ -15,7 +15,7 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: WWWArray.cc,v 1.4 2000/10/03 20:07:20 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: WWWArray.cc,v 1.5 2001/01/26 19:17:36 jimg Exp $"};
 
 #include "config_dap.h"
 
@@ -67,15 +67,18 @@ WWWArray::print_val(ostream &os, string, bool print_decl_p)
 {
     os << "<script type=\"text/javascript\">\n"
        << "<!--\n"
-       << name() << " = new dods_var(\"" << name() << "\", 1);\n"
-       << "DODS_URL.add_dods_var(" << name() << ");\n"
+       << name_for_js_code(name()) << " = new dods_var(\"" << name() 
+       << "\", \"" << name_for_js_code(name()) << "\", 1);\n"
+       << "DODS_URL.add_dods_var(" << name_for_js_code(name()) << ");\n"
        << "// -->\n"
        << "</script>\n";
 
     os << "<b>" 
-       << "<input type=\"checkbox\" name=\"get_" << name() << "\"\n"
-       << "onclick=\"" << name() << ".handle_projection_change(get_"
-       << name() << ")\">\n" 
+       << "<input type=\"checkbox\" name=\"get_" << name_for_js_code(name())
+       << "\"\n"
+       << "onclick=\"" << name_for_js_code(name())
+       << ".handle_projection_change(get_"
+       << name_for_js_code(name()) << ")\">\n" 
        << "<font size=\"+1\">" << name() << "</font>"
        << ": " << fancy_typename(this) << "</b><br>\n\n";
 
@@ -85,12 +88,13 @@ WWWArray::print_val(ostream &os, string, bool print_decl_p)
 	string n = dimension_name(p);
 	if (n != "")
 	    os << n << ":";
-	os << "<input type=\"text\" name=\"" << name() << "_" << i 
+	os << "<input type=\"text\" name=\"" << name_for_js_code(name())
+	   << "_" << i 
 	   << "\" size=8 onfocus=\"describe_index()\""
 	   << " onChange=\"DODS_URL.update_url()\">\n";
 	os << "<script type=\"text/javascript\">\n"
 	   << "<!--\n"
-	   << name() << ".add_dim(" << size << ");\n"
+	   << name_for_js_code(name()) << ".add_dim(" << size << ");\n"
 	   << "// -->\n"
 	   << "</script>\n";
     }
@@ -99,6 +103,14 @@ WWWArray::print_val(ostream &os, string, bool print_decl_p)
 }
 
 // $Log: WWWArray.cc,v $
+// Revision 1.5  2001/01/26 19:17:36  jimg
+// Merged with release-3-2.
+//
+// Revision 1.4.2.1  2001/01/26 04:04:33  jimg
+// Fixed a bug in the JavaScript code. Now the name of the JS variables
+// are prefixed by `dods_'. This means that DODS variables whose names are
+// also reserved words in JS work break the JS code.
+//
 // Revision 1.4  2000/10/03 20:07:20  jimg
 // Moved Logs to the end of each file.
 //

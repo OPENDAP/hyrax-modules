@@ -104,7 +104,32 @@ void write_simple_variable(ostream &os, const string &name,
     @return A string describing the variable's type. */
 string fancy_typename(BaseType *v);
 
+/** Generate variable names to be used by the JavaScript code. These names
+    must not interfere with JavaScript itself, which seems to have an always
+    expanding set of reserved words. Maybe that's stopped now (1/25/2001
+    jhrg) but the set is large and includes words such as `Location' which is
+    also a dataset variable name. By making the JS variable names
+    `dods_<var>' the HTML/JS page/code is still readable without stepping on
+    JS' reserved words.
+
+    Note that this is a function and not a class member; I included it in the
+    WWWOutput class since it seems to fit here. 
+
+    @param dods_name A string that contains the name of a variable.
+    @return A name suitable for use in JavaScript code similar to the
+    #dods_name# parameter. */
+
+string name_for_js_code(const string &dods_name);
+
 // $Log: WWWOutput.h,v $
+// Revision 1.3  2001/01/26 19:17:36  jimg
+// Merged with release-3-2.
+//
+// Revision 1.2.2.1  2001/01/26 04:04:33  jimg
+// Fixed a bug in the JavaScript code. Now the name of the JS variables
+// are prefixed by `dods_'. This means that DODS variables whose names are
+// also reserved words in JS work break the JS code.
+//
 // Revision 1.2  2000/10/03 20:07:21  jimg
 // Moved Logs to the end of each file.
 //

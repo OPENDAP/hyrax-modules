@@ -9,7 +9,7 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: www_int.cc,v 1.8 2000/11/09 21:04:37 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: www_int.cc,v 1.9 2001/01/26 19:17:36 jimg Exp $"};
 
 #include <stdio.h>
 #include <assert.h>
@@ -38,7 +38,7 @@ WWWOutput wo(cout);
 static void
 usage(string name)
 {
-    cerr << "Usage: " << name << endl
+    cerr << "Usage: " << name << " [options] -- <URL>" << endl
 	 << "m: Print a MIME header. Use this with nph- style CGIs.\n"
 	 << "n: Print HTTP protocol and status for reply.\n"
 	 << "H: Location (URL) of the help file. Should end in '\'.\n"
@@ -343,12 +343,13 @@ main(int argc, char * argv[])
 	     cout << "<address>Send questions or comments to: <a href=\"mailto:support@unidata.ucar.edu\">support@unidata.ucar.edu</a></address>"
 		  << "</body></html>\n";
 	}
+      }
       catch (Error &e) {
 	string error_msg = e.get_error_message();
 	cout << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n"
 	     << "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n"
 	     << "<html><head><title>DODS Error</title>\n"
-	     << "<base href=\"" << HELP_LOCATION << "\">\n"
+	     << "<base href=\"" << help_location << "\">\n"
 	     << "</head>\n" 
 	     << "<body>\n"
 	     << "<h3>Error building the DODS dataset query form</h3>:\n"
@@ -365,6 +366,17 @@ main(int argc, char * argv[])
 }
 
 // $Log: www_int.cc,v $
+// Revision 1.9  2001/01/26 19:17:36  jimg
+// Merged with release-3-2.
+//
+// Revision 1.8.2.2  2001/01/26 04:04:33  jimg
+// Fixed a bug in the JavaScript code. Now the name of the JS variables
+// are prefixed by `dods_'. This means that DODS variables whose names are
+// also reserved words in JS work break the JS code.
+//
+// Revision 1.8.2.1  2000/11/10 23:43:09  jimg
+// Build changes.
+//
 // Revision 1.8  2000/11/09 21:04:37  jimg
 // Merged changes from release-3-1. There was a goof and a bunch of the
 // changes never made it to the branch. I merged the entire branch.

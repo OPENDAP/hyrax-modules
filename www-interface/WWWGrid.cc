@@ -15,7 +15,7 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: WWWGrid.cc,v 1.4 2000/10/03 20:07:20 jimg Exp $"};
+static char rcsid[] not_used = {"$Id: WWWGrid.cc,v 1.5 2001/01/26 19:17:36 jimg Exp $"};
 
 #include <assert.h>
 #include <iostream>
@@ -62,23 +62,22 @@ WWWGrid::print_val(ostream &os, string space, bool print_decl_p)
 {
     os << "<script type=\"text/javascript\">\n"
        << "<!--\n"
-       << name() << " = new dods_var(\"" << name() << "\", 1);\n"
-       << "DODS_URL.add_dods_var(" << name() << ");\n"
+       << name_for_js_code(name()) << " = new dods_var(\"" << name() 
+       << "\", \"" << name_for_js_code(name()) << "\", 1);\n"
+       << "DODS_URL.add_dods_var(" << name_for_js_code(name()) << ");\n"
        << "// -->\n"
        << "</script>\n";
 
     os << "<b>" 
-       << "<input type=\"checkbox\" name=\"get_" << name() << "\"\n"
-       << "onclick=\"" << name() << ".handle_projection_change(get_"
-       << name() << ")\">\n" 
+       << "<input type=\"checkbox\" name=\"get_" << name_for_js_code(name())
+       << "\"\n"
+       << "onclick=\"" << name_for_js_code(name()) 
+       << ".handle_projection_change(get_"
+       << name_for_js_code(name()) << ")\">\n" 
        << "<font size=\"+1\">" << name() << "</font>"
        << ": " << fancy_typename(this) << "</b><br>\n\n";
 
     Array *a = dynamic_cast<Array *>(array_var());
-#if 0
-    if (!a)
-	throw Error(unknown_error, "Expected an Array\n");
-#endif
 
     Pix p = a->first_dim();
     for (int i = 0; p; ++i, a->next_dim(p)) {
@@ -86,12 +85,13 @@ WWWGrid::print_val(ostream &os, string space, bool print_decl_p)
 	string n = a->dimension_name(p);
 	if (n != "")
 	    os << n << ":";
-	os << "<input type=\"text\" name=\"" << name() << "_" << i 
+	os << "<input type=\"text\" name=\"" << name_for_js_code(name())
+	   << "_" << i 
 	   << "\" size=8 onfocus=\"describe_index()\""
 	   << "onChange=\"DODS_URL.update_url()\">\n";
 	os << "<script type=\"text/javascript\">\n"
 	   << "<!--\n"
-	   << name() << ".add_dim(" << size << ");\n"
+	   << name_for_js_code(name()) << ".add_dim(" << size << ");\n"
 	   << "// -->\n"
 	   << "</script>\n";
     }
@@ -100,6 +100,14 @@ WWWGrid::print_val(ostream &os, string space, bool print_decl_p)
 }
 
 // $Log: WWWGrid.cc,v $
+// Revision 1.5  2001/01/26 19:17:36  jimg
+// Merged with release-3-2.
+//
+// Revision 1.4.2.1  2001/01/26 04:04:33  jimg
+// Fixed a bug in the JavaScript code. Now the name of the JS variables
+// are prefixed by `dods_'. This means that DODS variables whose names are
+// also reserved words in JS work break the JS code.
+//
 // Revision 1.4  2000/10/03 20:07:20  jimg
 // Moved Logs to the end of each file.
 //
