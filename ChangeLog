@@ -1,0 +1,5 @@
+1998-10-28  James Gallagher  <jimg@dcz.cvo.oneworld.com>
+
+	* Updated the config.guess and config.sub files using those found
+	in automake-1.3.
+
