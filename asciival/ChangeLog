@@ -1,3 +1,8 @@
+1998-11-20  James Gallagher  <jimg@dcz.cvo.oneworld.com>
+
+	* Fixed the fix for multiple newline separators. The code for
+	arrays was broken be the previous patch.
+
 1998-11-19  James Gallagher  <jimg@dcz.cvo.oneworld.com>
 
 	* Updated the grammar in README. Note the stuff about the newline
