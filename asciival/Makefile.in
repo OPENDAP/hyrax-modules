@@ -1,5 +1,5 @@
 
-# $Id: Makefile.in,v 1.16 1997/04/11 19:44:53 jimg Exp $
+# $Id: Makefile.in,v 1.17 1997/04/19 00:55:35 jimg Exp $
 
 @SET_MAKE@
 
@@ -105,7 +105,7 @@ install: install-client
 install-client: urlqueue writeval loaddods
 	$(INSTALL_PROGRAM) urlqueue $(etcdir)
 	$(INSTALL_PROGRAM) posturl.pl $(etcdir)
-	$(INSTALL_PROGRAM) -s writeval $(bindir)
+	$(INSTALL_PROGRAM) -s writeval $(etcdir)
 	$(INSTALL_PROGRAM) loaddods.mex* $(bindir)
 	$(INSTALL_PROGRAM) loaddods.m $(bindir)
 	$(INSTALL_PROGRAM) whodods.m $(bindir)
@@ -119,10 +119,16 @@ config_writeval.h: config_writeval.h.in
 
 # Tests
 
-check: writeval writeval-check
+check: writeval writeval-check 
 
 writeval-check: writeval
 	${RUNTEST} ${RUNTESTFLAGS} --tool writeval --srcdir testsuite
+
+loaddods-check: writeval
+	$(CC)  -c -g $(CFLAGS) $(CPPFLAGS) -DTEST_LOADDODS loaddods.c
+	$(CC) $(LDFLAGS) -g -o test-ldods loaddods.o variable.o queue.o \
+		-lefence
+	-rm loaddods.o
 
 # these tests all fail when das-test is linked with -lnew_debug.
 
