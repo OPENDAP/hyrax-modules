@@ -1003,7 +1003,7 @@ sub print_dods_error {
     print "Cache-Control: no-cache\n\n";
 
     print "Error {\n";
-    print "    code = 0;\n";
+    print "    code = 1001;\n";
     print "    message = \"$whole_msg\";\n";
     print "};";
 
@@ -1140,6 +1140,9 @@ if ($test) {
 1;
 
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.44  2005/04/18 17:04:34  pwest
+# setting error code on an error to 1001, was being set to 0
+#
 # Revision 1.43  2004/10/22 17:54:38  jimg
 # fule_uri() --> full_uri() when getting the version info. See bug 821.
 #
