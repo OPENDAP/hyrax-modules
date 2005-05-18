@@ -1,0 +1,7 @@
+
+Updated for version 3.5.0
+
+This version of the OPeNDAP server is built and distributed separately from
+the libdap library.
+
+$Id: NEWS,v 1.1 2005/05/18 22:17:41 jimg Exp $
