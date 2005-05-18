@@ -11,24 +11,25 @@
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
 # version 2.1 of the License, or (at your option) any later version.
-# 
+#
 # This library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 # You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
 
-# Send DODS loggin information to stdout. This will be run in response to a
-# status request to the server dispatch code (nph-dods).
+# Send dap-server loggin information to stdout. This will be run in response
+# to a status request to the server dispatch code (nph-dods).
 
 package dods_logging;
 require Exporter;
-@ISA = qw(Exporter);
+
+@ISA    = qw(Exporter);
 @EXPORT = qw(print_log_info);
 
 use strict;
@@ -36,39 +37,43 @@ use strict;
 my $test = 0;
 
 sub print_log_info {
-    my $access_log_location=shift;
-    my $error_log_location=shift;
+    my $access_log_location = shift;
+    my $error_log_location  = shift;
 
     print "Access information:\n";
-    open ACCESS, $access_log_location or print "Could not open the access log.\n";
+    open ACCESS, $access_log_location
+      or print "Could not open the access log.\n";
 
-    while(<ACCESS>) {
-	if (m/nph-dods/) {
-	    print;
-	}
+    while (<ACCESS>) {
+        if (m/nph-dods/) {
+            print;
+        }
     }
 
     print "Error information:\n";
     open ERROR, $error_log_location or print "Could not open the error log.\n";
 
-    while(<ERROR>) {
-	if (m/nph-dods/) {
-	    print;
-	}
+    while (<ERROR>) {
+        if (m/nph-dods/) {
+            print;
+        }
     }
 
     print "End of log information\n";
 }
 
 if ($test) {
-    &print_log_info("/var/log/httpd/access_log", "/var/log/httpd/error_log");
-    &print_log_info("/var/log/httpd/access_log", "/dev/null");
-    &print_log_info("/var/log/httpd/access_log", "/no/such/file.ever");
+    &print_log_info( "/var/log/httpd/access_log", "/var/log/httpd/error_log" );
+    &print_log_info( "/var/log/httpd/access_log", "/dev/null" );
+    &print_log_info( "/var/log/httpd/access_log", "/no/such/file.ever" );
 }
 
 1;
 
 # $Log: dods_logging.pm,v $
+# Revision 1.5  2005/05/18 21:33:16  jimg
+# Update for the new build/install.
+#
 # Revision 1.4  2004/01/22 17:29:37  jimg
 # Merged with release-3-4.
 #

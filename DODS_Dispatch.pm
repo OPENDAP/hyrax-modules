@@ -10,12 +10,12 @@
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
 # version 2.1 of the License, or (at your option) any later version.
-# 
+#
 # This library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -37,13 +37,13 @@
 # We've added to this set of programs. www_int and asciival are now required.
 # 5/31/2001 jhrg
 #
-# A Url is handled thus: 
+# A Url is handled thus:
 # http://machine/cgi-bin/nph-dods/file.nc.dods?val
 #                                 ^^^^^^^ ^^^^ ^^^
 #                                 |       |    \
-#                                 |       \     - Constraint expression 
-#                                 |        - selects filter    
-#                                 \			    		     
+#                                 |       \     - Constraint expression
+#                                 |        - selects filter
+#                                 \
 #      	       	       	           - File to open (arg 1)
 #
 # Shell meta characters: &;`'\"|*?~<>^()[]{}$\n\r
@@ -58,40 +58,42 @@ use dods_logging;
 use DODS_Cache;
 
 my $debug = 0;
-my $test = 0;
+my $test  = 0;
 
 # Error message for bad extensions.
 my $unknown_ext = "The URL extension did not match any that are known by this
 server. Below is a list of the five extensions that are be recognized by
 all DODS servers. If you think that the server is broken (that the URL you
 submitted should have worked), then please contact the\n";
+
 # Bad file/dataset types.
 my $unknown_p1 = "This DODS server does not know how to serve the dataset\n`";
 my $unknown_p2 = ".'
 It maybe that the server has not been configured for this type of dataset.
 Please double check the URL for errors and, if you think that the URL is
-correct, please contact the "; 
+correct, please contact the ";
+
 # Bad characters in the URL.
 my $bad_chars = "Bad characters in URL. If you think this URL is correct, 
 please contact the ";
 
-open(DBG_LOG, ">> /usr/local/tmp/dbg_log") if $debug > 0;
+open( DBG_LOG, ">> /usr/local/tmp/dbg_log" ) if $debug > 0;
 
 # Test if variables are tainted.
 # From Programming Perl, p.258. 12/11/2000 jhrg
 sub is_tainted {
     not eval {
-	join("",@_), kill 0;	# Perl warns about join; don't listen to it.
-	1;
+        join( "", @_ ), kill 0;    # Perl warns about join; don't listen to it.
+        1;
     };
 }
 
 sub is_directory {
-    return -d @_[0];
+    return -d $_[0];
 }
 
 sub is_file {
-    return -f @_[0];
+    return -f $_[0];
 }
 
 # Given a time string that's nominally RFC822/1023 compliant, return the
@@ -99,35 +101,45 @@ sub is_file {
 sub rfc822_to_time {
     use Time::Local;
     my $time_string = shift;
-    my ($dummy, $mday, $mon_name, $year, $hour, $min, $sec); 
-    my %mon = (Jan => 0, Feb => 1, Mar => 2, Apr => 3, May => 4, Jun => 5,
-	       Jul => 6, Aug => 7, Sep => 8, Oct => 9, Nov => 10, Dec => 11);
-    
-    print(DBG_LOG "In RFC822_to_time: $time_string.\n") if $debug >= 1;
+    my ( $dummy, $mday, $mon_name, $year, $hour, $min, $sec );
+    my %mon = (
+                Jan => 0,
+                Feb => 1,
+                Mar => 2,
+                Apr => 3,
+                May => 4,
+                Jun => 5,
+                Jul => 6,
+                Aug => 7,
+                Sep => 8,
+                Oct => 9,
+                Nov => 10,
+                Dec => 11
+    );
+
+    print( DBG_LOG "In RFC822_to_time: $time_string.\n" ) if $debug >= 1;
 
     # Look for two common date strings, otherwise punt. 12/11/2001 jhrg
-    if ($time_string =~ /[A-z]+ [A-z]+ [0-3][0-9] .*/) {
-	($dummy, $mon_name, $mday, $hour, $min, $sec, $year) 
-	    = split /[:, ]+/, $time_string;
-    }
-    elsif ($time_string =~ /[A-z]+,* [0-3][0-9] [A-z]+ .*/) {
-	($dummy, $mday, $mon_name, $year, $hour, $min, $sec) 
-	    = split /[:, ]+/, $time_string;
-    }
-    else {
-	print(DBG_LOG "unrecognizable time string: ", $time_string, "\n")
-	    if $debug > 0;
-	return -1;
+    if ( $time_string =~ /[A-z]+ [A-z]+ [0-3][0-9] .*/ ) {
+        ( $dummy, $mon_name, $mday, $hour, $min, $sec, $year ) = split /[:, ]+/,
+          $time_string;
+    } elsif ( $time_string =~ /[A-z]+,* [0-3][0-9] [A-z]+ .*/ ) {
+        ( $dummy, $mday, $mon_name, $year, $hour, $min, $sec ) = split /[:, ]+/,
+          $time_string;
+    } else {
+        print( DBG_LOG "unrecognizable time string: ", $time_string, "\n" )
+          if $debug > 0;
+        return -1;
     }
 
-    return timegm($sec, $min, $hour, $mday, $mon{$mon_name}, $year);
+    return timegm( $sec, $min, $hour, $mday, $mon{$mon_name}, $year );
 }
 
 # Security issues: All the environment variables used to get information
 # passed to programs as arguments should be screened for hidden shell
 # commands such as `cat /etc/passwd', `rm -r *', ... unless we can be
 # otherwise sure that embedded shell commands will never be run. The
-# environment variables used are: 
+# environment variables used are:
 #
 # HTTP_HOST, SERVER_NAME
 # SERVER_ADMIN
@@ -139,31 +151,32 @@ sub rfc822_to_time {
 # PATH_TRANSLATED: Used to get the file/dataset name.
 # HTTP_ACCEPT_ENCODING: Used to indicate that the client can understand
 # compressed responses.
-# HTTP_IF_MODIFIED_SINCE: Used with conditional requests. 
+# HTTP_IF_MODIFIED_SINCE: Used with conditional requests.
 
 sub initialize {
     my $self = shift;
-    my $data; 			# temp used to hold data from %ENV
+    my $data;    # temp used to hold data from %ENV
 
-    if ($debug >= 1) {
-	print(DBG_LOG "------------------------------------------------\n");
-	print(DBG_LOG "DODS Server debug log: ", scalar localtime, "\n");
+    if ( $debug >= 1 ) {
+        print( DBG_LOG "------------------------------------------------\n" );
+        print( DBG_LOG "DODS Server debug log: ", scalar localtime, "\n" );
     }
 
     # Read the configuration file.
-    my ($timeout, $cache_dir, $cache_size, $maintainer, @exclude) 
-	= get_params($self->{config_file});
+    my ( $timeout, $cache_dir, $cache_size, $maintainer, $curl, @exclude ) =
+      get_params( $self->{config_file} );
     $self->timeout($timeout);
     $self->cache_dir($cache_dir);
     $self->cache_size($cache_size);
     $self->maintainer($maintainer);
+    $self->curl($curl);
     $self->exclude(@exclude);
 
-    print(DBG_LOG "Timeout: ", $self->timeout(), "\n") if $debug > 1;
-    print(DBG_LOG "Cache Dir: ", $self->cache_dir(), "\n") if $debug > 1;
-    print(DBG_LOG "Cache Size: ", $self->cache_size(), "\n") if $debug > 1;
-    print(DBG_LOG "Maintainer: ", $self->maintainer(), "\n") if $debug > 1;
-    print(DBG_LOG "Exclude: ", $self->exclude(), "\n") if $debug > 1;
+    print( DBG_LOG "Timeout: ",    $self->timeout(),    "\n" ) if $debug > 1;
+    print( DBG_LOG "Cache Dir: ",  $self->cache_dir(),  "\n" ) if $debug > 1;
+    print( DBG_LOG "Cache Size: ", $self->cache_size(), "\n" ) if $debug > 1;
+    print( DBG_LOG "Maintainer: ", $self->maintainer(), "\n" ) if $debug > 1;
+    print( DBG_LOG "Exclude: ",    $self->exclude(),    "\n" ) if $debug > 1;
 
     # Process values read from the CGI 1.1 environment variables.
 
@@ -175,16 +188,18 @@ sub initialize {
     # The information in SERVER_PORT takes precedence over SERVER_NAME.
     # 06/04/03 jhrg
     $data = $ENV{SERVER_PORT};
+
     # Sanitize.
-    if ($data =~ /^[~0-9]*([0-9]*)[~0-9]*$/) {
-	$self->{server_port} = $1;
+    if ( $data =~ /^[~0-9]*([0-9]*)[~0-9]*$/ ) {
+        $self->{server_port} = $1;
     } else {
-	print(DBG_LOG "Error:SERVER_PORT '$ENV{SERVER_PORT}'\n");
-	$self->print_dods_error(
+        print( DBG_LOG "Error:SERVER_PORT '$ENV{SERVER_PORT}'\n" );
+        $self->print_dods_error(
 "Bad characters in the SERVER_PORT header. This may be a problem with
 your client or with the OPeNDAP server software. If you think the probelm
-is not in your client, please contact the ", 0);
-	exit 1;
+is not in your client, please contact the ", 0
+        );
+        exit 1;
     }
 
     # The HOST header may not be in the http request object, but if it is use
@@ -192,23 +207,25 @@ is not in your client, please contact the ", 0);
     # be in the HOST header. Patch suggested by Jason Thaxter
     # <thaxter@gomoos.org>, see bug #336. 12/27/2001 jhrg
     $data = $ENV{HTTP_HOST} || $ENV{SERVER_NAME};
+
     # Sanitize.
-    if ($data =~ /^([-\@\w.]*):?([0-9]*)$/) {
-	$self->{server_name} = $1; # $data now untainted
-	if ($self->{server_port} eq "" && $2 ne "") {
-	    $self->{server_port} = $2;
-	}
+    if ( $data =~ /^([-\@\w.]*):?([0-9]*)$/ ) {
+        $self->{server_name} = $1;    # $data now untainted
+        if ( $self->{server_port} eq "" && $2 ne "" ) {
+            $self->{server_port} = $2;
+        }
     } else {
-	$data = $ENV{HTTP_HOST} || $ENV{SERVER_NAME};
-	print(DBG_LOG "Error:HTTP_HOST or SERVER_NAME '$data'\n");
-	$self->print_dods_error(
+        $data = $ENV{HTTP_HOST} || $ENV{SERVER_NAME};
+        print( DBG_LOG "Error:HTTP_HOST or SERVER_NAME '$data'\n" );
+        $self->print_dods_error(
 "Bad characters in the HOST or SERVER_NAME header. This may be a problem with
 your client or with the OPeNDAP server software. If you think the probelm
-is not in your client, please contact the ", 0);
-	exit 1;
+is not in your client, please contact the ", 0
+        );
+        exit 1;
     }
-    print(DBG_LOG "server port: " , $self->{server_port}, "\n") if $debug > 1;
-    print(DBG_LOG "server name: " , $self->{server_name}, "\n") if $debug > 1;
+    print( DBG_LOG "server port: ", $self->{server_port}, "\n" ) if $debug > 1;
+    print( DBG_LOG "server name: ", $self->{server_name}, "\n" ) if $debug > 1;
 
     # This is a potential security hole! Our variable names allow a great
     # many characters that should never be fed into script. Make sure that the
@@ -216,21 +233,21 @@ is not in your client, please contact the ", 0);
     # that 2) it's used only with the list form of exec (which does not
     # interpret shell meta characters.
     $data = $ENV{QUERY_STRING};
-    if ($data =~ /^(.*)$/) {
-	$self->{query} = $1; # $data now untainted
+    if ( $data =~ /^(.*)$/ ) {
+        $self->{query} = $1;    # $data now untainted
     } else {
-	print(DBG_LOG "Error:QUERY_SRING '$ENV{QUERY_STRING}'\n");
-	$self->print_dods_error($bad_chars, 0);
-	exit 1;
+        print( DBG_LOG "Error:QUERY_SRING '$ENV{QUERY_STRING}'\n" );
+        $self->print_dods_error( $bad_chars, 0 );
+        exit 1;
     }
-    $self->{query} =~ tr/+/ /;		# Undo escaping by client.
-    print(DBG_LOG "query: " , $self->{query}, "\n") if $debug > 1;
+    $self->{query} =~ tr/+/ /;    # Undo escaping by client.
+    print( DBG_LOG "query: ", $self->{query}, "\n" ) if $debug > 1;
 
     # Get the filename's ext. This tells us which filter to run. It
     # will be something like `.dods' (for data) or `.dds' (for the DDS
     # object).
     $ext = $ENV{PATH_INFO};
-    print(DBG_LOG "PATH_INFO: ", $ext, "\n") if $debug > 1;
+    print( DBG_LOG "PATH_INFO: ", $ext, "\n" ) if $debug > 1;
 
     # old comment (04/28/03 jhrg):
     # Using `s' does not untaint $ext, but using a pattern match followed
@@ -243,34 +260,35 @@ is not in your client, please contact the ", 0);
     # check for shell meta characters in $filename, rejecting any that are
     # found. 10/21/02 jhrg
 
-    if ($ext =~ /^.*(help|version|stats)(\/?)$/) {
-	$ext = $1;
+    if ( $ext =~ /^.*(help|version|stats)(\/?)$/ ) {
+        $ext = $1;
     }
+
     # Special case URLs for directories. 1/3/2001 jhrg
     # Use PATH_TRANSLATED for the directory test. 7/13/2001 jhrg
-    elsif (is_directory($ENV{PATH_TRANSLATED})) {
-	$ext = "/";
-    }
-    elsif ($ext =~ /^.*\.(das|dds|dods|ascii|asc|version|ver|info|html)$/) {
-	$ext = $1;
-    }
-    else {
-	print(DBG_LOG "DODS_Dispatch.pm: ext: ", $ext, "\n");
-	# I spiffed up this error message as per Dan's bug report #680.
-    	$self->print_dods_error(
+    elsif ( is_directory( $ENV{PATH_TRANSLATED} ) ) {
+        $ext = "/";
+    } elsif ( $ext =~ /^.*\.(das|dds|dods|ascii|asc|version|ver|info|html)$/ ) {
+        $ext = $1;
+    } else {
+        print( DBG_LOG "DODS_Dispatch.pm: ext: ", $ext, "\n" );
+
+        # I spiffed up this error message as per Dan's bug report #680.
+        $self->print_dods_error(
 
 "Bad characters in the URL's suffix. The server expects the filename part of
 the URL to end in one of das, dds, dods, ascii, info, html or version. These
 suffixes select different responses from the server. To ask the server for a
 directory listing, end the URL with a slash; See the DODS/OPeNDAP User Guide
 or ask the server for help (append '/help' or '.help' to any URL) to get more
-information. If you think this is a server problem please contanct the\n");
+information. If you think this is a server problem please contanct the\n"
+        );
 
-	exit(1);
+        exit(1);
     }
 
     $self->{ext} = $ext;
-    print(DBG_LOG "ext: ", $self->{ext}, "\n") if $debug > 1;
+    print( DBG_LOG "ext: ", $self->{ext}, "\n" ) if $debug > 1;
 
     # REQUEST_URI is a convenience supported by apache but not Netscape's
     # FastTrack server. See bug 111. 4/30/2001 jhrg
@@ -278,60 +296,63 @@ information. If you think this is a server problem please contanct the\n");
     # Note that we must differentiate between URLs for directories and those
     # for DODS responses. 05/07/03 jhrg
     my $request = $ENV{SCRIPT_NAME} . $ENV{PATH_INFO};
-    if ($ENV{QUERY_STRING} ne "") {
-	$request .= "?" . $ENV{QUERY_STRING};
+    if ( $ENV{QUERY_STRING} ne "" ) {
+        $request .= "?" . $ENV{QUERY_STRING};
     }
 
-    if ($self->{ext} eq "/") {
-	if ($request !~ m@^.*$ext$@) {
-	    $request .= $ext;
-	    print(DBG_LOG "Hacked request ext: ", $request, "\n")
-		if $debug > 1;
-	}
-	$request =~ m@(.*)$self->{ext}@;
-	$self->{request_uri} = $1 # Assignment must be right after match.
+    if ( $self->{ext} eq "/" ) {
+        if ( $request !~ m@^.*$ext$@ ) {
+            $request .= $ext;
+            print( DBG_LOG "Hacked request ext: ", $request, "\n" )
+              if $debug > 1;
+        }
+        $request =~ m@(.*)$self->{ext}@;
+        $self->{request_uri} = $1    # Assignment must be right after match.
     } else {
-	$request =~ m@(.*)\.$self->{ext}@;
-	$self->{request_uri} = $1
+        $request =~ m@(.*)\.$self->{ext}@;
+        $self->{request_uri} = $1;
     }
-    print(DBG_LOG "Request URI: $self->{request_uri}\n") if $debug > 1;
+    print( DBG_LOG "Request URI: $self->{request_uri}\n" ) if $debug > 1;
 
     # Now we can set the full_uri.
-    $self->{full_uri} = "http://" . $self->server_name() . $self->port()
-	. $self->request_uri();
+    $self->{full_uri} =
+      "http://" . $self->server_name() . $self->port() . $self->request_uri();
 
     # Now extract the filename part of the path.
     my $path_info = $ENV{PATH_INFO};
-    print(DBG_LOG "Second PATH_INFO access: ", $ENV{PATH_INFO}, "\n") if
-	$debug > 1;
+    print( DBG_LOG "Second PATH_INFO access: ", $ENV{PATH_INFO}, "\n" )
+      if $debug > 1;
+
     # Sanitize.
-    if ($ext eq "/") {
-	# I removed a '\.' in the patern below to get this to work with
-	# directories. The original pattern was @(.*)\.$ext@ 10/22/02 jhrg
-	# However, *that* doesn't work with other accesses and we *have* to
-	# use pattern match and assignment to sanitze path_info. 01/28/03 jhrg
-	if ($path_info !~ m@^.*$ext$@) {
-	    $path_info .= $ext;
-	    print(DBG_LOG "Hacked ext: ", $path_info, "\n") if $debug > 1;
-	}
-	$path_info =~ m@(.*)$ext@;
-	$path_info = $1;
-	print(DBG_LOG "path_info fraction (re)assigned to the variable: ",
-	      $path_info, "\n") if $debug > 1;	
-    }
-    else {
-	$path_info =~ m@(.*)\.$ext@;
-	$path_info = $1;
-	print(DBG_LOG "path_info fraction (re)assigned to the variable: ",
-	      $path_info, "\n") if $debug > 1;	
+    if ( $ext eq "/" ) {
+
+        # I removed a '\.' in the patern below to get this to work with
+        # directories. The original pattern was @(.*)\.$ext@ 10/22/02 jhrg
+        # However, *that* doesn't work with other accesses and we *have* to
+        # use pattern match and assignment to sanitze path_info. 01/28/03 jhrg
+        if ( $path_info !~ m@^.*$ext$@ ) {
+            $path_info .= $ext;
+            print( DBG_LOG "Hacked ext: ", $path_info, "\n" ) if $debug > 1;
+        }
+        $path_info =~ m@(.*)$ext@;
+        $path_info = $1;
+        print( DBG_LOG "path_info fraction (re)assigned to the variable: ",
+               $path_info, "\n" )
+          if $debug > 1;
+    } else {
+        $path_info =~ m@(.*)\.$ext@;
+        $path_info = $1;
+        print( DBG_LOG "path_info fraction (re)assigned to the variable: ",
+               $path_info, "\n" )
+          if $debug > 1;
     }
     $self->{path_info} = $path_info;
 
-    print(DBG_LOG "path_info: ", $self->{path_info}, "\n") if $debug > 1;
+    print( DBG_LOG "path_info: ", $self->{path_info}, "\n" ) if $debug > 1;
 
     # Figure out which type of handler to use when processing this request.
     # The config_file field is set in new(). Note that we only use the
-    # handlers to generate the DAP objects and ver and info responses; 
+    # handlers to generate the DAP objects and ver and info responses;
     # everything else is passed off to a helper or taken care of by this
     # script. However, we ask for the handler for all of the extensions to
     # make sure that the server (via dods.rc) is configured for the
@@ -342,100 +363,109 @@ information. If you think this is a server problem please contanct the\n");
     # Slight modification: If the handler is null ("") and the extension is a
     # slash ("/"), that's OK. See Bug 334. 12/27/2001 jhrg
 
-    $self->{script} = handler_name($self->{path_info}, $self->{config_file});
-    if ($self->{ext} ne "/" && $self->{ext} ne "stats" 
-	&& $self->{ext} ne "version" && $self->{ext} ne "help"
-	&& $self->{script} eq "") {
-	$self->print_dods_error("${unknown_p1}${path_info}${unknown_p2}", 0);
-	exit(1);
+    $self->{script} = handler_name( $self->{path_info}, $self->{config_file} );
+    if (    $self->{ext} ne "/"
+         && $self->{ext} ne "stats"
+         && $self->{ext} ne "version"
+         && $self->{ext} ne "help"
+         && $self->{script} eq "" )
+    {
+        $self->print_dods_error( "${unknown_p1}${path_info}${unknown_p2}", 0 );
+        exit(1);
     }
 
     print DBG_LOG "Server type: $self->{script}\n" if $debug > 1;
 
     # Look for the Accept-Encoding header. Does it exist? If so, store the
-    # value. 
+    # value.
     $data = $ENV{HTTP_ACCEPT_ENCODING};
-    if ($data =~ /^.*(deflate).*$/) {
- 	$self->{encoding} = "deflate"; # $data now untainted
+    if ( $data =~ /^.*(deflate).*$/ ) {
+        $self->{encoding} = "deflate";    # $data now untainted
     } else {
-	$self->{encoding} = "";
+        $self->{encoding} = "";
     }
 
     # Look for the If-Modified-Since header. Does it exist? If so, get the
     # date and convert it to Unix time.
-    if ($ENV{HTTP_IF_MODIFIED_SINCE} ne "") {
-	$data = $ENV{HTTP_IF_MODIFIED_SINCE};
-	if ($data =~ /^([-\w0-9\s\t,;:.=]+)$/) {
-	    $self->{if_modified_since} = rfc822_to_time($1);
-	} else {
-	    print(DBG_LOG "Error:IF_MODIFIED_SINCE '$ENV{HTTP_IF_MODIFIED_SINCE}'\n");
-	    $self->print_dods_error(
+    if ( $ENV{HTTP_IF_MODIFIED_SINCE} ne "" ) {
+        $data = $ENV{HTTP_IF_MODIFIED_SINCE};
+        if ( $data =~ /^([-\w0-9\s\t,;:.=]+)$/ ) {
+            $self->{if_modified_since} = rfc822_to_time($1);
+        } else {
+            print( DBG_LOG
+                   "Error:IF_MODIFIED_SINCE '$ENV{HTTP_IF_MODIFIED_SINCE}'\n" );
+            $self->print_dods_error(
 "Bad characters in the IF_MODIFIED_SINCE header. This may be a problem with
 your client or with the OPeNDAP server software. If you think the probelm
-is not in your client, please contact the ", 0);
-	    exit 1;
-	}
-    } 
-    else {
-	$self->{if_modified_since} = -1;
+is not in your client, please contact the ", 0
+            );
+            exit 1;
+        }
+    } else {
+        $self->{if_modified_since} = -1;
     }
 
-    print(DBG_LOG "if modified since value: ", $self->{if_modified_since},
-	  "\n") if $debug > 1;
+    print( DBG_LOG "if modified since value: ",
+           $self->{if_modified_since}, "\n" )
+      if $debug > 1;
 
-    print (DBG_LOG "PATH_TRANSLATED: ", $ENV{PATH_TRANSLATED}, "\n") 
-	if $debug > 1; 
+    print( DBG_LOG "PATH_TRANSLATED: ", $ENV{PATH_TRANSLATED}, "\n" )
+      if $debug > 1;
 
     # Here's where we need to set $filename so that it's something that
     # DODS_Cache can be hacked to deal with. If $filename is set to
     # $PATH_INFO, we should be all set. We process a DODSter URL in much the
     # same way a compressed local file is processed (see nph-dods.in).
     # 10/22/02 jhrg
-    if ($self->{script} eq "jg" || is_dodster($ENV{PATH_INFO})) {
-	$filename = $ENV{PATH_INFO};
-	# For both DODSter and JGOFS URLs, remove PATH_INFO's leading slash.
-	if ($filename =~ m@/(.*)@) {
-	    $filename = $1;
-	}
-    }
-    else {
-	$filename = $ENV{PATH_TRANSLATED};
-	if ($filename =~ m@(.*)@) {
-	    $filename = $1;
-	}
+    if ( $self->{script} eq "jg" || is_dodster( $ENV{PATH_INFO} ) ) {
+        $filename = $ENV{PATH_INFO};
+
+        # For both DODSter and JGOFS URLs, remove PATH_INFO's leading slash.
+        if ( $filename =~ m@/(.*)@ ) {
+            $filename = $1;
+        }
+    } else {
+        $filename = $ENV{PATH_TRANSLATED};
+        if ( $filename =~ m@(.*)@ ) {
+            $filename = $1;
+        }
     }
 
     print DBG_LOG "filename(1): $filename\n" if $debug > 1;
 
     # Simpler regex. 12/11/2000 jhrg
-    if ($self->{ext} eq "help" || $self->{ext} eq "version" 
-	|| $self->{ext} eq "stats") {
-	$filename = "";
-    }
-    # Added `:' to support DODSter. For that case, $filename will be a URL.
-    # 10/22/02 jhrg
-    elsif ($filename =~ /^([-\/.\w:]+)\.$self->{ext}.*$/) { # match - / . and words
-	$filename = $1;
-    }
-    # This makes directory URLs that end in `?M=A, et c., work by separating
-    # the pseudo-query part from the `filename' part. 12/11/2001 jhrg
-    elsif ($self->{ext} eq "/" && $filename =~ /^([-\/.\w]+).*$/) {
-	$filename = $1;
-    }
-    else {
-	printf(DBG_LOG "filename: %s\n", $filename) if $debug > 1;
-	$self->print_dods_error($bad_chars, 0);
-	exit 1;
+    if (    $self->{ext} eq "help"
+         || $self->{ext} eq "version"
+         || $self->{ext} eq "stats" )
+    {
+        $filename = "";
     }
 
-    printf(DBG_LOG "filename(2): %s\n", $filename) if $debug > 1;
+    # Added `:' to support DODSter. For that case, $filename will be a URL.
+    # 10/22/02 jhrg
+    elsif ( $filename =~ /^([-\/.\w:]+)\.$self->{ext}.*$/ )
+    {    # match - / . and words
+        $filename = $1;
+    }
+
+    # This makes directory URLs that end in `?M=A, et c., work by separating
+    # the pseudo-query part from the `filename' part. 12/11/2001 jhrg
+    elsif ( $self->{ext} eq "/" && $filename =~ /^([-\/.\w]+).*$/ ) {
+        $filename = $1;
+    } else {
+        printf( DBG_LOG "filename: %s\n", $filename ) if $debug > 1;
+        $self->print_dods_error( $bad_chars, 0 );
+        exit 1;
+    }
+
+    printf( DBG_LOG "filename(2): %s\n", $filename ) if $debug > 1;
 
     $self->{filename} = $filename;
 }
 
 # Extract various environment variables used to pass `parameters' encoded in
 # URL. The two arguments to this ctor are the current revision of the caller
-# and an email address of the dataset/server maintainer. 
+# and an email address of the dataset/server maintainer.
 #
 # Note that the $type variable is used so that DODS_Dispatch my be
 # sub-classed. See the perlobj man page for more information. 7/27/98 jhrg
@@ -448,19 +478,19 @@ is not in your client, please contact the ", 0);
 # 11/19/03 jhrg
 #
 # At some point a fourth param was added so that it would be possible to pass
-# into this object the name of the configuration file. 10/21/02 jhrg 
+# into this object the name of the configuration file. 10/21/02 jhrg
 # Now the dods.rc handles the parameters and so the other two arguments went
 # away. 11/19/03 jhrg
 sub new {
-    my $type = shift;
-    my $caller_revision = shift;
+    my $type               = shift;
+    my $caller_revision    = shift;
     my $server_config_file = shift;
 
-    my $self = {};  
+    my $self = {};
     bless $self, $type;
 
     $self->{caller_revision} = $caller_revision;
-    $self->{config_file} = $server_config_file;
+    $self->{config_file}     = $server_config_file;
 
     $self->initialize();
 
@@ -486,11 +516,10 @@ sub server_port {
 # without any port number. 05/07/03 jhrg
 sub port {
     my $self = shift;
-    if ($self->{server_port} == 80 || $self->{server_port} == "") {
-	return "";
-    }
-    else {
-	return ":$self->{server_port}";
+    if ( $self->{server_port} == 80 || $self->{server_port} == "" ) {
+        return "";
+    } else {
+        return ":$self->{server_port}";
     }
 }
 
@@ -509,7 +538,7 @@ sub request_uri {
 }
 
 # The full_uri is the whole URI, starting with http:// and continuing until,
-# but not including, the DODS request extension. 
+# but not including, the DODS request extension.
 # Example: http://dods.org/dods-3.4/nph-dods/data/dataset.hdf.dods?x,y,z
 # full_uri: http://dods.org/dods-3.4/nph-dods/data/dataset.hdf
 sub full_uri {
@@ -518,164 +547,175 @@ sub full_uri {
 }
 
 sub maintainer {
-    my $self = shift;
-    my $value = shift; 		# Optional, use to set.
+    my $self  = shift;
+    my $value = shift;    # Optional, use to set.
 
-    if ($value eq "") {
-	return $self->{maintainer};
+    if ( $value eq "" ) {
+        return $self->{maintainer};
     } else {
-	return $self->{maintainer} = $value;
+        return $self->{maintainer} = $value;
     }
 }
 
 sub exclude {
-    my $self = shift;
+    my $self   = shift;
     my $values = @_;
 
-    if ($#value == 0) {
-	return $self->{exclude}
+    if ( $#value == 0 ) {
+        return $self->{exclude};
     } else {
-	return $self->{exclude} = $values;
+        return $self->{exclude} = $values;
     }
 }
 
 # Return the query string given with the URL.
 sub query {
-    my $self = shift;
-    my $query = shift;		# The second arg is optional
+    my $self  = shift;
+    my $query = shift;    # The second arg is optional
 
-    if ($query eq "") {
-	return $self->{query};
+    if ( $query eq "" ) {
+        return $self->{query};
     } else {
-	return $self->{query} = $query;
+        return $self->{query} = $query;
     }
-}    
+}
 
 # If the second argument is given, use it to set the filename member.
 sub filename {
-    my $self = shift;
-    my $filename = shift;	# The second arg is optional
+    my $self     = shift;
+    my $filename = shift;    # The second arg is optional
 
-    if ($filename eq "") {
-	return $self->{filename};
+    if ( $filename eq "" ) {
+        return $self->{filename};
     } else {
-	return $self->{filename} = $filename;
+        return $self->{filename} = $filename;
     }
 }
 
 sub ext {
-    my $self = shift;
-    my $extension = shift;	# The second arg is optional
+    my $self      = shift;
+    my $extension = shift;    # The second arg is optional
 
-    if ($extension eq "") {
-	return $self->{ext};
+    if ( $extension eq "" ) {
+        return $self->{ext};
     } else {
-	return $self->{ext} = $extension;
+        return $self->{ext} = $extension;
     }
 }
 
 sub cgi_dir {
-    my $self = shift;
-    my $cgi_dir = shift;	# The second arg is optional
+    my $self    = shift;
+    my $cgi_dir = shift;      # The second arg is optional
 
-    if ($cgi_dir eq "") {
-	return $self->{cgi_dir};
+    if ( $cgi_dir eq "" ) {
+        return $self->{cgi_dir};
     } else {
-	return $self->{cgi_dir} = $cgi_dir;
+        return $self->{cgi_dir} = $cgi_dir;
     }
 }
 
 sub cache_dir {
-    my $self = shift;
-    my $cache_dir = shift;	# The second arg is optional
+    my $self      = shift;
+    my $cache_dir = shift;    # The second arg is optional
 
-    if ($cache_dir eq "") {
-	return $self->{cache_dir};
+    if ( $cache_dir eq "" ) {
+        return $self->{cache_dir};
     } else {
-	return $self->{cache_dir} = $cache_dir;
+        return $self->{cache_dir} = $cache_dir;
     }
 }
 
 sub cache_size {
-    my $self = shift;
-    my $cache_size = shift;	# The second arg is optional
+    my $self       = shift;
+    my $cache_size = shift;    # The second arg is optional
 
-    if ($cache_size == 0) {
-	return $self->{cache_size};
+    if ( $cache_size == 0 ) {
+        return $self->{cache_size};
     } else {
-	return $self->{cache_size} = $cache_size;
+        return $self->{cache_size} = $cache_size;
     }
 }
 
 sub timeout {
-    my $self = shift;
-    my $timeout = shift;	# The second arg is optional
+    my $self    = shift;
+    my $timeout = shift;       # The second arg is optional
 
-    if ($timeout eq "") {
-	return $self->{timeout};
+    if ( $timeout eq "" ) {
+        return $self->{timeout};
     } else {
-	return $self->{timeout} = $timeout;
+        return $self->{timeout} = $timeout;
+    }
+}
+
+sub curl {
+    my $self = shift;
+    my $curl = shift;          # The second arg is optional
+
+    if ( $curl eq "" ) {
+        return $self->{curl};
+    } else {
+        return $self->{curl} = $curl;
     }
 }
 
 sub access_log {
-    my $self = shift;
-    my $access_log = shift;	# The second arg is optional
+    my $self       = shift;
+    my $access_log = shift;    # The second arg is optional
 
-    if ($access_log eq "") {
-	return $self->{access_log};
+    if ( $access_log eq "" ) {
+        return $self->{access_log};
     } else {
-	return $self->{access_log} = $access_log;
+        return $self->{access_log} = $access_log;
     }
 }
 
 sub error_log {
-    my $self = shift;
-    my $error_log = shift;	# The second arg is optional
+    my $self      = shift;
+    my $error_log = shift;     # The second arg is optional
 
-    if ($error_log eq "") {
-	return $self->{error_log};
+    if ( $error_log eq "" ) {
+        return $self->{error_log};
     } else {
-	return $self->{error_log} = $error_log;
+        return $self->{error_log} = $error_log;
     }
 }
 
 sub machine_names {
-    my $self = shift;
-    my $machine_names = shift;	# The second arg is optional
+    my $self          = shift;
+    my $machine_names = shift;    # The second arg is optional
 
-    if ($machine_names eq "") {
-	return $self->{machine_names};
+    if ( $machine_names eq "" ) {
+        return $self->{machine_names};
     } else {
-	return $self->{machine_names} = $machine_names;
+        return $self->{machine_names} = $machine_names;
     }
 }
 
 sub is_stat_on {
-    my $self = shift;
+    my $self  = shift;
     my $value = shift;
 
-    if ($value eq "") {
-	return $self->{is_stat_on};
+    if ( $value eq "" ) {
+        return $self->{is_stat_on};
     } else {
-	return $self->{is_stat_on} = $value;
+        return $self->{is_stat_on} = $value;
     }
 }
 
 sub script {
-    my $self = shift;
-    my $script = shift;		# The second arg is optional
+    my $self   = shift;
+    my $script = shift;    # The second arg is optional
 
-    if ($script eq "") {
-	return $self->{script};
+    if ( $script eq "" ) {
+        return $self->{script};
     } else {
-	return $self->{script} = $script;
+        return $self->{script} = $script;
     }
 }
-    
+
 # Unlike the other access or functions you *cannot* set the value encoding. It
 # can only be set by the request header. The same is true for
-# if_modified_since. 
+# if_modified_since.
 
 sub encoding {
     my $self = shift;
@@ -685,31 +725,31 @@ sub encoding {
 
 sub if_modified_since {
     my $self = shift;
-    
+
     return $self->{if_modified_since};
 }
 
 # Private. Get the remote thing. The param $url should be scanned for shell
-# meta-characters. 
+# meta-characters.
 sub get_url {
     my $self = shift;
-    my $url = shift;
+    my $url  = shift;
 
-    my $curl = "./curl";
-
-    my $transfer = $curl . " --silent " . $url . " |";
+    my $transfer = $self->curl() . " --silent " . $url . " |";
     my $buf;
-    print(DBG_LOG "About to run curl: $transfer\n") if $debug > 1;
+    print( DBG_LOG "About to run curl: $transfer\n" ) if $debug > 1;
+
     # Use the HTML error message format since this is only used via a web
     # browser, never a client built with our library. 11/21/03 jhrg
-    open CURL, $transfer 
-	or print_error_message($self, "Could not transfer $url: \n\
-Unable to open the transfer utility (curl).\n", 0);
-    print(DBG_LOG "Back from curl\n") if $debug > 1;
+    open CURL, $transfer
+      or print_error_message(
+        $self, "Could not transfer $url: \n\
+Unable to open the transfer utility (curl).\n", 0 );
+    print( DBG_LOG "Back from curl\n" ) if $debug > 1;
     my $offset = 0;
     my $bytes;
-    while ($bytes = read CURL, $buf, 20, $offset) {
-	$offset += $bytes;
+    while ( $bytes = read CURL, $buf, 20, $offset ) {
+        $offset += $bytes;
     }
 
     close CURL;
@@ -723,126 +763,144 @@ sub command {
     # If the user wants to see info, version or help information, provide
     # that. Otherwise, form the name of the filter program to run by
     # catenating the script name, underscore and the ext.
-    if ($self->ext() eq "info") {
-	# I modified this so that the caller revision and cache directory
-	# information is passed to usage so that it can pass it on to the
-	# filter programs. Passing the cache dir info addresses bug #453
-	# where the HDF server was writing its cache files to the data
-	# directory (because that's the default). 6/5/2002 jhrg
-	$server_pgm = $self->cgi_dir() . "usage";
-	$options = "'-v " .$self->caller_revision() . " ";
-	if ($self->cache_dir() ne "") {
-	    $options .= "-r " . $self->cache_dir() . "'";
-	}
- 	$full_script = $self->cgi_dir() . $self->script();
-	@command = ($server_pgm, $options, $self->filename(), $full_script);
-    } elsif ($self->ext() eq "ver" || $self->ext() eq "version") {
-	# if there's no filename assume `.../nph-dods/version/'. 6/8/2001 jhrg
-	if ($self->filename() eq "") {
-	    $self->send_dods_version();
-	    exit(0);
-	} else {
-	    $server_pgm = $self->cgi_dir() . $self->script() . "_handler";
-	    @command = ($server_pgm, "-o", "Version", "-u", $self->full_uri(),
-			$self->filename());
-	}
-    } elsif ($self->ext() eq "stats") {
-	print DBG_LOG "Found stats\n" if $debug > 0;
-	if ($self->is_stat_on()) {
-	    $self->send_dods_stats();
-	}
-	exit(0);
-    } elsif ($self->ext() eq "help") {
-	$self->print_help_message();
-	exit(0);
-    } elsif ($self->ext() eq "/") {
-	use FilterDirHTML;	# FilterDirHTML is a subclass of HTML::Filter
+    if ( $self->ext() eq "info" ) {
 
-	# Build URL without CGI in it and use that to get the directory
-	# listing from the web server.
+        # I modified this so that the caller revision and cache directory
+        # information is passed to usage so that it can pass it on to the
+        # filter programs. Passing the cache dir info addresses bug #453
+        # where the HDF server was writing its cache files to the data
+        # directory (because that's the default). 6/5/2002 jhrg
+        $server_pgm = $self->cgi_dir() . "usage";
+        $options    = "'-v " . $self->caller_revision() . " ";
+        if ( $self->cache_dir() ne "" ) {
+            $options .= "-r " . $self->cache_dir() . "'";
+        }
+        $full_script = $self->cgi_dir() . $self->script();
+        @command = ( $server_pgm, $options, $self->filename(), $full_script );
+    } elsif ( $self->ext() eq "ver" || $self->ext() eq "version" ) {
 
- 	my $url = "http://" . $self->server_name() . $self->port()
- 	          . $self->path_info();
-	# Make sure URL ends in a slash. 10/12/2001 jhrg
-	if ($self->path_info() !~ m@^.*/$@) {
-	    print(DBG_LOG "In ext == `/', adding trailing slash.\n")
-		if $debug > 1;
-	    $url .= "/";
-	}
-	if ($self->query() ne "") {
-	    $url .= "?" . $self->query();
-	}
+        # if there's no filename assume `.../nph-dods/version/'. 6/8/2001 jhrg
+        if ( $self->filename() eq "" ) {
+            $self->send_dods_version();
+            exit(0);
+        } else {
+            $server_pgm = $self->cgi_dir() . $self->script() . "_handler";
+            @command = (
+                         $server_pgm, "-o", "Version", "-u", $self->full_uri(),
+                         $self->filename()
+            );
+        }
+    } elsif ( $self->ext() eq "stats" ) {
+        print DBG_LOG "Found stats\n" if $debug > 0;
+        if ( $self->is_stat_on() ) {
+            $self->send_dods_stats();
+        }
+        exit(0);
+    } elsif ( $self->ext() eq "help" ) {
+        $self->print_help_message();
+        exit(0);
+    } elsif ( $self->ext() eq "/" ) {
+        use FilterDirHTML;    # FilterDirHTML is a subclass of HTML::Filter
 
-	print(DBG_LOG "Getting the directory listing using: $url\n")
-	    if $debug > 1;
+        # Build URL without CGI in it and use that to get the directory
+        # listing from the web server.
 
-	my $directory_html = &get_url($self, $url);
+        my $url =
+          "http://" . $self->server_name() . $self->port() . $self->path_info();
 
-	print(DBG_LOG "Raw directory HTML:\n$directory_html\n\n") 
-	    if $debug > 1;
+        # Make sure URL ends in a slash. 10/12/2001 jhrg
+        if ( $self->path_info() !~ m@^.*/$@ ) {
+            print( DBG_LOG "In ext == `/', adding trailing slash.\n" )
+              if $debug > 1;
+            $url .= "/";
+        }
+        if ( $self->query() ne "" ) {
+            $url .= "?" . $self->query();
+        }
 
-	# Parse the HTML directory page
-	my $server_url = $self->full_uri();
+        print( DBG_LOG "Getting the directory listing using: $url\n" )
+          if $debug > 1;
 
-	# Make sure server_url ends in a slash. 10/12/2001 jhrg
-	if ($server_url !~ m@^.*/$@) {
-	    print(DBG_LOG "In ext == `/', adding trailing slash(2).\n")
-		if $debug > 1;
-	    $server_url .= "/";
-	}
-	if ($self->query() ne "") {
-	    ($server_url) = ($server_url =~ m@(.*)\?.*@);
-	}
-	my $excludes = $self->exclude();
-	my $filtered_dir_html 
-	    = new FilterDirHTML($server_url, $url,
-				dataset_regexes("./dods.rc", @$excludes)); 
+        my $directory_html = &get_url( $self, $url );
 
-	# Print HTTP response headers. 06/25/04 jhrg
-	print(STDOUT "HTTP/1.1 200 OK\n");
-	print(STDOUT "Content-Type: text/html\n\n");
+        print( DBG_LOG "Raw directory HTML:\n$directory_html\n\n" )
+          if $debug > 1;
 
-	$filtered_dir_html->parse($directory_html);
-	$filtered_dir_html->eof;
-	exit(0);		# Leave without returning @command!
-    } elsif ($self->ext() eq "das" || $self->ext() eq "dds" 
-	     || $self->ext() eq "dods"|| $self->ext() eq "ddx" ) {
-	$server_pgm = $self->cgi_dir() . $self->script() . "_handler";
- 	@command = ($server_pgm, "-v", $self->caller_revision(),
-		    "-o", $self->ext(), "-u", $self->full_uri(),
-		    $self->filename());
-  	if ($self->query() ne "") {
-  	    @command = (@command, "-e", $self->query());
-  	}
-  	if ($self->cache_dir() ne "") {
-  	    @command = (@command, "-r", $self->cache_dir());
-  	}
-  	if ($self->if_modified_since() != -1) {
-  	    @command = (@command, "-l", $self->if_modified_since());
-  	}
-  	if ($self->encoding() =~ /deflate/) {
-  	    @command = (@command, "-c");
-  	}
-  	if ($self->timeout() != 0) {
-  	    @command = (@command, "-t", $self->timeout());
-  	}
-    } elsif ($self->ext() eq "ascii" || $self->ext() eq "asc") {
-	my $dods_url = "http://" . $self->server_name() . $self->port()
-                     . $self->request_uri() . "?" . $self->query();
-	@command = ("./asciival", "-m", "--", $dods_url);
-    } elsif ($self->ext() eq "netcdf") {
-	my $dods_url = "http://" . $self->server_name() . $self->port()
-                     . $self->request_uri() . "?" . $self->query();
-	@command = ("./dods2ncdf", "-m", "-p", "--", $dods_url);
-    } elsif ($self->ext() eq "html") {
-	@command = ("./www_int", "-m", "-n", "--",
-		    $self->full_uri() . "?" . $self->query());
+        # Parse the HTML directory page
+        my $server_url = $self->full_uri();
+
+        # Make sure server_url ends in a slash. 10/12/2001 jhrg
+        if ( $server_url !~ m@^.*/$@ ) {
+            print( DBG_LOG "In ext == `/', adding trailing slash(2).\n" )
+              if $debug > 1;
+            $server_url .= "/";
+        }
+        if ( $self->query() ne "" ) {
+            ($server_url) = ( $server_url =~ m@(.*)\?.*@ );
+        }
+        my $excludes          = $self->exclude();
+        my $filtered_dir_html =
+          new FilterDirHTML( $server_url, $url,
+                             dataset_regexes( "./dods.rc", @$excludes ) );
+
+        # Print HTTP response headers. 06/25/04 jhrg
+        print( STDOUT "HTTP/1.1 200 OK\n" );
+        print( STDOUT "Content-Type: text/html\n\n" );
+
+        $filtered_dir_html->parse($directory_html);
+        $filtered_dir_html->eof;
+        exit(0);    # Leave without returning @command!
+    } elsif (    $self->ext() eq "das"
+              || $self->ext() eq "dds"
+              || $self->ext() eq "dods"
+              || $self->ext() eq "ddx" )
+    {
+        $server_pgm = $self->cgi_dir() . $self->script() . "_handler";
+        @command = (
+                     $server_pgm, "-v", $self->caller_revision(),
+                     "-o", $self->ext(), "-u", $self->full_uri(),
+                     $self->filename()
+        );
+        if ( $self->query() ne "" ) {
+            @command = ( @command, "-e", $self->query() );
+        }
+        if ( $self->cache_dir() ne "" ) {
+            @command = ( @command, "-r", $self->cache_dir() );
+        }
+        if ( $self->if_modified_since() != -1 ) {
+            @command = ( @command, "-l", $self->if_modified_since() );
+        }
+        if ( $self->encoding() =~ /deflate/ ) {
+            @command = ( @command, "-c" );
+        }
+        if ( $self->timeout() != 0 ) {
+            @command = ( @command, "-t", $self->timeout() );
+        }
+    } elsif ( $self->ext() eq "ascii" || $self->ext() eq "asc" ) {
+        my $dods_url = "http://"
+          . $self->server_name()
+          . $self->port()
+          . $self->request_uri() . "?"
+          . $self->query();
+        @command = ( "./asciival", "-m", "--", $dods_url );
+    } elsif ( $self->ext() eq "netcdf" ) {
+        my $dods_url = "http://"
+          . $self->server_name()
+          . $self->port()
+          . $self->request_uri() . "?"
+          . $self->query();
+        @command = ( "./dods2ncdf", "-m", "-p", "--", $dods_url );
+    } elsif ( $self->ext() eq "html" ) {
+        @command = (
+                     "./www_int", "-m", "-n", "--",
+                     $self->full_uri() . "?" . $self->query()
+        );
     } else {
-	$self->print_dods_error($unknown_ext, 1);
-	exit(1);
+        $self->print_dods_error( $unknown_ext, 1 );
+        exit(1);
     }
 
-    print(DBG_LOG "DODS server command: @command\n") if $debug;
+    print( DBG_LOG "DODS server command: @command\n" ) if $debug;
     return @command;
 }
 
@@ -853,7 +911,7 @@ submitted should have worked), then please contact the\n";
 
 # Boilerplate text for the error messages.
 my $DODS_Local_Admin = "administrator of this site at: ";
-my $DODS_Support = "DODS user support coordinator at: ";
+my $DODS_Support     = "DODS user support coordinator at: ";
 
 my $DODS_Para2 = "To access most of the features of this DODS server, append
 one of the following suffixes to a URL. Using these suffixes, you can ask 
@@ -887,7 +945,7 @@ query using the customized form.\n";
 
 # Send the DODS version information.
 sub send_dods_version {
-    my $self = shift;
+    my $self         = shift;
     my $core_version = $self->caller_revision();
 
     print "HTTP/1.0 200 OK\n";
@@ -895,31 +953,31 @@ sub send_dods_version {
     print "Content-Type: text/plain\n\n";
 
     print "DODS server core software: $core_version\n";
-} 
+}
 
 # Send the DODS stats information. Only call this if is_stat_on() is true.
 sub send_dods_stats {
-    my $self = shift;
+    my $self         = shift;
     my $core_version = $self->caller_revision();
     my $blessed = "unidata.ucar.edu|.*gso.uri.edu|.*dods.org|.*opendap.org";
     my $machine_names = $self->machine_names();
 
     print DBG_LOG "In send_dods_stats\n" if $debug > 0;
-    if ($self->server_name() =~ m@($blessed|$machine_names)@) {
-	print "HTTP/1.0 200 OK\n";
-	print "XDODS-Server: dods/$core_version\n";
-	print "Content-Type: text/plain\n\n";
+    if ( $self->server_name() =~ m@($blessed|$machine_names)@ ) {
+        print "HTTP/1.0 200 OK\n";
+        print "XDODS-Server: dods/$core_version\n";
+        print "Content-Type: text/plain\n\n";
 
-	print "Server: ", $self->server_name(), " (version: $core_version)\n";
-	print DBG_LOG "Access log: ", $self->access_log(), "\n" if $debug > 0;
-	&print_log_info($self->access_log(), $self->error_log());
+        print "Server: ", $self->server_name(), " (version: $core_version)\n";
+        print DBG_LOG "Access log: ", $self->access_log(), "\n" if $debug > 0;
+        &print_log_info( $self->access_log(), $self->error_log() );
     }
-} 
+}
 
 # This method takes three arguments; the object, a string which names the
 # script's version number and an address for mailing bug reports. If the last
 # parameter is not supplied, use the maintainer address from the environment
-# variables. 
+# variables.
 #
 # Note that this mfunc takes the script_rev and address information as
 # arguments for historical reasons. That information is now part of the object.
@@ -934,13 +992,13 @@ sub send_dods_stats {
 # print the longish help message about URLs and their supported extensions.
 # 6/8/2001 jhrg
 sub print_error_message {
-    my $self = shift;
-    my $msg = shift;
-    my $print_help = shift;
+    my $self        = shift;
+    my $msg         = shift;
+    my $print_help  = shift;
     my $local_admin = 0;
 
-    if ($self->maintainer() ne "support\@unidata.ucar.edu") {
-	$local_admin = 1;
+    if ( $self->maintainer() ne "support\@unidata.ucar.edu" ) {
+        $local_admin = 1;
     }
 
     # Note that 400 is the error code for `Bad Request'.
@@ -956,10 +1014,10 @@ sub print_error_message {
     print "<h3>DODS Server or URL Error</h3>\n";
 
     print $msg;
-    if ($local_admin == 1) {
-	print $DODS_Local_Admin, $self->maintainer();
+    if ( $local_admin == 1 ) {
+        print $DODS_Local_Admin, $self->maintainer();
     } else {
-	print $DODS_Support, $self->maintainer();
+        print $DODS_Support, $self->maintainer();
     }
     print "<p>\n";
 
@@ -967,28 +1025,28 @@ sub print_error_message {
 
     my $date = localtime;
     print DBG_LOG "[$date] DODS Server error: ", $msg, "\n";
-    if ($local_admin == 1) {
-	print DBG_LOG $DODS_Local_Admin, $self->maintainer(), "\n";
+    if ( $local_admin == 1 ) {
+        print DBG_LOG $DODS_Local_Admin, $self->maintainer(), "\n";
     } else {
-	print DBG_LOG $DODS_Support, $self->maintainer(), "\n";
+        print DBG_LOG $DODS_Support, $self->maintainer(), "\n";
     }
 }
 
 sub print_dods_error {
-    my $self = shift;
-    my $msg = shift;
+    my $self        = shift;
+    my $msg         = shift;
     my $local_admin = 0;
 
-    if ($self->maintainer() ne "support\@unidata.ucar.edu") {
-	$local_admin = 1;
+    if ( $self->maintainer() ne "support\@unidata.ucar.edu" ) {
+        $local_admin = 1;
     }
 
     my $whole_msg;
     my $contact = $self->maintainer();
-    if ($local_admin == 1) {
-	$whole_msg = "${msg}${DODS_Local_Admin}${contact}";
+    if ( $local_admin == 1 ) {
+        $whole_msg = "${msg}${DODS_Local_Admin}${contact}";
     } else {
-	$whole_msg = "${msg}${DODS_Support}${contact}";
+        $whole_msg = "${msg}${DODS_Support}${contact}";
     }
 
     print DBG_LOG "Whole message: $whole_msg\n";
@@ -1008,7 +1066,7 @@ sub print_dods_error {
     print "};";
 
     my $date = localtime;
-    print(DBG_LOG "[$date] DODS Server error: ", $whole_msg, "\n");
+    print( DBG_LOG "[$date] DODS Server error: ", $whole_msg, "\n" );
 }
 
 # Assumption: If this message is being shown, it is probably being shown in a
@@ -1028,108 +1086,122 @@ sub print_help_message {
 }
 
 if ($test) {
+
     # Set up the environment variables used in initialize
-    $ENV{SERVER_PORT} = 80;
-    $ENV{SERVER_NAME} = "dcz.dods.org";
+    $ENV{SERVER_PORT}  = 80;
+    $ENV{SERVER_NAME}  = "dcz.dods.org";
     $ENV{SERVER_ADMIN} = "jimbo";
     $ENV{QUERY_STRING} = "x,y,z&x<x&z>10.0";
-    $ENV{PATH_INFO} = "/data/x.nc.dods";
-    $ENV{SCRIPT_NAME} = "/test-3.2/nph-dods";
-    # Replaced the use of this environment variable since it is not part of
-    # the CGI 1.1 spec and not provided by Netscape's FastTrack server.
-    # 4/30/2001 jhrg.
-    # $ENV{REQUEST_URI} = "http://dcz.dods.org/test-3.2/nph-dods/data/x.nc.dods";
+    $ENV{PATH_INFO}    = "/data/x.nc.dods";
+    $ENV{SCRIPT_NAME}  = "/test-3.2/nph-dods";
+
+   # Replaced the use of this environment variable since it is not part of
+   # the CGI 1.1 spec and not provided by Netscape's FastTrack server.
+   # 4/30/2001 jhrg.
+   # $ENV{REQUEST_URI} = "http://dcz.dods.org/test-3.2/nph-dods/data/x.nc.dods";
     $ENV{HTTP_ACCEPT_ENCODING} = "deflate";
-    $ENV{PATH_TRANSLATED} = "/home/httpd/html/htdocs/data/x.nc.dods";
+    $ENV{PATH_TRANSLATED}      = "/home/httpd/html/htdocs/data/x.nc.dods";
 
     print "Simple file access\n";
-    my $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc");
-    $dd->ext() eq "dods" || die;
-    $dd->script() eq "nc" || die;
+    my $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
+    $dd->ext()    eq "dods" || die;
+    $dd->script() eq "nc"   || die;
 
     print "Files with extra dots on their names\n";
-    # Test files which have more than one dot in their names.
-    $ENV{PATH_INFO} = "/data/tmp.x.nc.dods";
-    $ENV{PATH_TRANSLATED} = "/home/httpd/html/htdocs/data/tmp.x.nc.dods";
-    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc");
 
-    $dd->ext() eq "dods" || die;
-    $dd->script() eq "nc" || die;
+    # Test files which have more than one dot in their names.
+    $ENV{PATH_INFO}       = "/data/tmp.x.nc.dods";
+    $ENV{PATH_TRANSLATED} = "/home/httpd/html/htdocs/data/tmp.x.nc.dods";
+    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
+
+    $dd->ext()    eq "dods" || die;
+    $dd->script() eq "nc"   || die;
 
     print "Directory names ending in a slash\n";
-    # Directory ending in a slash. 
+
+    # Directory ending in a slash.
     # NOTE: The directory must really exist!
-    $ENV{PATH_INFO} = "/data/";
+    $ENV{PATH_INFO}       = "/data/";
     $ENV{PATH_TRANSLATED} = "/var/www/html/data/";
-    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc");
-    $dd->ext() eq "/" || die;
-    $dd->script() eq "" || die; # a weird anomaly of handler.pm
+    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
+    $dd->ext()    eq "/" || die;
+    $dd->script() eq ""  || die;    # a weird anomaly of handler.pm
 
     print "Directory names ending in a slash with a M=A query\n";
+
     # Directory ending in a slash with a query string
-    $ENV{QUERY_STRING} = "M=A";
-    $ENV{PATH_INFO} = "/data/";
+    $ENV{QUERY_STRING}    = "M=A";
+    $ENV{PATH_INFO}       = "/data/";
     $ENV{PATH_TRANSLATED} = "/var/www/html/data/";
-    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc");
+    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
     $dd->ext() eq "/" || die;
 
     print "Directory names not ending in a slash\n";
+
     # Directory, not ending in a slash
-    $ENV{PATH_INFO} = "/data";
+    $ENV{PATH_INFO}       = "/data";
     $ENV{PATH_TRANSLATED} = "/var/www/html/data";
-    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc");
+    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
     $dd->ext() eq "/" || die;
 
     print "Directory names not ending in a slash with a M=A query\n";
+
     # Directory, not ending in a slash with a M=A query
-    $ENV{QUERY_STRING} = "M=A";
-    $ENV{PATH_INFO} = "/data";
+    $ENV{QUERY_STRING}    = "M=A";
+    $ENV{PATH_INFO}       = "/data";
     $ENV{PATH_TRANSLATED} = "/var/www/html/data";
-    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc");
+    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
     $dd->ext() eq "/" || die;
 
     # Test the RFC822_to_time function.
     use POSIX;
     my $t = time;
-    my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) 
-	= gmtime($t); 
-    my $t_str = POSIX::strftime("%a, %d %b %Y %H:%M:%S %z", $sec, $min,
-				$hour, $mday, $mon, $year, $wday, $yday, 
-				$isdst);
+    my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) =
+      gmtime($t);
+    my $t_str = POSIX::strftime(
+                                 "%a, %d %b %Y %H:%M:%S %z",
+                                 $sec,  $min,  $hour, $mday, $mon,
+                                 $year, $wday, $yday, $isdst
+    );
 
     print "Time string in is: $t_str\n";
     my $t2 = rfc822_to_time($t_str);
     print "Time: $t, Time from converter: $t2\n";
     $t == $t2 || die;
 
-    my $tt_str = POSIX::strftime("%a %b %d %H:%M:%S %Y %z", $sec, $min,
-				$hour, $mday, $mon, $year, $wday, $yday, 
-				$isdst);
+    my $tt_str = POSIX::strftime(
+                                  "%a %b %d %H:%M:%S %Y %z",
+                                  $sec,  $min,  $hour, $mday, $mon,
+                                  $year, $wday, $yday, $isdst
+    );
     print "Time string in is: $tt_str\n";
     my $tt2 = rfc822_to_time($tt_str);
     print "Time: $t, Time from converter: $tt2\n";
     $t == $tt2 || die;
 
     print "Test is_directory()\n";
+
     # is_directory and is_file (just to be sure).
-    is_directory(".") || die;
-    is_directory("..") || die;
-    is_directory("/") || die;
-    is_directory("/etc") || die;
-    is_directory("/etc/") || die;
+    is_directory(".")            || die;
+    is_directory("..")           || die;
+    is_directory("/")            || die;
+    is_directory("/etc")         || die;
+    is_directory("/etc/")        || die;
     !is_directory("/etc/passwd") || die;
-    
+
     print "Test is_file()\n";
-    !is_file(".") || die;
-    !is_file("..") || die;
-    !is_file("/") || die;
-    !is_file("/etc") || die;
-    !is_file("/etc/") || die;
+    !is_file(".")          || die;
+    !is_file("..")         || die;
+    !is_file("/")          || die;
+    !is_file("/etc")       || die;
+    !is_file("/etc/")      || die;
     is_file("/etc/passwd") || die;
-    
-    $ENV{PATH_INFO} = "/http://dcz.dods.org/dods-3.2/nph-dods/data/nc/fnoc1.nc.das";
+
+    $ENV{PATH_INFO} =
+      "/http://dcz.dods.org/dods-3.2/nph-dods/data/nc/fnoc1.nc.das";
     $ENV{PATH_TRANSLATED} = "/var/www/html$ENV{PATH_INFO}";
-    $dd = new DODS_Dispatch("dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc");
+    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
+
     # print "DODSter filename: $dd->filename() \n";
     # $dd->ext() eq "/" || die;
     # $dd->script() eq "" || die; # a weird anomaly of handler.pm
@@ -1140,6 +1212,9 @@ if ($test) {
 1;
 
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.45  2005/05/18 21:33:16  jimg
+# Update for the new build/install.
+#
 # Revision 1.44  2005/04/18 17:04:34  pwest
 # setting error code on an error to 1001, was being set to 0
 #
@@ -1170,7 +1245,7 @@ if ($test) {
 #
 # Revision 1.37.2.14  2003/11/21 20:12:05  jimg
 # Fixed the error message produced when there's no valid URL suffix. See bug
-# 680. 
+# 680.
 #
 # Revision 1.37.2.13  2003/11/21 19:43:47  jimg
 # Fixed the fix for the deflate bug (673). If the value of ACCEPT_ENCODING is

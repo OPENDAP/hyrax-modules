@@ -11,12 +11,12 @@
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
 # version 2.1 of the License, or (at your option) any later version.
-# 
+#
 # This library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -38,11 +38,11 @@
 
 package DODS_Cache;
 require Exporter;
-@ISA = qw(Exporter);
+@ISA    = qw(Exporter);
 @EXPORT = qw(purge_cache is_compressed decompress_and_cache is_dodster
-	     dodster_and_cache);
+  dodster_and_cache);
 
-my $test = 0;
+my $test  = 0;
 my $debug = 0;
 
 # This regex is used to recognize files that are compressed.
@@ -57,59 +57,62 @@ use strict;
 # files added by the routine decompress_and_cache(). It does this by
 # selecting files which contains he regex `dods_cache#'.
 #
-# The arguments to this subroutine are: 
+# The arguments to this subroutine are:
 # CACHE: the directory that holds the cached files
 # CACHE_MAX_SIZE: prune files from the cache until the size (in megabytes) of
 # the cache is less than this value.
 
 sub purge_cache {
-    my($cache, $cache_max_size) = @_;
+    my ( $cache, $cache_max_size ) = @_;
 
-    $cache_max_size *= 1048576;	# Bytes/Meg
+    $cache_max_size *= 1048576;    # Bytes/Meg
     my $cached_names_regex = ".*dods_cache#.*";
-    my $cache_size = 0;
-    
+    my $cache_size         = 0;
+
     # Read the cache directory contents.
     opendir CACHE, $cache or die "Could not open the cache directory!\n";
-    my(@files) = grep(/$cached_names_regex/, readdir(CACHE));
+    my (@files) = grep( /$cached_names_regex/, readdir(CACHE) );
     closedir CACHE;
 
-    my(%links, %sizes, %times, $nlink, $size, $atime, $file, $d);
+    my ( %links, %sizes, %times, $nlink, $size, $atime, $file, $d );
     foreach $file (@files) {
         $file = "$cache\/$file";
 
-	($d, $d, $d, $nlink, $d, $d, $d, $size, $atime) = stat($file);
-	$links{$file} = $nlink;
-	$sizes{$file} = $size;
-	$times{$file} = $atime;
-	$cache_size += $size;
+        ( $d, $d, $d, $nlink, $d, $d, $d, $size, $atime ) = stat($file);
+        $links{$file} = $nlink;
+        $sizes{$file} = $size;
+        $times{$file} = $atime;
+        $cache_size += $size;
     }
 
-    print STDERR "Spool size: $cache_size\n" if $debug;
+    print STDERR "Spool size: $cache_size\n"         if $debug;
     print STDERR "Spool max size: $cache_max_size\n" if $debug;
 
     # Remove oldest files first. Continue removing files until cache size
     # falls below max size. Note that for sort ``... the normal calling code
     # for subroutines is bypassed... .'' Look in Wall's ``Programming PERL'',
     # p.218. 7/10/2001 jhrg
-    my(@files_sorted_by_times) 
-	= sort({$times{$a} <=> $times{$b}} keys(%times));
-    
+    my (@files_sorted_by_times) =
+      sort( { $times{$a} <=> $times{$b} } keys(%times) );
+
     print STDERR "files sorted by times: @files_sorted_by_times\n" if $debug;
 
     my $sorted_file;
     foreach $sorted_file (@files_sorted_by_times) {
-	# If enough files have been removed, stop flushing the cache.
-	if ($cache_size < $cache_max_size) {
-	    return $cache_size;
-	}
-	# Remove the file if only one link to it exists (i.e., not in use).
-	# Then update cache_size.
-	if ($links{$sorted_file} == 1) {
-	    unlink $sorted_file;
-	    # print STDERR "Removing $sorted_file\n";
-	    $cache_size -= $sizes{$sorted_file};
-	}
+
+        # If enough files have been removed, stop flushing the cache.
+        if ( $cache_size < $cache_max_size ) {
+            return $cache_size;
+        }
+
+        # Remove the file if only one link to it exists (i.e., not in use).
+        # Then update cache_size.
+        if ( $links{$sorted_file} == 1 ) {
+            unlink $sorted_file;
+
+            # print STDERR "Removing $sorted_file\n";
+            $cache_size -= $sizes{$sorted_file};
+        }
     }
 }
 
@@ -118,7 +121,7 @@ sub purge_cache {
 sub is_compressed {
     my $file_name = shift;
 
-    return ($file_name =~ m/.*$compressed_regex/) ? 1 : 0;
+    return ( $file_name =~ m/.*$compressed_regex/ ) ? 1 : 0;
 }
 
 my $dods_ext = "(das|dds|dods|asc|ascii|html|info|ver)";
@@ -127,7 +130,7 @@ my $dods_ext = "(das|dds|dods|asc|ascii|html|info|ver)";
 sub is_dodster {
     my $file_name = shift;
 
-    return ($file_name =~ m@(http|ftp)://.*@) ? 1 : 0;
+    return ( $file_name =~ m@(http|ftp)://.*@ ) ? 1 : 0;
 }
 
 # Given the full path name to a compressed file, decompress that file and
@@ -136,123 +139,135 @@ sub is_dodster {
 # pathname to the compressed file. Before calling this routine, make sure
 # $pathname has been sanitized!
 sub decompress_and_cache {
-    my $pathname = shift;
+    my $pathname  = shift;
     my $cache_dir = shift;
 
     # Strip shell meta-characters from the $pathname. 7/10/2001 jhrg
     print STDERR "pathname: $pathname\n" if $debug;
-    $pathname !~ m@.*[\s%&()*?<>]+.*@ 
-	or return ("", "Found shell meta characters in pathname");
+    $pathname !~ m@.*[\s%&()*?<>]+.*@
+      or return ( "", "Found shell meta characters in pathname" );
 
-    my $cache_entity = cache_name($pathname, $cache_dir);
+    my $cache_entity = cache_name( $pathname, $cache_dir );
 
     # Only uncompress and cache if the data file actually exits *and* has not
     # already been decompressed and cached.
-    if ((! -e $cache_entity) && (-e $pathname)) { 
-	# This code uses two opens and is a safer than using system since
-	# $cache_entity is not run through the shell. However, it sounds like
-	# (see ``Programming PERL'') that $pathanme is still exposed to the
-	# shell since open uses /bin/sh when a pipe symbol is present. 
-	my $uncomp = "/bin/gzip -c -d " . $pathname . " |";
-	my $buf;
-	open GZIP, $uncomp 
-	    or return ("", "Could not decompress $pathname: Unable to open the decompresser");
-	open DEST, ">$cache_entity" 
-	    or return ("", "Could not decompress $pathname: Unable to open destination");
-	while (read GZIP, $buf, 16384) {
-	    print DEST $buf;
-	}
-	close GZIP;
-	close DEST;
+    if ( ( !-e $cache_entity ) && ( -e $pathname ) ) {
+
+        # This code uses two opens and is a safer than using system since
+        # $cache_entity is not run through the shell. However, it sounds like
+        # (see ``Programming PERL'') that $pathanme is still exposed to the
+        # shell since open uses /bin/sh when a pipe symbol is present.
+        my $uncomp = "/bin/gzip -c -d " . $pathname . " |";
+        my $buf;
+        open GZIP, $uncomp
+          or return ( "",
+            "Could not decompress $pathname: Unable to open the decompresser" );
+        open DEST, ">$cache_entity"
+          or return ( "",
+                    "Could not decompress $pathname: Unable to open destination"
+          );
+        while ( read GZIP, $buf, 16384 ) {
+            print DEST $buf;
+        }
+        close GZIP;
+        close DEST;
     }
 
-    return ($cache_entity, "");
+    return ( $cache_entity, "" );
 }
 
 # Private. Build up the cache filename.
 sub cache_name {
-    my $pathname = shift;
+    my $pathname  = shift;
     my $cache_dir = shift;
 
-    $pathname =~ s@^/@@;  # delete leading /
-    $pathname =~ s@/@\#@g; # turn remaining / into #
-    $pathname =~ s@$compressed_regex@@; # delete trailing file type
+    $pathname =~ s@^/@@;                   # delete leading /
+    $pathname =~ s@/@\#@g;                 # turn remaining / into #
+    $pathname =~ s@$compressed_regex@@;    # delete trailing file type
 
     return $cache_dir . "/" . "dods_cache#" . $pathname;
 }
 
 # Given a DODSter URL...
 sub dodster_and_cache {
-    my $url = shift;
+    my $url       = shift;
     my $cache_dir = shift;
 
     # Strip shell meta-characters from the $pathname. 7/10/2001 jhrg
     print STDERR "URL: $url\n" if $debug;
-    $url !~ m@.*[\s%&()*?<>]+.*@ 
-	or return ("", "Found shell meta characters in DODSter URL");
+    $url !~ m@.*[\s%&()*?<>]+.*@
+      or return ( "", "Found shell meta characters in DODSter URL" );
 
-    my $cache_entity = dodster_name($url, $cache_dir);
+    my $cache_entity = dodster_name( $url, $cache_dir );
 
     my @trans_response;
+
     # Only transfer and cache if the data file has not already been cached.
-    if (! -e $cache_entity) {
-	print(STDERR "Starting transfer of remote file... ") if $debug > 0;
-	@trans_response = &transfer_remote_file($url, $cache_entity);
-	if ($trans_response[1] ne "") {
-	    print(STDERR "error\n") if $debug > 0;
-	    return ("", $trans_response[1]);
-	}
-	print(STDERR "successful ($trans_response[0] bytes).\n") if $debug > 0;
-    }
-    else {
-	print(STDERR "Remote file ($url) found in cache.\n") if $debug > 0;
+    if ( !-e $cache_entity ) {
+        print( STDERR "Starting transfer of remote file... " ) if $debug > 0;
+        @trans_response = &transfer_remote_file( $url, $cache_entity );
+        if ( $trans_response[1] ne "" ) {
+            print( STDERR "error\n" ) if $debug > 0;
+            return ( "", $trans_response[1] );
+        }
+        print( STDERR "successful ($trans_response[0] bytes).\n" )
+          if $debug > 0;
+    } else {
+        print( STDERR "Remote file ($url) found in cache.\n" ) if $debug > 0;
     }
 
-    return ($cache_entity, "");
+    return ( $cache_entity, "" );
 }
 
 # Private. Get the remote thing. The param $url should be scanned for shell
-# meta-characters. 
+# meta-characters.
 sub transfer_remote_file {
-    my $url = shift;
+    my $url          = shift;
     my $cache_entity = shift;
 
     my $curl = "./curl";
 
-    my $transfer = $curl . " --silent --user anonymous:root\@dods.org " . $url . " |";
+    my $transfer =
+      $curl . " --silent --user anonymous:root\@dods.org " . $url . " |";
     my $buf;
-    open CURL, $transfer 
-	or return ("", "Could not transfer $url: Unable to open the transfer utility.");
-    open DEST, ">$cache_entity" 
-	or return ("", "Could not transfer $url: Unable to open destination in the local cache.");
+    open CURL, $transfer
+      or return ( "",
+                 "Could not transfer $url: Unable to open the transfer utility."
+      );
+    open DEST, ">$cache_entity"
+      or return (
+        "",
+"Could not transfer $url: Unable to open destination in the local cache."
+      );
 
     my $bytes;
     my $total = 0;
-    while ($bytes = read CURL, $buf, 16384) {
-	my $status = print DEST $buf;
-	print(STDERR "Status: $status\n") if $debug > 0;
-	if (!$status) {
-	    close CURL;
-	    close DEST;
-	    unlink $cache_entity;
-	    return ($total, "Error transferring remote file ($url) to the cache.");
-	}
-	$total += $bytes;
+    while ( $bytes = read CURL, $buf, 16384 ) {
+        my $status = print DEST $buf;
+        print( STDERR "Status: $status\n" ) if $debug > 0;
+        if ( !$status ) {
+            close CURL;
+            close DEST;
+            unlink $cache_entity;
+            return ( $total,
+                     "Error transferring remote file ($url) to the cache." );
+        }
+        $total += $bytes;
     }
 
     close CURL;
     close DEST;
 
-    return ($total, "");
+    return ( $total, "" );
 }
 
 # Private. Build up the cache filename for a DODSter thing.
 sub dodster_name {
-    my $pathname = shift;
+    my $pathname  = shift;
     my $cache_dir = shift;
 
-    $pathname =~ s@^/@@;  # delete leading /
-    $pathname =~ s@/@\#@g; # turn remaining / into #
+    $pathname =~ s@^/@@;      # delete leading /
+    $pathname =~ s@/@\#@g;    # turn remaining / into #
 
     return $cache_dir . "/" . "dods_cache#" . $pathname;
 }
@@ -260,100 +275,116 @@ sub dodster_name {
 ##########################################################################
 
 if ($test) {
-    (1 == is_compressed("myfile.Z")) || die;
-    (1 == is_compressed("my.file.Z")) || die;
-    (1 == is_compressed("test.gz")) || die;
-    (0 == is_compressed("myfile.")) || die;
-    (0 == is_compressed("my.file")) || die;
-    (0 == is_compressed("test")) || die;
-    (0 == is_compressed("gz")) || die;
+    ( 1 == is_compressed("myfile.Z") )  || die;
+    ( 1 == is_compressed("my.file.Z") ) || die;
+    ( 1 == is_compressed("test.gz") )   || die;
+    ( 0 == is_compressed("myfile.") )   || die;
+    ( 0 == is_compressed("my.file") )   || die;
+    ( 0 == is_compressed("test") )      || die;
+    ( 0 == is_compressed("gz") )        || die;
     print "\t is_compressed passed all tests\n";
 
-    (1 == is_dodster("/http://dcz.dods.org/nph-dods/data/nc/fnoc1.nc.das")) 
-	|| die;
-    (1 == is_dodster("/http://dcz.dods.org/nph-dods/data/nc/fnoc1.nc.dods")) 
-	|| die;
-    (1 == is_dodster("/http://dcz.dods.org/nph-dods/data/nc/fnoc1.nc.asc")) 
-	|| die;
-    (1 == is_dodster("/ftp://dcz.dods.org/nph-dods/data/nc/fnoc1.nc.asc")) 
-	|| die;
-    (1 == is_dodster("/ftp://dcz.dods.org/nph-dods/data/nc/fnoc1.nc.das")) 
-	|| die;
-    (0 == is_dodster("/http/dcz.dods.org/nph-dods/data/nc/fnoc1.nc.asc")) 
-	|| die;
-    (0 == is_dodster("/ftp/dcz.dods.org/nph-dods/data/nc/fnoc1.nc.asc")) 
-	|| die;
+    ( 1 == is_dodster("/http://dcz.dods.org/nph-dods/data/nc/fnoc1.nc.das") )
+      || die;
+    ( 1 == is_dodster("/http://dcz.dods.org/nph-dods/data/nc/fnoc1.nc.dods") )
+      || die;
+    ( 1 == is_dodster("/http://dcz.dods.org/nph-dods/data/nc/fnoc1.nc.asc") )
+      || die;
+    ( 1 == is_dodster("/ftp://dcz.dods.org/nph-dods/data/nc/fnoc1.nc.asc") )
+      || die;
+    ( 1 == is_dodster("/ftp://dcz.dods.org/nph-dods/data/nc/fnoc1.nc.das") )
+      || die;
+    ( 0 == is_dodster("/http/dcz.dods.org/nph-dods/data/nc/fnoc1.nc.asc") )
+      || die;
+    ( 0 == is_dodster("/ftp/dcz.dods.org/nph-dods/data/nc/fnoc1.nc.asc") )
+      || die;
     print "\t is_dodster passed all tests\n";
 
     # NB: Never call cache_name with "" for the cache directory. I'm doing it
     # here just to test stuff. 10/18/2000 jhrg
-    print "cache_name myfile: ", cache_name("myfile", ""), "\n" 
-  	if $debug; 
-    ("/dods_cache#myfile" eq cache_name("myfile", "")) || die;
-    ("/dods_cache#myfile" eq cache_name("myfile.Z", "")) || die;
-    ("/dods_cache#myfile" eq cache_name("myfile.gz", "")) || die;
-    print "cache_name ./myfile.gz", cache_name("./myfile.gz", ""), "\n" 
-  	if $debug; 
-    ("/dods_cache#this#is#myfile" eq cache_name("/this/is/myfile.Z", "")) || die;
-    ("/usr/tmp/dods_cache#myfile" eq cache_name("myfile", "/usr/tmp")) || die;
-    ("/usr/tmp/dods_cache#myfile" eq cache_name("myfile.Z", "/usr/tmp")) || die;
-    ("/usr/tmp/dods_cache#myfile" eq cache_name("myfile.gz", "/usr/tmp")) || die;
-    ("/usr/tmp/dods_cache#this#is#myfile" eq cache_name("/this/is/myfile.Z",
-					     "/usr/tmp")) || die;
-    ("/usr/tmp/dods_cache#this#is#myfile.HDF" eq cache_name("/this/is/myfile.HDF.Z",
-					     "/usr/tmp")) || die;
-    ("/usr/tmp/dods_cache#this#is#my.file.HDF" eq cache_name("/this/is/my.file.HDF.Z",
-					     "/usr/tmp")) || die;
+    print "cache_name myfile: ", cache_name( "myfile", "" ), "\n"
+      if $debug;
+    ( "/dods_cache#myfile" eq cache_name( "myfile",    "" ) ) || die;
+    ( "/dods_cache#myfile" eq cache_name( "myfile.Z",  "" ) ) || die;
+    ( "/dods_cache#myfile" eq cache_name( "myfile.gz", "" ) ) || die;
+    print "cache_name ./myfile.gz", cache_name( "./myfile.gz", "" ), "\n"
+      if $debug;
+    ( "/dods_cache#this#is#myfile" eq cache_name( "/this/is/myfile.Z", "" ) )
+      || die;
+    ( "/usr/tmp/dods_cache#myfile" eq cache_name( "myfile", "/usr/tmp" ) )
+      || die;
+    ( "/usr/tmp/dods_cache#myfile" eq cache_name( "myfile.Z", "/usr/tmp" ) )
+      || die;
+    ( "/usr/tmp/dods_cache#myfile" eq cache_name( "myfile.gz", "/usr/tmp" ) )
+      || die;
+    ( "/usr/tmp/dods_cache#this#is#myfile" eq
+       cache_name( "/this/is/myfile.Z", "/usr/tmp" ) )
+      || die;
+    ( "/usr/tmp/dods_cache#this#is#myfile.HDF" eq
+       cache_name( "/this/is/myfile.HDF.Z", "/usr/tmp" ) )
+      || die;
+    ( "/usr/tmp/dods_cache#this#is#my.file.HDF" eq
+       cache_name( "/this/is/my.file.HDF.Z", "/usr/tmp" ) )
+      || die;
     print "\t cache_name passed all tests\n";
 
-    ("/dods_cache#http:##stuff" == dodster_name("/http://stuff", ""))
-	|| die;
-    ("/dods_cache#ftp:##dcz.dods.org#nph-dods#data#nc#fnoc1.nc" == dodster_name("/ftp://dcz.dods.org/nph-dods/data/nc/fnoc1.nc", ""))
-	|| die;
-    ("/dods_cache#http:##dcz.dods.org#nph-dods#data#nc#fnoc1.nc" == dodster_name("/http://dcz.dods.org/nph-dods/data/nc/fnoc1.nc", ""))
-	|| die;
+    ( "/dods_cache#http:##stuff" == dodster_name( "/http://stuff", "" ) )
+      || die;
+    ( "/dods_cache#ftp:##dcz.dods.org#nph-dods#data#nc#fnoc1.nc" ==
+       dodster_name( "/ftp://dcz.dods.org/nph-dods/data/nc/fnoc1.nc", "" ) )
+      || die;
+    ( "/dods_cache#http:##dcz.dods.org#nph-dods#data#nc#fnoc1.nc" ==
+       dodster_name( "/http://dcz.dods.org/nph-dods/data/nc/fnoc1.nc", "" ) )
+      || die;
     print "\t dodster_name passed all tests\n";
 
-    ($a, $b) = decompress_and_cache("test_file.gz", "/usr/tmp");
-    ("/usr/tmp/dods_cache#test_file" eq $a && "" eq $b) || die;
-    (-e "/usr/tmp/dods_cache#test_file") || die;
-    (55 == -s "/usr/tmp/dods_cache#test_file") || die;
+    ( $a, $b ) = decompress_and_cache( "test_file.gz", "/usr/tmp" );
+    ( "/usr/tmp/dods_cache#test_file" eq $a && "" eq $b ) || die;
+    ( -e "/usr/tmp/dods_cache#test_file" )       || die;
+    ( 55 == -s "/usr/tmp/dods_cache#test_file" ) || die;
 
-    ($a, $b) = decompress_and_cache("test/test_file.gz", "/usr/tmp");
-    ("/usr/tmp/dods_cache#test#test_file" eq $a && "" eq $b) || die;
-    (-e "/usr/tmp/dods_cache#test#test_file") || die;
-    (55 == -s "/usr/tmp/dods_cache#test_file") || die;
+    ( $a, $b ) = decompress_and_cache( "test/test_file.gz", "/usr/tmp" );
+    ( "/usr/tmp/dods_cache#test#test_file" eq $a && "" eq $b ) || die;
+    ( -e "/usr/tmp/dods_cache#test#test_file" )  || die;
+    ( 55 == -s "/usr/tmp/dods_cache#test_file" ) || die;
 
     # Test scanning for meta chars before sending pathname to /bin/sh.
-    ($a, $b) = decompress_and_cache("test_file.gz%3Bcat%20/etc/passwd%3B", 
-				    "/usr/tmp");
-    ("" eq $a && "" ne $b) || die; # Any error message passes the test.
+    ( $a, $b ) =
+      decompress_and_cache( "test_file.gz%3Bcat%20/etc/passwd%3B", "/usr/tmp" );
+    ( "" eq $a && "" ne $b ) || die;    # Any error message passes the test.
 
     print "\t decompress_and_cache passed all tests\n";
 
     # Test the transfer_remote_file() function
 
-    transfer_remote_file("http://dcz.dods.org/data/nc/fnoc1.nc", "/tmp/dods_http_fnoc1.nc");
-    (-e "/tmp/dods_http_fnoc1.nc" && 23944 == -s "/tmp/dods_http_fnoc1.nc") 
-	|| die;
-    # No anonymous transfers from dcz!
+    transfer_remote_file( "http://dcz.dods.org/data/nc/fnoc1.nc",
+                          "/tmp/dods_http_fnoc1.nc" );
+    ( -e "/tmp/dods_http_fnoc1.nc" && 23944 == -s "/tmp/dods_http_fnoc1.nc" )
+      || die;
+
+# No anonymous transfers from dcz!
 #     transfer_remote_file("ftp://dcz.dods.org/data/nc/fnoc1.nc", "/tmp/dods_ftp_fnoc1.nc");
-#     (-e "/tmp/dods_ftp_fnoc1.nc" && 23944 == -s "/tmp/dods_ftp_fnoc1.nc") 
+#     (-e "/tmp/dods_ftp_fnoc1.nc" && 23944 == -s "/tmp/dods_ftp_fnoc1.nc")
 # 	|| die;
     unlink "/tmp/dods_http_fnoc1.nc";
-#    unlink "/tmp/dods_ftp_fnoc1.nc";
+
+    #    unlink "/tmp/dods_ftp_fnoc1.nc";
 
     print "\t transfer_remote_file passed all tests\n";
 
-    ($a, $b) = dodster_and_cache("http://dcz.dods.org/data/nc/fnoc1.nc", "/usr/tmp");
-    ("/usr/tmp/dods_cache#http:##dcz.dods.org#data#nc#fnoc1.nc" eq $a && "" eq $b) || die;
-    (-e "/usr/tmp/dods_cache#http:##dcz.dods.org#data#nc#fnoc1.nc") || die;
-    (23944 == -s "/usr/tmp/dods_cache#http:##dcz.dods.org#data#nc#fnoc1.nc") || die;
+    ( $a, $b ) =
+      dodster_and_cache( "http://dcz.dods.org/data/nc/fnoc1.nc", "/usr/tmp" );
+    (     "/usr/tmp/dods_cache#http:##dcz.dods.org#data#nc#fnoc1.nc" eq $a
+       && "" eq $b )
+      || die;
+    ( -e "/usr/tmp/dods_cache#http:##dcz.dods.org#data#nc#fnoc1.nc" ) || die;
+    ( 23944 == -s "/usr/tmp/dods_cache#http:##dcz.dods.org#data#nc#fnoc1.nc" )
+      || die;
 
     print "\t dodster_and_cache passed all tests\n";
-    
-    (purge_cache("/usr/tmp", 1) > 0) || die;
-    (0 == purge_cache("/usr/tmp", 0)) || die;
+
+    ( purge_cache( "/usr/tmp", 1 ) > 0 ) || die;
+    ( 0 == purge_cache( "/usr/tmp", 0 ) ) || die;
     print "\t purge_cache passed all tests\n";
 
     print "All tests succeeded\n";
@@ -362,6 +393,9 @@ if ($test) {
 1;
 
 # $Log: DODS_Cache.pm,v $
+# Revision 1.10  2005/05/18 21:33:16  jimg
+# Update for the new build/install.
+#
 # Revision 1.9  2004/01/22 17:29:37  jimg
 # Merged with release-3-4.
 #
