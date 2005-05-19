@@ -11,18 +11,18 @@
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
 # version 2.1 of the License, or (at your option) any later version.
-# 
+#
 # This library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 # You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
- 
+
 # Make sure that the path after the `#!' at the start of this file is the
 # path to Perl on your system. If there are several versions of perl, make
 # sure this points to a perl that is at least version 5.004.
@@ -39,29 +39,31 @@
 # directory subtree. If you want to access files outside that subtree, use a
 # symbolic link and make sure that your server is set to follow symbolic
 # links. To configure an Apache server to follow symbolic links, add
-# FollowSymLinks to the Options in the httpd.conf file. 
+# FollowSymLinks to the Options in the httpd.conf file.
 #
 # Options: -T: use Perl's taint mode.
 #
-# $Id: nph-dods.in,v 1.7 2004/01/22 17:29:37 jimg Exp $
+# $Id: nph-dods.in,v 1.8 2005/05/19 14:43:26 jimg Exp $
 
 # Force PATH. This should work for most UNIXs. Forcing PATH means that -T
 # (taint) won't complain about running programs. Perl will consider any
 # directory that's writeable by someone other than the owner as tainted, so
 # adding, for example, /usr/local/bin here might break other operations
-# (places where we use exec or system in DODS_Dispatch or DODS_Cache). 
-$ENV{PATH} = '/bin:/usr/bin:/sbin:/usr/sbin';
-$ENV{IFS} = "" if $ENV{IFS} ne ""; # For the truly paranoid...
+# (places where we use exec or system in DODS_Dispatch or DODS_Cache).
+$ENV{PATH} = '/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/sbin';
+$ENV{IFS} = "" if $ENV{IFS} ne "";    # For the truly paranoid...
 
 # Needed for Perl 5.6.0 on Linux 12/11/2000 jhrg
 $ENV{BASH_ENV} = '';
 
 # These environment variables are used by the JGOFS server when there's no
 # JGOFS user on the host system. 5/31/2001 jhrg
-$ENV{"JGOFS_OBJECT"} = "@dods_root@/etc/";
-$ENV{"JGOFS_METHOD"} = "@dods_root@/etc/";
+# Assume this script will run in the cgi-bin directory and that all dap-server
+# configuration files will also be in that directory. 5/17/2005 jhrg
+$ENV{"JGOFS_OBJECT"} = "`pwd`";
+$ENV{"JGOFS_METHOD"} = "`pwd`";
 
-use lib (".");			# Look for modules in the cwd.
+use lib ("@prefix@/sbin/dap-server");    # Look for modules in the cwd.
 use DODS_Dispatch;
 use DODS_Cache;
 
@@ -70,8 +72,8 @@ to handle this request. Please check that the URL is correct. If you're sure
 this should work, please contact the ";
 
 # The DODS_Dispatch object reads information from environment variables
-# and builds up a command based on the format of a DODS URL. 
-$dispatch = new DODS_Dispatch("DAP/@DAP_VERSION@", "./dods.rc");
+# and builds up a command based on the format of a DODS URL.
+$dispatch = new DODS_Dispatch( "DAP/@DAP_VERSION@", "./dods.rc" );
 
 # Note that the statistics 'stuff' has its own configuration file. That's
 # because we're just evaluating this feature. 07/22/03 jhrg
@@ -83,35 +85,32 @@ $dispatch = new DODS_Dispatch("DAP/@DAP_VERSION@", "./dods.rc");
 # I think we should probably move this information into the dods.conf/ini
 # file. The reason for keeping it separate is that we want to make sure that
 # this feature is not turned on accidentally. 10/23/02 jhrg
-if (-f "DODS_STATISTICS") {
+if ( -f "DODS_STATISTICS" ) {
     $dispatch->is_stat_on(1);
 
-    open (STATS, "DODS_STATISTICS");
+    open( STATS, "DODS_STATISTICS" );
 
-  LINE: 
+  LINE:
     while (<STATS>) {
-	next LINE if /^\#/;
-	next LINE if /^$/;
+        next LINE if /^\#/;
+        next LINE if /^$/;
 
-	my ($name, $value) = split;
+        my ( $name, $value ) = split;
 
-	print STDERR "Name: $name, Value: $value \n" if $debug >= 2;
-	if ($name eq "access_log") {
-	    $dispatch->access_log($value); # Path to httpd's access log
-	}
-	elsif ($name eq "error_log") {
-	    $dispatch->error_log($value); # Path to http'd error log
-	}
-	elsif ($name eq "machine_names") {
-	    $dispatch->machine_names($value); # Regex of names for this machine
-	}
+        print STDERR "Name: $name, Value: $value \n" if $debug >= 2;
+        if ( $name eq "access_log" ) {
+            $dispatch->access_log($value);    # Path to httpd's access log
+        } elsif ( $name eq "error_log" ) {
+            $dispatch->error_log($value);     # Path to http'd error log
+        } elsif ( $name eq "machine_names" ) {
+            $dispatch->machine_names($value);  # Regex of names for this machine
+        }
     }
-}
-else {
-    $dispatch->is_stat_on(0);	# Set to 1 if statistics are turned on.
-    $dispatch->access_log();	# Path to httpd's access log
-    $dispatch->error_log();	# Path to http'd error log
-    $dispatch->machine_names();	# PERL Regex of names for this machine
+} else {
+    $dispatch->is_stat_on(0);      # Set to 1 if statistics are turned on.
+    $dispatch->access_log();       # Path to httpd's access log
+    $dispatch->error_log();        # Path to http'd error log
+    $dispatch->machine_names();    # PERL Regex of names for this machine
 }
 
 # DODSter is part of an experimental system which is loosely based on
@@ -119,37 +118,39 @@ else {
 # more information, go to the NASA ESIP Federation web site and search for
 # MODSter. 07/22/03 jhrg
 
-my $dodster = is_dodster($dispatch->filename());
-my $compressed = is_compressed($dispatch->filename());
+my $dodster    = is_dodster( $dispatch->filename() );
+my $compressed = is_compressed( $dispatch->filename() );
 
-if ($dodster || $compressed) {
-    purge_cache($dispatch->cache_dir(), $dispatch->cache_size());
+if ( $dodster || $compressed ) {
+    purge_cache( $dispatch->cache_dir(), $dispatch->cache_size() );
 
-    my ($cache_entity, $error);
+    my ( $cache_entity, $error );
     if ($dodster) {
-	($cache_entity, $error) = dodster_and_cache($dispatch->filename(),
-						    $dispatch->cache_dir());
-    }
-    else {
-	($cache_entity, $error) = decompress_and_cache($dispatch->filename(), 
-						       $dispatch->cache_dir());
+        ( $cache_entity, $error ) =
+          dodster_and_cache( $dispatch->filename(), $dispatch->cache_dir() );
+    } else {
+        ( $cache_entity, $error ) =
+          decompress_and_cache( $dispatch->filename(), $dispatch->cache_dir() );
     }
 
-    $dispatch->print_error_msg($error, 0) 
-	if ($cache_entity eq "" && $error ne "");
+    $dispatch->print_error_msg( $error, 0 )
+      if ( $cache_entity eq "" && $error ne "" );
 
     $dispatch->filename($cache_entity);
 }
 
 @command = $dispatch->command();
 
-if ($command[0] ne "") {		# if no error...
+if ( $command[0] ne "" ) {    # if no error...
     exec(@command);
 } else {
-    $dispatch->print_error_msg($bad_command, 1);
+    $dispatch->print_error_msg( $bad_command, 1 );
 }
 
 # $Log: nph-dods.in,v $
+# Revision 1.8  2005/05/19 14:43:26  jimg
+# Update
+#
 # Revision 1.7  2004/01/22 17:29:37  jimg
 # Merged with release-3-4.
 #

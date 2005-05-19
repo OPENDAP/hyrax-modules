@@ -1,3 +1,66 @@
+2005-05-18  James Gallagher  <jimg@zoey.opendap.org>
+
+	* DODS_Cache.pm, DODS_Dispatch.pm, Makefile.am, acinclude.m4, check_perl.sh, common_tests.exp, configure.ac, dods.rc, dods_logging.pm, read_config.pm, ud_aclocal.m4:
+	Update for the new build/install.
+
+	* .project: *** empty log message ***
+
+2005-04-18  pwest  <pwest@zoey.opendap.org>
+
+	* DODS_Dispatch.pm:
+	setting error code on an error to 1001, was being set to 0
+
+2005-03-18  James Gallagher  <jimg@zoey.opendap.org>
+
+	* COPYRIGHT_URI:
+	Updated the old URI Copyright; removed clause about requiring credit
+	in publications. This was never really intended and is probably
+	unenforcable.
+
+2004-10-22  James Gallagher  <jimg@zoey.opendap.org>
+
+	* DODS_Dispatch.pm:
+	fule_uri() --> full_uri() when getting the version info. See bug 821.
+
+2004-10-11  James Gallagher  <jimg@zoey.opendap.org>
+
+	* FilterDirHTML.pm:
+	Fixed anchor_ref --> anchor_href in one of the debug statments.
+
+	* FilterDirHTML.pm:
+	Hacked up the comments so the code is easier to read. Added a note about bug
+	755 and bug 814.
+
+	* DODS_Dispatch.pm, FilterDirHTML.pm:
+	Added changes from NRL. These address a problem with the directory
+	response and files whose type (HDF, netCDF, et c.) are determined using
+	a regex that looks at the complete path and not just the filename. The
+	problem was that the full path was not used when building the directory
+	listing which meant that files that should have been treated as data files
+	were not.
+	The patches were provided by Brandon Casey <casey@hydrogen.nrlssc.navy.mil>.
+
+	* DODS_Dispatch.pm:
+	Incorporated a patch from John Allision that fixes a problem he had with the
+	version and .ver responses. See bug 820.
+
+	* DODS_Dispatch.pm:
+	Fixed a spelling mistake in one of the error messages.
+
+2004-10-08  James Gallagher  <jimg@zoey.opendap.org>
+
+	* FilterDirHTML.pm:
+	Replaced $self = {} with $self = HTML::Filter->new as per bug report 813.
+
+	* DODS_Dispatch.pm:
+	I removed the single quotes around the options when calling usage as per info
+	from Brandon Casey (bug 810).
+
+2004-07-07  James Gallagher  <jimg@zoey.opendap.org>
+
+	* ChangeLog, DODS_Dispatch.pm, FilterDirHTML.pm, acinclude.m4, common_tests.exp:
+	Merged with release-3-4-8FCS
+
 2004-07-07  James Gallagher  <jimg@comet.dods.org>
 
 	* Merged with release-3-4-8FCS.
