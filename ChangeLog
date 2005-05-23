@@ -26,7 +26,9 @@
 
 2005-05-18  James Gallagher  <jimg@zoey.opendap.org>
 
-	* DODS_Cache.pm, DODS_Dispatch.pm, Makefile.am, acinclude.m4, check_perl.sh, common_tests.exp, configure.ac, dods.rc, dods_logging.pm, read_config.pm, ud_aclocal.m4:
+	* DODS_Cache.pm, DODS_Dispatch.pm, Makefile.am, acinclude.m4,
+	check_perl.sh, common_tests.exp, configure.ac, dods.rc,
+	dods_logging.pm, read_config.pm, ud_aclocal.m4: 
 	Update for the new build/install.
 
 	* .project: *** empty log message ***
