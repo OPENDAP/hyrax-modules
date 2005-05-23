@@ -1,3 +1,29 @@
+2005-05-23  James Gallagher  <jimg@zoey.opendap.org>
+
+	* .includepath, .project, Makefile.in, configure:
+	Added files missing from CVS.
+
+2005-05-19  James Gallagher  <jimg@zoey.opendap.org>
+
+	* INSTALL, Makefile.am, check_perl.sh, dods.rc.in, missing,
+	mkinstalldirs, configure.ac: 
+	Update to make use of the dist target.
+
+	* ChangeLog, .project, nph-dods.in: Update
+
+	* dods.rc: removed
+
+2005-05-18  James Gallagher  <jimg@zoey.opendap.org>
+
+	* NEWS: Added
+
+	* DODS_Cache.pm, DODS_Dispatch.pm, acinclude.m4, check_perl.sh,
+	common_tests.exp, dods.rc, dods_logging.pm, read_config.pm,
+	ud_aclocal.m4: 
+	Update for the new build/install.
+
+	* .project: *** empty log message ***
+
 2005-05-18  James Gallagher  <jimg@zoey.opendap.org>
 
 	* DODS_Cache.pm, DODS_Dispatch.pm, Makefile.am, acinclude.m4, check_perl.sh, common_tests.exp, configure.ac, dods.rc, dods_logging.pm, read_config.pm, ud_aclocal.m4:
