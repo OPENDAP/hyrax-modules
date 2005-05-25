@@ -124,8 +124,10 @@ sub handler_name {
             print STDERR "match $handler\n" if $debug >= 1;
 
             # Sanitize data read from configuration file. 04/28/03 jhrg
-            $handler =~ /^([\w]+)$/;
-            return $1;
+            $handler =~ /^([^#!:;]+)$/;
+            $handler = $1;
+            print STDERR "Handler returned: $handler\n" if $debug;
+            return $handler;
         }
     }
 
@@ -172,22 +174,22 @@ sub dataset_regexes {
 
 # Tests
 if ($test) {
-    ( "hdf" eq handler_name( "/stuff/file.HDF", "./dods.rc" ) ) || die;
-    ( "hdf" eq handler_name( "/stuff/file.hdf", "./dods.rc" ) ) || die;
-    ( "nc"  eq handler_name( "/stuff/file.nc",  "./dods.rc" ) ) || die;
-    ( "nc"  eq handler_name( "/stuff/file.NC",  "./dods.rc" ) ) || die;
-    ( "nc"  eq handler_name( "/stuff/file.cdf", "./dods.rc" ) ) || die;
-    ( "nc"  eq handler_name( "/stuff/file.CDF", "./dods.rc" ) ) || die;
-    ( "jg"  eq handler_name( "/stuff/test",     "./dods.rc" ) ) || die;
+    ( "/usr/local/sbin/hdf_handler" eq handler_name( "/stuff/file.HDF", "./dods.rc" ) ) || die;
+    ( "/usr/local/sbin/hdf_handler" eq handler_name( "/stuff/file.hdf", "./dods.rc" ) ) || die;
+    ( "/usr/local/sbin/nc_handler"  eq handler_name( "/stuff/file.nc",  "./dods.rc" ) ) || die;
+    ( "/usr/local/sbin/nc_handler"  eq handler_name( "/stuff/file.NC",  "./dods.rc" ) ) || die;
+    ( "/usr/local/sbin/nc_handler"  eq handler_name( "/stuff/file.cdf", "./dods.rc" ) ) || die;
+    ( "/usr/local/sbin/nc_handler"  eq handler_name( "/stuff/file.CDF", "./dods.rc" ) ) || die;
+    ( "/usr/local/sbin/jg_handler"  eq handler_name( "/stuff/test",     "./dods.rc" ) ) || die;
 
-    ( "mat" eq handler_name( "/stuff/test.mat", "./dods.rc" ) ) || die;
-    ( "mat" eq handler_name( "/stuff/test.Mat", "./dods.rc" ) ) || die;
-    ( "mat" eq handler_name( "/stuff/test.MAT", "./dods.rc" ) ) || die;
-    ( "ff"  eq handler_name( "/stuff/test.dat", "./dods.rc" ) ) || die;
-    ( "ff"  eq handler_name( "/stuff/test.bin", "./dods.rc" ) ) || die;
+    ( "/usr/local/sbin/mat_handler" eq handler_name( "/stuff/test.mat", "./dods.rc" ) ) || die;
+    ( "/usr/local/sbin/mat_handler" eq handler_name( "/stuff/test.Mat", "./dods.rc" ) ) || die;
+    ( "/usr/local/sbin/mat_handler" eq handler_name( "/stuff/test.MAT", "./dods.rc" ) ) || die;
+    ( "/usr/local/sbin/ff_handler"  eq handler_name( "/stuff/test.dat", "./dods.rc" ) ) || die;
+    ( "/usr/local/sbin/ff_handler"  eq handler_name( "/stuff/test.bin", "./dods.rc" ) ) || die;
     ( ""    eq handler_name( "/stuff/file.bob", "./dods.rc" ) ) || die;
     (
-       "hdf" eq handler_name(
+       "/usr/local/sbin/hdf_handler" eq handler_name(
                     "/usr/tmp/dods_cache#home#httpd#html#data#hdf#S1700101.HDF",
                     "./dods.rc"
        )
@@ -207,9 +209,11 @@ if ($test) {
     shift @params;
     ( $params[0] == "/usr/tmp" ) || die;
     shift @params;
-    ( $params[0] == 50 ) || die;
+    ( $params[0] == 500 ) || die;
     shift @params;
     ( $params[0] == "support\@unidata.ucar.edu" ) || die;
+    shift @params;
+     ( $params[0] == "curl" ) || die;
     shift @params;
     print STDERR "Exclude: @params\n";
     my @exclude_test = ();
@@ -221,6 +225,11 @@ if ($test) {
 1;
 
 # $Log: read_config.pm,v $
+# Revision 1.4  2005/05/25 23:53:43  jimg
+# Changes to mesh with the new netcdf handler project/module. make install in
+# both will now yield a running server when nph-dods and dods.rc are copied to
+# a cgi-bin directory.
+#
 # Revision 1.3  2005/05/18 21:33:16  jimg
 # Update for the new build/install.
 #

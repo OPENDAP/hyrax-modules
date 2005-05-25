@@ -57,7 +57,7 @@ use read_config;
 use dods_logging;
 use DODS_Cache;
 
-my $debug = 0;
+my $debug = 2;
 my $test  = 0;
 
 # Error message for bad extensions.
@@ -77,7 +77,6 @@ correct, please contact the ";
 my $bad_chars = "Bad characters in URL. If you think this URL is correct, 
 please contact the ";
 
-open( DBG_LOG, ">> /usr/local/tmp/dbg_log" ) if $debug > 0;
 
 # Test if variables are tainted.
 # From Programming Perl, p.258. 12/11/2000 jhrg
@@ -146,8 +145,7 @@ sub rfc822_to_time {
 # QUERY_STRING: Contains the DODS CE
 # PATH_INFO: Used to extract the extension from the filename which is used to
 # choose the server's filter program (.das --> nc_das, etc.)
-# SCRIPT_NAME: Used to build the `basename' part of the server's filter
-# program (nc --> nc_das, etc.).
+# SCRIPT_NAME: Used to build the request_uri field's value. Used by asciival, et c.
 # PATH_TRANSLATED: Used to get the file/dataset name.
 # HTTP_ACCEPT_ENCODING: Used to indicate that the client can understand
 # compressed responses.
@@ -157,10 +155,10 @@ sub initialize {
     my $self = shift;
     my $data;    # temp used to hold data from %ENV
 
-    if ( $debug >= 1 ) {
-        print( DBG_LOG "------------------------------------------------\n" );
-        print( DBG_LOG "DODS Server debug log: ", scalar localtime, "\n" );
-    }
+    open( DBG_LOG, ">> /usr/local/tmp/dbg_log" ) if $debug;
+    
+    print( DBG_LOG "------------------------------------------------\n" ) if $debug;
+    print( DBG_LOG "DODS Server debug log: ", scalar localtime, "\n" ) if $debug;
 
     # Read the configuration file.
     my ( $timeout, $cache_dir, $cache_size, $maintainer, $curl, @exclude ) =
@@ -228,7 +226,7 @@ is not in your client, please contact the ", 0
     print( DBG_LOG "server name: ", $self->{server_name}, "\n" ) if $debug > 1;
 
     # This is a potential security hole! Our variable names allow a great
-    # many characters that should never be fed into script. Make sure that the
+    # many characters that should never be fed into a CGI. Make sure that the
     # query string is passed to executable programs that 1) never call sh and
     # that 2) it's used only with the list form of exec (which does not
     # interpret shell meta characters.
@@ -363,18 +361,18 @@ information. If you think this is a server problem please contanct the\n"
     # Slight modification: If the handler is null ("") and the extension is a
     # slash ("/"), that's OK. See Bug 334. 12/27/2001 jhrg
 
-    $self->{script} = handler_name( $self->{path_info}, $self->{config_file} );
+    $self->{handler} = handler_name( $self->{path_info}, $self->{config_file} );
     if (    $self->{ext} ne "/"
          && $self->{ext} ne "stats"
          && $self->{ext} ne "version"
          && $self->{ext} ne "help"
-         && $self->{script} eq "" )
+         && $self->{handler} eq "" )
     {
         $self->print_dods_error( "${unknown_p1}${path_info}${unknown_p2}", 0 );
         exit(1);
     }
 
-    print DBG_LOG "Server type: $self->{script}\n" if $debug > 1;
+    print DBG_LOG "Server type: $self->{handler}\n" if $debug > 1;
 
     # Look for the Accept-Encoding header. Does it exist? If so, store the
     # value.
@@ -417,7 +415,7 @@ is not in your client, please contact the ", 0
     # $PATH_INFO, we should be all set. We process a DODSter URL in much the
     # same way a compressed local file is processed (see nph-dods.in).
     # 10/22/02 jhrg
-    if ( $self->{script} eq "jg" || is_dodster( $ENV{PATH_INFO} ) ) {
+    if ( $self->{handler} =~ m@^.*/jg_handler$@ || is_dodster( $ENV{PATH_INFO} ) ) {
         $filename = $ENV{PATH_INFO};
 
         # For both DODSter and JGOFS URLs, remove PATH_INFO's leading slash.
@@ -702,14 +700,29 @@ sub is_stat_on {
     }
 }
 
-sub script {
+# This returns the full path to the handler. The set of known handlers
+# is read from the dods.rc file during initialization. 
+sub handler {
     my $self   = shift;
-    my $script = shift;    # The second arg is optional
+    my $handler = shift;    # The second arg is optional
 
-    if ( $script eq "" ) {
-        return $self->{script};
+    if ( $handler eq "" ) {
+        return $self->{handler};
     } else {
-        return $self->{script} = $script;
+        return $self->{handler} = $handler;
+    }
+}
+
+# This returns the directory where the server binaries are stored. From the 
+# configuration file (dods.rc).
+sub sbin_dir {
+    my $self   = shift;
+    my $sbin_dir = shift;    # The second arg is optional
+
+    if ( $sbin_dir eq "" ) {
+        return $self->{sbin_dir};
+    } else {
+        return $self->{sbin_dir} = $sbin_dir;
     }
 }
 
@@ -761,8 +774,8 @@ sub command {
     my $self = shift;
 
     # If the user wants to see info, version or help information, provide
-    # that. Otherwise, form the name of the filter program to run by
-    # catenating the script name, underscore and the ext.
+    # that. Otherwise, run the handler. Pass the response type into the 
+    # handler using the -o option.
     if ( $self->ext() eq "info" ) {
 
         # I modified this so that the caller revision and cache directory
@@ -770,13 +783,13 @@ sub command {
         # filter programs. Passing the cache dir info addresses bug #453
         # where the HDF server was writing its cache files to the data
         # directory (because that's the default). 6/5/2002 jhrg
-        $server_pgm = $self->cgi_dir() . "usage";
+        $server_pgm = $self->sbin_dir() . "usage";
         $options    = "'-v " . $self->caller_revision() . " ";
         if ( $self->cache_dir() ne "" ) {
             $options .= "-r " . $self->cache_dir() . "'";
         }
-        $full_script = $self->cgi_dir() . $self->script();
-        @command = ( $server_pgm, $options, $self->filename(), $full_script );
+
+        @command = ( $server_pgm, $options, $self->filename(), $self->handler() );
     } elsif ( $self->ext() eq "ver" || $self->ext() eq "version" ) {
 
         # if there's no filename assume `.../nph-dods/version/'. 6/8/2001 jhrg
@@ -784,9 +797,9 @@ sub command {
             $self->send_dods_version();
             exit(0);
         } else {
-            $server_pgm = $self->cgi_dir() . $self->script() . "_handler";
+            $server_pgm = $self->handler();
             @command = (
-                         $server_pgm, "-o", "Version", "-u", $self->full_uri(),
+                         $self->handler(), "-o", "Version", "-u", $self->full_uri(),
                          $self->filename()
             );
         }
@@ -855,9 +868,8 @@ sub command {
               || $self->ext() eq "dods"
               || $self->ext() eq "ddx" )
     {
-        $server_pgm = $self->cgi_dir() . $self->script() . "_handler";
         @command = (
-                     $server_pgm, "-v", $self->caller_revision(),
+                     $self->handler(), "-v", $self->caller_revision(),
                      "-o", $self->ext(), "-u", $self->full_uri(),
                      $self->filename()
         );
@@ -974,18 +986,6 @@ sub send_dods_stats {
     }
 }
 
-# This method takes three arguments; the object, a string which names the
-# script's version number and an address for mailing bug reports. If the last
-# parameter is not supplied, use the maintainer address from the environment
-# variables.
-#
-# Note that this mfunc takes the script_rev and address information as
-# arguments for historical reasons. That information is now part of the object.
-# 2/10/1998 jhrg
-#
-# Further changed the dispatch script. The caller_revision and maintainer
-# fields are used explicitly and the args are ignored. 5/4/99 jhrg
-#
 # Changed by adding the two new arguments. The first (after the `self'
 # instance) is a variable that should name a string to print to report the
 # error. The second is a flag that indicates (0 == false, no) whether to
@@ -1004,7 +1004,7 @@ sub print_error_message {
     # Note that 400 is the error code for `Bad Request'.
 
     print "HTTP/1.0 400 DODS server error.\n";
-    print "XDODS-Server: $self->{script}/$self->{caller_revision}\n";
+    print "XDODS-Server: DAP2/$self->{caller_revision}\n";
     my $time = gmtime;
     print "Date: $time GMT\n";
     print "Last-Modified: $time GMT\n";
@@ -1052,7 +1052,7 @@ sub print_dods_error {
     print DBG_LOG "Whole message: $whole_msg\n";
 
     print "HTTP/1.0 200 OK\n";
-    print "XDODS-Server: $self->{script}/$self->{caller_revision}\n";
+    print "XDODS-Server: DAP2/$self->{caller_revision}\n";
     my $time = gmtime;
     print "Date: $time GMT\n";
     print "Last-Modified: $time GMT\n";
@@ -1076,7 +1076,7 @@ sub print_help_message {
     my $self = shift;
 
     print "HTTP/1.0 200 OK\n";
-    print "XDODS-Server: $self->{script}/$self->{caller_revision}\n";
+    print "XDODS-Server: DAP2/$self->{caller_revision}\n";
     print "Content-Type: text/html\n";
     print "\n";
 
@@ -1105,7 +1105,7 @@ if ($test) {
     print "Simple file access\n";
     my $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
     $dd->ext()    eq "dods" || die;
-    $dd->script() eq "nc"   || die;
+    $dd->handler() eq "/usr/local/sbin/nc_handler"   || die;
 
     print "Files with extra dots on their names\n";
 
@@ -1115,7 +1115,7 @@ if ($test) {
     $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
 
     $dd->ext()    eq "dods" || die;
-    $dd->script() eq "nc"   || die;
+    $dd->handler() eq "/usr/local/sbin/nc_handler"   || die;
 
     print "Directory names ending in a slash\n";
 
@@ -1125,7 +1125,7 @@ if ($test) {
     $ENV{PATH_TRANSLATED} = "/var/www/html/data/";
     $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
     $dd->ext()    eq "/" || die;
-    $dd->script() eq ""  || die;    # a weird anomaly of handler.pm
+    $dd->handler() eq ""  || die;    # a weird anomaly of handler.pm
 
     print "Directory names ending in a slash with a M=A query\n";
 
@@ -1212,6 +1212,11 @@ if ($test) {
 1;
 
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.46  2005/05/25 23:53:43  jimg
+# Changes to mesh with the new netcdf handler project/module. make install in
+# both will now yield a running server when nph-dods and dods.rc are copied to
+# a cgi-bin directory.
+#
 # Revision 1.45  2005/05/18 21:33:16  jimg
 # Update for the new build/install.
 #

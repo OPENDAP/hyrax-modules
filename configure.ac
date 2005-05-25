@@ -14,7 +14,7 @@ AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 
 DODS_PROG_PERL
-DODS_PROG_GTAR
+dnl DODS_PROG_GTAR
 
 AC_PATH_PROG([CURL], [curl], [*** Where is curl? ***],
 	         [/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/sbin])

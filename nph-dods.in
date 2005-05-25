@@ -43,7 +43,7 @@
 #
 # Options: -T: use Perl's taint mode.
 #
-# $Id: nph-dods.in,v 1.8 2005/05/19 14:43:26 jimg Exp $
+# $Id: nph-dods.in,v 1.9 2005/05/25 23:53:43 jimg Exp $
 
 # Force PATH. This should work for most UNIXs. Forcing PATH means that -T
 # (taint) won't complain about running programs. Perl will consider any
@@ -51,7 +51,7 @@
 # adding, for example, /usr/local/bin here might break other operations
 # (places where we use exec or system in DODS_Dispatch or DODS_Cache).
 $ENV{PATH} = '/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/sbin';
-$ENV{IFS} = "" if $ENV{IFS} ne "";    # For the truly paranoid...
+$ENV{IFS} = "" if $ENV{IFS};    # For the truly paranoid...
 
 # Needed for Perl 5.6.0 on Linux 12/11/2000 jhrg
 $ENV{BASH_ENV} = '';
@@ -63,7 +63,7 @@ $ENV{BASH_ENV} = '';
 $ENV{"JGOFS_OBJECT"} = "`pwd`";
 $ENV{"JGOFS_METHOD"} = "`pwd`";
 
-use lib ("@prefix@/sbin/dap-server");    # Look for modules in the cwd.
+use lib ("@prefix@/share/dap-server", ".");    # Look for modules in the cwd.
 use DODS_Dispatch;
 use DODS_Cache;
 
@@ -73,7 +73,7 @@ this should work, please contact the ";
 
 # The DODS_Dispatch object reads information from environment variables
 # and builds up a command based on the format of a DODS URL.
-$dispatch = new DODS_Dispatch( "DAP/@DAP_VERSION@", "./dods.rc" );
+$dispatch = new DODS_Dispatch( "DAP2/@PACKAGE_VERSION@", "./dods.rc" );
 
 # Note that the statistics 'stuff' has its own configuration file. That's
 # because we're just evaluating this feature. 07/22/03 jhrg
@@ -97,7 +97,6 @@ if ( -f "DODS_STATISTICS" ) {
 
         my ( $name, $value ) = split;
 
-        print STDERR "Name: $name, Value: $value \n" if $debug >= 2;
         if ( $name eq "access_log" ) {
             $dispatch->access_log($value);    # Path to httpd's access log
         } elsif ( $name eq "error_log" ) {
@@ -148,6 +147,11 @@ if ( $command[0] ne "" ) {    # if no error...
 }
 
 # $Log: nph-dods.in,v $
+# Revision 1.9  2005/05/25 23:53:43  jimg
+# Changes to mesh with the new netcdf handler project/module. make install in
+# both will now yield a running server when nph-dods and dods.rc are copied to
+# a cgi-bin directory.
+#
 # Revision 1.8  2005/05/19 14:43:26  jimg
 # Update
 #
