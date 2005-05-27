@@ -2,6 +2,15 @@
 # OPeNDAP server configuration file.
 # Blank lines are ignored; comments must start with `#' in the first column.
 
+# Where are the data you want to serve? Give the path to the data as the
+# value of data_root. If you want to serve two or more directory trees
+# either use symbolic links to combine them or set up two or more
+# servers. If you want to serve data that also happens to be accessible from
+# your web server's DocumentRoot directory leave data_root commented out;
+# without a value for data _root, the server will use your web server's 
+# DocumentRoot directory by default.
+# data_root /home/jimg/workspace/
+
 # Set the server time out. This is different from the httpd time out (which
 # does not apply to an OPeNDAP server). The value is in seconds; a value of
 # zero disables the time out feature.
