@@ -1,3 +1,51 @@
+2005-05-27  James Gallagher  <jimg@zoey.opendap.org>
+
+	* NEWS: Updated with the latest info; still to do, the tools.
+
+	* test-dispatch.sh: checkpoint
+
+	* read_config.pm: Modified to parse the data_root parameter.
+
+	* nph-dods.in: Now uses the dap_server.rc configuration file.
+
+	* DODS_Dispatch.pm: Used the value of the configuration param
+	data_root along with PATH_INFO to figure out where the data are.
+	The data_root path is essentially a substitute for DocumentRoot.
+	If data_root is not set in the config file, DocumentRoot is used
+	in its place (by falling back to the old behavior of using
+	PATH_TRANSLATED to find the data file).
+
+	* dap_server.rc.in: Added data_root configuration parameter.
+
+	* configure, configure.ac: Now builds dap_server.rc instead of dods.rc
+
+	* dods.rc.in: renamed to dap_server.rc.in
+
+	* dap_server.rc.in: Moved dods.rc to this file.
+
+	* NEWS: Added text about Tools redesign.
+
+	* NEWS: Added blurb about new features.
+
+2005-05-25  James Gallagher  <jimg@zoey.opendap.org>
+
+	* DODS_Dispatch.pm, configure.ac, dods.rc.in, nph-dods.in,
+	read_config.pm: Changes to mesh with the new netcdf handler
+	project/module. make install in both will now yield a running
+	server when nph-dods and dods.rc are copied to a cgi-bin
+	directory.
+
+2005-05-24  James Gallagher  <jimg@zoey.opendap.org>
+
+	* dods.rc.in: Added eos and EOS to the extensions for HDF4 files.
+
+2005-05-23  James Gallagher  <jimg@zoey.opendap.org>
+
+	* ChangeLog: *** empty log message ***
+
+	* .includepath, .project, Makefile.in, configure:
+	Added files missing from CVS.
+
 2005-05-23  James Gallagher  <jimg@zoey.opendap.org>
 
 	* .includepath, .project, Makefile.in, configure:
@@ -46,22 +94,21 @@
 	* FilterDirHTML.pm:
 	Fixed anchor_ref --> anchor_href in one of the debug statments.
 
-	* FilterDirHTML.pm:
-	Hacked up the comments so the code is easier to read. Added a note about bug
-	755 and bug 814.
+	* FilterDirHTML.pm: Hacked up the comments so the code is easier
+	to read. Added a note about bug 755 and bug 814.
 
-	* DODS_Dispatch.pm, FilterDirHTML.pm:
-	Added changes from NRL. These address a problem with the directory
-	response and files whose type (HDF, netCDF, et c.) are determined using
-	a regex that looks at the complete path and not just the filename. The
-	problem was that the full path was not used when building the directory
-	listing which meant that files that should have been treated as data files
-	were not.
-	The patches were provided by Brandon Casey <casey@hydrogen.nrlssc.navy.mil>.
+	* DODS_Dispatch.pm, FilterDirHTML.pm: Added changes from NRL.
+	These address a problem with the directory response and files
+	whose type (HDF, netCDF, et c.) are determined using a regex that
+	looks at the complete path and not just the filename. The problem
+	was that the full path was not used when building the directory
+	listing which meant that files that should have been treated as
+	data files were not. The patches were provided by Brandon Casey
+	<casey@hydrogen.nrlssc.navy.mil>.
 
-	* DODS_Dispatch.pm:
-	Incorporated a patch from John Allision that fixes a problem he had with the
-	version and .ver responses. See bug 820.
+	* DODS_Dispatch.pm: Incorporated a patch from John Allision that
+	fixes a problem he had with the version and .ver responses. See
+	bug 820.
 
 	* DODS_Dispatch.pm:
 	Fixed a spelling mistake in one of the error messages.
