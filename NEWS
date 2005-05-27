@@ -1,46 +1,55 @@
 
 Updated for version 3.5.0
 
-Server 3.5 is an update for the current CGI-based server whose dispatch code is
-written using Perl. The code is still Perl :-( but will have several enhancements 
-suggested/implemented by various people over the past few months. 
+Server 3.5 is an update for the current CGI-based server whose dispatch code
+is written using Perl. The code is still Perl :-( but will have several
+enhancements suggested/implemented by various people over the past few
+months.
 
 * This version of the OPeNDAP server is built and distributed separately from
 the libdap library.
 
-* Only the nph-dods script and dods.rc files will be installed in the cgi binary 
-directory. The remainder of the Perl and the 'helper' programs are now stored 
-elsewhere. This makes it much harder for people to hack the servers and also makes 
-setting up several servers at one site simpler. This design change was suggested 
-by John Allison at UCAR, I think, and I don't know why it has take me so long to 
-release a version of the server that employs it... Others may have also suggested 
-this and I was just to thick to pick up on it. ;-)
+* The server's configuration file is now named 'dap_server.rc.' We're going
+to keep the name 'nph-dods' s that existing links don't break.
 
-* The code (except for nph-dods and dods.rc) now installs in regular directories 
-as you'd expect with Unix/Linux. The Perl code installs in /usr/local/share/dap 
-and the C++/C binaries install in /usr/local/sbin.
+* Only the nph-dods script and dap_server.rc files will be installed in the
+cgi binary directory. The remainder of the Perl and the 'helper' programs are
+now stored elsewhere. This makes it much harder for people to hack the
+servers and also makes setting up several servers at one site simpler. This
+design change was suggested by John Allison at UCAR, I think, and I don't
+know why it has take me so long to release a version of the server that
+employs it... Others may have also suggested this and I was just to thick to
+pick up on it. ;-)
 
-* The server no longer uses the web daemon's DocumentRoot as the root of the data. 
-Instead the 'data root' is set from within the dods.rc file. This will make 
-setting up secure servers simpler since it's no longer necessary to make two 
-security configurations for the data. The old design where data security is based 
-on securing the server is still the model used by this server, but at least the 
-management of that has been cut in half. This was suggested by Neil Killeen at 
-CSIRO.
+* The code (except for nph-dods and dap_server.rc) now installs in regular
+directories as you'd expect with Unix/Linux. The Perl code installs in
+/usr/local/share/dap and the C++/C binaries install in /usr/local/sbin.
 
-* The server now uses a smaller number of helper applications, which I've called 
-'handlers' to process different types of files. Instead of having three programs
-for netCDF, three for HDF, et c., there's now just one handler for each format.
-(This was first implemented by Jake Hamby at JPL years ago and also by Jose Garcia 
-and Patrick West from HAO). These handlers now have their own CVS/SVN modules and 
-will be used by both this code and the Server4 code to be released over the course
-of the next six months.
+* The server no longer requires data providers to use the web daemon's
+DocumentRoot as the root of the data. Instead the 'data root' is set from
+within the dap_server.rc file. This will make setting up secure servers simpler
+since it's no longer necessary to make two security configurations for the
+data. The old design where data security is based on securing the server is
+still the model used by this server, but at least the management of that has
+been cut in half. This was suggested by Neil Killeen at CSIRO. Note that if
+data_root is not set int eh dap_server.rc file, the old behavior is used as a
+default. Thus existing sites don't need to mess with this at all; those
+configurations will continue to use DocumentRoot as the root of the data.
+
+* The server now uses a smaller number of helper applications, which I've
+called 'handlers' to process different types of files. Instead of having
+three programs for netCDF, three for HDF, et c., there's now just one handler
+for each format. (This was first implemented by Jake Hamby at JPL years ago
+and also by Jose Garcia and Patrick West from HAO). These handlers now have
+their own CVS/SVN modules and will be used by both this code and Server4.
+
+Still to be done:
 
 * Tools: The tools are helper programs that generate the info, ascii and HTML
-responses for the server. These have been moved into the server's directory and
-no longer make a round trip through the server to access data. This should speed
-up the server and also ease some of the thorny configuration issues when setting
-up a secure server.
+responses for the server. These have been moved into the server's directory
+and no longer make a round trip through the server to access data. This
+should speed up the server and also ease some of the thorny configuration
+issues when setting up a secure server.
 
 
-$Id: NEWS,v 1.3 2005/05/27 17:56:03 jimg Exp $
+$Id: NEWS,v 1.4 2005/05/27 22:44:41 jimg Exp $
