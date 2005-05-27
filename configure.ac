@@ -19,5 +19,5 @@ dnl DODS_PROG_GTAR
 AC_PATH_PROG([CURL], [curl], [*** Where is curl? ***],
 	         [/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/sbin])
 
-AC_CONFIG_FILES([nph-dods dods.rc Makefile], [chmod +x nph-dods])
+AC_CONFIG_FILES([nph-dods dap_server.rc Makefile], [chmod +x nph-dods])
 AC_OUTPUT
