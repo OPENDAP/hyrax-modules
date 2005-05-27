@@ -144,9 +144,13 @@ sub rfc822_to_time {
 # SERVER_ADMIN
 # QUERY_STRING: Contains the DODS CE
 # PATH_INFO: Used to extract the extension from the filename which is used to
-# choose the server's filter program (.das --> nc_das, etc.)
+# pass the response (object) type to the filter program. PATH_INFO is
+# the path-part of the URL which follows the CGI up to a '?' character.
 # SCRIPT_NAME: Used to build the request_uri field's value. Used by asciival, et c.
-# PATH_TRANSLATED: Used to get the file/dataset name.
+# PATH_TRANSLATED: Used to get the file/dataset name. PATH_TRANSLATED is 
+# the result of performing a logical to physical mapping on PATH_INFO. If
+# data_root is set in dap_server.rc, that is used along with PATH_INFO 
+# instead of PATH_TRANSLATED.
 # HTTP_ACCEPT_ENCODING: Used to indicate that the client can understand
 # compressed responses.
 # HTTP_IF_MODIFIED_SINCE: Used with conditional requests.
@@ -161,19 +165,31 @@ sub initialize {
     print( DBG_LOG "DODS Server debug log: ", scalar localtime, "\n" ) if $debug;
 
     # Read the configuration file.
-    my ( $timeout, $cache_dir, $cache_size, $maintainer, $curl, @exclude ) =
-      get_params( $self->{config_file} );
+    my ( $timeout, $cache_dir, $cache_size, $maintainer, $curl, $data_root, 
+         @exclude ) = get_params( $self->{config_file} );
     $self->timeout($timeout);
     $self->cache_dir($cache_dir);
     $self->cache_size($cache_size);
     $self->maintainer($maintainer);
+    # If data_root is not set, then use PATH_TRANSLATED as with 3.4 and
+    # earlier. jhrg 5/27/05
+    if ($data_root ne "") {
+        $self->data_path("$data_root$ENV{PATH_INFO}"); 
+    }
+    else {
+        $self->data_path("$ENV{PATH_TRANSLATED}");
+    }
     $self->curl($curl);
+    
     $self->exclude(@exclude);
 
     print( DBG_LOG "Timeout: ",    $self->timeout(),    "\n" ) if $debug > 1;
     print( DBG_LOG "Cache Dir: ",  $self->cache_dir(),  "\n" ) if $debug > 1;
     print( DBG_LOG "Cache Size: ", $self->cache_size(), "\n" ) if $debug > 1;
     print( DBG_LOG "Maintainer: ", $self->maintainer(), "\n" ) if $debug > 1;
+
+    print( DBG_LOG "data path: ", $self->data_path(), "\n" ) if $debug > 1;
+
     print( DBG_LOG "Exclude: ",    $self->exclude(),    "\n" ) if $debug > 1;
 
     # Process values read from the CGI 1.1 environment variables.
@@ -264,7 +280,7 @@ is not in your client, please contact the ", 0
 
     # Special case URLs for directories. 1/3/2001 jhrg
     # Use PATH_TRANSLATED for the directory test. 7/13/2001 jhrg
-    elsif ( is_directory( $ENV{PATH_TRANSLATED} ) ) {
+    elsif ( is_directory( $self->data_path() ) ) {
         $ext = "/";
     } elsif ( $ext =~ /^.*\.(das|dds|dods|ascii|asc|version|ver|info|html)$/ ) {
         $ext = $1;
@@ -407,7 +423,7 @@ is not in your client, please contact the ", 0
            $self->{if_modified_since}, "\n" )
       if $debug > 1;
 
-    print( DBG_LOG "PATH_TRANSLATED: ", $ENV{PATH_TRANSLATED}, "\n" )
+    print( DBG_LOG "data path: ", $self->data_path(), "\n" )
       if $debug > 1;
 
     # Here's where we need to set $filename so that it's something that
@@ -423,7 +439,7 @@ is not in your client, please contact the ", 0
             $filename = $1;
         }
     } else {
-        $filename = $ENV{PATH_TRANSLATED};
+        $filename = $self->data_path();
         if ( $filename =~ m@(.*)@ ) {
             $filename = $1;
         }
@@ -723,6 +739,17 @@ sub sbin_dir {
         return $self->{sbin_dir};
     } else {
         return $self->{sbin_dir} = $sbin_dir;
+    }
+}
+
+sub data_path {
+    my $self   = shift;
+    my $data_path = shift;    # The second arg is optional
+
+    if ( $data_path eq "" ) {
+        return $self->{data_path};
+    } else {
+        return $self->{data_path} = $data_path;
     }
 }
 
@@ -1100,7 +1127,7 @@ if ($test) {
    # 4/30/2001 jhrg.
    # $ENV{REQUEST_URI} = "http://dcz.dods.org/test-3.2/nph-dods/data/x.nc.dods";
     $ENV{HTTP_ACCEPT_ENCODING} = "deflate";
-    $ENV{PATH_TRANSLATED}      = "/home/httpd/html/htdocs/data/x.nc.dods";
+    $self->data_path("/home/httpd/html/htdocs/data/x.nc.dods");
 
     print "Simple file access\n";
     my $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
@@ -1111,7 +1138,7 @@ if ($test) {
 
     # Test files which have more than one dot in their names.
     $ENV{PATH_INFO}       = "/data/tmp.x.nc.dods";
-    $ENV{PATH_TRANSLATED} = "/home/httpd/html/htdocs/data/tmp.x.nc.dods";
+    $self->data_path("/home/httpd/html/htdocs/data/tmp.x.nc.dods");
     $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
 
     $dd->ext()    eq "dods" || die;
@@ -1122,7 +1149,7 @@ if ($test) {
     # Directory ending in a slash.
     # NOTE: The directory must really exist!
     $ENV{PATH_INFO}       = "/data/";
-    $ENV{PATH_TRANSLATED} = "/var/www/html/data/";
+    $self->data_path("/var/www/html/data/");
     $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
     $dd->ext()    eq "/" || die;
     $dd->handler() eq ""  || die;    # a weird anomaly of handler.pm
@@ -1132,7 +1159,8 @@ if ($test) {
     # Directory ending in a slash with a query string
     $ENV{QUERY_STRING}    = "M=A";
     $ENV{PATH_INFO}       = "/data/";
-    $ENV{PATH_TRANSLATED} = "/var/www/html/data/";
+#    $ENV{PATH_TRANSLATED} = "/var/www/html/data/";
+    $self->data_path("/var/www/html/data/");
     $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
     $dd->ext() eq "/" || die;
 
@@ -1149,7 +1177,7 @@ if ($test) {
     # Directory, not ending in a slash with a M=A query
     $ENV{QUERY_STRING}    = "M=A";
     $ENV{PATH_INFO}       = "/data";
-    $ENV{PATH_TRANSLATED} = "/var/www/html/data";
+    $self->data_path("/var/www/html/data");
     $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
     $dd->ext() eq "/" || die;
 
@@ -1199,7 +1227,7 @@ if ($test) {
 
     $ENV{PATH_INFO} =
       "/http://dcz.dods.org/dods-3.2/nph-dods/data/nc/fnoc1.nc.das";
-    $ENV{PATH_TRANSLATED} = "/var/www/html$ENV{PATH_INFO}";
+    $self->data_path("/var/www/html$ENV{PATH_INFO}");
     $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
 
     # print "DODSter filename: $dd->filename() \n";
@@ -1212,6 +1240,13 @@ if ($test) {
 1;
 
 # $Log: DODS_Dispatch.pm,v $
+# Revision 1.47  2005/05/27 22:37:02  jimg
+# Used the value of the configuration param data_root along with PATH_INFO
+# to figure out where the data are. The data_root path is essentially a substitute
+# for DocumentRoot. If data_root is not set in the config file, DocumentRoot is
+# used in its place (by falling back to the old behavior of using PATH_TRANSLATED
+# to find the data file).
+#
 # Revision 1.46  2005/05/25 23:53:43  jimg
 # Changes to mesh with the new netcdf handler project/module. make install in
 # both will now yield a running server when nph-dods and dods.rc are copied to
