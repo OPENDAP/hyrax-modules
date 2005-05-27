@@ -7,7 +7,7 @@
 #
 # SERVER_SOFTWARE
 #      NCSA/1.5.2 
-export SERVER_NAME=comet.dods.org
+export SERVER_NAME=zoey.opendap.org
 
 #      dcz.cvo.oneworld.com 
 # GATEWAY_INTERFACE
@@ -39,13 +39,13 @@ export SERVER_PORT=80
 #PATH_INFO="/data/"
 #PATH_INFO="/data/hdf/S3096277.HDF.Z.dds"
 
-PATH_INFO="/data/ff/1998-6-avhrr.dat.dods"
+PATH_INFO="/data/nc/fnoc1.nc.dods"
 export PATH_INFO
 
-SCRIPT_NAME="/dods-3.2/nph-dods"
+SCRIPT_NAME="/jimg/nph-dods"
 export SCRIPT_NAME
 
-QUERY_STRING="year,day_num"
+QUERY_STRING=""
 export QUERY_STRING
 
 PATH_TRANSLATED="/var/www/html${PATH_INFO}"
