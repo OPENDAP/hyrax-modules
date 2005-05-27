@@ -42,10 +42,11 @@ my $test  = 0;
 sub get_params {
     my ($server_config_file) = @_;
     my $timeout              = 0;                              # Never timeout
-    my $cache_dir            = "/usr/tmp";                     # Default
-    my $maintainer           = "support\@unidata.ucar.edu";    # Default
-    my $cache_size           = 50;                             # Default
+    my $cache_dir            = "/usr/tmp";
+    my $maintainer           = "support\@unidata.ucar.edu";
+    my $cache_size           = 50;
     my $curl                 = "curl";
+    my $data_root            = "";
     my @exclude;    # Default is empty
 
     open( DODSINI, $server_config_file );
@@ -83,6 +84,9 @@ sub get_params {
         } elsif ( $keyword eq "curl" ) {
             $value[0] =~ /^(.*)$/;
             $curl = $1;
+        } elsif ( $keyword eq "data_root" ) {
+            $value[0] =~ /^(.*)$/;
+            $data_root = $1;
         } elsif ( $keyword eq "exclude" ) {
 
             # These are only used internally, no need to sanitize (which is
@@ -92,7 +96,8 @@ sub get_params {
         }
     }
 
-    return ( $timeout, $cache_dir, $cache_size, $maintainer, $curl, @exclude );
+    return ( $timeout, $cache_dir, $cache_size, $maintainer, $curl, $data_root,
+             @exclude );
 }
 
 # Lookup the handler name using the regular expressions from the dods.rc
@@ -174,36 +179,36 @@ sub dataset_regexes {
 
 # Tests
 if ($test) {
-    ( "/usr/local/sbin/hdf_handler" eq handler_name( "/stuff/file.HDF", "./dods.rc" ) ) || die;
-    ( "/usr/local/sbin/hdf_handler" eq handler_name( "/stuff/file.hdf", "./dods.rc" ) ) || die;
-    ( "/usr/local/sbin/nc_handler"  eq handler_name( "/stuff/file.nc",  "./dods.rc" ) ) || die;
-    ( "/usr/local/sbin/nc_handler"  eq handler_name( "/stuff/file.NC",  "./dods.rc" ) ) || die;
-    ( "/usr/local/sbin/nc_handler"  eq handler_name( "/stuff/file.cdf", "./dods.rc" ) ) || die;
-    ( "/usr/local/sbin/nc_handler"  eq handler_name( "/stuff/file.CDF", "./dods.rc" ) ) || die;
-    ( "/usr/local/sbin/jg_handler"  eq handler_name( "/stuff/test",     "./dods.rc" ) ) || die;
+    ( "/usr/local/sbin/hdf_handler" eq handler_name( "/stuff/file.HDF", "./dap_server.rc" ) ) || die;
+    ( "/usr/local/sbin/hdf_handler" eq handler_name( "/stuff/file.hdf", "./dap_server.rc" ) ) || die;
+    ( "/usr/local/sbin/nc_handler"  eq handler_name( "/stuff/file.nc",  "./dap_server.rc" ) ) || die;
+    ( "/usr/local/sbin/nc_handler"  eq handler_name( "/stuff/file.NC",  "./dap_server.rc" ) ) || die;
+    ( "/usr/local/sbin/nc_handler"  eq handler_name( "/stuff/file.cdf", "./dap_server.rc" ) ) || die;
+    ( "/usr/local/sbin/nc_handler"  eq handler_name( "/stuff/file.CDF", "./dap_server.rc" ) ) || die;
+    ( "/usr/local/sbin/jg_handler"  eq handler_name( "/stuff/test",     "./dap_server.rc" ) ) || die;
 
-    ( "/usr/local/sbin/mat_handler" eq handler_name( "/stuff/test.mat", "./dods.rc" ) ) || die;
-    ( "/usr/local/sbin/mat_handler" eq handler_name( "/stuff/test.Mat", "./dods.rc" ) ) || die;
-    ( "/usr/local/sbin/mat_handler" eq handler_name( "/stuff/test.MAT", "./dods.rc" ) ) || die;
-    ( "/usr/local/sbin/ff_handler"  eq handler_name( "/stuff/test.dat", "./dods.rc" ) ) || die;
-    ( "/usr/local/sbin/ff_handler"  eq handler_name( "/stuff/test.bin", "./dods.rc" ) ) || die;
-    ( ""    eq handler_name( "/stuff/file.bob", "./dods.rc" ) ) || die;
+    ( "/usr/local/sbin/mat_handler" eq handler_name( "/stuff/test.mat", "./dap_server.rc" ) ) || die;
+    ( "/usr/local/sbin/mat_handler" eq handler_name( "/stuff/test.Mat", "./dap_server.rc" ) ) || die;
+    ( "/usr/local/sbin/mat_handler" eq handler_name( "/stuff/test.MAT", "./dap_server.rc" ) ) || die;
+    ( "/usr/local/sbin/ff_handler"  eq handler_name( "/stuff/test.dat", "./dap_server.rc" ) ) || die;
+    ( "/usr/local/sbin/ff_handler"  eq handler_name( "/stuff/test.bin", "./dap_server.rc" ) ) || die;
+    ( ""    eq handler_name( "/stuff/file.bob", "./dap_server.rc" ) ) || die;
     (
        "/usr/local/sbin/hdf_handler" eq handler_name(
                     "/usr/tmp/dods_cache#home#httpd#html#data#hdf#S1700101.HDF",
-                    "./dods.rc"
+                    "./dap_server.rc"
        )
       )
       || die;
 
     print STDERR "first: ",
-      dataset_regexes( "./dods.rc", ( "hdf", "nc", "mat", "ff", "dsp", "jg" ) ),
+      dataset_regexes( "./dap_server.rc", ( "hdf", "nc", "mat", "ff", "dsp", "jg" ) ),
       "\n";
     print STDERR "second: ",
-      dataset_regexes( "./dods.rc", ( "nc", "mat", "ff", "dsp", "jg" ) ), "\n";
-    print STDERR "third: ", dataset_regexes( "./dods.rc", ("jg") ), "\n";
+      dataset_regexes( "./dap_server.rc", ( "nc", "mat", "ff", "dsp", "jg" ) ), "\n";
+    print STDERR "third: ", dataset_regexes( "./dap_server.rc", ("jg") ), "\n";
 
-    my @params = get_params("./dods.rc");
+    my @params = get_params("./dap_server.rc");
     print STDERR "params: @params\n" if $debug;
     ( $params[0] == 0 ) || die;
     shift @params;
@@ -215,6 +220,8 @@ if ($test) {
     shift @params;
      ( $params[0] == "curl" ) || die;
     shift @params;
+     ( $params[0] == "" ) || die;
+    shift @params;
     print STDERR "Exclude: @params\n";
     my @exclude_test = ();
     ( @params == @exclude_test ) || die;
@@ -225,9 +232,12 @@ if ($test) {
 1;
 
 # $Log: read_config.pm,v $
+# Revision 1.5  2005/05/27 22:39:19  jimg
+# Modified to parse the data_root parameter.
+#
 # Revision 1.4  2005/05/25 23:53:43  jimg
 # Changes to mesh with the new netcdf handler project/module. make install in
-# both will now yield a running server when nph-dods and dods.rc are copied to
+# both will now yield a running server when nph-dods and dap_server.rc are copied to
 # a cgi-bin directory.
 #
 # Revision 1.3  2005/05/18 21:33:16  jimg
@@ -241,7 +251,7 @@ if ($test) {
 # non-zero.
 #
 # Revision 1.1.2.1  2003/07/23 23:24:32  jimg
-# Moved from handler_name.pm when I made the dods.rc a real configuration
+# Moved from handler_name.pm when I made the dap_server.rc a real configuration
 # file.
 #
 # Revision 1.8  2003/04/28 22:01:47  jimg
@@ -253,7 +263,7 @@ if ($test) {
 # GNU Lesser GPL.
 #
 # Revision 1.6  2003/01/22 00:41:47  jimg
-# Changed dods.ini to dods.rc.
+# Changed dods.ini to dap_server.rc.
 #
 # Revision 1.5  2002/12/31 22:28:45  jimg
 # Merged with release 3.2.10.
