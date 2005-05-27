@@ -28,5 +28,19 @@ on securing the server is still the model used by this server, but at least the
 management of that has been cut in half. This was suggested by Neil Killeen at 
 CSIRO.
 
+* The server now uses a smaller number of helper applications, which I've called 
+'handlers' to process different types of files. Instead of having three programs
+for netCDF, three for HDF, et c., there's now just one handler for each format.
+(This was first implemented by Jake Hamby at JPL years ago and also by Jose Garcia 
+and Patrick West from HAO). These handlers now have their own CVS/SVN modules and 
+will be used by both this code and the Server4 code to be released over the course
+of the next six months.
 
-$Id: NEWS,v 1.2 2005/05/27 17:45:04 jimg Exp $
+* Tools: The tools are helper programs that generate the info, ascii and HTML
+responses for the server. These have been moved into the server's directory and
+no longer make a round trip through the server to access data. This should speed
+up the server and also ease some of the thorny configuration issues when setting
+up a secure server.
+
+
+$Id: NEWS,v 1.3 2005/05/27 17:56:03 jimg Exp $
