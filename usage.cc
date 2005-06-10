@@ -36,12 +36,16 @@
 // information that the dataset providers want to make available. jhrg
 // 12/9/96
 
-#include "config_dap.h"
+#include "config.h"
 
 static char rcsid[] not_used = {"$Id: usage.cc,v 1.29 2005/01/28 17:25:13 jimg Exp $"};
 
 #include <stdio.h>
 
+// I've added the pthread code here because this might someday move inside a
+// library as a function/object and it should be MT-safe. In the current
+// build HAVE_PTHREAD_H is set by configure; not having it makes no practical
+// difference. jhrg 6/10/05
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 #endif
@@ -69,9 +73,9 @@ using namespace std;
 #endif
 
 #ifdef WIN32
-#define RETURN void
+#define RETURN_TYPE void
 #else
-#define RETURN int
+#define RETURN_TYPE int
 #endif 
 
 static void
@@ -393,13 +397,16 @@ static void
 html_header()
 {
     fprintf( stdout, "HTTP/1.0 200 OK\n" ) ;
-    fprintf( stdout, "XDODS-Server: %s\n", DVR ) ;
+    fprintf( stdout, "XDODS-Server: %s\n", PACKAGE_VERSION ) ;
+    fprintf( stdout, "XDAP-Version: %s\n", DAP_VERSION ) ;
     fprintf( stdout, "Content-type: text/html\n" ) ;
     fprintf( stdout, "Content-Description: dods_description\n" ) ;
     fprintf( stdout, "\n" ) ;	// MIME header ends with a blank line
 }
 
-RETURN
+// This program is passes a collection of Unix-style options, the pathname
+// of the data source and the pathname of the handler.
+RETURN_TYPE
 main(int argc, char *argv[])
 {
     if (argc != 4) {
@@ -421,12 +428,14 @@ main(int argc, char *argv[])
     // The site is not overriding the DAS/DDS generated information, so read
     // the DAS, DDS and user supplied documents. 
 
-    string cgi = argv[3];
+    string handler = argv[3];
 
     DAS das;
-    string command = cgi + "_das " + options + " \"" + name + "\"";
+    string command = handler + "-o DAS " + options + " \"" + name + "\"";
 
     DBG(cerr << "DAS Command: " << command << endl);
+
+    BaseTypeFactory *factory = new BaseTypeFactory;
 
     try {
 	FILE *in = popen(command.c_str(), "r");
@@ -436,8 +445,8 @@ main(int argc, char *argv[])
 		pclose(in);
 	}
 
-	DDS dds;
-	string command = cgi + "_dds " + options + " \"" + name + "\"";
+	DDS dds(factory);
+	string command = handler + "-o DDS " + options + " \"" + name + "\"";
 	DBG(cerr << "DDS Command: " << command << endl);
 
 	in = popen(command.c_str(), "r");
@@ -449,7 +458,9 @@ main(int argc, char *argv[])
 
 	// Build the HTML* documents.
 
-	string user_html = get_user_supplied_docs(name, cgi);
+        // This will require some hacking in libdap; maybe that code should
+        // move here? jhrg
+	string user_html = get_user_supplied_docs(name, handler);
 
 	string global_attrs = build_global_attributes(das, dds);
 
@@ -474,6 +485,8 @@ main(int argc, char *argv[])
 	fprintf( stdout, "%s\n", user_html.c_str() ) ;
 
 	fprintf( stdout, "</body>\n</html>\n" ) ;
+
+	delete factory;
     }
     catch (Error &e) {
 	string error_msg = e.get_error_message();
@@ -486,17 +499,11 @@ main(int argc, char *argv[])
 	fprintf( stdout, "%s", error_msg.c_str() ) ;
 	fprintf( stdout, "<hr>\n" ) ;
 
-#ifndef WIN32
-	return 1;
-#endif
+	delete factory;
+	return EXIT_FAILURE;
     }
 
-    //  Needed for VC++
-#ifdef WIN32
-    return;
-#else
-    return 0;
-#endif
+    return EXIT_SUCCESS;
 }
 
 // $Log: usage.cc,v $

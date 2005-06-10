@@ -30,33 +30,24 @@ AC_DEFUN(DODS_PROG_PERL, [dnl
 
     AC_SUBST(PERL)])
 
-# Added by Ethan, 1999/06/21
-# Look for GNU tar.
-# 
-# I modified the regexp below but it still does not work exactly correctly; 
-# the variable tar_ver should have only the version number in it. However,
-# my version (1.12) spits out a multi-line thing. The regexp below gets the
-# version number from the first line but does not remove the subsequent lines
-# of garbage. 7/15/99 jhrg
-# Added awk line to handle multiline output. 1999/07/22 erd
+AC_DEFUN([OPENDAP_DEBUG_OPTION], [dnl
+    AC_ARG_ENABLE(debug, 
+		  [  --enable-debug=ARG      Program instrumentation (1,2)],
+		  DEBUG=$enableval, DEBUG=no)
 
-AC_DEFUN(DODS_PROG_GTAR, [dnl
-    AC_CHECK_PROGS(TAR,gtar tar,tar)
-    case "$TAR" in
-	*tar)
-	    tar_ver=`$TAR --version 2>&1 | awk '/G[[Nn]][[Uu]] tar/ {print}'`
-	    tar_ver=`echo $tar_ver | sed 's/.*GNU tar[[^0-9.]]*\([[0-9._]]*\)/\1/'`
-	    if test -n "$tar_ver"
-	    then
-		AC_MSG_RESULT(Found Gnu tar version ${tar_ver}.)
-	    else
-		AC_MSG_WARN(GNU tar is required for some Makefile targets.)
-	    fi
-	    ;;
-	*)
-	    AC_MSG_WARN(GNU tar is required for some Makefile targets.)
-	    ;;
-    esac
-
-    AC_SUBST(TAR)])
-
+    case "$DEBUG" in
+    no) 
+      ;;
+    1)
+      AC_MSG_RESULT(Setting debugging to level 1)
+      AC_DEFINE(DODS_DEBUG)
+      ;;
+    2) 
+      AC_MSG_RESULT(Setting debugging to level 2)
+      AC_DEFINE(DODS_DEBUG, , [Set instrumentation to level 1 (see debug.h)])
+      AC_DEFINE(DODS_DEBUG2, , [Set instrumentation to level 2])
+      ;;
+    *)
+      AC_MSG_ERROR(Bad debug value)
+      ;;
+    esac])
