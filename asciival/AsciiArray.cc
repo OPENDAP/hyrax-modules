@@ -37,7 +37,7 @@
 #pragma implementation
 #endif
 
-#include "config_dap.h"
+#include "config_asciival.h"
 
 #include <iostream>
 #include <string>

@@ -36,7 +36,6 @@
     
     @author: jhrg */
 
-//#include "config_dap.h"
 #include "config_asciival.h"
 
 static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.20 2004/07/08 22:18:25 jimg Exp $"};

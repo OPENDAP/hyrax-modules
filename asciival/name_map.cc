@@ -33,7 +33,7 @@
 #pragma implementation
 #endif
 
-#include "config_dap.h"
+#include "config_asciival.h"
 
 static char rcsid[] not_used = {"$Id: name_map.cc,v 1.10 2004/07/08 22:18:25 jimg Exp $"};
 

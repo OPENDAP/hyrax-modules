@@ -1677,6 +1677,10 @@ INSTALL_STRIP_PROGRAM="\${SHELL} \$(install_sh) -c -s"
 # along with our hook.
           ac_config_headers="$ac_config_headers config.h"
 
+# Add the stamp file to the list of files AC keeps track of,
+# along with our hook.
+          ac_config_headers="$ac_config_headers asciival/config_asciival.h"
+
 
 
 
@@ -4854,7 +4858,7 @@ echo "$as_me: error: Bad debug value" >&2;}
 
 
 
-                                                            ac_config_files="$ac_config_files nph-dods dap_server.rc Makefile ais-tool/Makefile asciival/Makefile www-interface/Makefile"
+                                                  ac_config_files="$ac_config_files nph-dods dap_server.rc Makefile asciival/Makefile www-interface/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -5400,11 +5404,11 @@ do
   "nph-dods" ) CONFIG_FILES="$CONFIG_FILES nph-dods" ;;
   "dap_server.rc" ) CONFIG_FILES="$CONFIG_FILES dap_server.rc" ;;
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-  "ais-tool/Makefile" ) CONFIG_FILES="$CONFIG_FILES ais-tool/Makefile" ;;
   "asciival/Makefile" ) CONFIG_FILES="$CONFIG_FILES asciival/Makefile" ;;
   "www-interface/Makefile" ) CONFIG_FILES="$CONFIG_FILES www-interface/Makefile" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
   "config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
+  "asciival/config_asciival.h" ) CONFIG_HEADERS="$CONFIG_HEADERS asciival/config_asciival.h" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
@@ -5753,7 +5757,6 @@ s,@INSTALL@,$ac_INSTALL,;t t
     nph-dods ) chmod +x nph-dods ;;
     dap_server.rc ) chmod +x nph-dods ;;
     Makefile ) chmod +x nph-dods ;;
-    ais-tool/Makefile ) chmod +x nph-dods ;;
     asciival/Makefile ) chmod +x nph-dods ;;
     www-interface/Makefile ) chmod +x nph-dods ;;
   esac
@@ -5983,6 +5986,9 @@ echo "$as_me: error: cannot create directory \"$ac_dir\"" >&2;}
   case $ac_file in
     config.h ) # update the timestamp
 echo 'timestamp for config.h' >"./stamp-h1"
+ ;;
+    asciival/config_asciival.h ) # update the timestamp
+echo 'timestamp for asciival/config_asciival.h' >"asciival/stamp-h2"
  ;;
   esac
 done
