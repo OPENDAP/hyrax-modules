@@ -116,9 +116,8 @@ EXTRA_DIST = EXAMPLE_DODS_STATISTICS README-security
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
-CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = nph-dods dap_server.rc ais-tool/Makefile \
-	asciival/Makefile www-interface/Makefile
+CONFIG_HEADER = config.h $(top_builddir)/asciival/config_asciival.h
+CONFIG_CLEAN_FILES = nph-dods dap_server.rc www-interface/Makefile
 sbin_PROGRAMS = usage$(EXEEXT)
 PROGRAMS = $(sbin_PROGRAMS)
 
@@ -131,7 +130,7 @@ SCRIPTS = $(dist_pkgdata_SCRIPTS) $(noinst_SCRIPTS)
 
 
 DEFS = @DEFS@
-DEFAULT_INCLUDES =  -I. -I$(srcdir) -I.
+DEFAULT_INCLUDES =  -I. -I$(srcdir) -I. -I$(top_builddir)/asciival
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
@@ -195,10 +194,6 @@ distclean-hdr:
 nph-dods: $(top_builddir)/config.status nph-dods.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 dap_server.rc: $(top_builddir)/config.status dap_server.rc.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-ais-tool/Makefile: $(top_builddir)/config.status $(top_srcdir)/ais-tool/Makefile.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-asciival/Makefile: $(top_builddir)/config.status $(top_srcdir)/asciival/Makefile.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 www-interface/Makefile: $(top_builddir)/config.status $(top_srcdir)/www-interface/Makefile.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
@@ -331,7 +326,7 @@ distdir: $(DISTFILES)
 	fi
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkinstalldirs) $(distdir)/. $(distdir)/HTML $(distdir)/ais-tool $(distdir)/asciival $(distdir)/www-interface
+	$(mkinstalldirs) $(distdir)/. $(distdir)/HTML $(distdir)/www-interface
 	@list='$(DISTFILES)'; for file in $$list; do \
 	  if test -f $$file || test -d $$file; then d=.; else d=$(srcdir); fi; \
 	  dir=`echo "$$file" | sed -e 's,/[^/]*$$,,'`; \

@@ -431,7 +431,7 @@ main(int argc, char *argv[])
     string handler = argv[3];
 
     DAS das;
-    string command = handler + "-o DAS " + options + " \"" + name + "\"";
+    string command = handler + " -o DAS " + options + " \"" + name + "\"";
 
     DBG(cerr << "DAS Command: " << command << endl);
 
@@ -446,7 +446,7 @@ main(int argc, char *argv[])
 	}
 
 	DDS dds(factory);
-	string command = handler + "-o DDS " + options + " \"" + name + "\"";
+	string command = handler + " -o DDS " + options + " \"" + name + "\"";
 	DBG(cerr << "DDS Command: " << command << endl);
 
 	in = popen(command.c_str(), "r");
