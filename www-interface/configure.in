@@ -32,7 +32,7 @@ AC_SUBST(host)
 # 1/1/2005, you can probably remove it. Same is true for the Alpha/OSF5. 
 # jhrg 04/13/04. 
 case "${host_cpu}:${host_vendor}:${host_os}" in
-     powerpc:apple:netbsd*)
+     powerpc:apple:netbsd* | powerpc:apple:darwin* )
        CFLAGS=${CFLAGS-"-O2 $CFLAGS"}
        CXXFLAGS=${CXXFLAGS-"-O2 $CXXFLAGS"}
        break;;
