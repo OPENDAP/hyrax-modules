@@ -50,7 +50,7 @@ static char rcsid[] not_used = {"$Id: WWWOutput.cc,v 1.15 2004/07/08 22:32:19 ji
 #include <io.h>
 #endif
 
-#include "Regex.h"
+#include "GNURegex.h"
 
 #include "BaseType.h"
 #include "Array.h"

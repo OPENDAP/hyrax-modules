@@ -6,7 +6,7 @@ AC_PREREQ(2.57)
 AC_INIT([dap-server], [3.5.0], [dods-tech@unidata.ucar.edu])
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([nph-dods.in])
-AM_CONFIG_HEADER([config.h asciival/config_asciival.h])
+AM_CONFIG_HEADER([config.h])
 
 AC_DEFINE([DAP_VERSION], ["2.0"], [What version of the data server is this?])
 
@@ -103,9 +103,12 @@ AH_BOTTOM([/* Shorthand for gcc's unused attribute feature */
 
 #endif /* _config_h */])
 
-AC_CONFIG_FILES([nph-dods 
-	         dap_server.rc 
+AC_CONFIG_FILES([dap_server.rc 
 		 Makefile
                  asciival/Makefile
-                 www-interface/Makefile], [chmod +x nph-dods])
+                 www-interface/Makefile])
+
+AC_CONFIG_FILES([nph-dods], [chmod +x nph-dods])
+AC_CONFIG_FILES([www-interface/js2h.pl], [chmod +x www-interface/js2h.pl])
+
 AC_OUTPUT

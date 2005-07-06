@@ -57,7 +57,7 @@ static char rcsid[] not_used = {"$Id: www_int.cc,v 1.15 2004/07/08 22:32:19 jimg
 #include "WWWOutput.h"
 #include "javascript.h"		// Try to hide this stuff...
 
-const char *version = WWW_INT_VER;
+const char *version = PACKAGE_VERSION;
 
 DAS global_das;
 WWWOutput wo(cout);

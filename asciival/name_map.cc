@@ -37,10 +37,10 @@
 
 static char rcsid[] not_used = {"$Id: name_map.cc,v 1.10 2004/07/08 22:18:25 jimg Exp $"};
 
-#include <Regex.h>
+#include <GNURegex.h>
 
-#include "escaping.h"
-#include "name_map.h"
+#include <escaping.h>
+#include <name_map.h>
 
 name_map::name_map(char *raw_equiv) 
 {

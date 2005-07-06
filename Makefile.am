@@ -7,6 +7,8 @@
 
 AUTOMAKE_OPTIONS = foreign check-news
 
+SUBDIRS = . asciival www-interface
+
 sbin_PROGRAMS = usage
 
 usage_SOURCES = usage.cc

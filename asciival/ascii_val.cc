@@ -75,11 +75,7 @@ using std::endl ;
 name_map names;
 bool translate = false;
 
-#ifdef DODS_VERSION
-const char *VERSION = DODS_VERSION;
-#else
-const char *VERSION = "unknown";
-#endif /* DODS_VERSION */
+const char *version = PACKAGE_VERSION;
 
 static void
 usage(string name)
@@ -178,7 +174,7 @@ main(int argc, char * argv[])
 	  case 'g': gui = true; break;
 	  case 'm': mime_header = true; break;
 	  case 'v': verbose = true; break;
-	  case 'V': {cerr << "asciival: " << VERSION << endl; exit(0);}
+	  case 'V': {cerr << "asciival: " << version << endl; exit(0);}
 	  case 'h':
 	  case '?':
 	  default:

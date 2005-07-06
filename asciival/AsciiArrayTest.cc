@@ -25,20 +25,27 @@
  
 // Tests for the DataDDS class.
 
-#include "TestCase.h"
-#include "TestCaller.h"
-#include "TestSuite.h"
+#include <cppunit/TextTestRunner.h>
+#include <cppunit/extensions/TestFactoryRegistry.h>
+#include <cppunit/extensions/HelperMacros.h>
 
 #include "DDS.h"
+
+#include "name_map.h"
 #include "AsciiArray.h"
 
-class AsciiArrayTest : public TestCase {
+name_map names;
+bool translate = false;
+using namespace CppUnit;
+
+class AsciiArrayTest : public TestFixture {
 private:
     DDS *dds1;
     AsciiArray *a, *b, *c, *d;
 
 public: 
-    AsciiArrayTest (string name) : TestCase (name) {}
+    AsciiArrayTest() {}
+    ~AsciiArrayTest() {}
 
     void setUp() {
 	dds1 = new DDS("ascii_array_test");
@@ -57,6 +64,14 @@ public:
 	delete dds1; dds1 = 0;
     }
 
+    CPPUNIT_TEST_SUITE( AsciiArrayTest );
+
+    CPPUNIT_TEST(test_get_nth_dim_size);
+    CPPUNIT_TEST(test_get_shape_vector);
+    CPPUNIT_TEST(test_get_index);
+
+    CPPUNIT_TEST_SUITE_END();
+    
     void test_get_nth_dim_size() {
 	assert(a->get_nth_dim_size(1) == 10);
 
@@ -67,7 +82,7 @@ public:
 	assert(c->get_nth_dim_size(2) == 5);
 	assert(c->get_nth_dim_size(3) == 5);
 
-	try { a->get_nth_dim_size(-1); assert(false);}
+	try { a->get_nth_dim_size((unsigned long)-1); assert(false);}
 	catch(InternalErr &ie) { assert(true);}
 	try { a->get_nth_dim_size(0); assert(false);}
 	catch(InternalErr &ie) { assert(true);}
@@ -137,22 +152,20 @@ public:
 	    assert(false);
 	}
     }
-
-    static Test *suite ()  {
-	TestSuite *s = new TestSuite("AsciiArrayTest");
-	s->addTest(new TestCaller<AsciiArrayTest>
-		   ("test_get_nth_dim_size",
-		    &AsciiArrayTest::test_get_nth_dim_size));
-	s->addTest(new TestCaller<AsciiArrayTest>
-		   ("test_get_shape_vector",
-		    &AsciiArrayTest::test_get_shape_vector));
-
-	s->addTest(new TestCaller<AsciiArrayTest>
-		   ("test_get_index", &AsciiArrayTest::test_get_index));
-
-	return s;
-    }
 };
+
+CPPUNIT_TEST_SUITE_REGISTRATION(AsciiArrayTest);
+
+int 
+main( int argc, char* argv[] )
+{
+    CppUnit::TextTestRunner runner;
+    runner.addTest( CppUnit::TestFactoryRegistry::getRegistry().makeTest() );
+
+    runner.run();
+
+    return 0;
+}
 
 
 

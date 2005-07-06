@@ -55,13 +55,13 @@ static char rcsid[] not_used = {"$Id: usage.cc,v 1.29 2005/01/28 17:25:13 jimg E
 #include <string>
 #include <sstream>
 
-#include "Regex.h"
+#include <GNURegex.h>
 
-#include "cgi_util.h"
-#include "util.h"
-#include "DAS.h"
+#include <cgi_util.h>
+#include <util.h>
+#include <DAS.h>
 
-#include "debug.h"
+#include <debug.h>
 
 using namespace std;
 
