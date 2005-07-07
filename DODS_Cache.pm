@@ -46,7 +46,7 @@ my $test  = 0;
 my $debug = 0;
 
 # This regex is used to recognize files that are compressed.
-my $compressed_regex = "(\.gz|\.Z)";
+my $compressed_regex = "(\\.gz|\\.Z)";
 
 use strict;
 
