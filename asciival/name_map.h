@@ -33,7 +33,7 @@
 #define _name_map_h
 
 #ifdef __GNUG__
-#pragma interface
+//#pragma interface
 #endif
 
 #include <vector>
@@ -116,12 +116,12 @@ public:
 // Use "using std::*" in the standard way.
 //
 // Revision 1.11.4.2  2003/07/11 04:28:18  jimg
-// Boldly (ahem) removed the GNUG interface/implementation #pragma.
+// Boldly (ahem) removed the GNUG interface/implementation //#pragma.
 // compared object sizes; there's a little difference, but it looks like a
 // draw as to which is bigger.
 //
 // Revision 1.11.4.1  2003/06/26 07:38:59  rmorris
-// #ifdef'd out #pragma interface directives under OS X.  They cause problems
+// #ifdef'd out //#pragma interface directives under OS X.  They cause problems
 // with the dynamic typing system under Jaguar.
 //
 // Revision 1.11  2003/01/27 19:38:23  jimg

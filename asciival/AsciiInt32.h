@@ -37,7 +37,7 @@
 #define _asciiint32_h 1
 
 #ifdef __GNUG__
-#pragma interface
+//#pragma interface
 #endif
 
 #include "Int32.h"

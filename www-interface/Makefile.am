@@ -5,7 +5,7 @@
 #
 # $Id$
 
-AUTOMAKE_OPTIONS = foreign check-news
+AUTOMAKE_OPTIONS = foreign
 
 AM_CPPFLAGS = -DDEFAULT_BASETYPE_FACTORY
 
@@ -21,9 +21,9 @@ www_int_SOURCES = WWWArray.cc WWWFloat64.cc WWWInt32.cc WWWSequence.cc	     \
 	WWWFloat32.cc WWWInt16.cc WWWOutput.cc WWWStructure.cc WWWUrl.cc     \
 	WWWFloat32.h WWWInt16.h WWWSequence.h WWWUInt16.h WWWArray.h	     \
 	WWWFloat64.h WWWInt32.h WWWStr.h WWWUInt32.h WWWByte.h WWWGrid.h     \
-	WWWOutput.h WWWStructure.h WWWUrl.h version.h javascript.h
+	WWWOutput.h WWWStructure.h WWWUrl.h javascript.h config_www_int.h
 
-EXTRA_DIST = ChangeLog COPYRIGHT js2h.pl www.js
+EXTRA_DIST = ChangeLog js2h.pl www.js
 
 javascript.h: www.js
 	./js2h.pl $< > $@

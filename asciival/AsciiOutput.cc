@@ -34,7 +34,7 @@
 // 3/12/98 jhrg
 
 #ifdef __GNUG__
-#pragma implementation
+//#pragma implementation
 #endif
 
 #include "config_asciival.h"

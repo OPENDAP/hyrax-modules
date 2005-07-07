@@ -38,7 +38,7 @@
 
 #ifndef __POWERPC__
 #ifdef __GNUG__
-#pragma interface
+//#pragma interface
 #endif
 #endif
 
@@ -62,7 +62,7 @@ public:
 // Merge release-3-4 into trunk
 //
 // Revision 1.5.4.1  2003/06/26 07:53:39  rmorris
-// #ifdef'd out #pragma interface directive under OS X.  It makes the dynamic
+// #ifdef'd out //#pragma interface directive under OS X.  It makes the dynamic
 // typing system not work.
 //
 // Revision 1.5  2003/01/27 23:53:54  jimg

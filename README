@@ -1,29 +1,17 @@
-$Id: README,v 1.3 2003/04/29 22:35:53 jimg Exp $
+$Id$
 
-See the Install-servers file for information about installing NVODS/OPeNDAP
-servers. 
+This is the base software for the OPeNDAP data server. It uses the
+CGI 1.1 protocol and requires Apache or a similar web daemon. 
 
-This directory contains software used by DODS during the build process and at
-runtime. Software that may be useful to developers working on new
-client-libraries or data servers is also kept here. Lastly, information about
-the project that fits nowhere else, such as the copyright statement for the
-core and sample software is here.
+The software here includes three C++ programs which are installed in
+<prefix>/sbin and a collection of Perl software install in
+<prefix>/share/dap-server. Finally, the Perl script nph-dods, it's
+configuration file dap-server.rc and the HTML interface help file
+dods_form_help.html are also here. These last three files are
+installed in the HTTP daemon's CGI binaries directory (you can use the
+default cgi-bin or set up a new one). Thus the bulk of the fles used
+to process a DAP request are not actually in the CGI directory.
 
-Scripts used during the build:
-
-install-sh: The GNU replacement for `install'. Presence of this script
-guarantees that configure will be able to find a compatible installation
-utility when it is creating the Makefiles.
-
-depend.sh: This is a script which replaces makedepend. It requires gcc, but
-so does the rest of DODS (at least in principle), so that should not matter. 
-
-config.{sub, guess}: Guess the host vendor, hardware and operating system
-combination. Used by configure when building the Makefiles.
-
-aclocal.m4: Used by autoconf when building the configure scripts from the
-configure.in files. Users should never have to mess with this, but people
-writing configure.in files will find it handy.
 
 
 

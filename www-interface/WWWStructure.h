@@ -37,7 +37,7 @@
 #define _wwwstructure_h 1
 
 #ifdef _GNUG_
-#pragma interface
+//#pragma interface
 #endif
 
 #include "Structure.h"

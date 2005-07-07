@@ -30,7 +30,7 @@
 //	jhrg,jimg	James Gallagher <jgallagher@gso.uri.edu>
 
 #ifdef __GNUG__
-#pragma implementation
+//#pragma implementation
 #endif
 
 #include "config_asciival.h"
@@ -105,7 +105,7 @@ name_map::delete_all()
 // Use "using std::*" in the standard way.
 //
 // Revision 1.9.4.1  2003/07/11 04:28:18  jimg
-// Boldly (ahem) removed the GNUG interface/implementation #pragma.
+// Boldly (ahem) removed the GNUG interface/implementation //#pragma.
 // compared object sizes; there's a little difference, but it looks like a
 // draw as to which is bigger.
 //

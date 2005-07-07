@@ -34,7 +34,7 @@
 //  4/7/99 jhrg
 
 #ifdef __GNUG__
-#pragma implementation
+//#pragma implementation
 #endif
 
 #include "config_www_int.h"

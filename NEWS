@@ -10,7 +10,7 @@ months.
 the libdap library.
 
 * The server's configuration file is now named 'dap_server.rc.' We're going
-to keep the name 'nph-dods' s that existing links don't break.
+to keep the name 'nph-dods' so that existing links don't break.
 
 * Only the nph-dods script and dap_server.rc files will be installed in the
 cgi binary directory. The remainder of the Perl and the 'helper' programs are

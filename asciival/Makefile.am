@@ -5,7 +5,7 @@
 #
 # $Id$
 
-AUTOMAKE_OPTIONS = foreign check-news
+AUTOMAKE_OPTIONS = foreign dejagnu
 
 AM_CPPFLAGS = -DDEFAULT_BASETYPE_FACTORY
 
@@ -23,8 +23,8 @@ asciival_SOURCES = AsciiArray.cc AsciiInt16.cc AsciiStructure.cc	   \
 		name_map.cc AsciiArray.h AsciiInt32.h AsciiUInt32.h	   \
 		AsciiByte.h AsciiOutput.h AsciiUrl.h AsciiFloat32.h	   \
 		AsciiSequence.h name_map.h AsciiFloat64.h AsciiStr.h	   \
-		AsciiGrid.h AsciiStructure.h AsciiInt16.h AsciiUInt16.h	   \
-		version.h
+		AsciiGrid.h AsciiStructure.h AsciiInt16.h AsciiUInt16.h \
+		config_asciival.h
 
 UNIT_TESTS = AsciiArrayTest AsciiOutputTest
 
@@ -44,4 +44,7 @@ ASCIIOBJS = AsciiByte.o AsciiInt32.o AsciiFloat64.o AsciiStr.o AsciiUrl.o     \
 AsciiArrayTest_LDADD = $(ASCIIOBJS) name_map.o -lcppunit
 AsciiOutputTest_LDADD = $(ASCIIOBJS) name_map.o -lcppunit
 
-EXTRA_DIST = ChangeLog COPYRIGHT
+DEJATOOL = asciival
+
+EXTRA_DIST = ChangeLog
+

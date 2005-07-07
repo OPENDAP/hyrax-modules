@@ -921,17 +921,17 @@ sub command {
           . $self->port()
           . $self->request_uri() . "?"
           . $self->query();
-        @command = ( "./asciival", "-m", "--", $dods_url );
+        @command = ( "asciival", "-m", "--", $dods_url );
     } elsif ( $self->ext() eq "netcdf" ) {
         my $dods_url = "http://"
           . $self->server_name()
           . $self->port()
           . $self->request_uri() . "?"
           . $self->query();
-        @command = ( "./dods2ncdf", "-m", "-p", "--", $dods_url );
+        @command = ( "dods2ncdf", "-m", "-p", "--", $dods_url );
     } elsif ( $self->ext() eq "html" ) {
         @command = (
-                     "./www_int", "-m", "-n", "--",
+                     "www_int", "-m", "-n", "--",
                      $self->full_uri() . "?" . $self->query()
         );
     } else {
@@ -1132,7 +1132,7 @@ if ($test) {
     print "Simple file access\n";
     my $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
     $dd->ext()    eq "dods" || die;
-    $dd->handler() eq "/usr/local/sbin/nc_handler"   || die;
+    $dd->handler() eq "nc_handler"   || die;
 
     print "Files with extra dots on their names\n";
 
@@ -1142,7 +1142,7 @@ if ($test) {
     $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
 
     $dd->ext()    eq "dods" || die;
-    $dd->handler() eq "/usr/local/sbin/nc_handler"   || die;
+    $dd->handler() eq "nc_handler"   || die;
 
     print "Directory names ending in a slash\n";
 

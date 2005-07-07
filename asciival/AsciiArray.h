@@ -36,10 +36,6 @@
 #ifndef _asciiarray_h
 #define _asciiarray_h 1
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "Array.h"
 #include "AsciiOutput.h"
 

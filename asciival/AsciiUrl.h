@@ -37,7 +37,7 @@
 #define _asciiurl_h 1
 
 #ifdef __GNUG__
-#pragma interface
+//#pragma interface
 #endif
 
 #include "AsciiStr.h"

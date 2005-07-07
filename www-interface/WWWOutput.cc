@@ -30,7 +30,7 @@
 //      jhrg,jimg       James Gallagher <jgallagher@gso.uri.edu>
 
 #ifdef __GNUG__
-#pragma implementation
+//#pragma implementation
 #endif
 
 #include "config_www_int.h"

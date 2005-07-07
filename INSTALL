@@ -1,0 +1,19 @@
+
+./configure
+
+make
+
+make install
+
+Server installs in /usr/local/sbin and /usr/local/share/dap-server by
+default; use ./configure --prefix=<<prefix>> to change the default
+prefix from /usr/local to something else.
+
+Last step: Copy nph-dods, dap-server.rc and
+www-itnerface/dods_form_help.html to a CGI BIN directory.
+
+* Upgrading from a previous version
+
+Changes
+
+dods.rc --> dap-server.rc

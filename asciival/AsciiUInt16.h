@@ -37,7 +37,7 @@
 #define _asciiuint16_h 1
 
 #ifdef __GNUG__
-#pragma interface
+//#pragma interface
 #endif
 
 #include "UInt16.h"

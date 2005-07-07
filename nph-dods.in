@@ -50,7 +50,7 @@
 # directory that's writeable by someone other than the owner as tainted, so
 # adding, for example, /usr/local/bin here might break other operations
 # (places where we use exec or system in DODS_Dispatch or DODS_Cache).
-$ENV{PATH} = '/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/sbin';
+$ENV{PATH} = '/bin:/usr/bin:/sbin:/usr/sbin:@prefix@/sbin';
 $ENV{IFS} = "" if $ENV{IFS};    # For the truly paranoid...
 
 # Needed for Perl 5.6.0 on Linux 12/11/2000 jhrg
