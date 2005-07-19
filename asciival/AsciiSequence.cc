@@ -52,11 +52,13 @@ using std::endl ;
 extern bool translate;
 extern name_map names;
 
+#if 0
 Sequence *
 NewSequence(const string &n)
 {
     return new AsciiSequence(n);
 }
+#endif
 
 BaseType *
 AsciiSequence::ptr_duplicate()

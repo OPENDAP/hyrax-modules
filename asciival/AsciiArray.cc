@@ -53,11 +53,13 @@ extern name_map names;
 #include "trace_new.h"
 #endif
 
+#if 0
 Array *
 NewArray(const string &n, BaseType *v)
 {
     return new AsciiArray(n, v);
 }
+#endif
 
 BaseType *
 AsciiArray::ptr_duplicate()
@@ -123,7 +125,7 @@ AsciiArray::print_vector(ostream &os, bool print_name)
 int
 AsciiArray::print_row(ostream &os, int index, int number)
 {
-    for (unsigned i = 0; i < number; ++i) {
+    for (int i = 0; i < number; ++i) {
 	dynamic_cast<AsciiOutput *>(var(index++))->print_ascii(os, false);
 	os << ", ";
     }
@@ -184,7 +186,7 @@ AsciiArray::get_shape_vector(size_t n) throw(InternalErr)
     vector<int> shape(n);
     vector<int>::iterator shape_iter = shape.begin();
     Pix p = first_dim();    
-    for (int i = 0; i < n; i++) {
+    for (unsigned i = 0; i < n; i++) {
 	*shape_iter++ = dimension_size(p, true);
 	next_dim(p);
     }
@@ -192,6 +194,9 @@ AsciiArray::get_shape_vector(size_t n) throw(InternalErr)
     return shape;
 }    
 
+/** Get the size of the Nth dimension.
+    @param n The index. Uses ones-indexing.
+    @return the size of the dimension. */
 int
 AsciiArray::get_nth_dim_size(size_t n) throw(InternalErr)
 {
@@ -203,7 +208,7 @@ AsciiArray::get_nth_dim_size(size_t n) throw(InternalErr)
     }
 
     Pix p = first_dim();    
-    for (int i = 0; i < n; i++) {
+    for (unsigned i = 1; i < n; i++) {
 	next_dim(p);
     }
 

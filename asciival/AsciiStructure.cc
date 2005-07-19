@@ -52,11 +52,13 @@ using std::endl ;
 extern bool translate;
 extern name_map names;
 
+#if 0
 Structure *
 NewStructure(const string &n)
 {
     return new AsciiStructure(n);
 }
+#endif
 
 BaseType *
 AsciiStructure::ptr_duplicate()

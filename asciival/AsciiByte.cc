@@ -62,11 +62,13 @@
 #include "InternalErr.h"
 #include "AsciiByte.h"
 
+#if 0
 Byte *
 NewByte(const string &n)
 {
     return new AsciiByte(n);
 }
+#endif
 
 AsciiByte::AsciiByte(const string &n) : Byte(n)
 {

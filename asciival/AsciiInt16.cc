@@ -44,11 +44,13 @@
 #include "InternalErr.h"
 #include "AsciiInt16.h"
 
+#if 0
 Int16 *
 NewInt16(const string &n)
 {
     return new AsciiInt16(n);
 }
+#endif
 
 AsciiInt16::AsciiInt16(const string &n) : Int16(n)
 {

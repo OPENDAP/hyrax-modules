@@ -30,8 +30,10 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include <DDS.h>
+#include <debug.h>
 
 #include "AsciiOutput.h"
+#include "AsciiOutputFactory.h"
 #include "name_map.h"
 
 // These globals are defined in ascii_val.cc and are needed by the Ascii*
@@ -48,17 +50,20 @@ using namespace CppUnit;
 class AsciiOutputTest : public TestFixture {
 private:
     DDS *dds;
-
+    AsciiOutputFactory *aof;
+    
 public: 
     AsciiOutputTest() {}
     ~AsciiOutputTest() {}
 
     void setUp() {
-	dds = new DDS("ascii_output_test");
+        aof = new AsciiOutputFactory;
+	dds = new DDS(aof, "ascii_output_test");
 	dds->parse("testsuite/AsciiOutputTest1.dds");
     }
 
     void tearDown() {
+        delete aof; aof = 0;
 	delete dds; dds = 0;
     }
 
@@ -70,9 +75,9 @@ public:
 
     void test_get_full_name() {
 	CPPUNIT_ASSERT(dynamic_cast<AsciiOutput*>(dds->var("a"))->get_full_name() == "a");
-	cerr << "full name: " 
+	DBG(cerr << "full name: " 
 	     << dynamic_cast<AsciiOutput*>(dds->var("e.c"))->get_full_name()
-	     << endl;
+	     << endl);
 
 	CPPUNIT_ASSERT(dynamic_cast<AsciiOutput*>(dds->var("e.c"))->get_full_name() == "e.c");
 	CPPUNIT_ASSERT(dynamic_cast<AsciiOutput*>(dds->var("f.c"))->get_full_name() == "f.c");

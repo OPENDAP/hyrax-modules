@@ -45,8 +45,7 @@ static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.20 2004/07/08 22:18:25 ji
 #include <string>
 #include <iostream>
 
-using std::cerr ;
-using std::endl ;
+using namespace std;
 
 #include <GetOpt.h>
 
@@ -71,6 +70,8 @@ using std::endl ;
 #include "AsciiStructure.h"
 #include "AsciiSequence.h"
 #include "AsciiGrid.h"
+
+#include "AsciiOutputFactory.h"
 
 name_map names;
 bool translate = false;
@@ -126,7 +127,7 @@ process_data(DDS *dds)
     cout << "Dataset: " << dds->get_dataset_name() << endl;
 
     for (Pix q = dds->first_var(); q; dds->next_var(q)) {
-	dynamic_cast<AsciiOutput *>(dds->var(q))->print_ascii(cout);
+	dynamic_cast<AsciiOutput &>(*dds->var(q)).print_ascii(cout);
 	cout << endl;
     }
 }
@@ -228,7 +229,8 @@ main(int argc, char * argv[])
 
 	    process_per_url_options(i, argc, argv, verbose);
 
-	    DataDDS dds;
+            AsciiOutputFactory *aof = new AsciiOutputFactory;
+	    DataDDS dds(aof, "Ascii Data", "DAP/2.0");;
 
 	    if (url->is_local() && (strcmp(argv[i], "-") == 0)) {
 		url->read_data(dds, stdin);
@@ -241,12 +243,17 @@ main(int argc, char * argv[])
 	    if (mime_header)
 		set_mime_text(cout, dods_data);
 
-	    process_data(&dds);
+       	    process_data(&dds);
+            delete aof; aof = 0;
 	}
 	catch (Error &e) {
 	    DBG(cerr << "Caught an Error object." << endl);
 	    output_error_object(e);
 	}
+        
+        catch (exception &e) {
+            cerr << "Caught an exception: " << e.what() << endl;
+        }
     }
 
     cout.flush();

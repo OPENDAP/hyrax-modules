@@ -43,13 +43,15 @@
 
 #include "AsciiUrl.h"
 
+#if 0
 AsciiUrl *
 NewUrl(const string &n)
 {
     return new AsciiUrl(n);
 }
+#endif
 
-AsciiUrl::AsciiUrl(const string &n) : AsciiStr(n)
+AsciiUrl::AsciiUrl(const string &n) : Url(n)
 {
 }
 

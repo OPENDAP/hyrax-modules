@@ -7,7 +7,7 @@
 
 AUTOMAKE_OPTIONS = foreign dejagnu
 
-AM_CPPFLAGS = -DDEFAULT_BASETYPE_FACTORY
+# AM_CPPFLAGS = -DDEFAULT_BASETYPE_FACTORY
 
 # These are not used by automak but are often useful for certain types of
 # debugging.
@@ -24,7 +24,7 @@ asciival_SOURCES = AsciiArray.cc AsciiInt16.cc AsciiStructure.cc	   \
 		AsciiByte.h AsciiOutput.h AsciiUrl.h AsciiFloat32.h	   \
 		AsciiSequence.h name_map.h AsciiFloat64.h AsciiStr.h	   \
 		AsciiGrid.h AsciiStructure.h AsciiInt16.h AsciiUInt16.h \
-		config_asciival.h
+		config_asciival.h AsciiOutputFactory.cc AsciiOutputFactory.h
 
 UNIT_TESTS = AsciiArrayTest AsciiOutputTest
 
@@ -39,7 +39,8 @@ AsciiOutputTest_SOURCES = AsciiOutputTest.cc
 
 ASCIIOBJS = AsciiByte.o AsciiInt32.o AsciiFloat64.o AsciiStr.o AsciiUrl.o     \
 	AsciiArray.o AsciiStructure.o AsciiSequence.o AsciiGrid.o	      \
-	AsciiUInt32.o AsciiInt16.o AsciiUInt16.o AsciiFloat32.o AsciiOutput.o
+	AsciiUInt32.o AsciiInt16.o AsciiUInt16.o AsciiFloat32.o AsciiOutput.o \
+	AsciiOutputFactory.o
 
 AsciiArrayTest_LDADD = $(ASCIIOBJS) name_map.o -lcppunit
 AsciiOutputTest_LDADD = $(ASCIIOBJS) name_map.o -lcppunit

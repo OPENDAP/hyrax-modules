@@ -52,11 +52,13 @@ using std::endl ;
 extern bool translate;
 extern name_map names;
 
+#if 0
 Grid *
 NewGrid(const string &n)
 {
     return new AsciiGrid(n);
 }
+#endif
 
 BaseType *
 AsciiGrid::ptr_duplicate()

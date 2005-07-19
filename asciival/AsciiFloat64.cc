@@ -44,11 +44,13 @@
 #include "InternalErr.h"
 #include "AsciiFloat64.h"
 
+#if 0
 Float64 *
 NewFloat64(const string &n)
 {
     return new AsciiFloat64(n);
 }
+#endif
 
 AsciiFloat64::AsciiFloat64(const string &n) : Float64(n)
 {

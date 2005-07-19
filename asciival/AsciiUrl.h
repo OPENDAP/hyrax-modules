@@ -40,9 +40,10 @@
 //#pragma interface
 #endif
 
-#include "AsciiStr.h"
+#include "Url.h"
+#include "AsciiOutput.h"
 
-class AsciiUrl: public AsciiStr {
+class AsciiUrl: public Url, public AsciiOutput {
 public:
     AsciiUrl(const string &n = (char *)0);
     virtual ~AsciiUrl() {}

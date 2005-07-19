@@ -44,11 +44,13 @@
 #include "InternalErr.h"
 #include "AsciiFloat32.h"
 
+#if 0
 Float32 *
 NewFloat32(const string &n)
 {
     return new AsciiFloat32(n);
 }
+#endif
 
 AsciiFloat32::AsciiFloat32(const string &n) : Float32(n)
 {

@@ -44,11 +44,13 @@
 #include "InternalErr.h"
 #include "AsciiStr.h"
 
+#if 0
 Str *
 NewStr(const string &n)
 {
     return new AsciiStr(n);
 }
+#endif
 
 AsciiStr::AsciiStr(const string &n) : Str(n)
 {
