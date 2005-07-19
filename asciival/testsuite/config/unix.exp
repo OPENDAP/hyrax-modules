@@ -13,10 +13,8 @@
 
 # Read the common code for tests.
 
-if {[info exists env(DODS_ROOT)] && [file exists $env(DODS_ROOT)/etc/common_tests.exp]} {
-    source $env(DODS_ROOT)/etc/common_tests.exp
-} elseif {[file exists ../../../etc/common_tests.exp]} {
-    source ../../../etc/common_tests.exp
+if {[file exists common_tests.exp]} {
+    source common_tests.exp
 } else {
     send_user "Could not load common tests!"
     exit(1)
