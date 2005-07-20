@@ -17,12 +17,13 @@ HTML_FILTER = HTML/Filter.pm HTML/LinkExtor.pm HTML/TokeParser.pm \
 	HTML/Entities.pm HTML/HeadParser.pm HTML/Parser.pm
 
 dist_pkgdata_SCRIPTS = DODS_Dispatch.pm DODS_Cache.pm dods_logging.pm \
-	FilterDirHTML.pm read_config.pm $(HTML_FILTER)
+	FilterDirHTML.pm read_config.pm $(HTML_FILTER) nph-dods
 
+dist_pkgdata_DATA = dap-server.rc EXAMPLE_DODS_STATISTICS
 # Make the noinst_ files install into the cgi bin dir if that directory 
 # can be determined by configure, otherwise add directions to INSTALL.
-noinst_SCRIPTS = nph-dods
-noinst_DATA = dap_server.rc EXAMPLE_DODS_STATISTICS
+#noinst_SCRIPTS = 
+#noinst_DATA = 
 
 # don't need to add nph-dods.in or dods.rc.in here because they are listed
 # in the configure.ac file; automake figures they should be distributed.

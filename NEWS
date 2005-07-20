@@ -9,8 +9,10 @@ months.
 * This version of the OPeNDAP server is built and distributed separately from
 the libdap library.
 
-* The server's configuration file is now named 'dap_server.rc.' We're going
-to keep the name 'nph-dods' so that existing links don't break.
+* The server's configuration file is now named 'dap-server.rc.' We're going
+to keep the name 'nph-dods' so that existing links don't break. People
+upgrading servers should take their dods.rc file and make sure any
+customizations ae addedd to dap-server.rc.
 
 * Only the nph-dods script and dap_server.rc files will be installed in the
 cgi binary directory. The remainder of the Perl and the 'helper' programs are
@@ -23,7 +25,8 @@ pick up on it. ;-)
 
 * The code (except for nph-dods and dap_server.rc) now installs in regular
 directories as you'd expect with Unix/Linux. The Perl code installs in
-/usr/local/share/dap and the C++/C binaries install in /usr/local/sbin.
+/usr/local/share/dap and the C++/C binaries install in /usr/local/sbin by
+default, although you can change this easily).
 
 * The server no longer requires data providers to use the web daemon's
 DocumentRoot as the root of the data. Instead the 'data root' is set from
@@ -32,7 +35,7 @@ since it's no longer necessary to make two security configurations for the
 data. The old design where data security is based on securing the server is
 still the model used by this server, but at least the management of that has
 been cut in half. This was suggested by Neil Killeen at CSIRO. Note that if
-data_root is not set int eh dap_server.rc file, the old behavior is used as a
+data_root is not set in the dap_server.rc file, the old behavior is used as a
 default. Thus existing sites don't need to mess with this at all; those
 configurations will continue to use DocumentRoot as the root of the data.
 
@@ -45,11 +48,30 @@ their own CVS/SVN modules and will be used by both this code and Server4.
 
 Still to be done:
 
-* Tools: The tools are helper programs that generate the info, ascii and HTML
-responses for the server. These have been moved into the server's directory
-and no longer make a round trip through the server to access data. This
-should speed up the server and also ease some of the thorny configuration
-issues when setting up a secure server.
+* The tools are helper programs that generate the info, ascii and HTML
+responses for the server. These have been moved into the server's directory.
+However, these programs still make a round-trip to the server to access data.
+The next release will fix this and these programs will read directly from the
+data sources using the handlers. This will not only speed up generating these
+reponses but also simplify security configurations since an extra setup step
+where local accesses are allowed for all will then be eliminated.
 
+Changes in version 3.4
+
+The server configuration file dods.ini is now called dods.rc. This name
+change brings the file in line with the other configuration files used by
+OPeNDAP software. Previously the configuration file was just used to match
+'handler' programs to data source (usually files). However, with the 3.4
+release we've migrated all the configuration information into this file
+(except for the experimental statistics software). The dods.rc file has
+comments which explain the various paramters.
+
+We've reduced our dependence on some Perl modules by replacing them with a
+compiled (C++) program called 'curl.' If you're upgrading a server, make sure
+you get this or features like ASCII and HTML responses will not work.
+
+We have had some issues in the past with serving data from files that are
+compressed using UNIX compress or gzip. See the special section below about
+serving these types of files for important configuration information!
 
 $Id: NEWS,v 1.4 2005/05/27 22:44:41 jimg Exp $

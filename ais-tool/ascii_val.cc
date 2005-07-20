@@ -150,14 +150,17 @@ main(int argc, char * argv[])
     GetOpt getopt (argc, argv, "ngmvVh?");
     int option_char;
     bool verbose = false;
+#if 0
     bool trace = false;
+#endif
     bool translate = false;
     bool gui = false;
     bool mime_header = false;
     string expr = "";
+#if 0
     char *tcode = NULL;
     int topts = 0;
-
+#endif
     putenv("_POSIX_OPTION_ORDER=1"); // Suppress GetOpt's argv[] permutation.
 
     while ((option_char = getopt()) != EOF)

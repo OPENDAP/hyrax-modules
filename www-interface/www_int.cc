@@ -80,14 +80,14 @@ usage(string name)
     write anything out.
 
     @author jhrg */
-
+#if 0
 static void
 output_error_object(Error e)
 {
     if (e.OK())
 	cout << "Error: " << e.error_message() << endl;
 }
-
+#endif
 /** 
     Build an HTML page which both describes the data and provides a way for
     users to query the dataset. The page prompts for the input of query
@@ -108,14 +108,18 @@ main(int argc, char * argv[])
 {
     GetOpt getopt (argc, argv, "vVnmH:a:h?");
     int option_char;
+#if 0
     bool trace = false;
+#endif
     bool verbose = false;
     bool regular_header = false;
     bool nph_header = false;
     string help_location = "http://unidata.ucar.edu/packages/dods/help_files/";
     string admin_name = "";
+#if 0
     char *tcode = NULL;
     int topts = 0;
+#endif
 
 #ifdef WIN32
     _setmode(_fileno(stdout), _O_BINARY);

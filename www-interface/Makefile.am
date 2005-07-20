@@ -23,6 +23,8 @@ www_int_SOURCES = WWWArray.cc WWWFloat64.cc WWWInt32.cc WWWSequence.cc	     \
 	WWWFloat64.h WWWInt32.h WWWStr.h WWWUInt32.h WWWByte.h WWWGrid.h     \
 	WWWOutput.h WWWStructure.h WWWUrl.h javascript.h config_www_int.h
 
+dist_pkgdata_DATA = dods_form_help.html
+
 EXTRA_DIST = ChangeLog js2h.pl www.js
 
 javascript.h: www.js

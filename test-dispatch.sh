@@ -39,10 +39,10 @@ export SERVER_PORT=80
 #PATH_INFO="/data/"
 #PATH_INFO="/data/hdf/S3096277.HDF.Z.dds"
 
-PATH_INFO="/data/nc/fnoc1.nc.dods"
+PATH_INFO="/data/nc/fnoc1.nc.info"
 export PATH_INFO
 
-SCRIPT_NAME="/jimg/nph-dods"
+SCRIPT_NAME="/home/jimg/dap-server/nph-dods"
 export SCRIPT_NAME
 
 QUERY_STRING=""

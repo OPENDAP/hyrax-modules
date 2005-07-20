@@ -73,7 +73,7 @@ this should work, please contact the ";
 
 # The DODS_Dispatch object reads information from environment variables
 # and builds up a command based on the format of a DODS URL.
-$dispatch = new DODS_Dispatch( "DAP2/@PACKAGE_VERSION@", "./dap_server.rc" );
+$dispatch = new DODS_Dispatch( "DAP2/@PACKAGE_VERSION@", "./dap-server.rc" );
 
 # Note that the statistics 'stuff' has its own configuration file. That's
 # because we're just evaluating this feature. 07/22/03 jhrg

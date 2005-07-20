@@ -103,7 +103,7 @@ AH_BOTTOM([/* Shorthand for gcc's unused attribute feature */
 
 #endif /* _config_h */])
 
-AC_CONFIG_FILES([dap_server.rc 
+AC_CONFIG_FILES([dap-server.rc 
 		 Makefile
                  asciival/Makefile
                  www-interface/Makefile])
