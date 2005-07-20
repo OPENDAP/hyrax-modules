@@ -155,17 +155,10 @@ main(int argc, char * argv[])
     GetOpt getopt (argc, argv, "ngmvVh?");
     int option_char;
     bool verbose = false;
-#if 0
-    bool trace = false;
-#endif
     bool translate = false;
     bool gui = false;
     bool mime_header = false;
     string expr = "";
-#if 0
-    char *tcode = NULL;
-    int topts = 0;
-#endif
 
 #ifdef WIN32
     _setmode(_fileno(stdout), _O_BINARY);
@@ -236,6 +229,9 @@ main(int argc, char * argv[])
             AsciiOutputFactory *aof = new AsciiOutputFactory;
 	    DataDDS dds(aof, "Ascii Data", "DAP/2.0");;
 
+	    // Connect::read_data or request_data call deserialize() for each
+	    // of the variables. Thus the DDS passed to them will hold
+	    // variables that are full of data.
 	    if (url->is_local() && (strcmp(argv[i], "-") == 0)) {
 		url->read_data(dds, stdin);
 	    } else if (url->is_local()) {

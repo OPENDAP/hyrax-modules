@@ -33,32 +33,24 @@
 //
 // 3/12/98 jhrg
 
-#ifdef __GNUG__
-//#pragma implementation
-#endif
-
 #include "config_asciival.h"
 
 #include <iostream>
 #include <string>
 
-using std::endl ;
+using namespace std;
 
 #include "InternalErr.h"
+
+// #define DODS_DEBUG
+
 #include "AsciiGrid.h"
 #include "AsciiArray.h"
 #include "name_map.h"
+#include "debug.h"
 
 extern bool translate;
 extern name_map names;
-
-#if 0
-Grid *
-NewGrid(const string &n)
-{
-    return new AsciiGrid(n);
-}
-#endif
 
 BaseType *
 AsciiGrid::ptr_duplicate()
@@ -96,6 +88,8 @@ AsciiGrid::print_ascii(ostream &os, bool print_name) throw(InternalErr)
 void
 AsciiGrid::print_vector(ostream &os, bool print_name)
 {
+    DBG(cerr << "AsciiGrid::print_vector" << endl);
+
     dynamic_cast<AsciiArray *>(map_var(first_map_var()))
 	->print_ascii(os, print_name);
     
@@ -107,6 +101,8 @@ AsciiGrid::print_vector(ostream &os, bool print_name)
 void 
 AsciiGrid::print_grid(ostream &os, bool print_name)
 {
+    DBG(cerr << "AsciiGrid::print_grid" << endl);
+
     // Grab the Grid's array
     AsciiArray *grid_array = dynamic_cast<AsciiArray *>(array_var());
 
@@ -122,7 +118,7 @@ AsciiGrid::print_grid(ostream &os, bool print_name)
     vector<int> shape = grid_array->get_shape_vector(dims - 1);
     int rightmost_dim_size = grid_array->get_nth_dim_size(dims - 1);
 
-    // state holds the indeces of the current row being printed. For an N-dim
+    // state holds the indexes of the current row being printed. For an N-dim
     // array, there are N-1 dims that are iterated over when printing (the
     // Nth dim is not printed explicitly. Instead it's the number of values
     // on the row.
@@ -162,7 +158,9 @@ AsciiGrid::print_grid(ostream &os, bool print_name)
 	}
 	os << ", ";
 
+#if 1
 	index = grid_array->print_row(os, index, rightmost_dim_size - 1);
+#endif
 	more_indices = increment_state(&state, shape);
 	if (more_indices)
 	    os << endl;

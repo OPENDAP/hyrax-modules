@@ -39,27 +39,19 @@
 #include <string>
 #include <algorithm>
 
-using std::endl ;
+using namespace std;
 
-#include "util.h"
-#include "AsciiArray.h"
+// #define DODS_DEBUG
+
 #include "InternalErr.h"
+#include "debug.h"
+
+#include "AsciiArray.h"
+#include "util.h"
 #include "name_map.h"
 
 extern bool translate;
 extern name_map names;
-
-#ifdef TRACE_NEW
-#include "trace_new.h"
-#endif
-
-#if 0
-Array *
-NewArray(const string &n, BaseType *v)
-{
-    return new AsciiArray(n, v);
-}
-#endif
 
 BaseType *
 AsciiArray::ptr_duplicate()
@@ -194,21 +186,25 @@ AsciiArray::get_shape_vector(size_t n) throw(InternalErr)
     return shape;
 }    
 
-/** Get the size of the Nth dimension.
-    @param n The index. Uses ones-indexing.
+/** Get the size of the Nth dimension. The first dimension is N == 0.
+    @param n The index. Uses sero-based indexing.
     @return the size of the dimension. */
 int
 AsciiArray::get_nth_dim_size(size_t n) throw(InternalErr)
 {
+    // I think this should test 0 ... dimensions(true)-1. jhrg 7/20/
+#if 0
     if (n < 1 || n > dimensions(true)) {
-	string msg = "Attempt to get dimension N from `";
-	msg += name() + "' which has " 
+#endif
+    if (n < 0 || n > dimensions(true)-1) {
+	string msg = "Attempt to get dimension ";
+	msg += long_to_string(n+1) + " from `" + name() + "' which has " 
 	    + long_to_string(dimensions(true)) + " dimension(s).";
 	throw InternalErr(__FILE__, __LINE__, msg);
     }
 
     Pix p = first_dim();    
-    for (unsigned i = 1; i < n; i++) {
+    for (unsigned i = 0; i < n; i++) {
 	next_dim(p);
     }
 
@@ -218,6 +214,8 @@ AsciiArray::get_nth_dim_size(size_t n) throw(InternalErr)
 void 
 AsciiArray::print_array(ostream &os, bool print_name)
 {
+    DBG(cerr << "Entering AsciiArray::print_array" << endl);
+
     int dims = dimensions(true);
     if (dims <= 1)
 	throw InternalErr(__FILE__, __LINE__, 
@@ -228,7 +226,7 @@ AsciiArray::print_array(ostream &os, bool print_name)
     vector<int> shape = get_shape_vector(dims - 1);
     int rightmost_dim_size = get_nth_dim_size(dims - 1);
 
-    // state holds the indeces of the current row being printed. For an N-dim
+    // state holds the indexes of the current row being printed. For an N-dim
     // array, there are N-1 dims that are iterated over when printing (the
     // Nth dim is not printed explicitly. Instead it's the number of values
     // on the row.
@@ -250,11 +248,15 @@ AsciiArray::print_array(ostream &os, bool print_name)
 	    os << endl;
 
     } while (more_indices);
+
+    DBG(cerr << "ExitingAsciiArray::print_array" << endl);
 }
 
 void 
 AsciiArray::print_complex_array(ostream &os, bool print_name)
 {
+    DBG(cerr << "Entering AsciiArray::print_complex_array" << endl);
+
     int dims = dimensions(true);
     if (dims < 1)
 	throw InternalErr(__FILE__, __LINE__, 
@@ -283,6 +285,8 @@ AsciiArray::print_complex_array(ostream &os, bool print_name)
 	    os << endl;
 
     } while (more_indices);
+
+    DBG(cerr << "ExitingAsciiArray::print_complex_array" << endl);
 }
 
 // $Log: AsciiArray.cc,v $
