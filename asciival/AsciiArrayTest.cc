@@ -86,25 +86,21 @@ public:
     CPPUNIT_TEST_SUITE_END();
     
     void test_get_nth_dim_size() {
-	CPPUNIT_ASSERT(a->get_nth_dim_size(1) == 10);
+	CPPUNIT_ASSERT(a->get_nth_dim_size(0) == 10);
 
+	CPPUNIT_ASSERT(b->get_nth_dim_size(0) == 10);
 	CPPUNIT_ASSERT(b->get_nth_dim_size(1) == 10);
-	CPPUNIT_ASSERT(b->get_nth_dim_size(2) == 10);
 
+	CPPUNIT_ASSERT(c->get_nth_dim_size(0) == 5);
 	CPPUNIT_ASSERT(c->get_nth_dim_size(1) == 5);
 	CPPUNIT_ASSERT(c->get_nth_dim_size(2) == 5);
-	CPPUNIT_ASSERT(c->get_nth_dim_size(3) == 5);
 
 	try { a->get_nth_dim_size((unsigned long)-1); CPPUNIT_ASSERT(false);}
 	catch(InternalErr &ie) { CPPUNIT_ASSERT(true);}
-	try { a->get_nth_dim_size(0); CPPUNIT_ASSERT(false);}
-	catch(InternalErr &ie) { CPPUNIT_ASSERT(true);}
-	try { a->get_nth_dim_size(2); CPPUNIT_ASSERT(false);}
+	try { a->get_nth_dim_size(1); CPPUNIT_ASSERT(false);}
 	catch(InternalErr &ie) { CPPUNIT_ASSERT(true);}
 
-	try { c->get_nth_dim_size(0); CPPUNIT_ASSERT(false);}
-	catch(InternalErr &ie) { CPPUNIT_ASSERT(true);}
-	try { c->get_nth_dim_size(4); CPPUNIT_ASSERT(false);}
+	try { c->get_nth_dim_size(3); CPPUNIT_ASSERT(false);}
 	catch(InternalErr &ie) { CPPUNIT_ASSERT(true);}
     }
 
