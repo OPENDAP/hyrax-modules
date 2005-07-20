@@ -155,13 +155,17 @@ main(int argc, char * argv[])
     GetOpt getopt (argc, argv, "ngmvVh?");
     int option_char;
     bool verbose = false;
+#if 0
     bool trace = false;
+#endif
     bool translate = false;
     bool gui = false;
     bool mime_header = false;
     string expr = "";
+#if 0
     char *tcode = NULL;
     int topts = 0;
+#endif
 
 #ifdef WIN32
     _setmode(_fileno(stdout), _O_BINARY);
