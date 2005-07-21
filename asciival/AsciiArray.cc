@@ -177,10 +177,9 @@ AsciiArray::get_shape_vector(size_t n) throw(InternalErr)
 
     vector<int> shape(n);
     vector<int>::iterator shape_iter = shape.begin();
-    Pix p = first_dim();    
+    Array::Dim_iter p = dim_begin();
     for (unsigned i = 0; i < n; i++) {
-	*shape_iter++ = dimension_size(p, true);
-	next_dim(p);
+	*shape_iter++ = dimension_size(p++, true);
     }
 
     return shape;
@@ -203,12 +202,7 @@ AsciiArray::get_nth_dim_size(size_t n) throw(InternalErr)
 	throw InternalErr(__FILE__, __LINE__, msg);
     }
 
-    Pix p = first_dim();    
-    for (unsigned i = 0; i < n; i++) {
-	next_dim(p);
-    }
-
-    return dimension_size(p, true);
+    return dimension_size(dim_begin() + n, true);
 }
 
 void 

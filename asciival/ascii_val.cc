@@ -41,7 +41,7 @@
 static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.20 2004/07/08 22:18:25 jimg Exp $"};
 
 #include <stdio.h>
-#include <assert.h>
+
 #include <string>
 #include <iostream>
 
@@ -126,8 +126,9 @@ process_data(DDS *dds)
 {
     cout << "Dataset: " << dds->get_dataset_name() << endl;
 
-    for (Pix q = dds->first_var(); q; dds->next_var(q)) {
-	dynamic_cast<AsciiOutput &>(*dds->var(q)).print_ascii(cout);
+    DDS::Vars_iter i = dds->var_begin();
+    while (i != dds->var_end()) {
+	dynamic_cast<AsciiOutput &>(**i++).print_ascii(cout);
 	cout << endl;
     }
 }

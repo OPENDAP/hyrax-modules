@@ -127,12 +127,9 @@ AsciiGrid::print_grid(ostream &os, bool print_name)
     // Now that we have the number of dims, get and print the rightmost map.
     // This is cumbersome; if we used the STL it would be much less so.
     {
-	// Use the empty loop to get a Pix to the last element of map_var.
-	Pix last = first_map_var();
-	for (int i = 0; i < dims - 1; ++i, next_map_var(last)); // empty loop
 	// By definition, a map is a vector. Print the rightmost map.
-	dynamic_cast<AsciiArray *>(map_var(last))
-	    ->print_ascii(os, print_name);
+	dynamic_cast<AsciiArray &>(**(map_begin() + dims - 1))
+	    .print_ascii(os, print_name);
 	os << endl;
     }
 
@@ -145,22 +142,22 @@ AsciiGrid::print_grid(ostream &os, bool print_name)
 	// of each of the N-1 dimensions for the current row.
 	os << names.lookup(dynamic_cast<AsciiOutput*>(grid_array)->get_full_name(), translate);
 	vector<int>::iterator state_iter = state.begin();
-	Pix p = first_map_var();
-	for (state_iter = state.begin(); state_iter < state.end(); 
-	     state_iter++, next_map_var(p)) {
+	Grid::Map_iter p = map_begin();
+	while (state_iter != state.end()) {
 	    os << "[" 
-	       << dynamic_cast<AsciiOutput*>(map_var(p))->get_full_name() 
+	       << dynamic_cast<AsciiOutput &>(**p).get_full_name() 
 	       << "=";
-	    AsciiArray *m = dynamic_cast<AsciiArray*>(map_var(p));
-	    dynamic_cast<AsciiOutput*>(m->var(*state_iter))
-		->print_ascii(os, false);
+	    AsciiArray &m = dynamic_cast<AsciiArray &>(**p);
+	    dynamic_cast<AsciiOutput &>(*m.var(*state_iter))
+		.print_ascii(os, false);
 	    os << "]";
+
+	    state_iter++; p++;
 	}
 	os << ", ";
 
-#if 1
 	index = grid_array->print_row(os, index, rightmost_dim_size - 1);
-#endif
+
 	more_indices = increment_state(&state, shape);
 	if (more_indices)
 	    os << endl;

@@ -53,15 +53,12 @@ public:
         aof = new AsciiOutputFactory;
 	dds1 = new DDS(aof, "ascii_array_test");
         try {
-	dds1->parse("testsuite/AsciiArrayTest1.dds");
-	Pix p = dds1->first_var();
-	a = dynamic_cast<AsciiArray*>(dds1->var(p));
-	dds1->next_var(p);
-	b = dynamic_cast<AsciiArray*>(dds1->var(p));
-	dds1->next_var(p);
-	c = dynamic_cast<AsciiArray*>(dds1->var(p));
-	dds1->next_var(p);
-	d = dynamic_cast<AsciiArray*>(dds1->var(p));
+	    dds1->parse("testsuite/AsciiArrayTest1.dds");
+	    DDS::Vars_iter p = dds1->var_begin();
+	    a = dynamic_cast<AsciiArray*>(*p++);
+	    b = dynamic_cast<AsciiArray*>(*p++);
+	    c = dynamic_cast<AsciiArray*>(*p++);
+	    d = dynamic_cast<AsciiArray*>(*p++);
         }
         catch (Error &e) {
             cerr << "Caught Error in setUp: " << e.get_error_message()
