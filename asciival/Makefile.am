@@ -7,8 +7,6 @@
 
 AUTOMAKE_OPTIONS = foreign dejagnu
 
-# AM_CPPFLAGS = -DDEFAULT_BASETYPE_FACTORY
-
 # These are not used by automak but are often useful for certain types of
 # debugging.
 CXXFLAGS_DEBUG = -g3 -O0 -Wall -fno-defer-pop
@@ -46,6 +44,7 @@ AsciiArrayTest_LDADD = $(ASCIIOBJS) name_map.o -lcppunit
 AsciiOutputTest_LDADD = $(ASCIIOBJS) name_map.o -lcppunit
 
 DEJATOOL = asciival
+RUNTESTDEFAULTFLAGS = --tool $$tool --srcdir testsuite
 
 EXTRA_DIST = ChangeLog
 
