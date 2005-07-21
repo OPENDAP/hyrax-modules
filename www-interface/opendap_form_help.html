@@ -1,0 +1,75 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<!-- $Id: dods_form_help.html,v 1.3 2003/12/08 18:08:02 edavis Exp $ -->
+
+<html>
+<head>
+<title>Help for the DODS WWW query builder</title>
+</head>
+
+<body>
+
+<center>
+<h2>Help for the DODS World Wide Web Query Builder</h2>
+</center>
+
+<dl>
+
+<dt><a name="data_url"><h3>Data URL</h3></a>
+<dd>This is the URL that specifies the data. You may edit this by hand adding
+a DODS constraint expression to the end of the URL (see the <a
+href="http://dods.gso.uri.edu/DODS">DODS user's guide</a> for information on
+constraint expressions) or by clicking on one or more of the variables listed
+under `Data variables'.
+
+<dt><a name="disposition"><h3>Disposition</h3></a> <dd>The <em>Get ASCII</em>
+button retrieves data encoded in ASCII from the server. These data are
+displayed in a new browser window; use the File menu of that window to save
+the data. The presentation format is designed to be simple to import into a
+spreadsheet program.<p>
+
+The <em>Get Binary</em> button is used to retrieve a binary DODS data object
+from the server. Read/decode this object using one of the DODS client
+programs such as geturl or loaddods (Note: loaddods cannot currently decode
+these files, but a new version to be released soon will be able to).<p>
+
+The button labeled `Send to Program' causes the data to be sent directly to
+the <tt>loaddods</tt> extension command (currently this works only for Matlab
+but we will support IDL soon). Read the documentation for that DODS client to
+properly configure it. Using this button, you may import data values directly
+into Matlab. Be aware that some limitations exist on the types of data that
+you may import and this interface does not try to enforce those limitations
+(because they don't apply to the other disposition options). Specifically,
+arrays must be no more than two dimensions when working with Matlab 4. To
+read data from an array with more than two dimension, project one or more
+dimensions so that they contain only a single element. For example, given a
+the dimensional array <tt>U</tt> a constraint that would let you read this
+into Matlab would be: <tt>U[0:0][0:9][0:9]</tt>. Note that the first
+dimension has been reduced to a single element by selecting index zero.
+
+<dt><a name="global_attributes"><h3>Global attributes</h3></a> 
+<dd>contain information about the dataset as a whole. Most datasets contain
+this type of information, but some do not.
+
+<dt><a name="variable_attributes"><h3>Variable attributes</h3></a> 
+<dd>contain specific information about each variable in the dataset.
+
+<dt><a name="dataset_variables"><h3>Dataset Variables</h3></a> <dd>This list
+shows each variable contained in this data. clicking the checkbox to the left
+of one or more of these variables causes it/them to be added to the current
+projection of this dataset. When you click on one of the `Disposition'
+button, data in those variables will be retrieved.
+
+<dt><h3>Need more help?</h3>
+<dd>You may email user support at <a href="mailto:support@unidata.ucar.edu">
+support@unidata.ucar.edu</a>
+
+</dl>
+
+<address>
+James Gallagher<br>
+jgallagher@gso.uri.edu
+</address>
+
+</body>
+</html>
