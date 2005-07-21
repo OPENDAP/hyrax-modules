@@ -126,7 +126,7 @@ function write_help_contents() {
 "<em>Get DODS Data Object</em> buttons will always be present. Other buttons " +
 "may be present providing access other types of return formats such as NetCDF, " +
 "HDF, et cetera. Note that in order to use the DODS Data Objects, you'll need " +
-"to download software from the <a href=\"http://unidata.ucar.edu/packages/dods/\">DODS web site</a> " +
+"to download software from the <a href=\"http://www.opendap.org/download/\">OPeNDAP web site</a> " +
 "to decode them. " +
 //  "<li>To use the <em>Send to Program</em> feature you must install a web " +
 //  "helper application that can route the DODS URL built by this form to a " +
@@ -137,10 +137,10 @@ function write_help_contents() {
 //  "</ul>" +
 "Also note that the URL displayed in the <em>DataURL</em> field is updated " +
 "as you select and/or constrain variables. The URL in this field can be " +
-"cut and pasted in various DODS clients such as the Matlab and IDL " +
-"command extensions. See the <a " +
-"href=\"http://unidata.ucar.edu/packages/dods/\" target=\"DODS\"> " +
-"DODS home page</a> for " +
+"cut and pasted in various clients such as the Matlab, ferret, GrADS " +
+"et cetera. See the <a " +
+"href=\"http://www.opendap.org/\" target=\"DODS\"> " +
+"OPeNDAP home page</a> for " +
 "information about those clients. " +
 "<p><hr><p> " + 
 "<center> " +
@@ -149,7 +149,7 @@ function write_help_contents() {
 }
 
 function open_dods_home() {
-    window.open("http://unidata.ucar.edu/packages/dods/", "DODS_HOME_PAGE");
+    window.open("http://www.opendap.org/", "DODS_HOME_PAGE");
 }
 
 
@@ -350,71 +350,3 @@ function get_selection() {
 
     return s;
 }    
-
-// $Log: www.js,v $
-// Revision 1.5  2003/12/08 18:08:02  edavis
-// Merge release-3-4 into trunk
-//
-// Revision 1.4.4.2  2003/06/29 02:58:55  rmorris
-// Had to come up with a more robust solution to line termination in side
-// the very-big-long-string landing in javascript.h.  Related to very last fix.
-//
-// Revision 1.4  2003/01/27 23:53:55  jimg
-// Merged with release-3-2-7.
-//
-// Revision 1.1.2.4 2002/02/04 17:28:45 jimg Updated the binary_button
-// function so that it can be used with many different extensions. This is a
-// simple way to provide support for several different binary return formats
-// (DataDDS, NetCDF, ...). Updated the online help to explain that other
-// buttons besides GET ASCII and GET DODS... might be present.
-//
-// Revision 1.3  2001/09/28 23:51:32  jimg
-// Merged with 3.2.4.
-//
-// Revision 1.1.2.3  2001/09/10 21:48:07  jimg
-// Removed the `Send to Program' button and its help text.
-//
-// Revision 1.1.2.2  2001/09/10 19:32:28  jimg
-// Fixed two problems: 1) Variable names in the JavaScript code sometimes
-// contained spaces since they were made using the dataset's variable name.
-// The names are now filtered through id2www and esc2underscore. 2) The CE
-// sometimes contained spaces, again, because dataset variable names were
-// used to build the CE. I filtered the names with id2www_ce before passing
-// them to the JavaScript code.
-//
-// Revision 1.2  2001/01/26 19:17:36  jimg
-// Merged with release-3-2.
-//
-// Revision 1.1.2.1  2001/01/26 04:01:13  jimg
-// Added
-//
-// Revision 1.5  2000/11/09 21:04:37  jimg
-// Merged changes from release-3-1. There was a goof and a bunch of the
-// changes never made it to the branch. I merged the entire branch.
-// There maybe problems still...
-//
-// Revision 1.4  2000/10/03 20:07:21  jimg
-// Moved Logs to the end of each file.
-//
-// Revision 1.3  1999/05/18 20:08:18  jimg
-// Fixed massive problems introduced by the String to string changes.
-//
-// Revision 1.2  2000/11/09 21:04:37  jimg
-// Merged changes from release-3-1. There was a goof and a bunch of the
-// changes never made it to the branch. I merged the entire branch.
-// There maybe problems still...
-//
-// Revision 1.1.2.3  1999/10/13 17:02:55  jimg
-// Changed location of posturl.pl.
-//
-// Revision 1.1.2.2  1999/10/11 17:57:32  jimg
-// Fixed a bug which showed up in IE 5. Objects in IE 5 cannot use eval() to
-// name a field and access a property of that field in the same statement.
-// Instead, the use of eval to name a field and the access to that (new)
-// field must be broken up. I think this is the case because IE 5's parser
-// thinks `eval' is, in this situation, an object property. Of course,
-// there's no eval property per se, so script execution halts. See the use of
-// the document.forms[0].<text_widget> stuff in the method display_indices().
-//
-// Revision 1.1.2.1  1999/10/09 00:30:36  jimg
-// Created.

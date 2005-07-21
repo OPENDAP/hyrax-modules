@@ -51,7 +51,7 @@ NewUrl(const string &n)
     return new WWWUrl(n);
 }
 
-WWWUrl::WWWUrl(const string &n) : WWWStr(n)
+WWWUrl::WWWUrl(const string &n) : Url(n)
 {
 }
 

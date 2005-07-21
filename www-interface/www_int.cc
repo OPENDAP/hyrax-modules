@@ -51,10 +51,12 @@ static char rcsid[] not_used = {"$Id: www_int.cc,v 1.15 2004/07/08 22:32:19 jimg
 
 #include "BaseType.h"
 #include "Connect.h"
+#include "BaseTypeFactory.h"
 #include "cgi_util.h"
 #include "debug.h"
 
 #include "WWWOutput.h"
+#include "WWWOutputFactory.h"
 #include "javascript.h"		// Try to hide this stuff...
 
 const char *version = PACKAGE_VERSION;
@@ -108,18 +110,13 @@ main(int argc, char * argv[])
 {
     GetOpt getopt (argc, argv, "vVnmH:a:h?");
     int option_char;
-#if 0
-    bool trace = false;
-#endif
     bool verbose = false;
     bool regular_header = false;
     bool nph_header = false;
-    string help_location = "http://unidata.ucar.edu/packages/dods/help_files/";
+    // Note that the help file is stored as part of the web page source and
+    // not with this source code. jhrg 7/21/05
+    string help_location = "http://www.opendap.org/online_help_files/opendap_form_help.html";
     string admin_name = "";
-#if 0
-    char *tcode = NULL;
-    int topts = 0;
-#endif
 
 #ifdef WIN32
     _setmode(_fileno(stdout), _O_BINARY);
@@ -156,6 +153,7 @@ main(int argc, char * argv[])
 	throw Error(msg);
     }
 
+    WWWOutputFactory *wof;
     try {
 	url = new Connect(argv[getopt.optind]);
 
@@ -167,11 +165,19 @@ main(int argc, char * argv[])
 	    throw Error(msg);
 	}
 
+#if 0
 	url->request_das();	// These throw on error.
 	url->request_dds();
 
 	global_das = url->das();
 	DDS dds = url->dds();
+#endif
+
+	wof = new WWWOutputFactory;
+	DDS dds(wof, "WWW Interface");
+
+	url->request_das(global_das);
+	url->request_dds(dds);
 
 	if (regular_header || nph_header)
 	    wo.write_html_header(nph_header);
@@ -200,21 +206,31 @@ main(int argc, char * argv[])
 	wo.write_variable_entries(global_das, dds);
 	cout << "</table></form>\n\n"
 	     << "<hr>\n"
-	     << "<font size=-1>Tested on Netscape 4.61, 7.1, Internet Explorer 5.0, Mozilla 1.2.1, 1.4, 1.6, Galeon 1.2.7 and Konqueror 3.1-13. Users have reported problems getting the DODS object using IE 6.0 and NS 7.02. However, the other features work fine on those browsers. </font>\n"
+	     << "<font size=-1>Tested on: "
+	     << "FireFox 1.0.4; "
+	     << "Galeon 1.2.7; "
+	     << "Internet Explorer 5.0; "
+	     << "Konqueror 3.1-13;"
+	     << "Mozilla 1.2.1, 1.4, 1.6; "
+	     << "and Netscape 4.61, 7.1."
+	     << "</font>\n"
 	     << "<hr>\n\n";
 	if (admin_name != "") {
 	    cout << "<address>Send questions or comments to: <a href=\"mailto:"
 		 << admin_name << "\">" << admin_name << "</a></address>\n\n"
-		 << "<address>For general help with DODS, see: "
-		 << "<a href=\"http://unidata.ucar.edu/packages/dods/\">"
-		 << "http://unidata.ucar.edu/packages/dods/</a></address>\n\n";
+		 << "<address>For general help with OPeNDAP software, see: "
+		 << "<a href=\"http://www.opendap.org/\">"
+		 << "http://www.opendap.org/</a></address>\n\n";
 	}
 	else {
 	    cout << "<address>Send questions or comments to: <a href=\"mailto:support@unidata.ucar.edu\">support@unidata.ucar.edu</a></address>"
 		 << "</body></html>\n";
 	}
+
+	delete wof; wof = 0;
     }
     catch (Error &e) {
+	delete wof; wof = 0;
 	string error_msg = e.get_error_message();
 	cout << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n"
 	     << "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n"

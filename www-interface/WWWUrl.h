@@ -42,9 +42,10 @@
 #endif
 #endif
 
-#include "WWWStr.h"
+#include "WWWOutput.h"
+#include "Url.h"
 
-class WWWUrl: public WWWStr {
+class WWWUrl: public Url {
 public:
     WWWUrl(const string &n = (char *)0);
     virtual ~WWWUrl() {}
