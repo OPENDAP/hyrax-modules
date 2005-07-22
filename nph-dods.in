@@ -49,7 +49,7 @@
 # (taint) won't complain about running programs. Perl will consider any
 # directory that's writeable by someone other than the owner as tainted, so
 # adding, for example, /usr/local/bin here might break other operations
-# (places where we use exec or system in DODS_Dispatch or DODS_Cache).
+# (places where we use exec in DODS_Dispatch or DODS_Cache).
 $ENV{PATH} = '/bin:/usr/bin:/sbin:/usr/sbin:@prefix@/sbin';
 $ENV{IFS} = "" if $ENV{IFS};    # For the truly paranoid...
 
@@ -78,17 +78,17 @@ $dispatch = new DODS_Dispatch( "DAP2/@PACKAGE_VERSION@", "./dap-server.rc" );
 # Note that the statistics 'stuff' has its own configuration file. That's
 # because we're just evaluating this feature. 07/22/03 jhrg
 
-# Small change: if there's a file called DODS_STATISTICS in the CWD, then
+# Small change: if there's a file called OPENDAP_STATISTICS in the CWD, then
 # stats are on. The installServers script will create this in response to
 # questions, but we can crate it too, so running the installServers script
 # every time the servers change is no longer necessary. 09/27/02 jhrg
 # I think we should probably move this information into the dods.conf/ini
 # file. The reason for keeping it separate is that we want to make sure that
 # this feature is not turned on accidentally. 10/23/02 jhrg
-if ( -f "DODS_STATISTICS" ) {
+if ( -f "OPENDAP_STATISTICS" ) {
     $dispatch->is_stat_on(1);
 
-    open( STATS, "DODS_STATISTICS" );
+    open( STATS, "OPENDAP_STATISTICS" );
 
   LINE:
     while (<STATS>) {

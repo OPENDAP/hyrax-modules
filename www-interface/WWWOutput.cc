@@ -72,6 +72,11 @@ static bool name_in_kill_file(const string &name);
 #define access _access
 #define X_OK 00  //  Simple existance
 
+// This was part of a system to provide a way to 'drop in' new DAP --> format
+// handlers. But only asciival was ever complete enough to be released. Since
+// it's always present, it seems silly to dump a huge effort into this code.
+// See below in write_disposition(). Also see Trac ticket #134. jhrg 7/22/05. 
+#if 0
 char *asciival = "./asciival.exe";
 char* dods2ncdf = "./dods2ncdf.exe";
 char* dods2hdf4 = "./dods2hdf4.exe";
@@ -79,12 +84,14 @@ char* dods2hdf5 = "./dods2hdf5.exe";
 char* dods2mat = "./dods2mat.exe";
 char* dods2idl = "./dods2idl.exe";
 #else
-char* asciival = "./asciival";
-char* dods2ncdf = "./dods2ncdf";
-char* dods2hdf4 = "./dods2hdf4";
-char* dods2hdf5 = "./dods2hdf5";
-char* dods2mat = "./dods2mat";
-char* dods2idl = "./dods2idl";
+char* asciival = "/usr/local/sbin/asciival";
+char* dods2ncdf = "dods2ncdf";
+char* dods2hdf4 = "dods2hdf4";
+char* dods2hdf5 = "dods2hdf5";
+char* dods2mat = "dods2mat";
+char* dods2idl = "dods2idl";
+#endif
+
 #endif
 
 const string allowable = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
@@ -133,8 +140,11 @@ WWWOutput::write_disposition(string url)
 <td align=\"right\"><h3><a href=\"dods_form_help.html#disposition\" valign=\"bottom\">Action:</a></h3>\n";
     _os << "<td>";
 
-    if (access(asciival, X_OK) == 0)
-	_os << "<input type=\"button\" value=\"Get ASCII\" onclick=\"ascii_button()\">\n";
+    _os << "<input type=\"button\" value=\"Get ASCII\" onclick=\"ascii_button()\">\n";
+
+#if 0
+    // See teh comment above about the 'drop in' format handler support that
+    // was never needed. jhrg 7/22/05
 
     if (access(dods2ncdf, X_OK) == 0)
 	_os << "<input type=\"button\" value=\"Get netCDF\" onclick=\"binary_button('netcdf')\">\n";
@@ -150,8 +160,9 @@ WWWOutput::write_disposition(string url)
 
     if (access(dods2idl, X_OK) == 0)
 	_os << "<input type=\"button\" value=\"Get IDL\" onclick=\"binary_button('idl')\">\n";
+#endif
 
-    _os << "<input type=\"button\" value=\"Get DODS Data Object \" onclick=\"binary_button('dods')\">\n\
+    _os << "<input type=\"button\" value=\"Binary Data Object \" onclick=\"binary_button('dods')\">\n\
 <input type=\"button\" value=\"Show Help\" onclick=\"help_button()\">\n\
 \n\
 <tr>\n\

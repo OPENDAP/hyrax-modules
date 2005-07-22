@@ -988,27 +988,30 @@ query using the customized form.\n";
 # Send the DODS version information.
 sub send_dods_version {
     my $self         = shift;
+    # For soe reason the function call doesn't work ina string but variable
+    # substitution does... jhrg 7/22/05
+    my $version      = $self->caller_revision();
 
     print "HTTP/1.0 200 OK\n";
     print "XDODS-Server: opendap/$self->caller_revision()\n";
     print "Content-Type: text/plain\n\n";
 
-    print "OPeNDAP server core software: $self->caller_revision()\n";
+    print "OPeNDAP server core software: $version\n";
 }
 
 # Send the DODS stats information. Only call this if is_stat_on() is true.
 sub send_dods_stats {
     my $self         = shift;
-    my $blessed = "unidata.ucar.edu|.*gso.uri.edu|.*dods.org|.*opendap.org";
     my $machine_names = $self->machine_names();
+    my $version      = $self->caller_revision(); # See above comment.
 
     print DBG_LOG "In send_dods_stats\n" if $debug > 0;
-    if ( $self->server_name() =~ m@($blessed|$machine_names)@ ) {
+    if ( $self->server_name() =~ m@($machine_names)@ ) {
         print "HTTP/1.0 200 OK\n";
         print "XDODS-Server: opendap/$self->caller_revision()\n";
         print "Content-Type: text/plain\n\n";
 
-        print "Server: ", $self->server_name(), " (version: $self->caller_revision())\n";
+        print "Server: ", $self->server_name(), " (version: $version)\n";
         print DBG_LOG "Access log: ", $self->access_log(), "\n" if $debug > 0;
         &print_log_info( $self->access_log(), $self->error_log() );
     }

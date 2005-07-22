@@ -78,18 +78,6 @@ usage(string name)
 	 << "h|?: This meassage.\n";
 }
 
-/** Write out the given error object. If the Error object #e# is empty, don't
-    write anything out.
-
-    @author jhrg */
-#if 0
-static void
-output_error_object(Error e)
-{
-    if (e.OK())
-	cout << "Error: " << e.error_message() << endl;
-}
-#endif
 /** 
     Build an HTML page which both describes the data and provides a way for
     users to query the dataset. The page prompts for the input of query
@@ -164,14 +152,6 @@ main(int argc, char * argv[])
 	    msg += string(argv[getopt.optind]) + "' is local.\n";
 	    throw Error(msg);
 	}
-
-#if 0
-	url->request_das();	// These throw on error.
-	url->request_dds();
-
-	global_das = url->das();
-	DDS dds = url->dds();
-#endif
 
 	wof = new WWWOutputFactory;
 	DDS dds(wof, "WWW Interface");

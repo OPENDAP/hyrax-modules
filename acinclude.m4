@@ -9,8 +9,8 @@
 # I modified the regexp below to remove any text that follows the version
 # number. This extra text was hosing the test. 7/15/99 jhrg
 
-AC_DEFUN(DODS_PROG_PERL, [dnl
-    AC_CHECK_PROG(PERL, perl, `which perl`)
+AC_DEFUN([DODS_PROG_PERL], [dnl
+    AC_CHECK_PROG([PERL], [perl], [`which perl`])
     case "$PERL" in
 	*perl*)
 	    perl_ver=`$PERL -v 2>&1 | awk '/This is perl/ {print}'`
@@ -18,13 +18,13 @@ AC_DEFUN(DODS_PROG_PERL, [dnl
             perl_ver_main=`echo $perl_ver | sed 's/\([[0-9]]*\).*/\1/'`
 	    if test -n "$perl_ver" && test $perl_ver_main -ge 5
 	    then
-		AC_MSG_RESULT(Found perl version ${perl_ver}.)
+		AC_MSG_RESULT([Found perl version ${perl_ver}.])
 	    else
-		AC_MSG_ERROR(perl version: found ${perl_ver} should be at least 5.000.)
+		AC_MSG_ERROR([perl version: found ${perl_ver} should be at least 5.000.])
 	    fi
 	    ;;
 	*)
-	    AC_MSG_WARN(perl is required.)
+	    AC_MSG_WARN([perl is required.])
 	    ;;
     esac
 
