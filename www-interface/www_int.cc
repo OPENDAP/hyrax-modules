@@ -33,7 +33,7 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: www_int.cc,v 1.15 2004/07/08 22:32:19 jimg Exp $"};
+static char rcsid[] not_used = {"$Id$"};
 
 #include <stdio.h>
 

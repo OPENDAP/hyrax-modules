@@ -2,7 +2,7 @@
 dnl -*- m4 -*-
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.ac,v 1.1 2003/03/13 23:37:32 jimg Exp $)
+AC_REVISION($Id$)
 AC_INIT
 AC_CONFIG_SRCDIR([ais_tool.cc])
 AC_CONFIG_HEADER(config_ais_tool.h)

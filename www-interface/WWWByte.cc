@@ -39,7 +39,7 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: WWWByte.cc,v 1.7 2003/12/08 18:08:02 edavis Exp $"};
+static char rcsid[] not_used = {"$Id$"};
 
 // The NewByte `helper function' creates a pointer to an WWWByte and
 // returns that pointer. It takes the same arguments as the class's ctor. If

@@ -43,7 +43,7 @@
 #
 # Options: -T: use Perl's taint mode.
 #
-# $Id: nph-dods.in,v 1.10 2005/05/27 22:38:00 jimg Exp $
+# $Id$
 
 # Force PATH. This should work for most UNIXs. Forcing PATH means that -T
 # (taint) won't complain about running programs. Perl will consider any

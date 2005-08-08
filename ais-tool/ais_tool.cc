@@ -31,7 +31,7 @@
 
 #include "config_ais_tool.h"
 
-static char rcsid[] not_used = {"$Id: ais_tool.cc,v 1.3 2003/03/14 19:59:56 jimg Exp $"};
+static char rcsid[] not_used = {"$Id$"};
 
 #include <stdio.h>
 

@@ -38,7 +38,7 @@
 
 #include "config.h"
 
-static char rcsid[] not_used = {"$Id: usage.cc,v 1.29 2005/01/28 17:25:13 jimg Exp $"};
+static char rcsid[] not_used = {"$Id$"};
 
 #include <stdio.h>
 

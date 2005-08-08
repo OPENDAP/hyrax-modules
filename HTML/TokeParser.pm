@@ -1,6 +1,6 @@
 package HTML::TokeParser;
 
-# $Id: TokeParser.pm,v 1.1 1999/07/30 17:13:59 jimg Exp $
+# $Id$
 
 require HTML::Parser;
 @ISA=qw(HTML::Parser);

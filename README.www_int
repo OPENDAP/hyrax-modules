@@ -1,5 +1,5 @@
 
-$Id: README,v 1.4 2003/12/08 18:08:02 edavis Exp $
+$Id$
 
 The www_int (WWW Interface) program is a simple HTML form interface for DODS
 datasets. The program is now designed to be run as part of a regular DODS

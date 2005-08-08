@@ -35,7 +35,7 @@
 
 #include "config_asciival.h"
 
-static char rcsid[] not_used = {"$Id: name_map.cc,v 1.10 2004/07/08 22:18:25 jimg Exp $"};
+static char rcsid[] not_used = {"$Id$"};
 
 #include <GNURegex.h>
 

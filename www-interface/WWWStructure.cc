@@ -39,7 +39,7 @@
 
 #include "config_www_int.h"
 
-static char rcsid[] not_used = {"$Id: WWWStructure.cc,v 1.7 2004/01/28 16:48:58 jimg Exp $"};
+static char rcsid[] not_used = {"$Id$"};
 
 #include <iostream>
 

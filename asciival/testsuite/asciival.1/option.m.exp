@@ -14,7 +14,7 @@
 # Test the `-m' option. See other options.?.exp files for test for the other
 # options. 
 
-# $Id: option.m.exp,v 1.6 2004/07/08 22:18:25 jimg Exp $
+# $Id$
 
 global comp_output		# contains output from das-test_start
 global verbose			# this and srcdir are set by runtest.exp

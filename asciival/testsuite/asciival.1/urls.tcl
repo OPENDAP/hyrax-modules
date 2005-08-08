@@ -1,5 +1,5 @@
 
-# $Id: urls.tcl,v 1.4 2003/01/27 20:39:23 jimg Exp $
+# $Id$
 
 # Datasets and their expected output (the information that asciival sends to
 # stdout - not the stuff that should be going into the file).

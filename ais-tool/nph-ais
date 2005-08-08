@@ -29,7 +29,7 @@
 
 # Options: -T: use Perl's taint mode.
 #
-# $Id: nph-ais,v 1.2 2003/03/14 20:02:48 jimg Exp $
+# $Id$
 
 # Force PATH. This should work for most UNIXs. Forcing PATH means that -T
 # (taint) won't complain about running programs. Perl will consider any

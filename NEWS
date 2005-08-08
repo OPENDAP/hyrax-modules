@@ -74,4 +74,4 @@ We have had some issues in the past with serving data from files that are
 compressed using UNIX compress or gzip. See the special section below about
 serving these types of files for important configuration information!
 
-$Id: NEWS,v 1.4 2005/05/27 22:44:41 jimg Exp $
+$Id$

@@ -29,7 +29,7 @@
 
 #include "config_ais_tool.h"
 
-static char rcsid[] not_used = {"$Id: AISDODSFilter.cc,v 1.2 2004/02/04 20:47:04 jimg Exp $"};
+static char rcsid[] not_used = {"$Id$"};
 
 #include <GetOpt.h>
 

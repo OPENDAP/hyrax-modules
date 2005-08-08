@@ -29,7 +29,7 @@
 // Authors:
 //	jhrg,jimg	James Gallagher <jgallagher@gso.uri.edu>
 
-// $Id: www.js,v 1.5 2003/12/08 18:08:02 edavis Exp $
+// $Id$
 
 var reflection_cgi = "http://unidata.ucar.edu/cgi-bin/dods/posturl.pl";
 

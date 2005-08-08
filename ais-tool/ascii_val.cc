@@ -39,7 +39,7 @@
 //#include "config_dap.h"
 #include "config_asciival.h"
 
-static char rcsid[] not_used = {"$Id: ascii_val.cc,v 1.2 2004/01/26 18:58:48 jimg Exp $"};
+static char rcsid[] not_used = {"$Id$"};
 
 #include <stdio.h>
 #include <assert.h>
