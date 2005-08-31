@@ -1,4 +1,23 @@
 
+Updated for version 3.5.1
+
+Bug fixes
+
+*** Clarify the security stuff about what requires localhost pass-through and
+directory support and data_root ... ***
+
+The ASCII and HTML responses are now built using local calls to the file
+system instead of network calls to the server. This means that those
+responses are more efficient and that secure servers are easier to configure.
+The additional step of opening access to he server for the localhost to
+enable these two reponses is no longer needed. Unfortunately, the directory
+response still makes a call to the server, so support for that feature will
+still require the additional configuration. See the FAQ for information about
+setting up a secure server (http://www.opendap.org/faq/server_security.html).
+
+All executables are now prefixed with 'dap_' to avoid situations where other
+packages use the same names (as was the case with 'usage').
+
 Updated for version 3.5.0
 
 Server 3.5 is an update for the current CGI-based server whose dispatch code

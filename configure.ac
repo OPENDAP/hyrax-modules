@@ -65,25 +65,17 @@ AC_TYPE_SIZE_T
 AC_CHECK_FUNCS([putenv strtol])
 
 dnl Checks for specific libraries
+
+AC_CHECK_LIBDAP([3.5.0],
+ [
+  LIBS="$LIBS $DAP_LIBS"
+  CPPFLAGS="$CPPFLAGS $DAP_CFLAGS"
+ ],
+ [ AC_MSG_ERROR([Cannot find libdap])
+])
+
 dnl I wrote these checks because we need the *-config scripts to build, so 
 dnl the AC_CHECK_LIB macro is not needed.
-AC_MSG_CHECKING([for libdap])
-if dap-config --version > /dev/null 2>&1
-then
-	version_libdap=`dap-config --version`
-	version_major=`echo $version_libdap | sed 's@^libdap \([[0-9]]\)*\.\([[0-9]]*\)\.\([[0-9]]*\)$@\1@'`
-	version_minor=`echo $version_libdap | sed 's@^libdap \([[0-9]]\)*\.\([[0-9]]*\)\.\([[0-9]]*\)$@\2@'`
-	if test $version_major -lt 3 || test $version_minor -lt 5
-	then
-		AC_MSG_ERROR([must have libdap 3.5.0 or greater, found $version_libdap])
-	fi
-
-	LIBS="$LIBS `dap-config --libs`"
-	CPPFLAGS="$CPPFLAGS `dap-config --cflags`"
-	AC_MSG_RESULT([yes])
-else
-	AC_MSG_ERROR([I could not find libdap])
-fi
 
 AC_PATH_PROG([CURL], [curl], [*** Where is curl? ***],
 	         [/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/sbin])

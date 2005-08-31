@@ -14,9 +14,9 @@ AUTOMAKE_OPTIONS = foreign
 CXXFLAGS_DEBUG = -g3 -O0 -Wall -fno-defer-pop
 TEST_COV_FLAGS = -ftest-coverage -fprofile-arcs
 
-sbin_PROGRAMS = www_int
+sbin_PROGRAMS = dap_www_int
 
-www_int_SOURCES = WWWArray.cc WWWFloat64.cc WWWInt32.cc WWWSequence.cc	     \
+dap_www_int_SOURCES = WWWArray.cc WWWFloat64.cc WWWInt32.cc WWWSequence.cc   \
 	WWWUInt16.cc WWWByte.cc WWWGrid.cc www_int.cc WWWStr.cc WWWUInt32.cc \
 	WWWFloat32.cc WWWInt16.cc WWWOutput.cc WWWStructure.cc WWWUrl.cc     \
 	WWWFloat32.h WWWInt16.h WWWSequence.h WWWUInt16.h WWWArray.h	     \

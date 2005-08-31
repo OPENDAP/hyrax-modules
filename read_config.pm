@@ -46,6 +46,9 @@ sub get_params {
     my $maintainer           = "support\@unidata.ucar.edu";
     my $cache_size           = 50;
     my $curl                 = "curl";
+    my $usage                = "dap_usage";
+    my $www_int              = "dap_www_int";
+    my $asciival             = "dap_asciival";
     my $data_root            = "";
     my @exclude;    # Default is empty
 
@@ -84,6 +87,15 @@ sub get_params {
         } elsif ( $keyword eq "curl" ) {
             $value[0] =~ /^(.*)$/;
             $curl = $1;
+        } elsif ( $keyword eq "usage" ) {
+            $value[0] =~ /^(.*)$/;
+            $usage = $1;
+        } elsif ( $keyword eq "www_int" ) {
+            $value[0] =~ /^(.*)$/;
+            $www_int = $1;
+        } elsif ( $keyword eq "asciival" ) {
+            $value[0] =~ /^(.*)$/;
+            $asciival = $1;
         } elsif ( $keyword eq "data_root" ) {
             $value[0] =~ /^(.*)$/;
             $data_root = $1;
@@ -96,16 +108,16 @@ sub get_params {
         }
     }
 
-    return ( $timeout, $cache_dir, $cache_size, $maintainer, $curl, $data_root,
-             @exclude );
+    return ( $timeout, $cache_dir, $cache_size, $maintainer, $curl, $usage,
+	     $www_int, $asciival, $data_root, @exclude );
 }
 
-# Lookup the handler name using the regular expressions from the dods.rc
-# file. The dods.rc file contains lines with one regular expression followed
-# by the handler name token. Comments start with the `#' character. If the
-# string (usually a pathname) matches a regular expression, this function
-# returns the handler associated with that regular expression. If no regexes
-# match, then return "".
+# Lookup the handler name using the regular expressions from the
+# dap-server.rc file. The dap-server.rc file contains lines with one regular
+# expression followed by the handler name token. Comments start with the `#'
+# character. If the string (usually a pathname) matches a regular expression,
+# this function returns the handler associated with that regular expression.
+# If no regexes match, then return "".
 
 sub handler_name {
     my ( $pathname, $server_config_file ) = @_;

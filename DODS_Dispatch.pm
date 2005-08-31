@@ -146,7 +146,8 @@ sub rfc822_to_time {
 # PATH_INFO: Used to extract the extension from the filename which is used to
 # pass the response (object) type to the filter program. PATH_INFO is
 # the path-part of the URL which follows the CGI up to a '?' character.
-# SCRIPT_NAME: Used to build the request_uri field's value. Used by asciival, et c.
+# SCRIPT_NAME: Used to build the request_uri field's value. Used by asciival,
+# et cetera.
 # PATH_TRANSLATED: Used to get the file/dataset name. PATH_TRANSLATED is 
 # the result of performing a logical to physical mapping on PATH_INFO. If
 # data_root is set in dap_server.rc, that is used along with PATH_INFO 
@@ -159,14 +160,16 @@ sub initialize {
     my $self = shift;
     my $data;    # temp used to hold data from %ENV
 
-    open( DBG_LOG, ">> /usr/local/tmp/dbg_log" ) if $debug;
+    open( DBG_LOG, ">> ./dbg_log" ) if $debug;
     
     print( DBG_LOG "------------------------------------------------\n" ) if $debug;
     print( DBG_LOG "DODS Server debug log: ", scalar localtime, "\n" ) if $debug;
 
     # Read the configuration file.
-    my ( $timeout, $cache_dir, $cache_size, $maintainer, $curl, $data_root, 
-         @exclude ) = get_params( $self->{config_file} );
+    my ( $timeout, $cache_dir, $cache_size, $maintainer, $curl, $usage,
+	 $www_int, $asciival, $data_root, @exclude ) 
+	= get_params( $self->{config_file} );
+
     $self->timeout($timeout);
     $self->cache_dir($cache_dir);
     $self->cache_size($cache_size);
@@ -180,7 +183,10 @@ sub initialize {
         $self->data_path("$ENV{PATH_TRANSLATED}");
     }
     $self->curl($curl);
-    
+    $self->usage($usage);
+    $self->www_int($www_int);
+    $self->asciival($asciival);
+
     $self->exclude(@exclude);
 
     print( DBG_LOG "Timeout: ",    $self->timeout(),    "\n" ) if $debug > 1;
@@ -369,7 +375,7 @@ information. If you think this is a server problem please contanct the\n"
     # handlers to generate the DAP objects and ver and info responses;
     # everything else is passed off to a helper or taken care of by this
     # script. However, we ask for the handler for all of the extensions to
-    # make sure that the server (via dods.rc) is configured for the
+    # make sure that the server (via dap-server.rc) is configured for the
     # particular type of URL. If we don't do that then an errant request for
     # .html, for example, will loop forever (since it's a subordinate request
     # that accesses the dataset and that's what fails). 9/19/2001 jhrg
@@ -484,17 +490,19 @@ is not in your client, please contact the ", 0
 # Note that the $type variable is used so that DODS_Dispatch my be
 # sub-classed. See the perlobj man page for more information. 7/27/98 jhrg
 #
+
 # Added @exclude to the list of ctor params. This is a list of `handler
-# names' (see the dods.rc file) that have regular expressions which should
-# NOT be rerouted through the DODS server's HTML form generator. Often this
-# is the case because their regexes are something like `.*'. 5/9/2001 jhrg
-# The 'exclude' stuff is now handled by a setting in the dods.rc file.
-# 11/19/03 jhrg
+# names' (see the dap-server.rc file) that have regular expressions which
+# should NOT be rerouted through the DODS server's HTML form generator. Often
+# this is the case because their regexes are something like `.*'. 5/9/2001
+# jhrg The 'exclude' stuff is now handled by a setting in the dap-server.rc
+# file. 11/19/03 jhrg
 #
 # At some point a fourth param was added so that it would be possible to pass
-# into this object the name of the configuration file. 10/21/02 jhrg
-# Now the dods.rc handles the parameters and so the other two arguments went
+# into this object the name of the configuration file. 10/21/02 jhrg Now the
+# dap-server.rc handles the parameters and so the other two arguments went
 # away. 11/19/03 jhrg
+
 sub new {
     my $type               = shift;
     my $caller_revision    = shift;
@@ -672,6 +680,39 @@ sub curl {
     }
 }
 
+sub usage {
+    my $self = shift;
+    my $usage = shift;          # The second arg is optional
+
+    if ( $usage eq "" ) {
+        return $self->{usage};
+    } else {
+        return $self->{usage} = $usage;
+    }
+}
+
+sub www_int {
+    my $self = shift;
+    my $www_int = shift;          # The second arg is optional
+
+    if ( $www_int eq "" ) {
+        return $self->{www_int};
+    } else {
+        return $self->{www_int} = $www_int;
+    }
+}
+
+sub asciival {
+    my $self = shift;
+    my $asciival = shift;          # The second arg is optional
+
+    if ( $asciival eq "" ) {
+        return $self->{asciival};
+    } else {
+        return $self->{asciival} = $asciival;
+    }
+}
+
 sub access_log {
     my $self       = shift;
     my $access_log = shift;    # The second arg is optional
@@ -717,7 +758,7 @@ sub is_stat_on {
 }
 
 # This returns the full path to the handler. The set of known handlers
-# is read from the dods.rc file during initialization. 
+# is read from the dap-server.rc file during initialization. 
 sub handler {
     my $self   = shift;
     my $handler = shift;    # The second arg is optional
@@ -730,7 +771,7 @@ sub handler {
 }
 
 # This returns the directory where the server binaries are stored. From the 
-# configuration file (dods.rc).
+# configuration file (dap-server.rc).
 sub sbin_dir {
     my $self   = shift;
     my $sbin_dir = shift;    # The second arg is optional
@@ -797,6 +838,18 @@ Unable to open the transfer utility (curl).\n", 0 );
     return $buf;
 }
 
+sub url_text {
+    my $self = shift;
+
+    my $url = "http://"
+	. $self->server_name()
+	. $self->port()
+	. $self->request_uri() . "?"
+	. $self->query();
+    
+    return $url
+}
+
 sub command {
     my $self = shift;
 
@@ -810,13 +863,12 @@ sub command {
         # filter programs. Passing the cache dir info addresses bug #453
         # where the HDF server was writing its cache files to the data
         # directory (because that's the default). 6/5/2002 jhrg
-        $server_pgm = $self->sbin_dir() . "usage";
         $options    = "'-v " . $self->caller_revision() . " ";
         if ( $self->cache_dir() ne "" ) {
             $options .= "-r " . $self->cache_dir() . "'";
         }
 
-        @command = ( $server_pgm, $options, $self->filename(), $self->handler() );
+        @command = ( $self->usage(), $options, $self->filename(), $self->handler() );
     } elsif ( $self->ext() eq "ver" || $self->ext() eq "version" ) {
 
         # if there's no filename assume `.../nph-dods/version/'. 6/8/2001 jhrg
@@ -884,7 +936,7 @@ sub command {
         my $excludes          = $self->exclude();
         my $filtered_dir_html =
           new FilterDirHTML( $server_url, $url,
-                             dataset_regexes( "./dods.rc", @$excludes ) );
+                             dataset_regexes( "./dap-server.rc", @$excludes ) );
 
         # Print HTTP response headers. 06/25/04 jhrg
         print( STDOUT "HTTP/1.1 200 OK\n" );
@@ -919,24 +971,32 @@ sub command {
             @command = ( @command, "-t", $self->timeout() );
         }
     } elsif ( $self->ext() eq "ascii" || $self->ext() eq "asc" ) {
-        my $dods_url = "http://"
-          . $self->server_name()
-          . $self->port()
-          . $self->request_uri() . "?"
-          . $self->query();
-        @command = ( "asciival", "-m", "--", $dods_url );
+        $options    = "-v " . $self->caller_revision() . " ";
+        if ( $self->cache_dir() ne "" ) {
+            $options .= "-r " . $self->cache_dir();
+        }
+
+        @command = ( $self->asciival(), $options, "-m", 
+		     "-u", $self->url_text(),
+		     "-f", $self->handler(), 
+		     "--", $self->filename() ); #. "?" . $self->query() );
+    } elsif ( $self->ext() eq "html" ) {
+        $options    = "-v " . $self->caller_revision() . " ";
+        if ( $self->cache_dir() ne "" ) {
+            $options .= "-r " . $self->cache_dir();
+        }
+
+        @command = ( $self->www_int(), $options, "-m", "-n", 
+		     "-u", $self->url_text(),
+		     "-f", $self->handler(), 
+		     "--", $self->filename() ); #. "?" . $self->query() );
     } elsif ( $self->ext() eq "netcdf" ) {
         my $dods_url = "http://"
           . $self->server_name()
           . $self->port()
           . $self->request_uri() . "?"
           . $self->query();
-        @command = ( "dods2ncdf", "-m", "-p", "--", $dods_url );
-    } elsif ( $self->ext() eq "html" ) {
-        @command = (
-                     "www_int", "-m", "-n", "--",
-                     $self->full_uri() . "?" . $self->query()
-        );
+        @command = ( "dods2ncdf", "-m", "-p", "--", $self->url_text() );
     } else {
         $self->print_dods_error( $unknown_ext, 1 );
         exit(1);
@@ -1134,7 +1194,7 @@ if ($test) {
     $self->data_path("/home/httpd/html/htdocs/data/x.nc.dods");
 
     print "Simple file access\n";
-    my $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
+    my $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dap-server.rc" );
     $dd->ext()    eq "dods" || die;
     $dd->handler() eq "nc_handler"   || die;
 
@@ -1143,7 +1203,7 @@ if ($test) {
     # Test files which have more than one dot in their names.
     $ENV{PATH_INFO}       = "/data/tmp.x.nc.dods";
     $self->data_path("/home/httpd/html/htdocs/data/tmp.x.nc.dods");
-    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
+    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dap-server.rc" );
 
     $dd->ext()    eq "dods" || die;
     $dd->handler() eq "nc_handler"   || die;
@@ -1154,7 +1214,7 @@ if ($test) {
     # NOTE: The directory must really exist!
     $ENV{PATH_INFO}       = "/data/";
     $self->data_path("/var/www/html/data/");
-    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
+    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dap-server.rc" );
     $dd->ext()    eq "/" || die;
     $dd->handler() eq ""  || die;    # a weird anomaly of handler.pm
 
@@ -1165,7 +1225,7 @@ if ($test) {
     $ENV{PATH_INFO}       = "/data/";
 #    $ENV{PATH_TRANSLATED} = "/var/www/html/data/";
     $self->data_path("/var/www/html/data/");
-    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
+    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dap-server.rc" );
     $dd->ext() eq "/" || die;
 
     print "Directory names not ending in a slash\n";
@@ -1173,7 +1233,7 @@ if ($test) {
     # Directory, not ending in a slash
     $ENV{PATH_INFO}       = "/data";
     $ENV{PATH_TRANSLATED} = "/var/www/html/data";
-    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
+    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dap-server.rc" );
     $dd->ext() eq "/" || die;
 
     print "Directory names not ending in a slash with a M=A query\n";
@@ -1182,7 +1242,7 @@ if ($test) {
     $ENV{QUERY_STRING}    = "M=A";
     $ENV{PATH_INFO}       = "/data";
     $self->data_path("/var/www/html/data");
-    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
+    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dap-server.rc" );
     $dd->ext() eq "/" || die;
 
     # Test the RFC822_to_time function.
@@ -1232,505 +1292,9 @@ if ($test) {
     $ENV{PATH_INFO} =
       "/http://dcz.dods.org/dods-3.2/nph-dods/data/nc/fnoc1.nc.das";
     $self->data_path("/var/www/html$ENV{PATH_INFO}");
-    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dods.rc" );
-
-    # print "DODSter filename: $dd->filename() \n";
-    # $dd->ext() eq "/" || die;
-    # $dd->script() eq "" || die; # a weird anomaly of handler.pm
+    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dap-server.rc" );
 
     print "All tests successful\n";
 }
 
 1;
-
-# $Log: DODS_Dispatch.pm,v $
-# Revision 1.47  2005/05/27 22:37:02  jimg
-# Used the value of the configuration param data_root along with PATH_INFO
-# to figure out where the data are. The data_root path is essentially a substitute
-# for DocumentRoot. If data_root is not set in the config file, DocumentRoot is
-# used in its place (by falling back to the old behavior of using PATH_TRANSLATED
-# to find the data file).
-#
-# Revision 1.46  2005/05/25 23:53:43  jimg
-# Changes to mesh with the new netcdf handler project/module. make install in
-# both will now yield a running server when nph-dods and dods.rc are copied to
-# a cgi-bin directory.
-#
-# Revision 1.45  2005/05/18 21:33:16  jimg
-# Update for the new build/install.
-#
-# Revision 1.44  2005/04/18 17:04:34  pwest
-# setting error code on an error to 1001, was being set to 0
-#
-# Revision 1.43  2004/10/22 17:54:38  jimg
-# fule_uri() --> full_uri() when getting the version info. See bug 821.
-#
-# Revision 1.42  2004/07/07 21:17:54  jimg
-# Merged with release-3-4-8FCS
-#
-# Revision 1.37.2.17  2004/06/25 19:50:12  jimg
-# Added HTTP response status line and Content-Type header for the directory
-# response.
-#
-# Revision 1.41  2004/01/22 17:29:13  jimg
-# Merged with release-3-4.
-#
-# Revision 1.37.2.16  2004/01/12 20:06:49  jimg
-# Turned off debugging for release of 3.4.
-#
-# Revision 1.40  2003/12/20 07:31:33  jimg
-# Resolved conflicts with the merge of release-3-4.
-#
-# Revision 1.39  2003/12/08 18:04:06  edavis
-# Merge release-3-4 into trunk
-#
-# Revision 1.37.2.15  2003/11/25 18:57:41  jimg
-# Oops... Forgot to escape the '@' in a string.
-#
-# Revision 1.37.2.14  2003/11/21 20:12:05  jimg
-# Fixed the error message produced when there's no valid URL suffix. See bug
-# 680.
-#
-# Revision 1.37.2.13  2003/11/21 19:43:47  jimg
-# Fixed the fix for the deflate bug (673). If the value of ACCEPT_ENCODING is
-# not deflate, that's OK.
-#
-# Revision 1.37.2.12  2003/11/21 18:38:00  jimg
-# Fixed the test for ACCEPT_ENCODING so that it'll work with string sent by
-# Safari. I also made the error messages returned for malformed request headers
-# more verbose and changed them from Web/HTML messages to OPeNDAP Error object
-# responses (Which can be displayed as text and interpreted by the dap++
-# library). See bug 673.
-#
-# Revision 1.37.2.11  2003/11/19 22:47:47  jimg
-# I cleaned up the new() subroutine, removing some extraneous comments.
-#
-# Revision 1.37.2.10  2003/07/24 00:15:35  jimg
-# Now uses the new/enhanced dods.rc configuration file (read via
-# read_config.pm).
-#
-# Revision 1.37.2.9  2003/06/24 16:32:08  jimg
-# Fixed bug 628. ACCPET_ENCODING needed to allow '-' because Konqueror uses
-# x-gzip as one value.
-#
-# Revision 1.37.2.8  2003/06/23 23:29:36  jimg
-# Fixed bug 625. When directory indexes were made using a URL that lacked a
-# trailing slash, the filtered HTML was missing the last component of the
-# pathname for filename links. Really odd. The initialize() function needs to
-# be broken out into separate functions and probably so does comment(). There
-# are too many places where initialize() depends on the value of a variable set
-# twenty of more lines previously while computing some unrelated value.
-#
-# Revision 1.37.2.7  2003/06/18 20:11:43  jimg
-# Completed(!) the fix for the curl-not-found-bug. Previously I patched
-# installServers and fixed up the target that builds the server-tools tarball,
-# but I forgot to actually fix the code... This script now assumes that curl
-# has been installed in the server's directory.
-#
-# Revision 1.37.2.6  2003/06/18 06:00:01  jimg
-# Added a note about characters that are shell meta characters. This might help
-# writing patterns that sanitize environment variables, et cetera. Also added
-# opendap.org to the list of domains that can access stats info. NB: bug 510
-# was fixed in this file earlier; I completed the fix in dods_logging.pm today.
-#
-# Revision 1.37.2.5  2003/06/14 00:00:40  jimg
-# Fix for bug 613; removed the SERVER_ADMIN code because that information is
-# actually not used (maybe it should be, but it's not) and the way we sanitize
-# that variable causes problems.
-#
-# Revision 1.37.2.4  2003/06/05 00:17:44  jimg
-# Fixed (I Hope, it's hard to test and may depend on a particular httpd
-# implementation and/or version) bug 610. The server port appeared twice in the
-# URL asciival used to request data.
-#
-# Revision 1.37.2.3  2003/05/30 18:58:47  edavis
-# Added $self as first parameter to several method calls that use $self
-# but were not called with $self->xxx() form. Also corrected some method
-# calls in test section, i.e., changed extension() to ext().
-#
-# Revision 1.38  2003/05/27 21:39:02  jimg
-# Added test for 'ddx' extension.
-#
-# Revision 1.37.2.2  2003/05/08 01:36:06  jimg
-# Turned off debugging...
-#
-# Revision 1.37.2.1  2003/05/07 23:34:09  jimg
-# Fixes for curl and dids_dir/html/ascii responses.
-#
-# Revision 1.37  2003/05/02 16:28:45  jimg
-# Switched to a DODS-specific log for the diagnostic messages. Also, boosted
-# the filtering of environment variables so that taint mode works with perl
-# 5.8.
-#
-# Revision 1.36  2003/04/28 23:56:08  jimg
-# Fixes for Perl 5.8.0 taint mode. 5.8 seems to be stricter about tainted
-# variables (which is good, I guess...).
-#
-# Revision 1.35  2003/04/23 23:26:27  jimg
-# Merged with 3.3.1.
-#
-# Revision 1.34.2.2  2003/04/09 21:36:16  jimg
-# Turned off debugging.
-#
-# Revision 1.34.2.1  2003/03/07 02:45:30  jimg
-# Fixed a bug where URLs to a directory which do not end with a slash
-# failed.
-#
-# Revision 1.34  2003/01/28 21:25:14  jimg
-# Moved a fix from release-3-2 *by hand* here. The variable path_info was not
-# being sanitized correctly. It's such a simple fix...
-#
-# Revision 1.33  2003/01/23 00:44:34  jimg
-# Updated the copyrights on various source files. OPeNDAP is adopting the
-# GNU Lesser GPL.
-#
-# Revision 1.32  2003/01/22 00:41:47  jimg
-# Changed dods.ini to dods.rc.
-#
-# Revision 1.31  2003/01/22 00:12:05  jimg
-# Added/Updated from release-3-2 branch.
-#
-# Revision 1.30  2002/12/31 22:28:45  jimg
-# Merged with release 3.2.10.
-#
-# Revision 1.25.2.41  2002/12/30 01:46:05  jimg
-#  Removed debugging.
-#
-# Revision 1.25.2.40  2002/11/05 00:40:12  jimg
-# DODSter and JGOFS fixes.
-#
-# Revision 1.25.2.39  2002/10/24 01:03:11  jimg
-# I improved the call to curl so that it uses the copy in ../bin if it's
-# there, otherwise it uses the copy on PATH.
-#
-# Revision 1.25.2.38  2002/10/24 00:43:43  jimg
-# Added changes that work with the dodster code. I replaced the LWP::get call
-# with code that uses curl. It still needs some work...
-#
-# Revision 1.25.2.37  2002/08/20 16:09:12  edavis
-# Reword .html and error message.
-#
-# Revision 1.25.2.36  2002/07/03 19:25:10  jimg
-# I changed the set of DODS machines that can access stats information to
-# any machine at gso.uri.edu or dods.org. The machine unidata.ucar.edu can
-# still get the information.
-#
-# Revision 1.25.2.35  2002/06/06 01:04:25  jimg
-# Cleared the debug flag.
-#
-# Revision 1.25.2.34  2002/06/06 00:53:45  jimg
-# The info service now passes caller revision and cache directory information
-# to usage so that it can be passed onto the filter programs. This enables the
-# HDF server to use the cache dir set in the nph-dods CGI rather than having to
-# fall back on the default. Using the default is bad because it's the data
-# directory, a place where CGIs often don't have write privileges.
-#
-# Revision 1.25.2.33  2002/05/21 21:21:36  jimg
-# Added code so that server log information can be accessed remotely.
-#
-# Revision 1.25.2.32  2002/04/22 15:57:52  jimg
-# Added a line for the dods2nc filter. This is triggered by the .netcdf
-# extension. Also added -m -n switches to the www_int call.
-#
-# Revision 1.25.2.31  2002/04/03 21:04:38  jimg
-# Removed debugging (how'd that get checked in...)
-#
-# Revision 1.25.2.30  2002/04/03 13:53:41  jimg
-# I added some instrumentation to the RFC_822 time string parsing code that
-# prints a message to DBG_LOG when an unrecognized time string is sent. This was
-# to help debug a problem reported a while ago about Mozilla's time strings.
-# The problem seems to have gone away, but I thought the instrumentation was
-# useful in its own right.
-#
-# Revision 1.25.2.29  2002/01/30 00:56:02  jimg
-# Added comment about bug 334
-#
-# Revision 1.25.2.28  2001/12/27 21:17:53  jimg
-# Directories with dots in their names broke again. I fixed this once (by
-# adding a patch from Rob Morris) but it broke again further down in the code
-# that looks at the return value from handler_name(). So now it's fixed again.
-#
-# Revision 1.25.2.27  2001/12/27 20:18:34  jimg
-# Added Jason Thaxter's <thaxter@gomoos.org> patch for getting the server name
-# from either the HTTP_HOST or SERVER_NAME env variables.
-#
-# Revision 1.25.2.26  2001/12/12 01:36:11  jimg
-# Fixed a problem with directory names that don't end in slashes. These were
-# being reported as `URLs with Bad characters in the extension.'
-# Changed RFC822_to_time so that it recognizes more time strings.
-# Added tests to cover the above changes/fixes.
-#
-# Revision 1.25.2.25  2001/10/14 00:42:32  jimg
-# Merged with release-3-2-8
-#
-# Revision 1.25.2.24  2001/10/13 22:17:39  jimg
-# *** empty log message ***
-#
-# Revision 1.25.2.23  2001/10/12 23:32:48  jimg
-# Fixed a bug (#306) where clicking on a dataset link in the directory page
-# fails because the URL is missing the slash that separates the file from the
-# last directory.
-#
-# Revision 1.25.2.22  2001/10/10 23:10:46  jimg
-# *** empty log message ***
-#
-# Revision 1.25.2.21  2001/10/02 00:45:50  jimg
-# Removed Perl debugging.
-#
-# Revision 1.29  2001/09/28 20:30:11  jimg
-# Merged with 3.2.7.
-#
-# Revision 1.25.2.20  2001/09/28 20:20:50  jimg
-# Fixed an error in the command() method where $filename was tested with using
-# is_directory() when $ext eq "/" should have been used.
-#
-# Revision 1.25.2.19  2001/09/26 22:27:47  dan
-# Removed the regexp that stripped the PATH_INFO variable for the jg-dods
-# filters.   Changes to jg-dods starting with version 3.2.2 require all the
-# information that is available in PATH_INFO to allow relative directory
-# searching to support multiple object dictionary files at a provider site.
-#
-# Revision 1.25.2.18  2001/09/19 20:37:59  jimg
-# Fixed the error message displayed when no regex matches the dataset's
-# extension.
-#
-# Revision 1.25.2.17  2001/07/19 22:22:04  jimg
-# Turned off debugging for revision in CVS.
-#
-# Revision 1.25.2.16  2001/07/13 18:52:22  jimg
-# Modified Rob's fix to use PATH_TRANSLATED and removed match looking for
-# slashes.
-#
-# Revision 1.25.2.15  2001/07/12 22:07:09  jimg
-# Fix from Rob Morris for directory names with `.' in them. The call to
-# is_directory() was moved before the the line that uses a regex to separate
-# the file's basename from its extension.
-#
-# Revision 1.25.2.14  2001/07/11 05:09:42  jimg
-# Moved the (commented out) code that scanned pathnames for shell meta
-# characters to DODS_Cache.pm. It is actually used there.
-#
-# Revision 1.28  2001/06/15 23:38:36  jimg
-# Merged with release-3-2-4.
-#
-# Revision 1.25.2.13  2001/06/15 17:51:44  dan
-# Removed redundant 'please contact' strings from error message.
-#
-# Revision 1.25.2.12  2001/06/15 00:55:20  jimg
-# Fixed the directory listing generator. It's hard to test this other than
-# running the code. $ext is set to "/" if the PATH_TRANSLATED information is a
-# directory(). However, this code no longer uses regular expressions to figure
-# out if the URL is a request for a directory listing. Instead the
-# PATH_TRANSLATED info is tested using Perl's -d operator.
-# I modified the use of the handler_name() function. It is only called when the
-# handler name will actually be used. Thus if it returns "" that's always an
-# error. Before it was always called, even when its return value was not used.
-#
-# Revision 1.25.2.11  2001/06/08 23:49:40  jimg
-# Fixed the `version' and `help' extensions.
-# Fixed `version' when the JG server is not installed. The dispatch script
-# itself now processes `version.'
-#
-# Revision 1.25.2.10  2001/06/08 19:16:21  jimg
-# Added a test for unrecognized dataset type.
-# Error messages changed to DODS Error objects in most cases. Errors where the
-# extension cannot be recognized are still reported as HTML documents because
-# it is most likely that those will occur with a web browser.
-#
-# Revision 1.25.2.9  2001/05/18 16:06:45  jimg
-# Added Rob's fix for the special case for the JGOFS server.
-#
-# Revision 1.25.2.8  2001/05/09 23:37:49  jimg
-# Added a function that tests if a string names a directory on the host system.
-# This function is now used to decide if a URL should be sent to the directory
-# service. Thus we no longer need to end directory names with slashes.
-#
-# Revision 1.25.2.7  2001/05/09 23:10:00  jimg
-# For the directory service, files routed through the HTML form generator
-# are now chosen based on the regexes listed in dods.ini. It's possible to
-# configure a given nph-dods to not use some of the expressions in the
-# dods.ini file, so regexes like .* won't do odd things like route all files
-# through the form interface. This is a partial fix, really, since the
-# regexes still might include files that will cause the server to gag.
-#
-# Revision 1.25.2.6  2001/05/03 18:57:07  jimg
-# Added code to extract the value of an If-Modified-Since header if it is
-# present.
-# Added support for DODSFilter's -l flag. This is used to pass the
-# If-Modified-Since value to the server's filter programs.
-#
-# Revision 1.25.2.5  2001/04/30 19:46:19  jimg
-# Replaced REQUEST_URI with other environment variables. REQUEST_URI is not
-# part of the CGI 1.1 spec nor is it supported by the Netscape FastTrack server
-# (see bug 111).
-# Fixed use of localtime in debug and error messages so that it returns a
-# string and not Unix time in seconds.
-#
-# Revision 1.25.2.4  2001/03/27 01:45:53  jimg
-# Added code to special case the help and version fake dataset_ids. These now
-# work but it's a kludge.
-#
-# Revision 1.25.2.3  2001/01/05 18:26:04  jimg
-# Consolidated the regexps that sanitize $ext and $filename.
-# Made error messages about bad a extension or filename exit the script.
-#
-# Revision 1.25.2.2  2001/01/04 17:43:28  jimg
-# Added to the regexps that `sanitize' the filename and extension. These
-# now correctly process directory requests.
-#
-# Revision 1.25.2.1  2000/12/11 20:40:08  jimg
-# Added the is_tainted() subroutine; tests is a variable is tainted.
-# Fixed $filename and $ext so that they are no longer tainted. See comments in
-# the source.
-#
-# Revision 1.25  2000/10/19 23:50:37  jimg
-# Moved the CVS Log to t eh end of the file.
-# Added Shekhar's changes.
-# Added a call to handler_name(); The DODS_Dispatch object now uses the
-# handler_name() routine to choose which handler to use. This makes it possible
-# to use a single dispatch script for all types of data served by dods.
-#
-# Revision 1.24  2000/08/02 22:20:23  jimg
-# Merged with 3.1.8
-#
-# Revision 1.21.2.6  2000/06/01 21:24:43  jimg
-# Added path_info method.
-#
-# Revision 1.21.2.5  2000/05/05 16:22:19  jimg
-# Fixed a bug in port()
-#
-# Revision 1.21.2.4  2000/05/05 16:21:38  jimg
-# Corrected some comments
-#
-# Revision 1.21.2.3  2000/05/02 22:46:05  jimg
-# Fixed a bug (#18) where URLs with port numbers were mangled by the ASCII
-# and html form options. The port number would be stripped of the URL when
-# asciival or www_int fetched the DAS, DDS or DataDDS. To fix this I added
-# a new field (server_port) and two new accessor functions. server_port()
-# returns the port number; port() returns a null string if the port is 80 or
-# ":<port num>" for any other number.
-#
-# Revision 1.23  2000/01/27 17:54:03  jimg
-# Merged with release-3-1-4
-#
-# Revision 1.21.2.2  2000/01/11 19:09:34  jimg
-# Added code to check for a trailing / and bypass a bogus error message when
-# the directory name contained characters that are not allowed in the URL
-# extension used to identify a DODS object. This means that the directory
-# listing will work for directories whose names contain underscores, numbers,
-# etc.
-#
-# Revision 1.22  1999/11/04 23:59:57  jimg
-# Result of merge with 3-1-3
-#
-# Revision 1.21.2.1  1999/10/19 17:35:33  jimg
-# Read the server admin environment variable and pass its value to www_int.
-#
-# Revision 1.21  1999/07/30 19:59:08  jimg
-# Added directory code from non-cvs version
-#
-# Revision 1.19  1999/07/22 03:08:46  jimg
-# Moved
-#
-# Revision 1.18  1999/06/12 00:00:26  jimg
-# Added server_name and request_uri procedure/fields.
-# Added code that translates the extension .html into a call to the www_int
-# filter. This uses the new server_name and request_uri information to run the
-# filter with a complete url, which might be wasteful but is quick and keeps
-# the server programs modular.
-# Fixed the call to asciival so that security features are no longer
-# circumvented. I used the same call-with-url technique that I used with
-# www_int.
-# Some of the help text was updated to include mention of the new .html
-# feature.
-#
-# Revision 1.17  1999/05/27 21:27:59  jimg
-# Moved the code that escapes the query into the section for asciival. Since
-# the security fixes only asciival needs special characters escaped (since it
-# is still run using a subshell).
-#
-# Revision 1.16  1999/05/24 23:34:35  dan
-# Added support for JGOFS dispatch script, which requires
-# filename = PATH_INFO, not filename = PATH_TRANSLATED
-#
-# Revision 1.15  1999/05/21 20:05:11  jimg
-# Retracted some of the security stuff when using the ASCII mode of the
-# servers. In order to run a pipe from Perl you must use an intermediate shell
-# or (maybe) explicitly open the two processes using open("|", ...). The later
-# might work but does not fit well into the design of DODS_Dispatch.pm. In the
-# long run, we'll have to change DODS_Dispatch, but for now I'm running that
-# part of the server through a shell.
-#
-# Revision 1.14  1999/05/21 17:18:09  jimg
-# Changed quoting of various strings, esp the $query. Since the command
-# arguments are now stored in a Perl list and passes to exec in that list (and
-# not a single string), the command is not evaluated by the shell. Thus, quotes
-# won't be removed by the shell and wind up confusing the parsers.
-#
-# Revision 1.13  1999/05/19 23:33:15  jimg
-# Fixes for security holes. The CWD module is no longer used; this makes it
-# simpler to run perl using the -T (taint) mode.
-# Variables passed to executables are scanned for nasty things (shell meta
-# characters).
-# The commands are run straight from perl, not using an intermediate shell.
-#
-# Revision 1.12  1999/05/18 20:01:58  jimg
-# Fixed version feature and help feature so that they work with nph-*/version,
-# nph-*/version/, and nph-*/ (the latter for help).
-# Fixed the help message so that it does not say `Error...' (suggested by
-# the GCMD).
-#
-# Revision 1.11  1999/05/05 00:38:46  jimg
-# Fixed the help message so that it no longer says `Error'.
-# When a URL with no extension is used the help message, not the error message,
-# is printed.
-# Added use of the -v option to all calls to the server filter programs.
-# The .ver/version extension now uses the new -V option (see DODSFilter).
-#
-# Revision 1.10  1999/05/04 19:47:21  jimg
-# Fixed copyright statements. Removed more of the GNU classes.
-#
-# Revision 1.9  1999/04/29 02:37:12  jimg
-# Fix the secure server stuff.
-#
-# Revision 1.8.4.1  1999/04/26 19:04:44  jimg
-# Dan's fixes for the secure server code. The script and filename variables are
-# now set correctly when data files are located in user directories (e.g.,
-# ~bob/data/file.dat).
-#
-# Revision 1.8  1999/02/20 01:36:52  jimg
-# Recognizes the XDODS-Accept-Types header (passed to the CGI using an
-# environment variable). Passes along the value to the _dds and _dods filters
-# using the -t option.
-#
-# Revision 1.7  1998/08/06 16:13:46  jimg
-# Added cache dir stuff (from jeh).
-#
-# Revision 1.6  1998/03/17 17:20:54  jimg
-# Added patch for the new ASCII filter. Use either the suffix .ascii or .asc
-# to get data back in ASCII form from a DODS server.
-#
-# Revision 1.5  1998/02/11 22:05:59  jimg
-# Added tests and an accessor function for the Accept-Encoding header (which
-# CGI 1.1 passes to the cgi program using the environment variable
-# HTTP_ACCEPT_ENCODING). When found with the value `deflate' the data filter
-# (nc_dods, ...) is called with the -c flag which causes DODSFilter::send_data
-# to try to compress the data stream using deflate (LZW from zlib 1.0.4).
-# Also added a help message (activated with /help or /help).
-# Fixed the error text (but it is often blocked by clients because of the http
-# 400 code).
-#
-# Revision 1.4  1997/08/27 17:19:56  jimg
-# Fixed error in -e option when requesting the DAS.
-#
-# Revision 1.3  1997/08/27 00:47:48  jimg
-# Modified to accommodate the new DODSFilter class; added `-e' for the
-# constraint expression. Hack the nph-* script to add -d and -f to $command
-# to specify various weird filename/directory locations for ancillary files.
-#
-# Revision 1.2  1997/06/05 23:17:39  jimg
-# Added to the accessor functions so that they can be used to set the field
-# values in addition to reading values from the `object'.
-#
-# Revision 1.1  1997/06/02 21:04:35  jimg
-# First version

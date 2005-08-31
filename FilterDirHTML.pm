@@ -54,7 +54,7 @@ require HTML::Filter;
 # The ctor takes three arguments, the server's URL, the directory's URL (both
 # scalars) and a list of regexs that define that types of files this server
 # recognizes as datasets (or comprising datasets). The later is probably
-# derived from the dods.rc file. Note that the directory URL is used to
+# derived from the dap-server.rc file. Note that the directory URL is used to
 # build references to files found in the data directories that should not be
 # routed through the DODS server. For example, it's an error to run a regulat
 # html file through a DODS server. 5/9/2001 jhrg

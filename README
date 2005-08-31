@@ -218,8 +218,9 @@ The dap-server.rc Configuration File
   server actually matches the entire pathname (starting at the HTTP Document
   Root) of the data source when searching for the correct handler to use. The
   regular expressions are Perl regular expressions; the examples in the
-  sample dods.rc file should get you going. If you need something ore complex,
-  consult a good book on Perl or contact us at support@unidata.ucar.edu.
+  sample dap-server.rc file should get you going. If you need something ore
+  complex, consult a good book on Perl or contact us at
+  support@unidata.ucar.edu.
 
 Serving Compressed Files 
 

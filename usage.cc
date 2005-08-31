@@ -442,7 +442,7 @@ main(int argc, char *argv[])
 
 	if (in && remove_mime_header(in)) {
 	    das.parse(in);
-		pclose(in);
+	    pclose(in);
 	}
 
 	DDS dds(factory);
@@ -453,7 +453,7 @@ main(int argc, char *argv[])
 
 	if (in && remove_mime_header(in)) {
 	    dds.parse(in);
-		pclose(in);
+	    pclose(in);
 	}
 
 	// Build the HTML* documents.

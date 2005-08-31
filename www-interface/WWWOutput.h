@@ -43,11 +43,16 @@
     
     @author jhrg. */
 
-// NB: I tried to add a private default ctor to prevent anypne from calling
-// it. However, g++ complains about such a ctor because it does not
-// initialize the _os reference member. 4/13/99 jhrg
-
 class WWWOutput {
+private:
+    // This pointer is allocated in main() and passed in here so that other
+    // functions/methods which use the global instance of WWWOutput name 'wo'
+    // can access the DAS object. There are better ways to do this, but this
+    // little tool is so simple that I don't think it needs to be
+    // rewritten... jhrg
+
+    DAS *d_das;
+
  protected:
     ostream &_os;
     int _attr_rows;
@@ -64,6 +69,18 @@ class WWWOutput {
 	@param cols The number of columns to show in the attribute textbox
 	(default 70). */
     WWWOutput(ostream &os, int rows = 5, int cols = 70);
+
+    /** Set DAS object for this data source. This is used inside the
+	print_val() methods. Since those do not have a DAS parameter, the
+	specialized methods get it using the matching get_das() accessor. 
+
+	@param das The data soruce's DAS. */
+    void set_das(DAS *das) { d_das = das; }
+
+    /** Get the data source's das. 
+	@see set_das()
+	@return The DAS object. */
+    DAS *get_das() const { return d_das; }
 
     /** Write out the header for the HTML document. */
     void write_html_header(bool nph_header);

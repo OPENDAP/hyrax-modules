@@ -115,7 +115,7 @@ WWWSequence::print_val(ostream &os, string space, bool print_decls)
 
     for (Vars_iter i = var_begin(); i != var_end(); ++i) {
 	(*i)->print_val(os, "", print_decls);
-	wo.write_variable_attributes((*i), global_das);
+	wo.write_variable_attributes((*i), *wo.get_das());
 	os << "<p><p>\n";
     }
 

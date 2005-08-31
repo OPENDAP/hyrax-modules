@@ -9,9 +9,9 @@ AUTOMAKE_OPTIONS = foreign check-news
 
 SUBDIRS = . asciival www-interface
 
-sbin_PROGRAMS = usage
+sbin_PROGRAMS = dap_usage
 
-usage_SOURCES = usage.cc
+dap_usage_SOURCES = usage.cc
 
 HTML_FILTER = HTML/Filter.pm HTML/LinkExtor.pm HTML/TokeParser.pm \
 	HTML/Entities.pm HTML/HeadParser.pm HTML/Parser.pm
@@ -37,7 +37,8 @@ dist_pkgdata_DATA = dap-server.rc EXAMPLE_DODS_STATISTICS
 #noinst_SCRIPTS = 
 #noinst_DATA = 
 
-# don't need to add nph-dods.in or dods.rc.in here because they are listed
-# in the configure.ac file; automake figures they should be distributed.
+# don't need to add nph-dods.in or dap-server.rc.in here because they are
+# listed in the configure.ac file; automake figures they should be
+# distributed.
 EXTRA_DIST = EXAMPLE_DODS_STATISTICS README-security COPYING COPYRIGHT_URI
 

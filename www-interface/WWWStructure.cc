@@ -94,17 +94,9 @@ WWWStructure::print_val(ostream &os, string space, bool print_decls)
     os << "<b>Structure " << name() << "</b><br>\n";
     os << "<dl><dd>\n";
 
-#if 0
-    for (Pix p = first_var(); p; next_var(p)) {
-	var(p)->print_val(os, "", print_decls);
-	wo.write_variable_attributes(var(p), global_das);
-	os << "<p><p>\n";
-    }
-#endif
-
     for (Vars_iter i = var_begin(); i != var_end(); ++i) {
 	(*i)->print_val(os, "", print_decls);
-	wo.write_variable_attributes(*i, global_das);
+	wo.write_variable_attributes(*i, *wo.get_das());
 	os << "<p><p>\n";
     }
 
@@ -117,19 +109,6 @@ WWWStructure::print_val(ostream &os, string space, bool print_decls)
 bool
 WWWStructure::is_simple_structure()
 {
-#if 0
-    for (Pix p = first_var(); p; next_var(p)) {
-	if (var(p)->type() == dods_structure_c) {
-	    if (!dynamic_cast<WWWStructure *>(var(p))->is_simple_structure())
-		return false;
-	}
-	else {
-	    if (!var(p)->is_simple_type())
-		return false;
-	}
-    }
-#endif
-
     for (Vars_iter i = var_begin(); i != var_end(); ++i) {
 	if ((*i)->type() == dods_structure_c) {
 	    if (!dynamic_cast<WWWStructure *>(*i)->is_simple_structure())

@@ -12,9 +12,9 @@ AUTOMAKE_OPTIONS = foreign dejagnu
 CXXFLAGS_DEBUG = -g3 -O0 -Wall -fno-defer-pop
 TEST_COV_FLAGS = -ftest-coverage -fprofile-arcs
 
-sbin_PROGRAMS = asciival
+sbin_PROGRAMS = dap_asciival
 
-asciival_SOURCES = AsciiArray.cc AsciiInt16.cc AsciiStructure.cc	     \
+dap_asciival_SOURCES = AsciiArray.cc AsciiInt16.cc AsciiStructure.cc	     \
 		AsciiInt32.cc AsciiUInt16.cc AsciiByte.cc AsciiOutput.cc     \
 		AsciiUInt32.cc AsciiFloat32.cc AsciiUrl.cc AsciiFloat64.cc   \
 		AsciiSequence.cc ascii_val.cc AsciiGrid.cc AsciiStr.cc	     \

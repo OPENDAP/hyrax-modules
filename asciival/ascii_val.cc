@@ -33,7 +33,24 @@
     a DODS data object (either by dereferencing a URL, reading from a file or
     reading from stdin) and writes comma separated ASCII representation of the
     data values in that object. 
+
+    Past versions could read from several URLs. This version can read a
+    single URL _or_ can read from a local file using a handler (run in a sub
+    process). It cannot read from several URLs. That feature was never used
+    and was hard to implement with the new file/handler mode. The
+    file/handler mode makes server operation much more efficient since the
+    data are not read by making another trip to the server. Instead, the
+    handler, running in a subprocess, will return data directly to asciival.
     
+    The -r 'per url' option has been removed. This was also not ever used.
+
+    @todo The code in read_from_file should really be moved into DDS. Or
+    DataDDS. That is, DataDDS should have the ability to read and parse not
+    only the DDS part of a 'DODS' response, but also load those variables with
+    data. It should also be smart enough to sort or Error objects and throw
+    them, something the code here (and also in Connect::process_data()) does
+    not do.
+
     @author: jhrg */
 
 #include "config_asciival.h"
@@ -81,20 +98,77 @@ const char *version = PACKAGE_VERSION;
 static void
 usage(string name)
 {
-    cerr << "Usage: " << name 
-	 << " [mngvVt] -- [<url> [-r <var>:<newvar> ...] ...]" << endl
-	 << "       m: Output a MIME header." << endl
-	 << "       n: Turn on name canonicalization." << endl
-	 << "       v: Verbose output." << endl
-	 << "       V: Print the version number and exit" << endl
-	 << "       r: Per-URL name mappings; var becomes newvar." << endl
-	 << endl
-	 << "<url> may be a true URL, which asciival will dereference," << endl
-	 << "it may be a local file or it may be standard input." << endl
-	 << "In the later case use `-' for <url>."
-	 << endl;
+    cerr << "Usage: \n"
+	 << " [mnhwvruVt] -- [<url> | <file> ]\n" 
+	 << "       m: Output a MIME header.\n" 
+	 << "       n: Turn on name canonicalization.\n"
+	 << "       f <handler pathname>: Use a local handler instead of reading from a URL\n"
+	 << "          This assumes a local file, not a url.\n"
+	 << "       w: Verbose (wordy) output.\n"
+	 << "       v <string>: Read the server version information.\n"
+	 << "       u <url>: URL to the referenced data source.\n"
+	 << "       r <dir>: Path to the cache directory.\n"
+	 << "       e <expr>: Constraint expression.\n"
+	 << "       V: Print the version number and exit.\n" 
+	 << "<url> may be a true URL, which asciival will dereference,\n" 
+	 << "it may be a local file or it may be standard input.\n"
+	 << "In the later case use `-' for <url>.\n";
 }
 
+static void
+read_from_url(DataDDS &dds, const string &url, const string &expr)
+{
+    Connect *c = new Connect(url);
+
+    c->set_cache_enabled(false); // Server components should not cache...
+
+    if (c->is_local()) {
+	string msg = "Error: URL `";
+	msg += string(url) + "' is local.\n";
+	throw Error(msg);
+    }
+
+    c->request_data(dds, expr);
+
+    delete c; c = 0;
+}
+
+static void
+read_from_file(DataDDS &dds, const string &handler, 
+	       const string &options, const string &file,
+	       const string &expr)
+{
+    string command = handler + " -o DataDDS " + options + "-e " + expr
+	+ " \"" + file + "\"";
+
+    DBG(cerr << "DDS Command: " << command << endl);
+
+    FILE *in = popen(command.c_str(), "r");
+    if (in && remove_mime_header(in)) {
+	XDR *xdr_stream;
+
+	try {
+	    dds.parse(in);
+	    xdr_stream = new_xdrstdio(in, XDR_DECODE);
+
+	    // Load the DDS with data.
+	    DDS::Vars_iter i;
+	    for (i = dds.var_begin(); i != dds.var_end(); i++) {
+		(*i)->deserialize(xdr_stream, &dds);
+	    }
+	}
+	catch(Error &e) {
+	    delete_xdrstdio(xdr_stream);
+	    throw e;
+	}
+
+	delete_xdrstdio(xdr_stream);
+
+	pclose(in);
+    }
+}
+
+#if 0
 static void
 process_per_url_options(int &i, int argc, char *argv[], bool verbose = false)
 {
@@ -120,6 +194,7 @@ process_per_url_options(int &i, int argc, char *argv[], bool verbose = false)
 	}
 
 }
+#endif
 
 static void
 process_data(DDS *dds)
@@ -153,13 +228,23 @@ output_error_object(const Error &e)
 int
 main(int argc, char * argv[])
 {
-    GetOpt getopt (argc, argv, "ngmvVh?");
+    GetOpt getopt (argc, argv, "nf:mv:r:u:e:wVh?");
     int option_char;
     bool verbose = false;
     bool translate = false;
-    bool gui = false;
+    bool handler = false;
     bool mime_header = false;
+    bool version = false;
+    bool cache = false;
+    bool url_given = false;
+    bool expr_given = false;
+
     string expr = "";
+    string handler_name = "";
+    string server_version = "";
+    string cache_dir = "/usr/tmp";
+    string url = "";
+    string file = "";		// Local file; used with the handler option
 
 #ifdef WIN32
     _setmode(_fileno(stdout), _O_BINARY);
@@ -170,9 +255,13 @@ main(int argc, char * argv[])
     while ((option_char = getopt()) != EOF)
 	switch (option_char) {
 	  case 'n': translate = true; break;
-	  case 'g': gui = true; break;
+	  case 'f': handler = true; handler_name = getopt.optarg; break;
 	  case 'm': mime_header = true; break;
-	  case 'v': verbose = true; break;
+	  case 'w': verbose = true; break;
+	  case 'v': version = true; server_version = getopt.optarg; break;
+	  case 'r': cache = true; cache_dir = getopt.optarg; break;
+	  case 'u': url_given = true; url = getopt.optarg; break;
+	  case 'e': expr_given = true; expr = getopt.optarg; break;
 	  case 'V': {cerr << "asciival: " << version << endl; exit(0);}
 	  case 'h':
 	  case '?':
@@ -180,81 +269,53 @@ main(int argc, char * argv[])
 	    usage((string)argv[0]); exit(1); break;
 	}
 
-    Connect *url = 0;
+    if (handler)
+	file = argv[getopt.optind];
 
-    for (int i = getopt.optind; i < argc; ++i) {
-	try {
-	    if (url)
-		delete url;
-	
-	    if (strcmp(argv[i], "-") == 0){
-		url = new Connect("stdin");
-		DBG(cerr << "Instantiated Connect object using stdin." \
-		    << endl);
+    // Normally, this filter is called using either a URL _or_ a handler, a
+    // file and a URL (the latter is needed for the form which builds the CE
+    // and appends it to the URL). However, it's possible to call the filter
+    // w/o a handler and pass the URL in explicitly using -u. In that case
+    // url_given will be true and the URL will already be assigned to url.
+    if (!handler && !url_given)
+	url = argv[getopt.optind];
 
-	    }
-	    else{
-		url = new Connect(argv[i]);
-		DBG(cerr << endl << "Instantiated Connect object using " \
-		    << argv[i] << endl << endl);
-	    }
+    AsciiOutputFactory *aof;
+    try {
+	// Only process one URL/file; throw an Error object if more than one is
+	// given. 10/8/2001 jhrg
+	if (argc > getopt.optind+1)
+	    throw Error("Error: more than one URL was supplied to www_int.");
 
-	    // asciival is used almost always as part of the DODS server. It
-	    // should not be caching values returned from/by the DAS, DDS, or
-	    // DataDDS handlers of the server. Doing so makes little hiccups
-	    // in the caching very hard for users to correct. 1/16/2002 jhrg 
-	    url->set_cache_enabled(false);
+#if 0
+	if (handler && !url_given)
+	    throw Error("Error: handler supplied but no matching URL given.");
+#endif
 
-	    DBG2(cerr << "argv[" << i << "] (of " << argc << "): " 
-		 << argv[i] << endl);
+	aof = new AsciiOutputFactory;
+	DataDDS dds(aof, "Ascii Data", "DAP/2.0");
 
-	    if (verbose) {
-		string source_name;
-
-		DBG(cerr << "URL->is_local(): " << url->is_local() << endl);
-		DBG(cerr << "argv[" << i << "]: \"" << argv[i] << "\"" 
-		    << endl);
-
-		if (url->is_local() && (strcmp(argv[i], "-") == 0))
-		    source_name = "standard input";
-		else if (url->is_local())
-		    source_name = argv[i];
-		else
-		    source_name = url->URL(false);
-
-		cerr << endl << "Reading: " << source_name << endl;
-	    }
-
-	    process_per_url_options(i, argc, argv, verbose);
-
-            AsciiOutputFactory *aof = new AsciiOutputFactory;
-	    DataDDS dds(aof, "Ascii Data", "DAP/2.0");;
-
-	    // Connect::read_data or request_data call deserialize() for each
-	    // of the variables. Thus the DDS passed to them will hold
-	    // variables that are full of data.
-	    if (url->is_local() && (strcmp(argv[i], "-") == 0)) {
-		url->read_data(dds, stdin);
-	    } else if (url->is_local()) {
-		url->read_data(dds, fopen(argv[i], "r"));
-	    } else {
-		url->request_data(dds, expr);
-	    }
-
-	    if (mime_header)
-		set_mime_text(cout, dods_data);
-
-       	    process_data(&dds);
-            delete aof; aof = 0;
+	if (handler) {
+	    string options = "";
+	    if (version)
+		options += string(" -v ") + server_version;
+	    if (cache)
+		options += string(" -r ") + cache_dir;
+	    read_from_file(dds, handler_name, options, file, expr);
 	}
-	catch (Error &e) {
-	    DBG(cerr << "Caught an Error object." << endl);
-	    output_error_object(e);
-	}
+	else
+	    read_from_url(dds, url, expr);
+
+	process_data(&dds);
+	delete aof; aof = 0;
+    }
+    catch (Error &e) {
+	DBG(cerr << "Caught an Error object." << endl);
+	output_error_object(e);
+    }
         
-        catch (exception &e) {
-            cerr << "Caught an exception: " << e.what() << endl;
-        }
+    catch (exception &e) {
+	cerr << "Caught an exception: " << e.what() << endl;
     }
 
     cout.flush();

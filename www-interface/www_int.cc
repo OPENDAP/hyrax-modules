@@ -61,21 +61,69 @@ static char rcsid[] not_used = {"$Id$"};
 
 const char *version = PACKAGE_VERSION;
 
-DAS global_das;
+// A better way to do this would have been to make WWWStructure, ..., inherit
+// from both Structure and WWWOutput. But I didn't... jhrg 8/29/05
 WWWOutput wo(cout);
 
 static void
 usage(string name)
 {
-    cerr << "Usage: " << name << " [options] -- <URL>" << endl
+    cerr << "Usage: " << name << " [options] -- <url> | <file>\n"
 	 << "m: Print a MIME header. Use this with nph- style CGIs.\n"
 	 << "n: Print HTTP protocol and status for reply.\n"
+	 << "f <handler pathname>: Use a local handler instead of reading from a URL" << endl
 	 << "H: Location (URL) of the help file. Should end in '\'.\n"
-	 << "a: Server administrator email.\n"
-	 << "v: Verbose output. Currently a null option.\n"
+	 << "a <email>: Server administrator email.\n"
+	 << "v <string>: Read the server version information.\n"
+	 << "r <dir>: Path to the cache directory.\n"
+	 << "u <url>: URL to the referenced data source.\n"
 	 << "V: Print version information and exit.\n"
-	 << "t: HTTP trace information.\n"
 	 << "h|?: This meassage.\n";
+}
+
+static void
+read_from_url(DAS &das, DDS &dds, const string &url)
+{
+    Connect *c = new Connect(url);
+
+    c->set_cache_enabled(false); // Server components should not cache...
+
+    if (c->is_local()) {
+	string msg = "Error: URL `";
+	msg += string(url) + "' is local.\n";
+	throw Error(msg);
+    }
+
+    c->request_das(das);
+    c->request_dds(dds);
+
+    delete c; c = 0;
+}
+
+static void
+read_from_file(DAS &das, DDS &dds, const string &handler, 
+	       const string &options, const string &file)
+{
+    string command = handler + " -o DAS " + options + " \"" + file + "\"";
+
+    DBG(cerr << "DAS Command: " << command << endl);
+
+    FILE *in = popen(command.c_str(), "r");
+
+    if (in && remove_mime_header(in)) {
+	das.parse(in);
+	pclose(in);
+    }
+
+    command = handler + " -o DDS " + options + " \"" + file + "\"";
+    DBG(cerr << "DDS Command: " << command << endl);
+
+    in = popen(command.c_str(), "r");
+
+    if (in && remove_mime_header(in)) {
+	dds.parse(in);
+	pclose(in);
+    }
 }
 
 /** 
@@ -96,15 +144,23 @@ usage(string name)
 int
 main(int argc, char * argv[])
 {
-    GetOpt getopt (argc, argv, "vVnmH:a:h?");
+    GetOpt getopt (argc, argv, "v:r:u:Vnmf:H:a:h?");
     int option_char;
-    bool verbose = false;
+    bool version = false;
+    bool cache = false;
     bool regular_header = false;
     bool nph_header = false;
+    bool handler = false;
+    bool url_given = false;
     // Note that the help file is stored as part of the web page source and
     // not with this source code. jhrg 7/21/05
     string help_location = "http://www.opendap.org/online_help_files/opendap_form_help.html";
     string admin_name = "";
+    string handler_name = "";
+    string server_version = "";
+    string cache_dir = "/usr/tmp";
+    string url = "";
+    string file = "";		// Local file; used with the handler option
 
 #ifdef WIN32
     _setmode(_fileno(stdout), _O_BINARY);
@@ -115,10 +171,13 @@ main(int argc, char * argv[])
     while ((option_char = getopt()) != EOF) {
 	switch (option_char) {
 	  case 'm': regular_header = true; break;
+	  case 'f': handler = true; handler_name = getopt.optarg; break;
 	  case 'H': help_location = getopt.optarg; break;
 	  case 'a': admin_name = getopt.optarg; break;
 	  case 'n': nph_header = true; break;
-	  case 'v': verbose = true; break;
+	  case 'v': version = true; server_version = getopt.optarg; break;
+	  case 'r': cache = true; cache_dir = getopt.optarg; break;
+	  case 'u': url_given = true; url = getopt.optarg; break;
 	  case 'V': {
 	    cerr << "WWW Interface version: " << version << endl
 		 << "DAP version: " << dap_version() << endl; 
@@ -131,33 +190,44 @@ main(int argc, char * argv[])
 	}
     }
 
-    Connect *url = 0;
+    if (handler)
+	file = argv[getopt.optind];
 
-    // Only process one URL; throw an Error object if more than one is given.
-    // 10/8/2001 jhrg
-    if (argc > getopt.optind+1) {
-	string msg = 
-	    "Error: more than one URL was supplied to www_int.\n";
-	throw Error(msg);
-    }
+    // Normally, this filter is called using either a URL _or_ a handler, a
+    // file and a URL (the latter is needed for the form which builds the CE
+    // and appends it to the URL). However, it's possible to call the filter
+    // w/o a handler and pass the URL in explicitly using -u. In that case
+    // url_given will be true and the URL will already be assigned to url.
+    if (!handler && !url_given)
+	url = argv[getopt.optind];
 
     WWWOutputFactory *wof;
     try {
-	url = new Connect(argv[getopt.optind]);
+	// Only process one URL/file; throw an Error object if more than one is
+	// given. 10/8/2001 jhrg
+	if (argc > getopt.optind+1)
+	    throw Error("Error: more than one URL was supplied to www_int.");
 
-	url->set_cache_enabled(false); // Server components should not cache...
-
-	if (url->is_local()) {
-	    string msg = "Error: URL `";
-	    msg += string(argv[getopt.optind]) + "' is local.\n";
-	    throw Error(msg);
-	}
+	if (handler && !url_given)
+	    throw Error("Error: handler supplied but no matching URL given.");
 
 	wof = new WWWOutputFactory;
 	DDS dds(wof, "WWW Interface");
 
-	url->request_das(global_das);
-	url->request_dds(dds);
+	DAS das;
+
+	if (handler) {
+	    string options = "";
+	    if (version)
+		options += string(" -v ") + server_version;
+	    if (cache)
+		options += string(" -r ") + cache_dir;
+	    read_from_file(das, dds, handler_name, options, file);
+	}
+	else
+	    read_from_url(das, dds, url);
+
+	wo.set_das(&das);
 
 	if (regular_header || nph_header)
 	    wo.write_html_header(nph_header);
@@ -170,7 +240,7 @@ main(int argc, char * argv[])
 	     << "<!--\n"
 	    // Javascript code here
 	     << java_code << "\n"
-	     << "DODS_URL = new dods_url(\"" << argv[getopt.optind] << "\");\n"
+	     << "DODS_URL = new dods_url(\"" << url << "\");\n"
 	     << "// -->\n"
 	     << "</script>\n"
 	     << "</head>\n" 
@@ -179,11 +249,11 @@ main(int argc, char * argv[])
 	     << "<hr>\n"
 	     << "<form action=\"\">\n"
 	     << "<table>\n";
-	wo.write_disposition(argv[getopt.optind]);
+	wo.write_disposition(url);
 	cout << "<tr><td><td><hr>\n\n";
-	wo.write_global_attributes(global_das);
+	wo.write_global_attributes(*wo.get_das());
 	cout << "<tr><td><td><hr>\n\n";
-	wo.write_variable_entries(global_das, dds);
+	wo.write_variable_entries(*wo.get_das(), dds);
 	cout << "</table></form>\n\n"
 	     << "<hr>\n"
 	     << "<font size=-1>Tested on: "
@@ -223,7 +293,6 @@ main(int argc, char * argv[])
 	     << "<hr>\n";
 
 	return 1;
-	     
     }
 
     return 0;
