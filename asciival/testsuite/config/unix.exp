@@ -22,34 +22,34 @@ if {[file exists common_tests.exp]} {
 
 # The four `required' procs are _start, _load, _exit and _version.
 
-proc asciival_start { {switches ""} {urls ""} {file ""}} {
+proc dap_asciival_start { {switches ""} {urls ""} {file ""}} {
     global verbose
     global comp_output
     global spawn_id
 
     if ![string compare $file ""] {
 	if {$verbose >= 1} {
-	    send_user "Testing asciival $switches -- $urls ...\n"
+	    send_user "Testing dap_asciival $switches -- $urls ...\n"
 	    exp_internal 1
 	}
-	catch "exec ./asciival $switches -- $urls" comp_output
+	catch "exec ./dap_asciival $switches -- $urls" comp_output
     } else {
 	if {$verbose >= 1} {
-	    send_user "Testing asciival $switches -- $urls >& $file ...\n"
+	    send_user "Testing dap_asciival $switches -- $urls >& $file ...\n"
 	    exp_internal 1
 	}
-	catch "exec ./asciival $switches -- $urls > $file" comp_output
+	catch "exec ./dap_asciival $switches -- $urls > $file" comp_output
     }
 }
 
-proc asciival_load {} {
+proc dap_asciival_load {} {
 }
 
-proc asciival_exit {} {
+proc dap_asciival_exit {} {
     send -raw ""
 }
 
-proc asciival_version {} {
-    send_user "asciival test suite 1.0.0\n"
+proc dap_asciival_version {} {
+    send_user "dap_asciival test suite 1.0.0\n"
 }
 

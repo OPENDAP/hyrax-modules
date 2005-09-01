@@ -7,10 +7,12 @@
 
 AUTOMAKE_OPTIONS = foreign dejagnu
 
-# These are not used by automak but are often useful for certain types of
+# These are not used by automake but are often useful for certain types of
 # debugging.
 CXXFLAGS_DEBUG = -g3 -O0 -Wall -fno-defer-pop
 TEST_COV_FLAGS = -ftest-coverage -fprofile-arcs
+
+DIST_SUBDIRS = unit-tests
 
 sbin_PROGRAMS = dap_asciival
 
@@ -24,27 +26,12 @@ dap_asciival_SOURCES = AsciiArray.cc AsciiInt16.cc AsciiStructure.cc	     \
 		AsciiGrid.h AsciiStructure.h AsciiInt16.h AsciiUInt16.h	     \
 		config_asciival.h AsciiOutputFactory.cc AsciiOutputFactory.h
 
-UNIT_TESTS = AsciiArrayTest AsciiOutputTest
-
-# Listing the unit test programs in TESTS causes the programs to be run as
-# part of the check: target; listing them again under check_PROGRAMS causes
-# them to be built.
-TESTS = $(UNIT_TESTS)
-check_PROGRAMS = $(UNIT_TESTS)
-
-AsciiArrayTest_SOURCES = AsciiArrayTest.cc
-AsciiOutputTest_SOURCES = AsciiOutputTest.cc
-
 ASCIIOBJS = AsciiByte.o AsciiInt32.o AsciiFloat64.o AsciiStr.o AsciiUrl.o     \
 	AsciiArray.o AsciiStructure.o AsciiSequence.o AsciiGrid.o	      \
 	AsciiUInt32.o AsciiInt16.o AsciiUInt16.o AsciiFloat32.o AsciiOutput.o \
 	AsciiOutputFactory.o
 
-AsciiArrayTest_LDADD = $(ASCIIOBJS) name_map.o -lcppunit
-AsciiOutputTest_LDADD = $(ASCIIOBJS) name_map.o -lcppunit
-
-DEJATOOL = asciival
+DEJATOOL = dap_asciival
 RUNTESTDEFAULTFLAGS = --tool $$tool --srcdir testsuite
 
-EXTRA_DIST = ChangeLog testsuite 
-
+EXTRA_DIST = ChangeLog testsuite

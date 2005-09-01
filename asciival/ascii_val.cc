@@ -93,8 +93,6 @@ using namespace std;
 name_map names;
 bool translate = false;
 
-const char *version = PACKAGE_VERSION;
-
 static void
 usage(string name)
 {
@@ -113,6 +111,31 @@ usage(string name)
 	 << "<url> may be a true URL, which asciival will dereference,\n" 
 	 << "it may be a local file or it may be standard input.\n"
 	 << "In the later case use `-' for <url>.\n";
+}
+
+static void
+process_per_url_options(int &i, int argc, char *argv[], bool verbose = false)
+{
+    names.delete_all();        // Clear the global name map for this URL.
+  
+    // Test for per-url option. Set variables accordingly.
+    while (argv[i+1] && argv[i+1][0] == '-')
+       switch (argv[++i][1]) {
+         case 'r':
+           ++i;        // Move past option to argument.
+           if (verbose)
+               cerr << "  Renaming: " << argv[i] << endl;
+           // Note that NAMES is a global variable so that all the
+           // writeval() mfuncs can access it without having to pass
+           // it into each function call.
+           names.add(argv[i]);
+           break;
+
+         default:
+           cerr << "Unknown option `" << argv[i][1]
+                << "' paired with URL has been ignored." << endl;
+           break;
+       }
 }
 
 static void
@@ -167,34 +190,6 @@ read_from_file(DataDDS &dds, const string &handler,
 	pclose(in);
     }
 }
-
-#if 0
-static void
-process_per_url_options(int &i, int argc, char *argv[], bool verbose = false)
-{
-    names.delete_all();	// Clear the global name map for this URL.
-
-    // Test for per-url option. Set variables accordingly.
-    while (argv[i+1] && argv[i+1][0] == '-')
-	switch (argv[++i][1]) {
-	  case 'r':
-	    ++i;	// Move past option to argument.
-	    if (verbose)
-		cerr << "  Renaming: " << argv[i] << endl;
-	    // Note that NAMES is a global variable so that all the
-	    // writeval() mfuncs can access it without having to pass
-	    // it into each function call.
-	    names.add(argv[i]);
-	    break;
-		
-	  default:
-	    cerr << "Unknown option `" << argv[i][1] 
-		 << "' paired with URL has been ignored." << endl;
-	    break;
-	}
-
-}
-#endif
 
 static void
 process_data(DDS *dds)
@@ -262,7 +257,7 @@ main(int argc, char * argv[])
 	  case 'r': cache = true; cache_dir = getopt.optarg; break;
 	  case 'u': url_given = true; url = getopt.optarg; break;
 	  case 'e': expr_given = true; expr = getopt.optarg; break;
-	  case 'V': {cerr << "asciival: " << version << endl; exit(0);}
+	  case 'V': {cerr << "asciival: " << PACKAGE_VERSION << endl; exit(0);}
 	  case 'h':
 	  case '?':
 	  default:
@@ -280,22 +275,28 @@ main(int argc, char * argv[])
     if (!handler && !url_given)
 	url = argv[getopt.optind];
 
+    // Remove the expression from the URL if no expression was given
+    // explicitly and the URL is not empty.
+    if (!expr_given && !url.empty()) {
+	expr = url.substr(url.find('?')+1);
+	url = url.substr(0, url.find('?'));
+    }
+
     AsciiOutputFactory *aof;
     try {
 	// Only process one URL/file; throw an Error object if more than one is
 	// given. 10/8/2001 jhrg
+#if 0
 	if (argc > getopt.optind+1)
 	    throw Error("Error: more than one URL was supplied to www_int.");
-
-#if 0
-	if (handler && !url_given)
-	    throw Error("Error: handler supplied but no matching URL given.");
 #endif
 
 	aof = new AsciiOutputFactory;
 	DataDDS dds(aof, "Ascii Data", "DAP/2.0");
 
 	if (handler) {
+	    if (verbose)
+		cerr << "Reading: " << file << endl;
 	    string options = "";
 	    if (version)
 		options += string(" -v ") + server_version;
@@ -303,8 +304,15 @@ main(int argc, char * argv[])
 		options += string(" -r ") + cache_dir;
 	    read_from_file(dds, handler_name, options, file, expr);
 	}
-	else
+	else {
+	    if (verbose)
+		cerr << "Reading: " << url << endl;
+	    process_per_url_options(getopt.optind, argc, argv, verbose);
 	    read_from_url(dds, url, expr);
+	}
+
+        if (mime_header)
+	    set_mime_text(cout, dods_data);
 
 	process_data(&dds);
 	delete aof; aof = 0;

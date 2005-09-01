@@ -3,7 +3,7 @@ dnl -*- autoconf -*-
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.57)
-AC_INIT([dap-server], [3.5.0], [dods-tech@unidata.ucar.edu])
+AC_INIT([dap-server], [3.5.1], [dods-tech@unidata.ucar.edu])
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([nph-dods.in])
 AM_CONFIG_HEADER([config.h])
@@ -98,6 +98,7 @@ AH_BOTTOM([/* Shorthand for gcc's unused attribute feature */
 AC_CONFIG_FILES([dap-server.rc 
 		 Makefile
                  asciival/Makefile
+		 asciival/unit-tests/Makefile
                  www-interface/Makefile])
 
 AC_CONFIG_FILES([nph-dods], [chmod +x nph-dods])
