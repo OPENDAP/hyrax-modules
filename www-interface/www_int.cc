@@ -190,26 +190,38 @@ main(int argc, char * argv[])
 	}
     }
 
-    if (handler)
-	file = argv[getopt.optind];
-
-    // Normally, this filter is called using either a URL _or_ a handler, a
-    // file and a URL (the latter is needed for the form which builds the CE
-    // and appends it to the URL). However, it's possible to call the filter
-    // w/o a handler and pass the URL in explicitly using -u. In that case
-    // url_given will be true and the URL will already be assigned to url.
-    if (!handler && !url_given)
-	url = argv[getopt.optind];
-
-    WWWOutputFactory *wof;
+    // Init this to null so that if we throw an Error before it is allocated
+    // the delte call in the catch block won't seg fault.
+    WWWOutputFactory *wof = 0;
     try {
+	// After processing options, test for errors. There must be a single
+	// argument in addition to any given with the options. This will be
+	// either a file or a URL, depending on the options supplied and will
+	// be the source from whic to read the data.
+	if (getopt.optind >= argc) {
+	    usage((string)argv[0]);
+	    throw Error("Internal configuration error: Expected a file or URL argument.");
+	}
+
+	if (handler)
+	    file = argv[getopt.optind];
+
+	// Normally, this filter is called using either a URL _or_ a handler,
+	// a file and a URL (the latter is needed for the form which builds
+	// the CE and appends it to the URL). However, it's possible to call
+	// the filter w/o a handler and pass the URL in explicitly using -u.
+	// In that case url_given will be true and the URL will already be
+	// assigned to url.
+	if (!handler && !url_given)
+	    url = argv[getopt.optind];
+
 	// Only process one URL/file; throw an Error object if more than one is
 	// given. 10/8/2001 jhrg
 	if (argc > getopt.optind+1)
-	    throw Error("Error: more than one URL was supplied to www_int.");
+	    throw Error("Internal configuration error: More than one URL was supplied to www_int.");
 
 	if (handler && !url_given)
-	    throw Error("Error: handler supplied but no matching URL given.");
+	    throw Error("Internal configuration error: Handler supplied but no matching URL given.");
 
 	wof = new WWWOutputFactory;
 	DDS dds(wof, "WWW Interface");
