@@ -119,7 +119,7 @@ process_per_url_options(int &i, int argc, char *argv[], bool verbose = false)
     names.delete_all();        // Clear the global name map for this URL.
   
     // Test for per-url option. Set variables accordingly.
-    while (argv[i+1] && argv[i+1][0] == '-')
+    while (i < argc && argv[i+1] && argv[i+1][0] == '-')
        switch (argv[++i][1]) {
          case 'r':
            ++i;        // Move past option to argument.
@@ -132,8 +132,15 @@ process_per_url_options(int &i, int argc, char *argv[], bool verbose = false)
            break;
 
          default:
-           cerr << "Unknown option `" << argv[i][1]
-                << "' paired with URL has been ignored." << endl;
+	   // if this was an option
+	   if (argv[i+1][0] == '-') {
+	       string msg = "Unknown option `";
+	       msg += argv[i][1] + "' paired with URL has been ignored.";
+	       throw Error(msg);
+	   }
+	   else {		// not an option
+	       throw Error("More than one URL of file was supplied to dap_asciival.");
+	   }
            break;
        }
 }
@@ -264,32 +271,35 @@ main(int argc, char * argv[])
 	    usage((string)argv[0]); exit(1); break;
 	}
 
-    if (handler)
-	file = argv[getopt.optind];
-
-    // Normally, this filter is called using either a URL _or_ a handler, a
-    // file and a URL (the latter is needed for the form which builds the CE
-    // and appends it to the URL). However, it's possible to call the filter
-    // w/o a handler and pass the URL in explicitly using -u. In that case
-    // url_given will be true and the URL will already be assigned to url.
-    if (!handler && !url_given)
-	url = argv[getopt.optind];
-
-    // Remove the expression from the URL if no expression was given
-    // explicitly and the URL is not empty.
-    if (!expr_given && !url.empty()) {
-	expr = url.substr(url.find('?')+1);
-	url = url.substr(0, url.find('?'));
-    }
-
     AsciiOutputFactory *aof;
     try {
-	// Only process one URL/file; throw an Error object if more than one is
-	// given. 10/8/2001 jhrg
-#if 0
-	if (argc > getopt.optind+1)
-	    throw Error("Error: more than one URL was supplied to www_int.");
-#endif
+	// After processing options, test for errors. There must be a single
+	// argument in addition to any given with the options. This will be
+	// either a file or a URL, depending on the options supplied and will
+	// be the source from whic to read the data.
+	if (getopt.optind >= argc) {
+	    usage((string)argv[0]);
+	    throw Error("Expected a file or URL argument.");
+	}
+
+	if (handler)
+	    file = argv[getopt.optind];
+
+	// Normally, this filter is called using either a URL _or_ a handler,
+	// a file and a URL (the latter is needed for the form which builds
+	// the CE and appends it to the URL). However, it's possible to call
+	// the filter w/o a handler and pass the URL in explicitly using -u.
+	// In that case url_given will be true and the URL will already be
+	// assigned to url.
+	if (!handler && !url_given)
+	    url = argv[getopt.optind];
+
+	// Remove the expression from the URL if no expression was given
+	// explicitly and the URL is not empty.
+	if (!expr_given && !url.empty()) {
+	    expr = url.substr(url.find('?')+1);
+	    url = url.substr(0, url.find('?'));
+	}
 
 	aof = new AsciiOutputFactory;
 	DataDDS dds(aof, "Ascii Data", "DAP/2.0");
