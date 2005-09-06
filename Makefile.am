@@ -13,8 +13,9 @@ sbin_PROGRAMS = dap_usage
 
 dap_usage_SOURCES = usage.cc
 
-HTML_FILTER = HTML/Filter.pm HTML/LinkExtor.pm HTML/TokeParser.pm \
-	HTML/Entities.pm HTML/HeadParser.pm HTML/Parser.pm
+# Removed: Use the cpan package HTML::Parser instead.
+# HTML_FILTER = HTML/Filter.pm HTML/LinkExtor.pm HTML/TokeParser.pm \
+#	HTML/Entities.pm HTML/HeadParser.pm HTML/Parser.pm
 
 # Just a little documentation: 
 #
@@ -28,10 +29,10 @@ HTML_FILTER = HTML/Filter.pm HTML/LinkExtor.pm HTML/TokeParser.pm \
 # 
 # data - put all these in $prefix/share.
 
-nobase_dist_pkgdata_SCRIPTS = DODS_Dispatch.pm DODS_Cache.pm dods_logging.pm \
-	FilterDirHTML.pm read_config.pm $(HTML_FILTER) nph-dods
+nobase_dist_pkgdata_SCRIPTS = nph-dods
 
-dist_pkgdata_DATA = dap-server.rc EXAMPLE_DODS_STATISTICS
+dist_pkgdata_DATA = DODS_Dispatch.pm DODS_Cache.pm dods_logging.pm \
+	FilterDirHTML.pm read_config.pm dap-server.rc EXAMPLE_DODS_STATISTICS
 # Make the noinst_ files install into the cgi bin dir if that directory 
 # can be determined by configure, otherwise add directions to INSTALL.
 #noinst_SCRIPTS = 

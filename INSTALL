@@ -42,8 +42,23 @@ BUILDING THE SOFTWARE
 
 REQUIREMENTS
 
-  o The Server Base Software uses libdap 3.5.1 or greater. You must install
+  o The Server Base Software uses libdap 3.5.2 or greater. You must install
     that software. See http://www.opendap.org/download/.
+
+  o You will need the perl package HTML::Parser installed. Use cpan ot rpm to
+    install the package:
+	    
+	perl -MCPAN -e shell
+	install HTML::Parser
+
+    or
+
+	force install HTML::Parser
+
+    In somce cases the a few of the tests for the module may fail and cpan
+    will only install the software if you use the 'force' option.
+
+    To install using RPM, install the package per-HTML-Parser.
 
   o You should have gcc/g++ 2.95.x or greater. You'll also need to get the
     stdc++ library that matches the compiler (whatever version). In most
