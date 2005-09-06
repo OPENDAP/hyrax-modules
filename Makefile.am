@@ -40,5 +40,6 @@ dist_pkgdata_DATA = dap-server.rc EXAMPLE_DODS_STATISTICS
 # don't need to add nph-dods.in or dap-server.rc.in here because they are
 # listed in the configure.ac file; automake figures they should be
 # distributed.
-EXTRA_DIST = EXAMPLE_DODS_STATISTICS README-security COPYING COPYRIGHT_URI
+EXTRA_DIST = EXAMPLE_DODS_STATISTICS README-security COPYING COPYRIGHT_URI \
+  README.ascii README.www_int
 
