@@ -52,6 +52,18 @@ AC_PROG_MAKE_SET
 
 DODS_PROG_PERL
 
+dods_HTML_Filter=no
+if $PERL -e "use HTML::Filter;" > /dev/null 2>&1; then 
+   dods_HTML_Filter=yes
+else 
+   dods_HTML_Filter=no
+fi
+
+if test "z$dods_HTML_Filter" = "zno"; then
+   AC_MSG_WARN([HTML::Filter not found.])
+fi  
+
+
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h stdlib.h unistd.h])
@@ -60,6 +72,30 @@ AC_CHECK_HEADERS([fcntl.h stdlib.h unistd.h])
 AC_HEADER_STDBOOL
 AC_C_CONST
 AC_TYPE_SIZE_T
+
+AC_ARG_ENABLE([modulesdir],
+   [AS_HELP_STRING([--with-modulesdir],[perl modules dir (default ${datadir}/dap-server)])],
+   [
+        dap_modulesdir="$withval"
+   ],
+   [
+       dap_modulesdir=${datadir}/dap-server
+   ]
+)
+
+AC_SUBST([dap_modulesdir])
+
+AC_ARG_ENABLE([cgidir],
+   [AS_HELP_STRING([--with-cgidir],[CGI scripts dir (default ${datadir}/dap-server-cgi)])],
+   [
+        dap_cgidir="$withval"
+   ],
+   [
+       dap_cgidir=${datadir}/dap-server-cgi
+   ]
+)
+
+AC_SUBST([dap_cgidir])
 
 # Checks for library functions.
 AC_CHECK_FUNCS([putenv strtol])
@@ -77,8 +113,7 @@ AC_CHECK_LIBDAP([3.5.0],
 dnl I wrote these checks because we need the *-config scripts to build, so 
 dnl the AC_CHECK_LIB macro is not needed.
 
-AC_PATH_PROG([CURL], [curl], [*** Where is curl? ***],
-	         [/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/sbin])
+AC_PATH_PROG([CURL], [curl], [*** Where is curl? ***], [/bin:/usr/bin])
 
 OPENDAP_DEBUG_OPTION
 
@@ -101,7 +136,7 @@ AC_CONFIG_FILES([dap-server.rc
 		 asciival/unit-tests/Makefile
                  www-interface/Makefile])
 
-AC_CONFIG_FILES([nph-dods], [chmod +x nph-dods])
+dnl AC_CONFIG_FILES([nph-dods], [chmod +x nph-dods])
 AC_CONFIG_FILES([www-interface/js2h.pl], [chmod +x www-interface/js2h.pl])
 
 AC_OUTPUT

@@ -33,10 +33,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%{_sbindir}/dap_usage
-%{_sbindir}/dap_asciival
-%{_sbindir}/dap_www_int
+%{_bindir}/dap_usage
+%{_bindir}/dap_asciival
+%{_bindir}/dap_www_int
 %{_datadir}/dap-server/
+%{_datadir}/dap-server-cgi/
 %doc COPYING COPYRIGHT_URI EXAMPLE_DODS_STATISTICS  NEWS
 %doc README README.ascii README-security README.www_int
 

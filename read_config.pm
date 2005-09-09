@@ -191,22 +191,22 @@ sub dataset_regexes {
 
 # Tests
 if ($test) {
-    ( "/usr/local/sbin/hdf_handler" eq handler_name( "/stuff/file.HDF", "./dap_server.rc" ) ) || die;
-    ( "/usr/local/sbin/hdf_handler" eq handler_name( "/stuff/file.hdf", "./dap_server.rc" ) ) || die;
-    ( "/usr/local/sbin/nc_handler"  eq handler_name( "/stuff/file.nc",  "./dap_server.rc" ) ) || die;
-    ( "/usr/local/sbin/nc_handler"  eq handler_name( "/stuff/file.NC",  "./dap_server.rc" ) ) || die;
-    ( "/usr/local/sbin/nc_handler"  eq handler_name( "/stuff/file.cdf", "./dap_server.rc" ) ) || die;
-    ( "/usr/local/sbin/nc_handler"  eq handler_name( "/stuff/file.CDF", "./dap_server.rc" ) ) || die;
-    ( "/usr/local/sbin/jg_handler"  eq handler_name( "/stuff/test",     "./dap_server.rc" ) ) || die;
+    ( "/usr/local/bin/hdf_handler" eq handler_name( "/stuff/file.HDF", "./dap_server.rc" ) ) || die;
+    ( "/usr/local/bin/hdf_handler" eq handler_name( "/stuff/file.hdf", "./dap_server.rc" ) ) || die;
+    ( "/usr/local/bin/nc_handler"  eq handler_name( "/stuff/file.nc",  "./dap_server.rc" ) ) || die;
+    ( "/usr/local/bin/nc_handler"  eq handler_name( "/stuff/file.NC",  "./dap_server.rc" ) ) || die;
+    ( "/usr/local/bin/nc_handler"  eq handler_name( "/stuff/file.cdf", "./dap_server.rc" ) ) || die;
+    ( "/usr/local/bin/nc_handler"  eq handler_name( "/stuff/file.CDF", "./dap_server.rc" ) ) || die;
+    ( "/usr/local/bin/jg_handler"  eq handler_name( "/stuff/test",     "./dap_server.rc" ) ) || die;
 
-    ( "/usr/local/sbin/mat_handler" eq handler_name( "/stuff/test.mat", "./dap_server.rc" ) ) || die;
-    ( "/usr/local/sbin/mat_handler" eq handler_name( "/stuff/test.Mat", "./dap_server.rc" ) ) || die;
-    ( "/usr/local/sbin/mat_handler" eq handler_name( "/stuff/test.MAT", "./dap_server.rc" ) ) || die;
-    ( "/usr/local/sbin/ff_handler"  eq handler_name( "/stuff/test.dat", "./dap_server.rc" ) ) || die;
-    ( "/usr/local/sbin/ff_handler"  eq handler_name( "/stuff/test.bin", "./dap_server.rc" ) ) || die;
+    ( "/usr/local/bin/mat_handler" eq handler_name( "/stuff/test.mat", "./dap_server.rc" ) ) || die;
+    ( "/usr/local/bin/mat_handler" eq handler_name( "/stuff/test.Mat", "./dap_server.rc" ) ) || die;
+    ( "/usr/local/bin/mat_handler" eq handler_name( "/stuff/test.MAT", "./dap_server.rc" ) ) || die;
+    ( "/usr/local/bin/ff_handler"  eq handler_name( "/stuff/test.dat", "./dap_server.rc" ) ) || die;
+    ( "/usr/local/bin/ff_handler"  eq handler_name( "/stuff/test.bin", "./dap_server.rc" ) ) || die;
     ( ""    eq handler_name( "/stuff/file.bob", "./dap_server.rc" ) ) || die;
     (
-       "/usr/local/sbin/hdf_handler" eq handler_name(
+       "/usr/local/bin/hdf_handler" eq handler_name(
                     "/usr/tmp/dods_cache#home#httpd#html#data#hdf#S1700101.HDF",
                     "./dap_server.rc"
        )

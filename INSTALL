@@ -30,14 +30,14 @@ BUILDING THE SOFTWARE
      tests won't yield useful results.
 
   3. Type `make install' to install the software. The software consists of
-     soe Perl modules and three compile programs written in C++. The Perl
+     some Perl modules and three compile programs written in C++. The Perl
      software, along with the server's configuration file and a help file,
-     will be isntall in /usr/local/share/dap-server, and the C++ programs will
-     install in /usr/local/sbin. If you'd like to change the installation
-     prefex from its default of /usr/local, use the --prefix option of
+     will install in /usr/local/share/dap-server, and the C++ programs will
+     install in /usr/local/bin. If you'd like to change the installation
+     prefix from its default of /usr/local, use the --prefix option of
      configure. See ./configure --help for more information.
 
-  4. See the file README for inportant information about configuation of the
+  4. See the file README for important information about configuration of the
      server. Without those extra steps, the server will not work!
 
 REQUIREMENTS
@@ -55,10 +55,10 @@ REQUIREMENTS
 
 	force install HTML::Parser
 
-    In somce cases the a few of the tests for the module may fail and cpan
+    In some cases the a few of the tests for the module may fail and cpan
     will only install the software if you use the 'force' option.
 
-    To install using RPM, install the package per-HTML-Parser.
+    To install using RPM, install the package perl-HTML-Parser.
 
   o You should have gcc/g++ 2.95.x or greater. You'll also need to get the
     stdc++ library that matches the compiler (whatever version). In most

@@ -6,6 +6,9 @@ Bug fixes
 *** Clarify the security stuff about what requires localhost pass-through and
 directory support and data_root ... ***
 
+The compiled server binaries are no longer installed in $prefix/sbin but in
+$prefix/bin.
+
 The ASCII and HTML responses are now built using local calls to the file
 system instead of network calls to the server. This means that those
 responses are more efficient and that secure servers are easier to configure.

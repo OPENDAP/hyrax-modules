@@ -48,7 +48,7 @@ my @pass_through_patterns = ('.*\?[A-Z]=[A-Z]');
 # ('README', '.*\.html', '.*\.d[da]s', '.*\.ovr.*', '.*\?[A-Z]=[A-Z]');
 
 package FilterDirHTML;
-require HTML::Filter;
+use HTML::Filter;
 @ISA=qw(HTML::Filter);
 
 # The ctor takes three arguments, the server's URL, the directory's URL (both

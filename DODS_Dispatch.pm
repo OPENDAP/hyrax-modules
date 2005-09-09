@@ -772,14 +772,14 @@ sub handler {
 
 # This returns the directory where the server binaries are stored. From the 
 # configuration file (dap-server.rc).
-sub sbin_dir {
+sub bin_dir {
     my $self   = shift;
-    my $sbin_dir = shift;    # The second arg is optional
+    my $bin_dir = shift;    # The second arg is optional
 
-    if ( $sbin_dir eq "" ) {
-        return $self->{sbin_dir};
+    if ( $bin_dir eq "" ) {
+        return $self->{bin_dir};
     } else {
-        return $self->{sbin_dir} = $sbin_dir;
+        return $self->{bin_dir} = $bin_dir;
     }
 }
 

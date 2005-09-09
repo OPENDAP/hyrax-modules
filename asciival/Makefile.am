@@ -14,7 +14,7 @@ TEST_COV_FLAGS = -ftest-coverage -fprofile-arcs
 
 DIST_SUBDIRS = unit-tests
 
-sbin_PROGRAMS = dap_asciival
+bin_PROGRAMS = dap_asciival
 
 dap_asciival_SOURCES = AsciiArray.cc AsciiInt16.cc AsciiStructure.cc	     \
 		AsciiInt32.cc AsciiUInt16.cc AsciiByte.cc AsciiOutput.cc     \

@@ -11,9 +11,9 @@ PREFACE
   other sites.
 
   Version 3.5 of the server, described in this file, differs in some
-  inportant ways from previous versions of the server. In version 3.5 only
+  important ways from previous versions of the server. In version 3.5 only
   one file is located in a web daemon's CGI binary directory. In addition,
-  it's no longer necessary to located the data in your web daemon's
+  it's no longer necessary to locate the data in your web daemon's
   DocumentRoot directory. Both of these changes increase server robustness.
 
   Though not absolutely essential, it will be useful to understand the
@@ -54,7 +54,7 @@ Server Installation Tips
   Tip 7: Is there a registry of datasets?
   Tip 8: Customizing the DODS Directory response (from Joe McLean)
 
-More Questions
+More Questions...
 
 -----------------------------------------------------------------------------
 
@@ -64,13 +64,13 @@ Introduction
   protocol and requires Apache or a similar web daemon.
 
   The software here includes three C++ programs which are installed in
-  <prefix>/sbin and a collection of Perl software install in
+  <prefix>/bin and a collection of Perl software install in
   <prefix>/share/dap-server. Finally, the Perl script nph-dods, it's
   configuration file dap-server.rc and the HTML interface help file
-  dods_form_help.html are also here. These last three files are installed in
-  the HTTP daemon's CGI binaries directory (you can use the default cgi-bin
-  or set up a new one). Thus the bulk of the fles used to process a DAP
-  request are not actually in the CGI directory.
+  dods_form_help.html are installed in <prefix>/share/dap-server-cgi. 
+  These last three files are to be installed in one of the HTTP daemon's 
+  CGI binaries directory (you can use the default cgi-bin or set up a 
+  new one). 
 
 -----------------------------------------------------------------------------
 
@@ -98,7 +98,7 @@ Quick Instructions
 
   Once the Base has been installed, you're ready to configure the software
   and add one or more data source handlers. The base software does not
-  include any handlers (each is available as a separate package) so we'll use
+  include any handlers (each are available as separate packages) so we'll use
   the NetCDF File handler as an example in this document.
 
   To configure the server you must copy the files nph-dods, dap-server.rc and
@@ -251,7 +251,7 @@ More Sophisticated Installation (But Just A Tiny Bit)
 
   Usage information
 
-  The `usage' program, placed in $prefix/sbin, provides a way for you to
+  The `dap_usage' program, placed in $prefix/bin, provides a way for you to
   supply additional information about your dataset that others can browse -
   it generates HTML output. See the User Guide for more information about the
   usage service, including how to add custom information to the returned
@@ -458,7 +458,7 @@ Tip 8: Customizing the Directory response (from Joe McLean)
 
   DefaultIcon: http://httpd.apache.org/docs/mod/mod_autoindex.html#defaulticon
 
-More Questions
+More Questions...
 
   There are several sources of further information about DODS/NVODS/OPeNDAP:
 

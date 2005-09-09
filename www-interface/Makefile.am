@@ -7,14 +7,12 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-# AM_CPPFLAGS = -DDEFAULT_BASETYPE_FACTORY
-
 # These are not used by automak but are often useful for certain types of
 # debugging.
 CXXFLAGS_DEBUG = -g3 -O0 -Wall -fno-defer-pop
 TEST_COV_FLAGS = -ftest-coverage -fprofile-arcs
 
-sbin_PROGRAMS = dap_www_int
+bin_PROGRAMS = dap_www_int
 
 dap_www_int_SOURCES = WWWArray.cc WWWFloat64.cc WWWInt32.cc WWWSequence.cc   \
 	WWWUInt16.cc WWWByte.cc WWWGrid.cc www_int.cc WWWStr.cc WWWUInt32.cc \
