@@ -7,6 +7,8 @@
 
 AUTOMAKE_OPTIONS = foreign
 
+AM_CPPFLAGS = -I$(top_srcdir)
+
 # These are not used by automak but are often useful for certain types of
 # debugging.
 CXXFLAGS_DEBUG = -g3 -O0 -Wall -fno-defer-pop
@@ -28,3 +30,5 @@ javascript.h: www.js
 	./js2h.pl $< > $@
 
 www_int.o: javascript.h
+
+CLEANFILES = *~

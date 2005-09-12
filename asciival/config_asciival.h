@@ -3,7 +3,7 @@
 #define _config_asciival_h
 
 #ifdef HAVE_CONFIG_H
-#include "../config.h"
+#include "config.h"
 #endif /* HAVE_CONFIG_H */
 
 #endif /* _config_asciival_h */

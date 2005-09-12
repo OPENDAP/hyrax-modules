@@ -7,6 +7,8 @@
 
 AUTOMAKE_OPTIONS = foreign dejagnu
 
+AM_CPPFLAGS = -I$(top_srcdir)
+
 # These are not used by automake but are often useful for certain types of
 # debugging.
 CXXFLAGS_DEBUG = -g3 -O0 -Wall -fno-defer-pop
@@ -35,3 +37,5 @@ DEJATOOL = dap_asciival
 RUNTESTDEFAULTFLAGS = --tool $$tool --srcdir testsuite
 
 EXTRA_DIST = ChangeLog testsuite
+
+CLEANFILES = *~ *.log *.sum

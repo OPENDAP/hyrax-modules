@@ -7,12 +7,12 @@
 // Copyright (c) 2002,2003 OPeNDAP, Inc.
 // Author: James Gallagher <jgallagher@opendap.org>
 //
-// asciival is free software; you can redistribute it and/or modify it under
+// www_int is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free
 // Software Foundation; either version 2, or (at your option) any later
 // version.
 // 
-// asciival is distributed in the hope that it will be useful, but WITHOUT
+// www_int is distributed in the hope that it will be useful, but WITHOUT
 // ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 // FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 // more details.
@@ -73,18 +73,18 @@ static bool name_in_kill_file(const string &name);
 #define X_OK 00  //  Simple existance
 
 // This was part of a system to provide a way to 'drop in' new DAP --> format
-// handlers. But only asciival was ever complete enough to be released. Since
+// handlers. But only www_int was ever complete enough to be released. Since
 // it's always present, it seems silly to dump a huge effort into this code.
 // See below in write_disposition(). Also see Trac ticket #134. jhrg 7/22/05. 
 #if 0
-char *asciival = "./asciival.exe";
+char *www_int = "./www_int.exe";
 char* dods2ncdf = "./dods2ncdf.exe";
 char* dods2hdf4 = "./dods2hdf4.exe";
 char* dods2hdf5 = "./dods2hdf5.exe";
 char* dods2mat = "./dods2mat.exe";
 char* dods2idl = "./dods2idl.exe";
 #else
-char* asciival = "/usr/local/sbin/asciival";
+char* www_int = "/usr/local/sbin/www_int";
 char* dods2ncdf = "dods2ncdf";
 char* dods2hdf4 = "dods2hdf4";
 char* dods2hdf5 = "dods2hdf5";
