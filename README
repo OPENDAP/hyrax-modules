@@ -12,8 +12,8 @@ PREFACE
 
   Version 3.5 of the server, described in this file, differs in some
   important ways from previous versions of the server. In version 3.5 only
-  one file is located in a web daemon's CGI binary directory. In addition,
-  it's no longer necessary to locate the data in your web daemon's
+  one executable file is located in a web daemon's CGI binary directory. In
+  addition, it's no longer necessary to locate the data in your web daemon's
   DocumentRoot directory. Both of these changes increase server robustness.
 
   Though not absolutely essential, it will be useful to understand the
@@ -76,7 +76,7 @@ Introduction
 
 About WWW Servers
 
-  We have extensively tested the servers with the Apache HTTP daemon (httpd).
+  We have tested the servers extensively with the Apache HTTP daemon (httpd).
   Other servers will work as along as they support CGI 1.1 standard. However,
   the installation instructions will be slightly different. Don't let this
   dissuade you from installing the servers with another httpd - the process
@@ -107,7 +107,7 @@ Quick Instructions
   below for help on how to locate your web server's CGI Binary diretcory.
   Make sure that the nph-dods script is exectuable.
 
-  Previous version of the OPeNDAP server required that data either be stored
+  Previous versions of the OPeNDAP server required that data either be stored
   in your web daemon's DocumentRoot or one of its subdirectories or be
   symbolically linked so that it appeared so (and in the later case a special
   option had to be set for the Apache web daemon). However, the version 3.5
@@ -222,50 +222,22 @@ The dap-server.rc Configuration File
   complex, consult a good book on Perl or contact us at
   support@unidata.ucar.edu.
 
-************
-3d) Set the dap-server.rc file so that the server will know how to handle
-    different types of files you are serving.
-
-    The nph-dods dispatch script receives a request and dispatches it to the
-    appropriate service program. The way it figures out what is the
-    appropriate service program is to match the filename part of the URL it
-    received with a set of patterns listed in a configuration file. Each line
-    of the configuration file contains a pattern and the name of a "handler"
-    to use for files that match that pattern.
-
-    Here is the default configuration:
+  Here are the default values for 'handler:'
 
     handler .*\.(HDF|hdf|EOS|eos)(.Z|.gz)*$ @prefix@/bin/dap_hdf_handler
     handler .*\.(NC|nc|cdf|CDF)$ @prefix@/bin/dap_nc_handler
     handler .*\.(dat|bin)$ @prefix@/bin/dap_ff_handler
     handler .*\.(pvu)(.Z|.gz)*$ @prefix@/bin/dap_dsp_handler
 
-
-    Each line consists of a regular expression pattern followed by an
-    abbreviation like "jg" or "mat". Consider a URL like this:
-
-    http://dods.org/cgi-bin/nph-dods/data/ctd.mat?temp  
-
-    When the nph-dods script is executed, the "file name" part of the URL is
-    /data/ctd.mat. Testing this against the default initialization file
-    matches the third line, which indicates that the mat (Matlab) service
-    programs are the ones to use to process this request. The request is then
-    dispatched to the mat-dods (or mat-dds or mat-das) programs for
-    processing.
-
-    NOTE: The default configuration is set up so that files without
-    extensions are handled by the JGOFS service programs. If this is not
-    right for your installation, delete the last line shown above.
+  Where @prefix@ will be replaced by the prefix directory given when the
+  software was built. By default this is '/usr/local.'
 
     "Regular expressions", advanced pattern-matching languages, are a
     powerful feature of Perl and many other computer programs. Powerful
     enough, in fact, to warrant at least one book about them (Mastering
-    Regular Expressions by Jeffrey Friedl, O'Reilly, 1997). You can find a
-    brief tutorial to regular expressions in the DODS bookshelf at
-    http://www.unidata.ucar.edu/packages/dods/user/regex-html/. (For a
-    complete reference online--not a particularly good place to learn about
-    them for the first time--see
-    http://www.perldoc.com/perl5.6/pod/perlre.html.
+    Regular Expressions by Jeffrey Friedl, O'Reilly, 1997). For a complete
+    reference online--not a particularly good place to learn about them for
+    the first time--see http://www.perldoc.com/perl5.6/pod/perlre.html.
 
     Briefly, however, the above patterns test whether a filename is of the
     form file.ext.comp, where comp (if present) is Z or gz, and ext is one of
