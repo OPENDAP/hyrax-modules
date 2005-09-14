@@ -1,14 +1,12 @@
 
  $Id$
 
-The following provides background technical information on the design of
-asciival.
+Updated for version 3.5.1 of the dap server
 
-ASCIIVAL: The program asciival can function as both a client and a server
-filter program. The asciival program can read data from a URL, a local
-filename or from standard input. The program prints to standard output an
-ASCII version of the data where columns are separated by commas and rows
-separated by newlines.
+The program asciival can function as both a client and a server filter
+program. The asciival program can read data from a URL or a local filename.
+The program prints to standard output an ASCII version of the data where
+columns are separated by commas and rows separated by newlines.
 
 Clients can request data from servers in ASCII form using the suffix .ascii
 or .asc in a DAP URL. To see how the asciival program is used on the server

@@ -26,10 +26,10 @@
 // Authors:
 //	jhrg,jimg	James Gallagher <jgallagher@gso.uri.edu>
 
-/** Asciival is a simple DODS client similar to geturl or writeval that reads
-    a DODS data object (either by dereferencing a URL, reading from a file or
-    reading from stdin) and writes comma separated ASCII representation of the
-    data values in that object. 
+/** Asciival is a simple filter program similar to geturl or writeval that
+    reads a data object from a DAP server (either by dereferencing a URL,
+    reading from a file or reading from stdin) and writes comma separated
+    ASCII representation of the data values in that object.
 
     Past versions could read from several URLs. This version can read a
     single URL _or_ can read from a local file using a handler (run in a sub

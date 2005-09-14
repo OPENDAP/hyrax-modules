@@ -4,7 +4,7 @@
 PREFACE
 
   This is a general guide for the OPeNDAP data servers. The server software
-  is split between two functions. This part of the software provides the
+  is split between two functions; this part of the software provides the
   general capabilities of the server such as basic request handling. The
   server also uses one or more 'handlers' for each specific data format.
   Those handlers are available as separate items from our web site or from
@@ -27,7 +27,7 @@ PREFACE
 
   See NEWS for recent changes to the server software.
 
-  Updated for version 3.5 of the OPeNDAP Server Software.
+  Updated for version 3.5.1 of the OPeNDAP Server Software.
 
 -----------------------------------------------------------------------------
 
@@ -65,12 +65,11 @@ Introduction
 
   The software here includes three C++ programs which are installed in
   <prefix>/bin and a collection of Perl software install in
-  <prefix>/share/dap-server. Finally, the Perl script nph-dods, it's
-  configuration file dap-server.rc and the HTML interface help file
-  dods_form_help.html are installed in <prefix>/share/dap-server-cgi. 
-  These last three files are to be installed in one of the HTTP daemon's 
-  CGI binaries directory (you can use the default cgi-bin or set up a 
-  new one). 
+  <prefix>/share/dap-server. Finally, the Perl script nph-dods and it's
+  configuration file dap-server.rc are installed in
+  <prefix>/share/dap-server-cgi. These last two files are to be installed in
+  one of the HTTP daemon's CGI binaries directory (you can use the default
+  cgi-bin or set up a new one).
 
 -----------------------------------------------------------------------------
 
@@ -97,21 +96,21 @@ Quick Instructions
   may be able to install a binary package and skip the build step.
 
   Once the Base has been installed, you're ready to configure the software
-  and add one or more data source handlers. The base software does not
-  include any handlers (each are available as separate packages) so we'll use
-  the NetCDF File handler as an example in this document.
+  and add one or more data handlers. The base software does not include any
+  handlers (each is available as separate packages) so we'll use the NetCDF
+  File handler as an example in this document.
 
-  To configure the server you must copy the files nph-dods, dap-server.rc and
-  dods_form_help.html from the directory $prefix/share/dap-server to a CGI
-  Binary directory for your web daemon. See SERVER INSTALLATION TIPS section
-  below for help on how to locate your web server's CGI Binary diretcory.
-  Make sure that the nph-dods script is exectuable.
+  To configure the server you must copy the files nph-dods and dap-server.rc
+  from the directory $prefix/share/dap-server-cgi to a CGI Binary directory
+  for your web daemon. See SERVER INSTALLATION TIPS section below for help on
+  how to locate your web server's CGI Binary diretcory. Make sure that the
+  nph-dods script is exectuable.
 
   Previous versions of the OPeNDAP server required that data either be stored
-  in your web daemon's DocumentRoot or one of its subdirectories or be
+  in your web daemon's DocumentRoot, one of its subdirectories or be
   symbolically linked so that it appeared so (and in the later case a special
   option had to be set for the Apache web daemon). However, the version 3.5
-  server provides an option whereby the data location can be set using the
+  server provides an option where the data location can be set using the
   data_root parameter of the dap_server.rc file. See below under "The
   dap_server.rc Configuration File" for details. Note that the old behavior
   where data are located in or under DocumentRoot is still supported. Also
@@ -128,7 +127,7 @@ The dap-server.rc Configuration File
   different data sources (typically files, although that doesn't have to be
   the case) and hander-programs. The format of the configuration files is:
   
-     <parameter> <value> ... <value>
+     <parameter> <value> [ <value> ... ]
 
   The configuration file is line-oriented, with each parameter appearing on
   its own line. Blank lines are ignored and the '#' character is used to
@@ -145,16 +144,16 @@ The dap-server.rc Configuration File
   we have a collection of netcdf, hdf, et c., files that we store in
   directories named /usr/local/test_data/data/nc,
   /usr/local/test_data/data/hdf, et c., and we set data_root to
-  /usr/local/test_data. The value of <path> should _not_ end in a slash.
+  '/usr/local/test_data'. The value of <path> should _not_ end in a slash.
 
-  Notes: 
+  Notes for 'data_root': 
 
   The OPeNDAP server's directory browsing functions do not work when using
   the data_root option. They do still work when locating data under
   DocumentRoot.
 
   It's not an absolute requirement that this path be a real directory or that
-  your data are in 'files.' Data can reside in a relational database, for
+  your data are in files. Data can reside in a relational database, for
   example. In that case the base software will use <path> as a prefix to the
   path part of the URL it receives from the client.).
 
@@ -176,9 +175,9 @@ The dap-server.rc Configuration File
   cache_size <size in MB>
 
   How much space can the cached files occupy? This value is given in
-  MegaBytes. When the total size of all the decompressed files exceeds this
+  mega bytes. When the total size of all the decompressed files exceeds this
   value, the oldest remaining file will be removed until the size drops below
-  the parameter value. If you are serving large files, make *sure* this value
+  the parameter value. If you are serving large files, make sure this value
   is at least as large as the largest file. 
 
   maintainer <email address>
@@ -199,7 +198,7 @@ The dap-server.rc Configuration File
   may not be able to find the program unless you tell it exactly where to
   look.
 
-  exclude <handler> ... <handler>
+  exclude <handler> [ <handler> ... ]
 
   This is a list of handlers whose regular expressions should *not* be used
   when building the HTML form interface for this server. In general, this
@@ -218,57 +217,47 @@ The dap-server.rc Configuration File
   server actually matches the entire pathname (starting at the HTTP Document
   Root) of the data source when searching for the correct handler to use. The
   regular expressions are Perl regular expressions; the examples in the
-  sample dap-server.rc file should get you going. If you need something ore
-  complex, consult a good book on Perl or contact us at
-  support@unidata.ucar.edu.
+  sample dap-server.rc file should get you going.
 
   Here are the default values for 'handler:'
 
-    handler .*\.(HDF|hdf|EOS|eos)(.Z|.gz)*$ @prefix@/bin/dap_hdf_handler
-    handler .*\.(NC|nc|cdf|CDF)$ @prefix@/bin/dap_nc_handler
-    handler .*\.(dat|bin)$ @prefix@/bin/dap_ff_handler
-    handler .*\.(pvu)(.Z|.gz)*$ @prefix@/bin/dap_dsp_handler
+    handler .*\.(HDF|hdf|EOS|eos)(.Z|.gz)*$ /usr/local/bin/dap_hdf_handler
+    handler .*\.(NC|nc|cdf|CDF)$ /usr/local/bin/dap_nc_handler
+    handler .*\.(dat|bin)$ /usr/local/bin/dap_ff_handler
 
-  Where @prefix@ will be replaced by the prefix directory given when the
-  software was built. By default this is '/usr/local.'
+  "Regular expressions", advanced pattern-matching languages, are a powerful
+  feature of Perl and many other computer programs. Powerful enough, in fact,
+  to warrant at least one book about them (Mastering Regular Expressions by
+  Jeffrey Friedl, O'Reilly, 1997). For a complete reference online--not a
+  particularly good place to learn about them for the first time--see
+  http://www.perldoc.com/perl5.6/pod/perlre.html.
 
-    "Regular expressions", advanced pattern-matching languages, are a
-    powerful feature of Perl and many other computer programs. Powerful
-    enough, in fact, to warrant at least one book about them (Mastering
-    Regular Expressions by Jeffrey Friedl, O'Reilly, 1997). For a complete
-    reference online--not a particularly good place to learn about them for
-    the first time--see http://www.perldoc.com/perl5.6/pod/perlre.html.
+  Briefly, however, the above patterns test whether a filename is of the form
+  'file.ext.comp', where 'comp' (if present) is Z or gz, and 'ext' is one of
+  several possible filename extensions that might indicate a specific storage
+  format. file.
 
-    Briefly, however, the above patterns test whether a filename is of the
-    form file.ext.comp, where comp (if present) is Z or gz, and ext is one of
-    several possible filename extensions that might indicate a specific
-    storage API. If a file has no extension, it is assumed to be a JGOFS
-    file.
+  If these default rules will not work for your installation, you can rewrite
+  them. For example, if all your files are HDF files, you could replace the
+  default configuration file with one that looks like this:
 
-    If these default rules will not work for your installation, you can
-    rewrite them. For example, if all your files are HDF files, you could
-    replace the default configuration file with one that looks like this:
+    handler .* dap_hdf_handler
 
-    .* hdf
+  The .* pattern matches all possible names, and indicates that whatever the
+  name of the file sought, the HDF handler is the one to use.
 
-    The .* pattern matches all possible names, and indicates that whatever
-    the name of the file sought, the HDF service programs are the ones to
-    use.
+  If you have a situation where all the files in a particular directory
+  (whatever its extension) are to be handled by the DSP service programs,
+  and all other files served are JGOFS files, try this:
 
-    If you have a situation where all the files in a particular directory
-    (whatever its extension) are to be handled by the DSP service programs,
-    and all other files served are JGOFS files, try this:
+    handler \/dsp_data\/.* dap_dsp_handler
+    handler .* dap_jg_handler
 
-    \/dsp_data\/.* dsp
-    .* jg
-
-    The rules are applied in order, and the first rule with a successful
-    match returns the handler that will be applied. The above set of rules
-    implies that everything in the dsp_data directory will be handled with
-    the DSP service programs, and everything else will be handled with the
-    JGOFS programs.
-
-*****************
+  The rules are applied in order, and the first rule with a successful match
+  returns the handler that will be applied. The above set of rules implies
+  that everything in the dsp_data directory will be handled with the DSP
+  service programs, and everything else will be handled with the JGOFS
+  programs.
 
 Serving Compressed Files 
 
@@ -295,17 +284,7 @@ Serving Compressed Files
   correct pathname. To figure out where gzip is on you computer, type 'which
   gzip' in a shell.
 
-More Sophisticated Installation (But Just A Tiny Bit)
-
-  Usage information
-
-  The `dap_usage' program, placed in $prefix/bin, provides a way for you to
-  supply additional information about your dataset that others can browse -
-  it generates HTML output. See the User Guide for more information about the
-  usage service, including how to add custom information to the returned
-  usage message.
-
-  Logging accesses
+Logging accesses
 
   Since an HTTP daemon logs all accesses, every access to data through your
   OPeNDAP server is logged. However, to collect information about
@@ -318,11 +297,12 @@ More Sophisticated Installation (But Just A Tiny Bit)
   information can be accessed by your computer and some computers at Unidata,
   URI and OPeNDAP, using tools like a browser or wget.
 
-  You can configure the remote stat access module by hand fairly
-  easily. In the distributions etc directory, edit the file called
-  DODS_STATISTICS. This file holds the pathname to you server's access and
-  error logs as well as its name. Once you have edited DODS_STATISTICS, copy
-  that file to the directory that contains the OPeNDAP server.
+  You can configure the remote stat access module by hand fairly easily. In
+  the distributions etc directory, edit the file called
+  EXAMPLE_OPENDAP_STATISTICS. This file holds the pathname to you server's
+  access and error logs as well as its name. Once you have edited the file,
+  save is as 'OPENDAP_STATISTICS' and copy that file to the directory that
+  contains the OPeNDAP server (i.e., nph-dods).
 
   If you are using virtual hosts with the web deamon that runs the OPeNDAP
   server, the remote stats access module can only be configured to provide
@@ -330,10 +310,8 @@ More Sophisticated Installation (But Just A Tiny Bit)
 
 Server Installation Tips
 
-  The following tips are mostly specific to the Apache server.  The NCSA web
-  server shares some of the same configuration options, and the advice is
-  often transferable.  For other web servers, this advice may be only of
-  general, or possibly little, help.
+  The following tips are mostly specific to the Apache server. For other web
+  servers, this advice may be only of general, or possibly little, help.
 
 Tip 1: Which directory is the cgi-bin directory?
 
@@ -341,12 +319,12 @@ Tip 1: Which directory is the cgi-bin directory?
 
     ScriptAlias /cgi-bin/ /var/www/cgi-bin/
 
-  For both the NCSA and Apache servers, the option ScriptAlias defines where
-  CGI (Common Interface Gateway) programs may reside. In this case they are
-  in the directory /var/www/cgi-bin/. With this script alias in effect, URLs
-  with `cgi-bin' in their path will automatically refer to programs in the
-  specified directory. You might want to put the OPeNDAP server in its own
-  CGI directory name opendap or dap, although that's not a requirement.
+  The option ScriptAlias defines where CGI programs may reside. In this case
+  they are in the directory /var/www/cgi-bin/. With this script alias in
+  effect, URLs with `cgi-bin' in their path will automatically refer to
+  programs in the specified directory. You might want to put the OPeNDAP
+  server in its own CGI directory named 'opendap' or 'dap', although that's
+  not a requirement.
 
 Tip 2: Which directory is used by your WWW server as the document root?
 
@@ -368,16 +346,17 @@ Tip 3: How can I avoid copying all my data into the document root?  Can't I
   link to it?
 
   This tip is old and, while still true, the 3.5 server provides a better
-  solution: Use the data_root configuration parameter in dap-server.rc. See
-  the section on the Configuration File for more information... 
+  solution for some sites: Use the data_root configuration parameter in
+  dap-server.rc. See the section on the Configuration File for more
+  information...
 
-  By default many servers disable soft (symbolic) links that point out of
-  the directories that fall under the web server's document root.  This is
-  not done for inconvenience, it is a security feature (really).  To disable
-  this feature, and allow links to other directories, you'll have to edit
-  the httpd.conf file, and add the `FollowSymLinks' option to the directory
-  trees which will contain the links to data. This sounds more complex than
-  it is.
+  By default many servers disable soft (symbolic) links that point out of the
+  directories that fall under the web server's document root. This is not
+  done for inconvenience, it is a security feature (really). To disable this
+  feature, and allow links to other directories, you'll have to edit the
+  httpd.conf file, and add the `FollowSymLinks' option to the directory trees
+  which will contain the links to data. This might sound more complex than it
+  is.
 
   For example, suppose that you have a large dataset stored in a directory
   named `/archive1'. Under that directory are many files and taken together

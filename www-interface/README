@@ -1,6 +1,8 @@
 
 $Id$
 
+Updated for version 3.5.1 of the dap server
+
 The www_int (WWW Interface) program is a simple HTML form interface for the
 OPeNDAP server.
 

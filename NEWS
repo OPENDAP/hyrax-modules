@@ -1,29 +1,37 @@
 
 Updated for version 3.5.1
 
+The version 3.5 server has a very different installation layout than previous
+versions. Now only the nph-dods CGI script and its configuration file are
+installed in a CGI bin directory. The other files are installed in
+/usr/local/share/dap-server and /usr/local/bin. See INSTALL for information
+about changing the prefix '/usr/local'.
+
+Also, it's no longer a requirement that data be stored under the WWW daemon's
+DocumentRoot. See the section about the configuration parameter 'data_root'
+in the README file.
+
 Bug fixes
 
-*** Clarify the security stuff about what requires localhost pass-through and
-directory support and data_root ... ***
-
-The compiled server binaries are no longer installed in $prefix/sbin but in
+* The compiled server binaries are no longer installed in $prefix/sbin but in
 $prefix/bin.
 
-The ASCII and HTML responses are now built using local calls to the file
+* The ASCII and HTML responses are now built using local calls to the file
 system instead of network calls to the server. This means that those
 responses are more efficient and that secure servers are easier to configure.
 The additional step of opening access to he server for the localhost to
 enable these two reponses is no longer needed. Unfortunately, the directory
 response still makes a call to the server, so support for that feature will
-still require the additional configuration. See the FAQ for information about
-setting up a secure server (http://www.opendap.org/faq/server_security.html).
+still require the additional configuration. See README-security and the FAQ
+for information about setting up a secure server
+(http://www.opendap.org/faq/server_security.html).
 
 All executables are now prefixed with 'dap_' to avoid situations where other
 packages use the same names (as was the case with 'usage').
 
 Updated for version 3.5.0
 
-Server 3.5 is an update for the current CGI-based server whose dispatch code
+* Server 3.5 is an update for the current CGI-based server whose dispatch code
 is written using Perl. The code is still Perl :-( but will have several
 enhancements suggested/implemented by various people over the past few
 months.
