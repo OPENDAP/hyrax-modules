@@ -6,6 +6,7 @@
 # $Id$
 
 AUTOMAKE_OPTIONS = foreign check-news
+ACLOCAL_AMFLAGS = -I conf
 
 SUBDIRS = . asciival www-interface
 
@@ -38,4 +39,4 @@ nph-dods: nph-dods.in configure
 		-e "s%[@]PACKAGE_VERSION[@]%${PACKAGE_VERSION}%" $< > nph-dods
 	chmod +x nph-dods
 
-DISTCLEANFILES = nph-dods
+DISTCLEANFILES = nph-dods dap-server.rc
