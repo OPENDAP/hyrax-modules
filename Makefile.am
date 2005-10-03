@@ -28,8 +28,8 @@ nodist_cgi_DATA = dap-server.rc
 # don't need to add nph-dods.in or dap-server.rc.in here because they are
 # listed in the configure.ac file; automake figures they should be
 # distributed.
-EXTRA_DIST = EXAMPLE_DODS_STATISTICS README-security COPYING COPYRIGHT_URI \
-  README.ascii README.www_int nph-dods.in dap-server.spec
+EXTRA_DIST = EXAMPLE_OPENDAP_STATISTICS README-security COPYING COPYRIGHT_URI \
+  nph-dods.in dap-server.spec
 
 nph-dods: nph-dods.in configure
 	sed -e "s%[@]PERL[@]%${PERL}%" \
@@ -40,3 +40,13 @@ nph-dods: nph-dods.in configure
 	chmod +x nph-dods
 
 DISTCLEANFILES = nph-dods dap-server.rc
+
+###########################################################################
+
+# Build linux RPMs
+
+srpm:
+	rpmbuild -ts dap-server-@PACKAGE_VERSION@.tar.gz
+
+rpm:
+	rpmbuild -tb dap-server-@PACKAGE_VERSION@.tar.gz

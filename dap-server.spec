@@ -38,8 +38,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/dap_www_int
 %{_datadir}/dap-server/
 %{_datadir}/dap-server-cgi/
-%doc COPYING COPYRIGHT_URI EXAMPLE_DODS_STATISTICS  NEWS
-%doc README README.ascii README-security README.www_int
+%doc COPYING COPYRIGHT_URI EXAMPLE_OPENDAP_STATISTICS  NEWS
+%doc README README-security
 
 %changelog
 * Fri Sep  2 2005 Patrice Dumas <dumas@centre-cired.fr> 3.5.1-1
