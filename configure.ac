@@ -19,29 +19,6 @@ dnl to default values otherwise.
 AC_CANONICAL_HOST
 AC_SUBST(host)
 
-dnl # Until further notice OS X port doesn't get -gstabs because of an
-dnl # apparent bug in their gcc 3.3 clone (a beta).  If you see this after
-dnl # 1/1/2005, you can probably remove it.
-dnl case "${host_cpu}:${host_vendor}:${host_os}" in
-dnl      powerpc:apple:netbsd* | alphaev56:dec:osf5.* | powerpc:apple:darwin* )
-dnl        CFLAGS=${CFLAGS-"-O2 $CFLAGS"}
-dnl        CXXFLAGS=${CXXFLAGS-"-O2 $CXXFLAGS"}
-dnl        break;;
-dnl     *:*:*)
-dnl        CFLAGS=${CFLAGS-"-gstabs -O2 $CFLAGS"}
-dnl        CXXFLAGS=${CXXFLAGS-"-gstabs -O2 $CXXFLAGS"}
-dnl        break;;
-dnl esac    
-
-dnl dnl Default to g++
-
-dnl CXX=${CXX-g++}
-dnl AC_MSG_RESULT(Setting CXX to $CXX)
-dnl AC_SUBST(CXX)
-
-dnl CFLAGS=${CFLAGS-"-gstabs -O2 $CFLAGS"}
-dnl CXXFLAGS=${CXXFLAGS-"-gstabs -O2 $CXXFLAGS"}
-
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
@@ -62,9 +39,8 @@ else
 fi
 
 if test "z$dods_HTML_Filter" = "zno"; then
-   AC_MSG_WARN([HTML::Filter not found.])
+   AC_MSG_WARN([HTML::Filter not found. See INSTALL])
 fi  
-
 
 # Checks for header files.
 AC_HEADER_STDC
@@ -81,7 +57,7 @@ AC_ARG_ENABLE([modulesdir],
         dap_modulesdir="$withval"
    ],
    [
-       dap_modulesdir=${datadir}/dap-server
+        dap_modulesdir=${datadir}/dap-server
    ]
 )
 
@@ -93,7 +69,7 @@ AC_ARG_ENABLE([cgidir],
         dap_cgidir="$withval"
    ],
    [
-       dap_cgidir=${datadir}/dap-server-cgi
+        dap_cgidir=${datadir}/dap-server-cgi
    ]
 )
 
@@ -132,13 +108,13 @@ AH_BOTTOM([/* Shorthand for gcc's unused attribute feature */
 
 #endif /* _config_h */])
 
-AC_CONFIG_FILES([dap-server.rc 
+AC_CONFIG_FILES([dap-server.rc
 		 Makefile
                  asciival/Makefile
 		 asciival/unit-tests/Makefile
                  www-interface/Makefile])
 
-dnl AC_CONFIG_FILES([nph-dods], [chmod +x nph-dods])
+AC_CONFIG_FILES([nph-dods], [chmod +x nph-dods])
 AC_CONFIG_FILES([www-interface/js2h.pl], [chmod +x www-interface/js2h.pl])
 
 AC_OUTPUT
