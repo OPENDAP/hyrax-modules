@@ -45,8 +45,8 @@ DISTCLEANFILES = nph-dods dap-server.rc
 
 # Build linux RPMs
 
-srpm:
-	rpmbuild -ts dap-server-@PACKAGE_VERSION@.tar.gz
+srpm: dist
+	rpmbuild -ts @PACKAGE@-@PACKAGE_VERSION@.tar.gz
 
-rpm:
-	rpmbuild -tb dap-server-@PACKAGE_VERSION@.tar.gz
+rpm: dist
+	rpmbuild -tb @PACKAGE@-@PACKAGE_VERSION@.tar.gz
