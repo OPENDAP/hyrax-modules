@@ -165,14 +165,14 @@ read_from_file(DataDDS &dds, const string &handler,
 	       const string &options, const string &file,
 	       const string &expr)
 {
-    string command = handler + " -o DataDDS " + options + "-e " + expr
+    string command = handler + " -o DataDDS " + options + " -e " + expr
 	+ " \"" + file + "\"";
 
     DBG(cerr << "DDS Command: " << command << endl);
 
     FILE *in = popen(command.c_str(), "r");
     if (in && remove_mime_header(in)) {
-	XDR *xdr_stream;
+	XDR *xdr_stream = 0;
 
 	try {
 	    dds.parse(in);
@@ -185,7 +185,8 @@ read_from_file(DataDDS &dds, const string &handler,
 	    }
 	}
 	catch(Error &e) {
-	    delete_xdrstdio(xdr_stream);
+            if (xdr_stream)
+	       delete_xdrstdio(xdr_stream);
 	    throw e;
 	}
 
