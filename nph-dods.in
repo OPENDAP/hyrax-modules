@@ -51,9 +51,14 @@
 # adding, for example, /usr/local/bin here might break other operations
 # (places where we use exec in DODS_Dispatch or DODS_Cache).
 
+# A note about @prefix@: This works because autoconf substitutes /usr/local
+# or some other literal string here. However, autoconf variables like
+# @bindir@ don't work because they include make-style variables like
+# ${exec_prefix}/bin and the ${var} notation tells perl to access a hash.
+
 my $prefix = '@prefix@';
 
-$ENV{PATH} = '/bin:/usr/bin:@bindir@';
+$ENV{PATH} = "/bin:/usr/bin:$prefix/bin";
 $ENV{IFS} = "" if $ENV{IFS};    # For the truly paranoid...
 
 # Needed for Perl 5.6.0 on Linux 12/11/2000 jhrg
@@ -66,7 +71,8 @@ $ENV{BASH_ENV} = '';
 $ENV{"JGOFS_OBJECT"} = "`pwd`";
 $ENV{"JGOFS_METHOD"} = "`pwd`";
 
-use lib ("@modulesdir@");
+
+use lib ("/usr/local/share/dap-server");
 use DODS_Dispatch;
 use DODS_Cache;
 
