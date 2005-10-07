@@ -61,8 +61,19 @@ name_map::add(char *raw_equiv)
 static string
 munge(string name)
 {
+#if 0
+    // The old version of esc2underscore did two things, first it took %hh
+    // escape codes and turned them into _hh strings and then it took a
+    // regex and escaped characters that matched that regex using _hh. In
+    // libdap 3.5.3 I changed the function to no longer use Regexs and to
+    // only replace the % with a _. I think we're going to be OK with the use
+    // I have below, but just in case, the old calls (for libdap 3.5.2) are
+    // preserved here. jhrg 10/6/05.
     name = esc2underscore(name);
     return esc2underscore(name, "[^A-z0-9_]");
+#endif
+
+    return esc2underscore(name);
 }
 
 string
