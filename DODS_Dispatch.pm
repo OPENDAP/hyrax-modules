@@ -160,7 +160,7 @@ sub initialize {
     my $self = shift;
     my $data;    # temp used to hold data from %ENV
 
-    open( DBG_LOG, ">> ./dbg_log" ) if $debug;
+    open( DBG_LOG, ">> /usr/local/share/dap-server/dbg_log" ) if $debug;
     
     print( DBG_LOG "------------------------------------------------\n" ) if $debug;
     print( DBG_LOG "DODS Server debug log: ", scalar localtime, "\n" ) if $debug;
