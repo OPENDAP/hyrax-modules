@@ -844,9 +844,12 @@ sub url_text {
     my $url = "http://"
 	. $self->server_name()
 	. $self->port()
-	. $self->request_uri() . "?"
-	. $self->query();
-    
+	. $self->request_uri();
+	
+	if ($self->query()) {
+	    $url .= "?" . $self->query();
+	}
+	
     return $url
 }
 
