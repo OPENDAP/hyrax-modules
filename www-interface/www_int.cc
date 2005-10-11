@@ -267,6 +267,7 @@ main(int argc, char * argv[])
 	cout << "<tr><td><td><hr>\n\n";
 	wo.write_variable_entries(*wo.get_das(), dds);
 	cout << "</table></form>\n\n"
+#if 0
 	     << "<hr>\n"
 	     << "<font size=-1>Tested on: "
 	     << "FireFox 1.0.4; "
@@ -276,6 +277,7 @@ main(int argc, char * argv[])
 	     << "Mozilla 1.2.1, 1.4, 1.6; "
 	     << "and Netscape 4.61, 7.1."
 	     << "</font>\n"
+#endif
 	     << "<hr>\n\n";
 	if (admin_name != "") {
 	    cout << "<address>Send questions or comments to: <a href=\"mailto:"
