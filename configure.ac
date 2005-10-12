@@ -113,8 +113,8 @@ AC_CONFIG_FILES([dap-server.rc
                  asciival/Makefile
 		 asciival/unit-tests/Makefile
                  www-interface/Makefile])
-
-AC_CONFIG_FILES([nph-dods], [chmod +x nph-dods])
+                 
+AC_CONFIG_FILES([nph-dods], [chmod +x nph-dods; touch stamp-nph-dods])
 AC_CONFIG_FILES([www-interface/js2h.pl], [chmod +x www-interface/js2h.pl])
 
 AC_OUTPUT

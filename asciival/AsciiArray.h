@@ -36,7 +36,7 @@
 #ifndef _asciiarray_h
 #define _asciiarray_h 1
 
-#include "Array.h"
+#include <Array.h>
 #include "AsciiOutput.h"
 
 class AsciiArray: public Array, public AsciiOutput {

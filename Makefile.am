@@ -31,15 +31,14 @@ nodist_cgi_DATA = dap-server.rc
 EXTRA_DIST = EXAMPLE_OPENDAP_STATISTICS README-security COPYING COPYRIGHT_URI \
   nph-dods.in dap-server.spec
 
-nph-dods: nph-dods.in configure
+stamp-nph-dods: nph-dods.in configure
 	sed -e "s%[@]PERL[@]%${PERL}%" \
 		-e "s%[@]prefix[@]%${prefix}%" \
-		-e "s%[@]bindir[@]%${bindir}%" \
-		-e "s%[@]modulesdir[@]%${modulesdir}%" \
 		-e "s%[@]PACKAGE_VERSION[@]%${PACKAGE_VERSION}%" $< > nph-dods
 	chmod +x nph-dods
+	touch stamp-nph-dods
 
-DISTCLEANFILES = nph-dods dap-server.rc
+DISTCLEANFILES = nph-dods dap-server.rc stamp-nph-dods
 
 ###########################################################################
 
