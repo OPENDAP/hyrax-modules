@@ -73,6 +73,9 @@ Introduction
   <prefix>/share/dap-server-cgi. These last two files are to be installed in
   one of the HTTP daemon's CGI binaries directory (you can use the default
   cgi-bin or set up a new one).
+  
+  We've added a sample configuration file which can be used with the
+  Apache 2.x web server. Look at 'opendap_apache.conf.'
 
 -----------------------------------------------------------------------------
 

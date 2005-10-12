@@ -29,7 +29,7 @@ nodist_cgi_DATA = dap-server.rc
 # listed in the configure.ac file; automake figures they should be
 # distributed.
 EXTRA_DIST = EXAMPLE_OPENDAP_STATISTICS COPYING COPYRIGHT_URI \
-  nph-dods.in dap-server.spec
+  nph-dods.in dap-server.spec opendap_apache.conf
 
 stamp-nph-dods: nph-dods.in configure
 	sed -e "s%[@]PERL[@]%${PERL}%" \

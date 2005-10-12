@@ -38,7 +38,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/dap_www_int
 %{_datadir}/dap-server/
 %{_datadir}/dap-server-cgi/
-%doc COPYING COPYRIGHT_URI EXAMPLE_OPENDAP_STATISTICS  NEWS README
+%doc COPYING COPYRIGHT_URI EXAMPLE_OPENDAP_STATISTICS NEWS README
+%doc opendap_apache.conf
 
 %changelog
 * Fri Sep  2 2005 Patrice Dumas <dumas@centre-cired.fr> 3.5.1-1
