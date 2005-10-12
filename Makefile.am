@@ -28,7 +28,7 @@ nodist_cgi_DATA = dap-server.rc
 # don't need to add nph-dods.in or dap-server.rc.in here because they are
 # listed in the configure.ac file; automake figures they should be
 # distributed.
-EXTRA_DIST = EXAMPLE_OPENDAP_STATISTICS README-security COPYING COPYRIGHT_URI \
+EXTRA_DIST = EXAMPLE_OPENDAP_STATISTICS COPYING COPYRIGHT_URI \
   nph-dods.in dap-server.spec
 
 stamp-nph-dods: nph-dods.in configure
