@@ -288,7 +288,7 @@ is not in your client, please contact the ", 0
     # Use PATH_TRANSLATED for the directory test. 7/13/2001 jhrg
     elsif ( is_directory( $self->data_path() ) ) {
         $ext = "/";
-    } elsif ( $ext =~ /^.*\.(das|dds|dods|ascii|asc|version|ver|info|html)$/ ) {
+    } elsif ( $ext =~ /^.*\.(das|dds|ddx|dods|ascii|asc|version|ver|info|html)$/ ) {
         $ext = $1;
     } else {
         print( DBG_LOG "DODS_Dispatch.pm: ext: ", $ext, "\n" );

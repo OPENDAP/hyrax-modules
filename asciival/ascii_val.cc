@@ -165,7 +165,7 @@ read_from_file(DataDDS &dds, const string &handler,
 	       const string &options, const string &file,
 	       const string &expr)
 {
-    string command = handler + " -o DataDDS " + options + " -e " + expr
+    string command = handler + " -o dods " + options + " -e " + expr
 	+ " \"" + file + "\"";
 
     DBG(cerr << "DDS Command: " << command << endl);
@@ -300,7 +300,8 @@ main(int argc, char * argv[])
 	}
 
 	aof = new AsciiOutputFactory;
-	DataDDS dds(aof, "Ascii Data", "DAP/2.0");
+        // The version should be read from the handler! jhrg 10/18/05
+	DataDDS dds(aof, "Ascii Data", "DAP2/3.5");
 
 	if (handler) {
 	    if (verbose)
