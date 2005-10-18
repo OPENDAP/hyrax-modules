@@ -40,7 +40,8 @@ static char rcsid[] not_used = {"$Id$"};
 #include <GNURegex.h>
 
 #include <escaping.h>
-#include <name_map.h>
+
+#include "name_map.h"
 
 name_map::name_map(char *raw_equiv) 
 {

@@ -11,6 +11,12 @@ Also, it's no longer a requirement that data be stored under the WWW daemon's
 DocumentRoot. See the section about the configuration parameter 'data_root'
 in the README file.
 
+This version of the server will pass off a request for the DDX response to 
+the format handlers. Currently only the hdf4 and NetCDF handlers can return
+the response, the others return an error. This feature and the DDX objects
+themselves are prototype versions. We may change the design before releasing 
+a final version.
+
 Bug fixes
 
 * The compiled server binaries are no longer installed in $prefix/sbin but in
