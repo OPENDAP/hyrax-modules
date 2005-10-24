@@ -16,8 +16,11 @@ dap_usage_SOURCES = usage.cc
 
 modulesdir = $(dap_modulesdir)
 
-dist_modules_DATA = DODS_Dispatch.pm DODS_Cache.pm dods_logging.pm \
-       FilterDirHTML.pm read_config.pm
+HTML_FILTER = HTML/Filter.pm HTML/LinkExtor.pm HTML/TokeParser.pm \
+	HTML/Entities.pm HTML/HeadParser.pm HTML/Parser.pm
+
+nobase_dist_modules_DATA = DODS_Dispatch.pm DODS_Cache.pm dods_logging.pm \
+       FilterDirHTML.pm read_config.pm $(HTML_FILTER)
 
 cgidir = $(dap_cgidir)
 
@@ -29,7 +32,7 @@ nodist_cgi_DATA = dap-server.rc
 # listed in the configure.ac file; automake figures they should be
 # distributed.
 EXTRA_DIST = EXAMPLE_OPENDAP_STATISTICS COPYING COPYRIGHT_URI \
-  nph-dods.in dap-server.spec opendap_apache.conf
+  nph-dods.in dap-server.spec opendap_apache.conf HTML
 
 stamp-nph-dods: nph-dods.in configure
 	sed -e "s%[@]PERL[@]%${PERL}%" \

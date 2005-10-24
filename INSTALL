@@ -46,19 +46,6 @@ REQUIREMENTS
   o The Server Base Software uses libdap 3.5.2 or greater. You must install
     that software. See http://www.opendap.org/download/.
 
-  o You will need the perl package HTML::Parser installed. Use CPAN or rpm to
-    install the package. Using CPAN:
-	    
-	perl -MCPAN -e shell
-	install HTML::Parser
-
-    In some cases a few of the tests for the module may fail and CPAN will
-    only install the software if you use the 'force' option:
-
-	force install HTML::Parser
-
-    To install using RPM, install the package perl-HTML-Parser.
-
   o You should have gcc/g++ 2.95.x or greater. You'll also need to get the
     stdc++ library that matches the compiler (whatever version). In most
     cases it's part of the compiler. NB: gcc 2.8.x and earlier *won't* build
@@ -71,6 +58,24 @@ REQUIREMENTS
     (autoconf 2.59 and its associated programs) . Use autoreconf to rebuild
     configure; if you call autoconf directly the aclocal.m4 file won't get
     built from acinclude.m4 correctly.
+
+  o This software uses the HTML::Parser package but requires an older version.
+    For this reason, until we bring the data server into sync with the 
+    current version of the package, we're including a local copy. If you want
+    to experiment with the latest version of HTML:Parser, here's how to
+    get it:
+  
+    Using CPAN:
+	    
+	perl -MCPAN -e shell
+	install HTML::Parser
+
+    In some cases a few of the tests for the module may fail and CPAN will
+    only install the software if you use the 'force' option:
+
+	force install HTML::Parser
+
+    To install using RPM, install the package perl-HTML-Parser.
 
 NOTES
 

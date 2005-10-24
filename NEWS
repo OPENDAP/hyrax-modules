@@ -1,6 +1,10 @@
 
 Updated for version 3.5.1
 
+Based on some testing I'm switching back to including HTML:Parser in the 
+distribution since newer versions don't work with our code. This should be
+fixed soon enough (3.6. hopefully).
+
 The version 3.5 server has a very different installation layout than previous
 versions. Now only the nph-dods CGI script and its configuration file are
 installed in a CGI bin directory. The other files are installed in
