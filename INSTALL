@@ -43,7 +43,7 @@ BUILDING THE SOFTWARE
 
 REQUIREMENTS
 
-  o The Server Base Software uses libdap 3.5.2 or greater. You must install
+  o The Server Base Software uses libdap 3.5.3 or greater. You must install
     that software. See http://www.opendap.org/download/.
 
   o You should have gcc/g++ 2.95.x or greater. You'll also need to get the
