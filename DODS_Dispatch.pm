@@ -57,7 +57,7 @@ use read_config;
 use dods_logging;
 use DODS_Cache;
 
-my $debug = 2;
+my $debug = 0;
 my $test  = 0;
 
 # Error message for bad extensions.
