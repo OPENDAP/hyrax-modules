@@ -46,7 +46,7 @@ my $test  = 0;
 my $debug = 0;
 
 # This regex is used to recognize files that are compressed.
-my $compressed_regex = "(\\.gz|\\.Z)";
+my $compressed_regex = "(\\.gz|\\.Z|\\.bz2)";
 
 use strict;
 
@@ -157,7 +157,40 @@ sub decompress_and_cache {
         # $cache_entity is not run through the shell. However, it sounds like
         # (see ``Programming PERL'') that $pathanme is still exposed to the
         # shell since open uses /bin/sh when a pipe symbol is present.
-        my $uncomp = "/bin/gzip -c -d " . $pathname . " |";
+        
+        # Choose which filter to use for decompression. Don't put these in
+        # the rc file since that file is stored in a CGI bin directory. If 
+        # gzip and/or bzip2 are not in the standard places, edit this file.
+        # I'm cautious about running just any copy of gzip/bzip2 for the same
+        # reason those programs are not in the rc file.
+        my $comp;
+        if ($pathname =~ m@.*//.bz2@) {
+        		if (-x "/bin/bzip2") {
+        			$comp = "/bin/bzip2";
+        		} 
+        		elsif (-x "/usr/bin/bzip2") {
+        			$comp = "/usr/bin/bzip2";
+        		}
+        		else {
+        			return ( "",
+        				    "Could not locate the bzip2 decompression utility"
+        				    );
+        		}
+        }
+        else {
+        		if (-x "/bin/gzip") {
+        			$comp = "/bin/gzip";
+        		} 
+        		elsif (-x "/usr/bin/gzip") {
+        			$comp = "/usr/bin/gzip";
+        		}
+        		else {
+        			return ( "",
+        				    "Could not locate the gzip decompression utility"
+        				    );
+        		}
+        }
+        my $uncomp = $comp . " -c -d " . $pathname . " |";
         my $buf;
         open GZIP, $uncomp
           or return ( "",
