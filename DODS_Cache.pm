@@ -144,14 +144,15 @@ sub decompress_and_cache {
 
     # Strip shell meta-characters from the $pathname. 7/10/2001 jhrg
     print STDERR "pathname: $pathname\n" if $debug;
-    $pathname !~ m@.*[\s%&()*?<>]+.*@
+    $pathname !~ m@.*[\s%&()*?<>;]+.*@
       or return ( "", "Found shell meta characters in pathname" );
 
     my $cache_entity = cache_name( $pathname, $cache_dir );
 
     # Only uncompress and cache if the data file actually exits *and* has not
-    # already been decompressed and cached.
-    if ( ( !-e $cache_entity ) && ( -e $pathname ) ) {
+    # already been decompressed and cached. Add a test for zero-length cache 
+    # entities. That's the same as the entity not existing. jhrg 11/25/05
+    if ( ( !-e $cache_entity || -s $cache_entity == 0 ) && ( -e $pathname ) ) {
 
         # This code uses two opens and is a safer than using system since
         # $cache_entity is not run through the shell. However, it sounds like
@@ -164,7 +165,7 @@ sub decompress_and_cache {
         # I'm cautious about running just any copy of gzip/bzip2 for the same
         # reason those programs are not in the rc file.
         my $comp;
-        if ($pathname =~ m@.*//.bz2@) {
+        if ($pathname =~ m@.*\.bz2@) {
         		if (-x "/bin/bzip2") {
         			$comp = "/bin/bzip2";
         		} 
@@ -172,9 +173,7 @@ sub decompress_and_cache {
         			$comp = "/usr/bin/bzip2";
         		}
         		else {
-        			return ( "",
-        				    "Could not locate the bzip2 decompression utility"
-        				    );
+        			return ("", "Could not locate the bzip2 decompression utility");
         		}
         }
         else {
@@ -185,9 +184,7 @@ sub decompress_and_cache {
         			$comp = "/usr/bin/gzip";
         		}
         		else {
-        			return ( "",
-        				    "Could not locate the gzip decompression utility"
-        				    );
+        			return ("", "Could not locate the gzip decompression utility");
         		}
         }
         my $uncomp = $comp . " -c -d " . $pathname . " |";
@@ -202,6 +199,7 @@ sub decompress_and_cache {
         while ( read GZIP, $buf, 16384 ) {
             print DEST $buf;
         }
+
         close GZIP;
         close DEST;
     }
@@ -258,7 +256,7 @@ sub transfer_remote_file {
     my $url          = shift;
     my $cache_entity = shift;
 
-    my $curl = "./curl";
+    my $curl = "curl"; # bug: Should use value from dap-server.rc. jhrg 11/25/05
 
     my $transfer =
       $curl . " --silent --user anonymous:root\@dods.org " . $url . " |";
@@ -308,6 +306,7 @@ sub dodster_name {
 ##########################################################################
 
 if ($test) {
+	if (0) {
     ( 1 == is_compressed("myfile.Z") )  || die;
     ( 1 == is_compressed("my.file.Z") ) || die;
     ( 1 == is_compressed("test.gz") )   || die;
@@ -315,6 +314,9 @@ if ($test) {
     ( 0 == is_compressed("my.file") )   || die;
     ( 0 == is_compressed("test") )      || die;
     ( 0 == is_compressed("gz") )        || die;
+    ( 0 == is_compressed("bz2") )        || die;
+    ( 1 == is_compressed("myfile.bz2") ) || die;
+    ( 1 == is_compressed("myfile.hdf.bz2") ) || die;
     print "\t is_compressed passed all tests\n";
 
     ( 1 == is_dodster("/http://dcz.dods.org/nph-dods/data/nc/fnoc1.nc.das") )
@@ -340,6 +342,7 @@ if ($test) {
     ( "/dods_cache#myfile" eq cache_name( "myfile",    "" ) ) || die;
     ( "/dods_cache#myfile" eq cache_name( "myfile.Z",  "" ) ) || die;
     ( "/dods_cache#myfile" eq cache_name( "myfile.gz", "" ) ) || die;
+    ( "/dods_cache#myfile" eq cache_name( "myfile.bz2", "" ) ) || die;
     print "cache_name ./myfile.gz", cache_name( "./myfile.gz", "" ), "\n"
       if $debug;
     ( "/dods_cache#this#is#myfile" eq cache_name( "/this/is/myfile.Z", "" ) )
@@ -350,8 +353,10 @@ if ($test) {
       || die;
     ( "/usr/tmp/dods_cache#myfile" eq cache_name( "myfile.gz", "/usr/tmp" ) )
       || die;
+    ( "/usr/tmp/dods_cache#myfile" eq cache_name( "myfile.gz", "/usr/tmp" ) )
+      || die;
     ( "/usr/tmp/dods_cache#this#is#myfile" eq
-       cache_name( "/this/is/myfile.Z", "/usr/tmp" ) )
+       cache_name( "/this/is/myfile.bz2", "/usr/tmp" ) )
       || die;
     ( "/usr/tmp/dods_cache#this#is#myfile.HDF" eq
        cache_name( "/this/is/myfile.HDF.Z", "/usr/tmp" ) )
@@ -361,26 +366,45 @@ if ($test) {
       || die;
     print "\t cache_name passed all tests\n";
 
-    ( "/dods_cache#http:##stuff" == dodster_name( "/http://stuff", "" ) )
+    ( "/dods_cache#http:##stuff" eq dodster_name( "/http://stuff", "" ) )
       || die;
-    ( "/dods_cache#ftp:##dcz.dods.org#nph-dods#data#nc#fnoc1.nc" ==
+    ( "/dods_cache#ftp:##dcz.dods.org#nph-dods#data#nc#fnoc1.nc" eq
        dodster_name( "/ftp://dcz.dods.org/nph-dods/data/nc/fnoc1.nc", "" ) )
       || die;
-    ( "/dods_cache#http:##dcz.dods.org#nph-dods#data#nc#fnoc1.nc" ==
+    ( "/dods_cache#http:##dcz.dods.org#nph-dods#data#nc#fnoc1.nc" eq
        dodster_name( "/http://dcz.dods.org/nph-dods/data/nc/fnoc1.nc", "" ) )
       || die;
     print "\t dodster_name passed all tests\n";
+	}
+    ( $a, $b ) = decompress_and_cache( "test_file.gz", "/tmp" );
+    print "decompressed test_file: " . $a . "\n" if $debug;
+    print "error message: " . $b . "\n" if $debug;
+    
+    ( "/tmp/dods_cache#test_file" eq $a && "" eq $b ) || die;
+    ( -e "/tmp/dods_cache#test_file" )       || die;
+    ( 55 == -s "/tmp/dods_cache#test_file" ) || die;
 
-    ( $a, $b ) = decompress_and_cache( "test_file.gz", "/usr/tmp" );
-    ( "/usr/tmp/dods_cache#test_file" eq $a && "" eq $b ) || die;
-    ( -e "/usr/tmp/dods_cache#test_file" )       || die;
-    ( 55 == -s "/usr/tmp/dods_cache#test_file" ) || die;
+    ( $a, $b ) = decompress_and_cache( "test/test_file.gz", "/tmp" );
+    print "decompressed test_file: " . $a . "\n" if $debug;
+    print "error message: " . $b . "\n" if $debug;
+    
+    ( "/tmp/dods_cache#test#test_file" eq $a && "" eq $b ) || die;
+    ( -e "/tmp/dods_cache#test#test_file" )  || die;
+    ( 55 == -s "/tmp/dods_cache#test_file" ) || die;
 
-    ( $a, $b ) = decompress_and_cache( "test/test_file.gz", "/usr/tmp" );
-    ( "/usr/tmp/dods_cache#test#test_file" eq $a && "" eq $b ) || die;
-    ( -e "/usr/tmp/dods_cache#test#test_file" )  || die;
-    ( 55 == -s "/usr/tmp/dods_cache#test_file" ) || die;
+    ( $a, $b ) = decompress_and_cache( "test_file2.bz2", "/tmp" );
+    print "decompressed test_file: " . $a . "\n" if $debug;
+    print "error message: " . $b . "\n" if $debug;
+    
+    ( "/tmp/dods_cache#test_file2" eq $a && "" eq $b ) || die;
+    ( -e "/tmp/dods_cache#test_file2" )       || die;
+    ( 55 == -s "/tmp/dods_cache#test_file2" ) || die;
 
+    ( $a, $b ) = decompress_and_cache( "test/test_file2.bz2", "/tmp" );
+    ( "/tmp/dods_cache#test#test_file2" eq $a && "" eq $b ) || die;
+    ( -e "/tmp/dods_cache#test#test_file2" )  || die;
+    ( 55 == -s "/tmp/dods_cache#test_file2" ) || die;
+    
     # Test scanning for meta chars before sending pathname to /bin/sh.
     ( $a, $b ) =
       decompress_and_cache( "test_file.gz%3Bcat%20/etc/passwd%3B", "/usr/tmp" );
@@ -390,15 +414,11 @@ if ($test) {
 
     # Test the transfer_remote_file() function
 
-    transfer_remote_file( "http://dcz.dods.org/data/nc/fnoc1.nc",
+    transfer_remote_file( "http://test.opendap.org/data/nc/fnoc1.nc",
                           "/tmp/dods_http_fnoc1.nc" );
     ( -e "/tmp/dods_http_fnoc1.nc" && 23944 == -s "/tmp/dods_http_fnoc1.nc" )
       || die;
 
-# No anonymous transfers from dcz!
-#     transfer_remote_file("ftp://dcz.dods.org/data/nc/fnoc1.nc", "/tmp/dods_ftp_fnoc1.nc");
-#     (-e "/tmp/dods_ftp_fnoc1.nc" && 23944 == -s "/tmp/dods_ftp_fnoc1.nc")
-# 	|| die;
     unlink "/tmp/dods_http_fnoc1.nc";
 
     #    unlink "/tmp/dods_ftp_fnoc1.nc";
@@ -406,18 +426,18 @@ if ($test) {
     print "\t transfer_remote_file passed all tests\n";
 
     ( $a, $b ) =
-      dodster_and_cache( "http://dcz.dods.org/data/nc/fnoc1.nc", "/usr/tmp" );
-    (     "/usr/tmp/dods_cache#http:##dcz.dods.org#data#nc#fnoc1.nc" eq $a
+      dodster_and_cache( "http://test.opendap.org/data/nc/fnoc1.nc", "/tmp" );
+    ("/tmp/dods_cache#http:##test.opendap.org#data#nc#fnoc1.nc" eq $a
        && "" eq $b )
       || die;
-    ( -e "/usr/tmp/dods_cache#http:##dcz.dods.org#data#nc#fnoc1.nc" ) || die;
-    ( 23944 == -s "/usr/tmp/dods_cache#http:##dcz.dods.org#data#nc#fnoc1.nc" )
+    ( -e "/tmp/dods_cache#http:##test.opendap.org#data#nc#fnoc1.nc" ) || die;
+    ( 23944 == -s "/tmp/dods_cache#http:##test.opendap.org#data#nc#fnoc1.nc" )
       || die;
 
     print "\t dodster_and_cache passed all tests\n";
 
-    ( purge_cache( "/usr/tmp", 1 ) > 0 ) || die;
-    ( 0 == purge_cache( "/usr/tmp", 0 ) ) || die;
+    ( purge_cache( "/tmp", 1 ) > 0 ) || die;
+    ( 0 == purge_cache( "/tmp", 0 ) ) || die;
     print "\t purge_cache passed all tests\n";
 
     print "All tests succeeded\n";
