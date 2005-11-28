@@ -44,8 +44,6 @@ static char rcsid[] not_used = {"$Id$"};
 #include <iostream>
 #include <string>
 
-#include <Pix.h>
-
 #include "InternalErr.h"
 
 #include "WWWFloat64.h"

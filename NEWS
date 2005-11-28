@@ -1,5 +1,14 @@
 
-Updated for version 3.5.1
+Updated for version 3.5.2
+
+A bug in the HTML form and info response generators caused global attributes 
+to be 'lost.'
+
+Support for bzip2 compression was added to the server. If the gzip and bzip2
+tools are not located in /bin or /usr/bin on the server host, edit the file
+DODS_Cache.pm so that module will be able to locate them.
+
+Version 3.5.1
 
 Based on some testing I'm switching back to including HTML:Parser in the 
 distribution since newer versions don't work with our code. This should be

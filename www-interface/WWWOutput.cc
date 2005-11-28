@@ -181,7 +181,7 @@ void
 WWWOutput::write_attributes(AttrTable *attr, const string prefix)
 {
     if (attr) {
-	for (Pix a = attr->first_attr(); a; attr->next_attr(a)) {
+        for (AttrTable::Attr_iter a = attr->attr_begin(); a != attr->attr_end(); ++a) {
 	    if (attr->is_container(a))
 		write_attributes(attr->get_attr_table(a), 
 				 (prefix == "") ? attr->get_name(a) 
@@ -211,13 +211,13 @@ WWWOutput::write_global_attributes(DAS &das)
 <td><textarea name=\"global_attr\" rows=" << _attr_rows << " cols=" 
 << _attr_cols << ">\n";
 
-    for (Pix p = das.first_var(); p; das.next_var(p)) {
-	string name = das.get_name(p);
+    for (AttrTable::Attr_iter p = das.var_begin(); p != das.var_end(); ++p) {
+        string name = das.get_name(p);
 
-	if (!name_in_kill_file(name) && name_is_global(name)) {
-	    AttrTable *attr = das.get_table(p);
-	    write_attributes(attr);
-	}
+        if (!name_in_kill_file(name) && name_is_global(name)) {
+            AttrTable *attr = das.get_table(p);
+            write_attributes(attr);
+        }
     }
 
     _os << "</textarea><p>\n\n";
@@ -232,9 +232,9 @@ WWWOutput::write_variable_list(DDS &dds)
 "<a href=\"dods_form_help.html#dataset_variables\"><h4>Dataset Variables</a>:</h4>\n\
 <select name=\"variables\" multiple size=5 onChange=\"variables_obj.var_selection()\">" << endl;
 
-    for (Pix p = dds.first_var(); p; dds.next_var(p)) {
-	_os << "<option value=\"" << dds.var(p)->name() << "\"> "
-	    << dds.var(p)->name() << endl;
+    for (DDS::Vars_iter p = dds.var_begin(); p != dds.var_end(); ++p) {
+        _os << "<option value=\"" << (*p)->name() << "\"> "
+            << (*p)->name() << endl;
     }
 
     _os << "</select>" << endl;
@@ -251,9 +251,9 @@ WWWOutput::write_variable_entries(DAS &das, DDS &dds)
 <h3><a href=\"dods_form_help.html#dataset_variables\">Variables:</a></h3>\n\
 <td>";
     
-    for (Pix p = dds.first_var(); p; dds.next_var(p)) {
-	dds.var(p)->print_val(_os);
-	write_variable_attributes(dds.var(p), das);
+    for (DDS::Vars_iter p = dds.var_begin(); p != dds.var_end(); ++p) {
+	(*p)->print_val(_os);
+	write_variable_attributes((*p), das);
 	_os << "\n<p><p>\n\n";		// End the current var's section
 	_os << "<tr><td><td>\n\n";	// Start the next var in column two
     }
@@ -299,19 +299,11 @@ fancy_typename(BaseType *v)
 	  ostringstream type;
 	  Array *a = (Array *)v;
 	  type << "Array of " << fancy_typename(a->var()) <<"s ";
-	  for (Pix p = a->first_dim(); p; a->next_dim(p))
+          for (Array::Dim_iter p = a->dim_begin(); p != a->dim_end(); ++p)
 	      type << "[" << a->dimension_name(p) << " = 0.." 
 		   << a->dimension_size(p, false)-1 << "]";
 	  return type.str();
       }
-#if 0
-      case dods_list_c: {
-	  ostringstream type;
-	  List *l = (List *)v;
-	  type << "List of " << fancy_typename(l->var()) <<"s ";
-	  return type.str();
-      }
-#endif
       case dods_structure_c:
 	return "Structure";
       case dods_sequence_c:
@@ -338,8 +330,15 @@ name_in_kill_file(const string &name)
 static bool
 name_is_global(string &name)
 {
-    static Regex global("\\(.*global.*\\)\\|\\(.*dods.*\\)", 1);
+    static Regex global("(.*global.*)|(.*dods.*)", 1);
     downcase(name);
+#if 0
+    cerr << "attribute container name: " << name << endl;
+    int match = global.match(name.c_str(), name.length());
+    cerr << "match: " << match << endl;
+    if (match != -1)
+        cerr << "       is global/dods" << endl;
+#endif        
     return global.match(name.c_str(), name.length()) != -1;
 }
 

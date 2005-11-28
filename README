@@ -286,7 +286,10 @@ Serving Compressed Files
   you'll need to edit the DODS_Cache.pm so that the correct version of gzip
   is used. Look in that file for "/bin/gzip" and replace that text with the
   correct pathname. To figure out where gzip is on you computer, type 'which
-  gzip' in a shell.
+  gzip' in a shell. As of version 3.5.2 the server will also decompress files
+  compressed using bzip2. If the bizip2 utility cannot be found by the
+  DOSD_Cache.pm module, look for /bin/bzip2 and replace that with the correct
+  pathname for your server host.
 
 Logging accesses
 

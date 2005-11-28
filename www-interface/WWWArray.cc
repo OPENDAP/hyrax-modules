@@ -44,8 +44,6 @@ static char rcsid[] not_used = {"$Id$"};
 #include <iostream>
 #include <string>
 
-#include <Pix.h>
-
 #include "InternalErr.h"
 #include "escaping.h"
 
@@ -103,8 +101,8 @@ WWWArray::print_val(ostream &os, string, bool print_decl_p)
        << "<font size=\"+1\">" << name() << "</font>"
        << ": " << fancy_typename(this) << "</b><br>\n\n";
 
-    Pix p = first_dim();
-    for (int i = 0; p; ++i, next_dim(p)) {
+    Array::Dim_iter p = dim_begin();
+    for (int i = 0; p != dim_end(); ++i, ++p) {
 	int size = dimension_size(p, true);
 	string n = dimension_name(p);
 	if (n != "")

@@ -41,7 +41,6 @@ static char rcsid[] not_used = {"$Id$"};
 #include <string>
 
 #include <GetOpt.h>
-#include <Pix.h>
 #include <string>
 
 #ifdef WIN32

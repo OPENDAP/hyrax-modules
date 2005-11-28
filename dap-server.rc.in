@@ -54,10 +54,10 @@ asciival @prefix@/bin/dap_asciival
 # see a good book on Perl such as the one by Larry Wall.
 
 # Look for common file extensions. 
-handler .*\.(HDF|hdf|EOS|eos)(.Z|.gz)*$ @prefix@/bin/dap_hdf4_handler
-handler .*\.(NC|nc|cdf|CDF)$ @prefix@/bin/dap_nc_handler
+handler .*\.(HDF|hdf|EOS|eos)(.Z|.gz|.bz2)?$ @prefix@/bin/dap_hdf4_handler
+handler .*\.(NC|nc|cdf|CDF)(.Z|.gz|.bz2)?$ @prefix@/bin/dap_nc_handler
 handler .*\.(dat|bin)$ @prefix@/bin/dap_ff_handler
-handler .*\.(pvu)(.Z|.gz)*$ @prefix@/bin/dap_dsp_handler
+handler .*\.(pvu)(.Z|.gz)?$ @prefix@/bin/dap_dsp_handler
 
 # For JGOFS datasets, match either the dataset name or the absence of an
 # extension. The later case is sort of risky, but if you have lots of JGOFS

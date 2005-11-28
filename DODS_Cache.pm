@@ -117,11 +117,11 @@ sub purge_cache {
 }
 
 # Return 1 if the filename looks like one we think is compressed, 0
-# otherwise. Compressed files end with either .Z or .gz.
+# otherwise. Compressed files end with either .Z or .gz. Or .bz2
 sub is_compressed {
     my $file_name = shift;
 
-    return ( $file_name =~ m/.*$compressed_regex/ ) ? 1 : 0;
+    return ( $file_name =~ m@.*$compressed_regex@ ) ? 1 : 0;
 }
 
 my $dods_ext = "(das|dds|dods|asc|ascii|html|info|ver)";

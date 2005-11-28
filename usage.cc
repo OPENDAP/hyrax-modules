@@ -131,7 +131,7 @@ static void
 init_global_regex()
 {
     // MT-Safe if called via pthread_once or similar
-    static Regex global("\\(.*global.*\\)\\|\\(.*dods.*\\)", 1);
+    static Regex global("(.*global.*)|(.*dods.*)", 1);
     global_ptr = &global;
 }
 

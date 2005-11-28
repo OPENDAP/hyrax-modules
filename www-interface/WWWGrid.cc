@@ -45,9 +45,6 @@ static char rcsid[] not_used = {"$Id$"};
 #include <iostream>
 #include <string>
 
-#include <Pix.h>
-#include <string>
-
 #include "Array.h"
 #include "escaping.h"
 #include "InternalErr.h"
@@ -104,8 +101,8 @@ WWWGrid::print_val(ostream &os, string space, bool print_decl_p)
 
     Array *a = dynamic_cast<Array *>(array_var());
 
-    Pix p = a->first_dim();
-    for (int i = 0; p; ++i, a->next_dim(p)) {
+    Array::Dim_iter p = a->dim_begin();
+    for (int i = 0; p != a->dim_end(); ++i, ++p) {
 	int size = a->dimension_size(p, true);
 	string n = a->dimension_name(p);
 	if (n != "")
