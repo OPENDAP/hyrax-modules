@@ -1,6 +1,6 @@
 Summary:         Basic request handlig for DAP servers 
 Name:            dap-server
-Version:         3.5.1
+Version:         3.5.2
 Release:         1
 License:         GPL
 Group:           System Environment/Daemons 
