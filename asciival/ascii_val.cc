@@ -91,7 +91,7 @@ name_map names;
 bool translate = false;
 
 static void
-usage(string name)
+usage()
 {
     cerr << "Usage: \n"
 	 << " [mnhwvruVt] -- [<url> | <file> ]\n" 
@@ -165,7 +165,8 @@ read_from_file(DataDDS &dds, const string &handler,
 	       const string &options, const string &file,
 	       const string &expr)
 {
-    string command = handler + " -o dods " + options + " -e " + expr
+    string command = handler + " -o dods " + options 
+        + " -e " + "\"" + expr  + "\""
 	+ " \"" + file + "\"";
 
     DBG(cerr << "DDS Command: " << command << endl);
@@ -266,7 +267,7 @@ main(int argc, char * argv[])
 	  case 'h':
 	  case '?':
 	  default:
-	    usage((string)argv[0]); exit(1); break;
+	    usage(); exit(1); break;
 	}
 
     AsciiOutputFactory *aof;
@@ -276,7 +277,7 @@ main(int argc, char * argv[])
 	// either a file or a URL, depending on the options supplied and will
 	// be the source from whic to read the data.
 	if (getopt.optind >= argc) {
-	    usage((string)argv[0]);
+	    usage();
 	    throw Error("Expected a file or URL argument.");
 	}
 
@@ -293,8 +294,8 @@ main(int argc, char * argv[])
 	    url = argv[getopt.optind];
 
 	// Remove the expression from the URL if no expression was given
-	// explicitly and the URL is not empty.
-	if (!expr_given && !url.empty()) {
+	// explicitly and the URL is not empty and contains a '?'
+	if (!expr_given && !url.empty() && url.find('?') != string::npos) {
 	    expr = url.substr(url.find('?')+1);
 	    url = url.substr(0, url.find('?'));
 	}
