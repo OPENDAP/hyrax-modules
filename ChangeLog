@@ -1,12 +1,9 @@
 2005-12-20  James Gallagher <jgallagher@opendap.org>
 
-	Fixed bug 276; getting ascii data with no CE failed. The problem
-	was that the software that parses the CE from the URL when no CE
-	is explicitly passed to ascii_val was assigned the entire URL
-	(argument to -u) to the CE. Fixed by adding code to test for '?'
-	and making sure to quote the CE (to handle the case when it's an
-	empty string and/or if it needs to be quoted (i.e., there was
-	another bug lurking there ...).
+	Fixed bug 276; getting ascii data with no CE failed. The problem was that the software that parses the CE from the URL
+	when no CE is explicitly passed to ascii_val was assigned the entire URL (argument to -u) to the CE. Fixed by
+	adding code to test for '?' and making sure to quote the CE (to handle the case when it's an empty string and/or
+	if it needs to be quoted (i.e., there was another bug lurking there ...).
 
 2005-12-20  James Gallagher <jgallagher@opendap.org>
 
@@ -14,8 +11,7 @@
 
 2005-11-28  James Gallagher <jgallagher@opendap.org>
 
-	Removed HTML from EXTRA_DIST since the files are listed in a
-	SOURCE variable.
+	Removed HTML from EXTRA_DIST since the files are listed in a SOURCE variable.
 
 2005-11-28  James Gallagher <jgallagher@opendap.org>
 
@@ -23,11 +19,9 @@
 
 2005-11-28  James Gallagher <jgallagher@opendap.org>
 
-	Fixed a bug where the HTML form and info responses lacked global
-	attributes. This bug was the result of changes to the Regex class.
-	The metachars () and | no longer need to be escaped. I also
-	removed all use of Pix from this code. Finally, I added support
-	for bzip2 to DODS_Cache.pm.
+	Fixed a bug where the HTML form and info responses lacked global attributes. This bug was the
+	result of changes to the Regex class. The metachars () and | no longer need to be escaped. I
+	also removed all use of Pix from this code. Finally, I added support for bzip2 to DODS_Cache.pm.
 
 2005-11-28  James Gallagher <jgallagher@opendap.org>
 
