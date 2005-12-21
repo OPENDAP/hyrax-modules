@@ -1,4 +1,16 @@
 
+Updated for version 3.5.3
+
+ASCII returns for entire data source (i.e., with an empty Constraint 
+expression) were failing. Fixed.
+
+There were packaing problems with the included HTML Parser code. Fixed.
+
+New to this distribtion in the opendap_apache.conf file. Edit this, replacing
+<<prefix>> with the installaion prefix for your code and drop the file into 
+Apache's configuration file directory (/etc/httpd/conf.d on many linux 
+distributions) and restart Apache. No need to edit your main httpd.conf file!
+
 Updated for version 3.5.2
 
 A bug in the HTML form and info response generators caused global attributes 

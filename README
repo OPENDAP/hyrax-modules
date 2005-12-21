@@ -111,7 +111,10 @@ Quick Instructions
   for your web daemon. Or, you can edit your web server's configuration file
   and make that directory a CGI bin directory. See SERVER INSTALLATION TIPS 
   section below for help on how to locate your web server's CGI Binary 
-  diretcory. Make sure that the nph-dods script is exectuable. 
+  diretcory. Make sure that the nph-dods script is exectuable. Also see the
+  opendap_apache.conf. This can be used in lieu of editing your httpd.conf
+  file in many cases, should you want to run your OPeNDAP server in its own
+  CGI bin directory.
 
   Previous versions of the OPeNDAP server required that data either be stored
   in your web daemon's DocumentRoot, one of its subdirectories or be
