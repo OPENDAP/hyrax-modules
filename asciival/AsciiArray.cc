@@ -195,7 +195,7 @@ AsciiArray::get_nth_dim_size(size_t n) throw(InternalErr)
 #if 0
     if (n < 1 || n > dimensions(true)) {
 #endif
-    if (n < 0 || n > dimensions(true)-1) {
+    if (/*n < 0 ||*/ n > dimensions(true)-1) {
 	string msg = "Attempt to get dimension ";
 	msg += long_to_string(n+1) + " from `" + name() + "' which has " 
 	    + long_to_string(dimensions(true)) + " dimension(s).";
@@ -206,7 +206,7 @@ AsciiArray::get_nth_dim_size(size_t n) throw(InternalErr)
 }
 
 void 
-AsciiArray::print_array(ostream &os, bool print_name)
+AsciiArray::print_array(ostream &os, bool /*print_name*/)
 {
     DBG(cerr << "Entering AsciiArray::print_array" << endl);
 
@@ -247,7 +247,7 @@ AsciiArray::print_array(ostream &os, bool print_name)
 }
 
 void 
-AsciiArray::print_complex_array(ostream &os, bool print_name)
+AsciiArray::print_complex_array(ostream &os, bool /*print_name*/)
 {
     DBG(cerr << "Entering AsciiArray::print_complex_array" << endl);
 
