@@ -322,7 +322,7 @@ main(int argc, char * argv[])
 	}
 
         if (mime_header)
-	    set_mime_text(cout, dods_data);
+	    set_mime_text(stdout, dods_data);
 
 	process_data(&dds);
 	delete aof; aof = 0;
