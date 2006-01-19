@@ -72,7 +72,7 @@ WWWInt16::read(const string &)
 }
 
 void 
-WWWInt16::print_val(ostream &os, string, bool print_decl_p)
+WWWInt16::print_val(ostream &os, string, bool /*print_decl_p*/)
 {
     write_simple_variable(os, (string)name().c_str(), fancy_typename(this));
 }

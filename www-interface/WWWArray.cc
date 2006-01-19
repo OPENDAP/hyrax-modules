@@ -81,7 +81,7 @@ WWWArray::read(const string &)
 }
 
 void 
-WWWArray::print_val(ostream &os, string, bool print_decl_p)
+WWWArray::print_val(ostream &os, string, bool /*print_decl_p*/)
 {
     os << "<script type=\"text/javascript\">\n"
        << "<!--\n"

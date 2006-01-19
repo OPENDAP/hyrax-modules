@@ -89,7 +89,7 @@ WWWByte::read(const string &)
 }
 
 void 
-WWWByte::print_val(ostream &os, string, bool print_decl_p)
+WWWByte::print_val(ostream &os, string, bool /*print_decl_p*/)
 {
     write_simple_variable(os, name(), fancy_typename(this));
 }

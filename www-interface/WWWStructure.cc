@@ -87,7 +87,7 @@ WWWStructure::read(const string &)
 // a sequence. 
 
 void 
-WWWStructure::print_val(ostream &os, string space, bool print_decls)
+WWWStructure::print_val(ostream &os, string /*space*/, bool print_decls)
 {
     os << "<b>Structure " << name() << "</b><br>\n";
     os << "<dl><dd>\n";

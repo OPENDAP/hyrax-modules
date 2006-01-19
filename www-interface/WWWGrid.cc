@@ -79,7 +79,7 @@ WWWGrid::read(const string &)
 }
 
 void
-WWWGrid::print_val(ostream &os, string space, bool print_decl_p)
+WWWGrid::print_val(ostream &os, string space, bool /*print_decl_p*/)
 {
     os << "<script type=\"text/javascript\">\n"
        << "<!--\n"

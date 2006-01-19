@@ -72,7 +72,7 @@ WWWFloat32::read(const string &)
 }
 
 void 
-WWWFloat32::print_val(ostream &os, string, bool print_decl_p)
+WWWFloat32::print_val(ostream &os, string, bool /*print_decl_p*/)
 {
     write_simple_variable(os, (string)name().c_str(), fancy_typename(this));
 }

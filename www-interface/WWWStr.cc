@@ -75,7 +75,7 @@ WWWStr::read(const string &)
 }
 
 void 
-WWWStr::print_val(ostream &os, string, bool print_decl_p)
+WWWStr::print_val(ostream &os, string, bool /*print_decl_p*/)
 {
     write_simple_variable(os, (string)name().c_str(), fancy_typename(this));
 }

@@ -72,7 +72,7 @@ WWWUInt32::read(const string &)
 }
 
 void 
-WWWUInt32::print_val(ostream &os, string, bool print_decl_p)
+WWWUInt32::print_val(ostream &os, string, bool /*print_decl_p*/)
 {
     write_simple_variable(os, (string)name().c_str(), fancy_typename(this));
 }

@@ -106,7 +106,7 @@ WWWSequence::is_simple_sequence()
 // a sequence. 
 
 void 
-WWWSequence::print_val(ostream &os, string space, bool print_decls)
+WWWSequence::print_val(ostream &os, string /*space*/, bool print_decls)
 {
     os << "<b>Sequence " << name() << "</b><br>\n";
     os << "<dl><dd>\n";
