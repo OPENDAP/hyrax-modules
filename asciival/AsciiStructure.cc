@@ -85,12 +85,13 @@ AsciiStructure::read(const string &)
 
 // This must only be called for simple structures!
 void
-AsciiStructure::print_header(ostream &os)
+AsciiStructure::print_header(FILE *os)
 {
     Vars_iter p = var_begin();
     while (p != var_end()) {
 	if ((*p)->is_simple_type())
-	    os << names.lookup(dynamic_cast<AsciiOutput*>((*p))->get_full_name(), translate);
+	    fprintf(os, "%s",
+                names.lookup(dynamic_cast<AsciiOutput*>((*p))->get_full_name(), translate).c_str());
 	else if ((*p)->type() == dods_structure_c)
 	    dynamic_cast<AsciiStructure*>((*p))->print_header(os);
 	// May need a case here for Sequence 2/18/2002 jhrg
@@ -99,24 +100,24 @@ AsciiStructure::print_header(ostream &os)
 	    throw InternalErr(__FILE__, __LINE__,
 			      "Support for ASCII output of datasets with structures which contain Sequences or Grids has not been completed.");
 	if (++p != var_end())
-	    os << ", ";
+	    fprintf(os, ", ");
     }
 }
 
 void
-AsciiStructure::print_ascii(ostream &os, bool print_name) throw(InternalErr)
+AsciiStructure::print_ascii(FILE *os, bool print_name) throw(InternalErr)
 {
     if (is_linear()) {
 	if (print_name) {
 	    print_header(os);
-	    os << endl;
+	    fprintf(os, "\n");
 	}
 	
 	Vars_iter p = var_begin();
 	while (p != var_end()) {
 	    dynamic_cast<AsciiOutput*>((*p))->print_ascii(os, false);
 	    if (++p != var_end())
-		os << ", ";
+		fprintf(os, ", ");
 	}
     }
     else {
@@ -125,7 +126,7 @@ AsciiStructure::print_ascii(ostream &os, bool print_name) throw(InternalErr)
 	    // This line outputs an extra endl when print_ascii is called for
 	    // nested structures because an endl is written for each member
 	    // and then once for the structure itself. 9/14/2001 jhrg
-	    os << endl;
+	    fprintf(os, "\n");
 	}
     }
 }

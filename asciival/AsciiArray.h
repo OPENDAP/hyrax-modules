@@ -41,9 +41,9 @@
 
 class AsciiArray: public Array, public AsciiOutput {
 private:
-    void print_vector(ostream &os, bool print_name);
-    void print_array(ostream &os, bool print_name);
-    void print_complex_array(ostream &os, bool print_name);
+    void print_vector(FILE *os, bool print_name);
+    void print_array(FILE *os, bool print_name);
+    void print_complex_array(FILE *os, bool print_name);
 
 public:
     AsciiArray(const string &n = (char *)0, BaseType *v = 0);
@@ -53,7 +53,7 @@ public:
 
     virtual bool read(const string &dataset);
 
-    int print_row(ostream &os, int index, int number);
+    int print_row(FILE *os, int index, int number);
 
     int get_index(vector<int> indices) throw(InternalErr);
 
@@ -69,7 +69,7 @@ public:
 	contains the highest index value. To get the size, add one. */
     vector<int> get_shape_vector(size_t n) throw(InternalErr);
 
-    virtual void AsciiArray::print_ascii(ostream &os, bool print_name = true) 
+    virtual void print_ascii(FILE *os, bool print_name = true) 
 	throw(InternalErr);
 };
 

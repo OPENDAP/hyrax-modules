@@ -68,15 +68,21 @@ AsciiOutput::get_full_name()
 }
 
 void 
-AsciiOutput::print_ascii(ostream &os, bool print_name) throw(InternalErr)
+AsciiOutput::print_ascii(FILE *os, bool print_name) throw(InternalErr)
 {
     BaseType *BTptr = dynamic_cast<BaseType *>(this);
     if (!BTptr)
 	throw InternalErr(__FILE__, __LINE__, 
 		  "An instance of AsciiOutput failed to cast to BaseType.");
 
+#if 0
     if (print_name)
 	os << names.lookup(get_full_name(), translate) << ", ";
+#endif
+
+    if (print_name)
+        fprintf(os, "%s, ", names.lookup(get_full_name(), translate).c_str());
+
     BTptr->print_val(os, "", false);
 }
 

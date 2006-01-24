@@ -73,7 +73,7 @@ AsciiGrid::read(const string &)
 }
 
 void
-AsciiGrid::print_ascii(ostream &os, bool print_name) throw(InternalErr)
+AsciiGrid::print_ascii(FILE *os, bool print_name) throw(InternalErr)
 {
     if (dynamic_cast<AsciiArray *>(array_var())->dimensions(true) > 1)
 	print_grid(os, print_name);
@@ -86,20 +86,20 @@ AsciiGrid::print_ascii(ostream &os, bool print_name) throw(InternalErr)
 // then the array (which has only one dimension). This is a special case; if
 // a grid has two or more dimensions then we can't use the AsciiArray code.
 void
-AsciiGrid::print_vector(ostream &os, bool print_name)
+AsciiGrid::print_vector(FILE *os, bool print_name)
 {
     DBG(cerr << "AsciiGrid::print_vector" << endl);
 
     dynamic_cast<AsciiArray *>(map_var(first_map_var()))
 	->print_ascii(os, print_name);
     
-    os << endl;
+    fprintf(os, "\n");
 
     dynamic_cast<AsciiArray *>(array_var())->print_ascii(os, print_name);
 }
 
 void 
-AsciiGrid::print_grid(ostream &os, bool print_name)
+AsciiGrid::print_grid(FILE *os, bool print_name)
 {
     DBG(cerr << "AsciiGrid::print_grid" << endl);
 
@@ -130,7 +130,7 @@ AsciiGrid::print_grid(ostream &os, bool print_name)
 	// By definition, a map is a vector. Print the rightmost map.
 	dynamic_cast<AsciiArray &>(**(map_begin() + dims - 1))
 	    .print_ascii(os, print_name);
-	os << endl;
+	fprintf(os, "\n");
     }
 
     bool more_indices;
@@ -140,27 +140,27 @@ AsciiGrid::print_grid(ostream &os, bool print_name)
 	// name of the corresponding map vector and the *value* of this
 	// index. Note that the successive elements of state give the indeces
 	// of each of the N-1 dimensions for the current row.
-	os << names.lookup(dynamic_cast<AsciiOutput*>(grid_array)->get_full_name(), translate);
+	fprintf(os, "%s",
+                names.lookup(dynamic_cast<AsciiOutput*>(grid_array)->get_full_name(), translate).c_str());
 	vector<int>::iterator state_iter = state.begin();
 	Grid::Map_iter p = map_begin();
 	while (state_iter != state.end()) {
-	    os << "[" 
-	       << dynamic_cast<AsciiOutput &>(**p).get_full_name() 
-	       << "=";
+	    fprintf(os, "[%s=", 
+                dynamic_cast<AsciiOutput &>(**p).get_full_name().c_str());
 	    AsciiArray &m = dynamic_cast<AsciiArray &>(**p);
 	    dynamic_cast<AsciiOutput &>(*m.var(*state_iter))
 		.print_ascii(os, false);
-	    os << "]";
+	    fprintf(os, "]");
 
 	    state_iter++; p++;
 	}
-	os << ", ";
+	fprintf(os, ", ");;
 
 	index = grid_array->print_row(os, index, rightmost_dim_size - 1);
 
 	more_indices = increment_state(&state, shape);
 	if (more_indices)
-	    os << endl;
+	    fprintf(os, "\n");
 
     } while (more_indices);
 }

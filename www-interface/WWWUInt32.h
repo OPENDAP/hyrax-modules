@@ -54,7 +54,7 @@ public:
     
     virtual bool read(const string &dataset);
     
-    void print_val(ostream &os, string space = "", bool print_decl_p = true);
+    void print_val(FILE *os, string space = "", bool print_decl_p = true);
 };
 
 // $Log: WWWUInt32.h,v $

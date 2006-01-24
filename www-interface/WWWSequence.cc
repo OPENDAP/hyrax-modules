@@ -106,18 +106,31 @@ WWWSequence::is_simple_sequence()
 // a sequence. 
 
 void 
-WWWSequence::print_val(ostream &os, string /*space*/, bool print_decls)
+WWWSequence::print_val(FILE *os, string /*space*/, bool print_decls)
 {
-    os << "<b>Sequence " << name() << "</b><br>\n";
-    os << "<dl><dd>\n";
+    fprintf(os, "<b>Sequence %s</b><br>\n", name().c_str());
+    fprintf(os, "<dl><dd>\n");
 
     for (Vars_iter i = var_begin(); i != var_end(); ++i) {
 	(*i)->print_val(os, "", print_decls);
 	wo.write_variable_attributes((*i), *wo.get_das());
-	os << "<p><p>\n";
+	fprintf(os,  "<p><p>\n");
+    }
+
+    fprintf(os, "</dd></dl>\n");
+    
+#if 0
+    os << "<b>Sequence " << name() << "</b><br>\n";
+    os << "<dl><dd>\n";
+
+    for (Vars_iter i = var_begin(); i != var_end(); ++i) {
+        (*i)->print_val(os, "", print_decls);
+        wo.write_variable_attributes((*i), *wo.get_das());
+        os << "<p><p>\n";
     }
 
     os << "</dd></dl>\n";
+#endif
 }
 
 // $Log: WWWSequence.cc,v $

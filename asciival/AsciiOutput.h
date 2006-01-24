@@ -39,13 +39,12 @@
 //#pragma interface
 #endif
 
-#include <iostream>
+#include <stdio.h>
 #include <vector>
 
 #include "InternalErr.h"
 
-using std::vector;
-using std::ostream;
+using namespace std;
 
 class AsciiOutput {
 
@@ -70,7 +69,7 @@ public:
 	@param os Write to this stream.
 	@param print_name If True, write the name of the variable, a comma
 	and then the value. If False, simply write the value. */
-    virtual void print_ascii(ostream &os, bool print_name = true) 
+    virtual void print_ascii(FILE *os, bool print_name = true) 
 	throw(InternalErr); 
 
     /** Increment #state# to the next value given #shape#. This method

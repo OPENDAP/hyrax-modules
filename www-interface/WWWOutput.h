@@ -54,7 +54,7 @@ private:
     DAS *d_das;
 
  protected:
-    ostream &_os;
+    FILE *d_os;
     int _attr_rows;
     int _attr_cols;
 
@@ -68,7 +68,7 @@ private:
 	(default 5).
 	@param cols The number of columns to show in the attribute textbox
 	(default 70). */
-    WWWOutput(ostream &os, int rows = 5, int cols = 70);
+    WWWOutput(FILE *os, int rows = 5, int cols = 70);
 
     /** Set DAS object for this data source. This is used inside the
 	print_val() methods. Since those do not have a DAS parameter, the
@@ -134,7 +134,7 @@ private:
     appear within Structure and Sequence types.
 
     @param name The name of the varaible. */
-void write_simple_variable(ostream &os, const string &name, 
+void write_simple_variable(FILE *os, const string &name, 
 			   const string &type);
 
 /** Return a string which describes the datatype of a DODS variable.

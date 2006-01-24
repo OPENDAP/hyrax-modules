@@ -45,8 +45,8 @@
 
 class AsciiGrid: public Grid, public AsciiOutput {
 private:
-    void print_vector(ostream &os, bool print_name);
-    void print_grid(ostream &os, bool print_name);
+    void print_vector(FILE *os, bool print_name);
+    void print_grid(FILE *os, bool print_name);
 #if 0
     int print_row(ostream &os, int index, int number);
 #endif
@@ -58,7 +58,7 @@ public:
     virtual BaseType *ptr_duplicate();
 
     virtual bool read(const string &dataset);
-    virtual void print_ascii(ostream &os, bool print_name = true)
+    virtual void print_ascii(FILE *os, bool print_name = true)
 	throw(InternalErr);
 };
 

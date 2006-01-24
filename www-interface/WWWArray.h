@@ -56,7 +56,7 @@ public:
     virtual bool read(const string &dataset);
 
     /// Overload of BaseType mfunc. This prints arrays using commas and CRs.
-    virtual void print_val(ostream &os, string space = "", 
+    virtual void print_val(FILE *os, string space = "", 
 			   bool print_decl_p = true);
 };
 

@@ -19,7 +19,7 @@
 // 
 // You should have received a copy of the GNU General Public License along
 // with GCC; see the file COPYING. If not, write to the Free Software
-// Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+// Foundation, 59 Temple Place - Suite 330, Bsston, MA 02111-1307, USA.
 // 
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
 
@@ -58,6 +58,7 @@ static char rcsid[] not_used = {"$Id$"};
 #include "DDS.h"
 #include "InternalErr.h"
 #include "escaping.h"
+#include "cgi_util.h"
 #include "util.h"
 
 #include "WWWOutput.h"
@@ -75,7 +76,7 @@ static bool name_in_kill_file(const string &name);
 // This was part of a system to provide a way to 'drop in' new DAP --> format
 // handlers. But only www_int was ever complete enough to be released. Since
 // it's always present, it seems silly to dump a huge effort into this code.
-// See below in write_disposition(). Also see Trac ticket #134. jhrg 7/22/05. 
+// See below in write_dispssition(). Also see Trac ticket #134. jhrg 7/22/05. 
 #if 0
 char *www_int = "./www_int.exe";
 char* dods2ncdf = "./dods2ncdf.exe";
@@ -84,7 +85,7 @@ char* dods2hdf5 = "./dods2hdf5.exe";
 char* dods2mat = "./dods2mat.exe";
 char* dods2idl = "./dods2idl.exe";
 #else
-char* www_int = "/usr/local/sbin/www_int";
+char* www_int = "/usr/local/bin/dap_www_int";
 char* dods2ncdf = "dods2ncdf";
 char* dods2hdf4 = "dods2hdf4";
 char* dods2hdf5 = "dods2hdf5";
@@ -113,20 +114,24 @@ name_for_js_code(const string &dods_name)
     return oss.str();
 }
 
-WWWOutput::WWWOutput(ostream &os, int rows, int cols):
-    _os(os), _attr_rows(rows), _attr_cols(cols)
+WWWOutput::WWWOutput(FILE *os, int rows, int cols):
+    d_os(os), _attr_rows(rows), _attr_cols(cols)
 {
 }
 
 void
 WWWOutput::write_html_header(bool nph_header)
 {
+#if 0
     if (nph_header)
 	_os << "HTTP/1.0 200 OK" << endl;
     _os << "XDODS-Server: " << dap_version() << endl;
     _os << "Content-type: text/html" << endl; 
-    _os << "Content-Description: dods_form" << endl;
+    _os << "Content-Description: opendap_form" << endl;
     _os << endl;		// MIME header ends with a blank line
+#endif
+
+    set_mime_html(d_os, unknown_type, dap_version(), x_plain);
 }
 
 void
@@ -136,40 +141,58 @@ WWWOutput::write_disposition(string url)
     // use some JavaScript code to generate the HTML. C++ --> JS --> HTML.
     // 4/8/99 jhrg
 
+    fprintf(d_os, "<tr>\n\
+<td align=\"right\">\n\
+<h3>\n\
+<a href=\"opendap_form_help.html#disposition\">Action:</a></h3>\n\
+<td>\n\
+<input type=\"button\" value=\"Get ASCII\" onclick=\"ascii_button()\">\n");
+
+#if 0
     _os << "<tr>\n\
-<td align=\"right\"><h3><a href=\"dods_form_help.html#disposition\" valign=\"bottom\">Action:</a></h3>\n";
+<td align=\"right\"><h3><a href=\"opendap_form_help.html#disposition\">Action:</a></h3>\n";
     _os << "<td>";
 
     _os << "<input type=\"button\" value=\"Get ASCII\" onclick=\"ascii_button()\">\n";
-
+#endif
 #if 0
-    // See teh comment above about the 'drop in' format handler support that
+    // See the comment above about the 'drop in' format handler support that
     // was never needed. jhrg 7/22/05
 
-    if (access(dods2ncdf, X_OK) == 0)
+    if (acceos(dods2ncdf, X_OK) == 0)
 	_os << "<input type=\"button\" value=\"Get netCDF\" onclick=\"binary_button('netcdf')\">\n";
 
-    if (access(dods2hdf4, X_OK) == 0)
+    if (acceos(dods2hdf4, X_OK) == 0)
 	_os << "<input type=\"button\" value=\"Get HDF 4\" onclick=\"binary_button('hdf4')\">\n";
 
-    if (access(dods2hdf5, X_OK) == 0)
+    if (acceos(dods2hdf5, X_OK) == 0)
 	_os << "<input type=\"button\" value=\"Get HDF 5\" onclick=\"binary_button('hdf5')\">\n";
 
-    if (access(dods2mat, X_OK) == 0)
+    if (acceos(dods2mat, X_OK) == 0)
 	_os << "<input type=\"button\" value=\"Get MatLAB\" onclick=\"binary_button('mat')\">\n";
 
-    if (access(dods2idl, X_OK) == 0)
+    if (acceos(dods2idl, X_OK) == 0)
 	_os << "<input type=\"button\" value=\"Get IDL\" onclick=\"binary_button('idl')\">\n";
 #endif
-
+#if 0
     _os << "<input type=\"button\" value=\"Binary Data Object \" onclick=\"binary_button('dods')\">\n\
 <input type=\"button\" value=\"Show Help\" onclick=\"help_button()\">\n\
 \n\
 <tr>\n\
-<td align=\"right\"><h3><a href=\"dods_form_help.html#data_url\" valign=\"bottom\">Data URL:</a>\n\
+<td align=\"right\"><h3><a href=\"opendap_form_help.html#data_url\">Data URL:</a>\n\
 </h3>\n\
 <td><input name=\"url\" type=\"text\" size=" << _attr_cols << " value=\"" 
-<< url << "\">"; 
+<< url << "\">";
+#endif
+    fprintf(d_os,
+"<input type=\"button\" value=\"Binary Data Object \" onclick=\"binary_button('dods')\">\n\
+<input type=\"button\" value=\"Show Help\" onclick=\"help_button()\">\n\
+\n\
+<tr>\n\
+<td align=\"right\"><h3><a href=\"opendap_form_help.html#data_url\">Data URL:</a>\n\
+</h3>\n\
+<td><input name=\"url\" type=\"text\" size=\"%d\" value=\"%s\">\n",
+_attr_cols, url.c_str());
 }
 
 #if 0
@@ -187,6 +210,7 @@ WWWOutput::write_attributes(AttrTable *attr, const string prefix)
 				 (prefix == "") ? attr->get_name(a) 
 				 : prefix + string(".") + attr->get_name(a));
 	    else {
+#if 0
 		if (prefix != "")
 		    _os << prefix << "." << attr->get_name(a) << ": ";
 		else
@@ -196,6 +220,16 @@ WWWOutput::write_attributes(AttrTable *attr, const string prefix)
 		for (int i = 0; i < num_attr; ++i)
 		    _os << attr->get_attr(a, i) << ", ";
 		_os << attr->get_attr(a, num_attr) << endl;
+#endif
+                if (prefix != "")
+                    fprintf(d_os, "%s.%s: ", prefix.c_str(),  attr->get_name(a).c_str());
+                else
+                    fprintf(d_os, "%s: ", attr->get_name(a).c_str());
+
+                int num_attr = attr->get_attr_num(a) - 1 ;
+                for (int i = 0; i < num_attr; ++i)
+                    fprintf(d_os, "%, ", attr->get_attr(a, i).c_str());
+                fprintf(d_os, "%s\n", attr->get_attr(a, num_attr).c_str());
 	    }
 	}
     }
@@ -204,10 +238,28 @@ WWWOutput::write_attributes(AttrTable *attr, const string prefix)
 void
 WWWOutput::write_global_attributes(DAS &das)
 {
+    fprintf(d_os,
+"<tr>\n\
+<td align=\"right\" valign=\"top\"><h3>\n\
+<a href=\"opendap_form_help.html#global_attr\">Global Attributes:</a></h3>\n\
+<td><textarea name=\"global_attr\" rows=\"%d\" cols=\"%d\">\n",
+_attr_rows, _attr_cols);
+
+    for (AttrTable::Attr_iter p = das.var_begin(); p != das.var_end(); ++p) {
+        string name = das.get_name(p);
+
+        if (!name_in_kill_file(name) && name_is_global(name)) {
+            AttrTable *attr = das.get_table(p);
+            write_attributes(attr);
+        }
+    }
+
+    fprintf(d_os, "</textarea><p>\n\n");
+#if 0
     _os << \
 "<tr>\n\
 <td align=\"right\" valign=\"top\"><h3>\n\
-<a href=\"dods_form_help.html#global_attr\">Global Attributes:</a></h3>\n\
+<a href=\"opendap_form_help.html#global_attr\">Global Attributes:</a></h3>\n\
 <td><textarea name=\"global_attr\" rows=" << _attr_rows << " cols=" 
 << _attr_cols << ">\n";
 
@@ -221,6 +273,7 @@ WWWOutput::write_global_attributes(DAS &das)
     }
 
     _os << "</textarea><p>\n\n";
+#endif
 }
 
 // deprecated
@@ -228,8 +281,19 @@ WWWOutput::write_global_attributes(DAS &das)
 void 
 WWWOutput::write_variable_list(DDS &dds)
 {
+    fprintf(d_os,
+"<a href=\"opendap_form_help.html#dataset_variables\"><h4>Dataset Variables</a>:</h4>\n\
+<select name=\"variables\" multiple size=5 onChange=\"variables_obj.var_selection()\">\n");
+
+    for (DDS::Vars_iter p = dds.var_begin(); p != dds.var_end(); ++p) {
+        fprintf(d_os, "<option value=\"%s\"> %s", (*p)->name().c_str(), 
+                (*p)->name().c_str());
+    }
+
+    fprintf(d_os, "</select>\n");
+#if 0
     _os << \
-"<a href=\"dods_form_help.html#dataset_variables\"><h4>Dataset Variables</a>:</h4>\n\
+"<a href=\"opendap_form_help.html#dataset_variables\"><h4>Dataset Variables</a>:</h4>\n\
 <select name=\"variables\" multiple size=5 onChange=\"variables_obj.var_selection()\">" << endl;
 
     for (DDS::Vars_iter p = dds.var_begin(); p != dds.var_end(); ++p) {
@@ -238,6 +302,7 @@ WWWOutput::write_variable_list(DDS &dds)
     }
 
     _os << "</select>" << endl;
+#endif
 }
 
 void
@@ -245,18 +310,32 @@ WWWOutput::write_variable_entries(DAS &das, DDS &dds)
 {
     // This writes the text `Variables:' and then sets up the table so that
     // the first variable's section is written into column two.
+    fprintf(d_os,
+"<tr>\n\
+<td align=\"right\" valign=\"top\">\n\
+<h3><a href=\"opendap_form_help.html#dataset_variables\">Variables:</a></h3>\n\
+<td>");
+    
+    for (DDS::Vars_iter p = dds.var_begin(); p != dds.var_end(); ++p) {
+	(*p)->print_val(d_os);
+	write_variable_attributes((*p), das);
+	fprintf(d_os, "\n<p><p>\n\n");		// End the current var's section
+	fprintf(d_os, "<tr><td><td>\n\n");	// Start the next var in column two
+    }
+#if 0
     _os << \
 "<tr>\n\
 <td align=\"right\" valign=\"top\">\n\
-<h3><a href=\"dods_form_help.html#dataset_variables\">Variables:</a></h3>\n\
+<h3><a href=\"opendap_form_help.html#dataset_variables\">Variables:</a></h3>\n\
 <td>";
     
     for (DDS::Vars_iter p = dds.var_begin(); p != dds.var_end(); ++p) {
-	(*p)->print_val(_os);
-	write_variable_attributes((*p), das);
-	_os << "\n<p><p>\n\n";		// End the current var's section
-	_os << "<tr><td><td>\n\n";	// Start the next var in column two
+        (*p)->print_val(_os);
+        write_variable_attributes((*p), das);
+        _os << "\n<p><p>\n\n";          // End the current var's section
+        _os << "<tr><td><td>\n\n";      // Start the next var in column two
     }
+#endif
 }
 
 void
@@ -267,10 +346,16 @@ WWWOutput::write_variable_attributes(BaseType *btp, DAS &das)
     if (!attr)
 	return;
 
+    fprintf(d_os, "<textarea name=\"%s_attr\" rows=\"%d\" cols=\"%d\">\n",
+        btp->name().c_str(), _attr_rows, _attr_cols);
+    write_attributes(attr);
+    fprintf(d_os, "</textarea>\n\n");
+#if 0
     _os << "<textarea name=\"" << btp->name() << "_attr" << "\" rows="
 	<< _attr_rows << " cols=" << _attr_cols << ">\n";
     write_attributes(attr);
     _os << "</textarea>\n\n";
+#endif
 }
 
 string
@@ -343,9 +428,10 @@ name_is_global(string &name)
 }
 
 void
-write_simple_variable(ostream &os, const string &name, const string &type)
+write_simple_variable(FILE *os, const string &name, const string &type)
 {
-    os << "<script type=\"text/javascript\">\n"
+    ostringstream ss;
+    ss << "<script type=\"text/javascript\">\n"
        << "<!--\n"
        << name_for_js_code(name) <<" = new dods_var(\"" << id2www_ce(name) 
        << "\", \"" 
@@ -354,7 +440,7 @@ write_simple_variable(ostream &os, const string &name, const string &type)
        << "// -->\n"
        << "</script>\n";
 
-    os << "<b>" 
+    ss << "<b>" 
        << "<input type=\"checkbox\" name=\"get_" << name_for_js_code(name) 
        << "\"\n"
        << "onclick=\"" 
@@ -363,7 +449,7 @@ write_simple_variable(ostream &os, const string &name, const string &type)
        << "<font size=\"+1\">" << name << "</font>" 
        << ": " << type << "</b><br>\n\n";
 
-    os << name << " <select name=\"" << name_for_js_code(name)<< "_operator\""
+    ss << name << " <select name=\"" << name_for_js_code(name)<< "_operator\""
        << " onfocus=\"describe_operator()\""
        << " onchange=\"DODS_URL.update_url()\">\n"
        << "<option value=\"=\" selected>=\n"
@@ -375,12 +461,15 @@ write_simple_variable(ostream &os, const string &name, const string &type)
        << "<option value=\"-\">--\n"
        << "</select>\n";
 
-    os << "<input type=\"text\" name=\"" << name_for_js_code(name)
+    ss << "<input type=\"text\" name=\"" << name_for_js_code(name)
        << "_selection"
        << "\" size=12 onFocus=\"describe_selection()\" "
        << "onChange=\"DODS_URL.update_url()\">\n";
     
-    os << "<br>\n\n";
+    ss << "<br>\n\n";
+    
+    // Now write that string to os
+    fprintf(os, "%", ss.str().c_str());
 }
 
 // $Log: WWWOutput.cc,v $
@@ -408,7 +497,7 @@ write_simple_variable(ostream &os, const string &name, const string &type)
 //
 // Revision 1.10.4.1  2003/05/07 22:08:51  jimg
 // Added 'using namespace std;', fixed multi-line string literals and replaced
-// ostrstream with ostringstream.
+// sstrstream with sstringstream.
 //
 // Revision 1.10  2003/01/27 23:53:54  jimg
 // Merged with release-3-2-7.
@@ -448,7 +537,7 @@ write_simple_variable(ostream &os, const string &name, const string &type)
 //
 // Revision 1.6.2.1  2001/01/26 04:04:33  jimg
 // Fixed a bug in the JavaScript code. Now the name of the JS variables
-// are prefixed by `dods_'. This means that DODS variables whose names are
+// are prefixed by `dods_'. This means that DODS variables whsse names are
 // also reserved words in JS work break the JS code.
 //
 // Revision 1.6  2000/11/09 21:04:37  jimg

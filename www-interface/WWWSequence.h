@@ -57,7 +57,7 @@ public:
 
     virtual int length();
 
-    virtual void print_val(ostream &os, string space = "", 
+    virtual void print_val(FILE *os, string space = "", 
 			   bool print_decl_p = true);
 };
 

@@ -54,12 +54,12 @@ public:
 
     virtual int length();
 
-    virtual void print_ascii(ostream &os, bool print_name) throw(InternalErr);
-    virtual void print_header(ostream &os);
+    virtual void print_ascii(FILE *os, bool print_name) throw(InternalErr);
+    virtual void print_header(FILE *os);
 
-    virtual void print_leading_vars(ostream &os, BaseTypeRow &outer_vars);
-    virtual void print_ascii_row(ostream &os, int row, BaseTypeRow out_vars);
-    virtual void print_ascii_rows(ostream &os, BaseTypeRow out_vars);
+    virtual void print_leading_vars(FILE *os, BaseTypeRow &outer_vars);
+    virtual void print_ascii_row(FILE *os, int row, BaseTypeRow out_vars);
+    virtual void print_ascii_rows(FILE *os, BaseTypeRow out_vars);
 };
 
 // $Log: AsciiSequence.h,v $

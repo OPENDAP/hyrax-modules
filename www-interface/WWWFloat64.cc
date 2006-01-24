@@ -72,7 +72,7 @@ WWWFloat64::read(const string &)
 }
 
 void 
-WWWFloat64::print_val(ostream &os, string, bool /*print_decl_p*/)
+WWWFloat64::print_val(FILE *os, string, bool /*print_decl_p*/)
 {
     write_simple_variable(os, (string)name().c_str(), fancy_typename(this));
 }

@@ -204,7 +204,7 @@ process_data(DDS *dds)
 
     DDS::Vars_iter i = dds->var_begin();
     while (i != dds->var_end()) {
-	dynamic_cast<AsciiOutput &>(**i++).print_ascii(cout);
+	dynamic_cast<AsciiOutput &>(**i++).print_ascii(stdout);
 	cout << endl;
     }
 }

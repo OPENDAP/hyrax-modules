@@ -87,8 +87,9 @@ WWWStructure::read(const string &)
 // a sequence. 
 
 void 
-WWWStructure::print_val(ostream &os, string /*space*/, bool print_decls)
+WWWStructure::print_val(FILE *os, string /*space*/, bool print_decls)
 {
+#if 0
     os << "<b>Structure " << name() << "</b><br>\n";
     os << "<dl><dd>\n";
 
@@ -99,6 +100,17 @@ WWWStructure::print_val(ostream &os, string /*space*/, bool print_decls)
     }
 
     os << "</dd></dl>\n";
+#endif
+    fprintf(os, "<b>Structure %s </b><br>\n", name().c_str());
+    fprintf(os, "<dl><dd>\n");
+
+    for (Vars_iter i = var_begin(); i != var_end(); ++i) {
+        (*i)->print_val(os, "", print_decls);
+        wo.write_variable_attributes(*i, *wo.get_das());
+        fprintf(os, "<p><p>\n");
+    }
+
+    fprintf(os, "</dd></dl>\n");
 }
 
 // Is this a simple WWWStructure? Simple WWWStructures are composed of

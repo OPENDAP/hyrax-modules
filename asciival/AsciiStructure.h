@@ -51,8 +51,8 @@ public:
     virtual BaseType *ptr_duplicate();
 
     virtual bool read(const string &dataset);
-    virtual void print_header(ostream &os);
-    virtual void print_ascii(ostream &os, bool print_name = true) 
+    virtual void print_header(FILE *os);
+    virtual void print_ascii(FILE *os, bool print_name = true) 
 	throw(InternalErr);
 };
 

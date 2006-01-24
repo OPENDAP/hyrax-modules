@@ -89,7 +89,7 @@ AsciiSequence::length()
 // case 1: Simple, Seq - handled
 // Case 2: Seq, Simple
 void
-AsciiSequence::print_ascii_row(ostream &os, int row, BaseTypeRow outer_vars)
+AsciiSequence::print_ascii_row(FILE *os, int row, BaseTypeRow outer_vars)
 {
     // Print the values from this sequence.
     int elements = element_count() - 1;
@@ -112,24 +112,24 @@ AsciiSequence::print_ascii_row(ostream &os, int row, BaseTypeRow outer_vars)
 	if (j > elements)
 	    done = true;
 	else {
-	    os << ", ";
+	    fprintf(os, ", ");
 	}
     } while (!done);
 }
 
 void
-AsciiSequence::print_leading_vars(ostream &os, BaseTypeRow &outer_vars)
+AsciiSequence::print_leading_vars(FILE *os, BaseTypeRow &outer_vars)
 {
     BaseTypeRow::iterator BTR_iter = outer_vars.begin();
     for (BTR_iter = outer_vars.begin(); BTR_iter != outer_vars.end(); 
 	 BTR_iter++) {
 	dynamic_cast<AsciiOutput*>(*BTR_iter)->print_ascii(os, false);
-	os << ", ";
+	fprintf(os, ", ");
     }
 }
 
 void
-AsciiSequence::print_ascii_rows(ostream &os, BaseTypeRow outer_vars)
+AsciiSequence::print_ascii_rows(FILE *os, BaseTypeRow outer_vars)
 {
     int rows = number_of_rows() - 1;
     int i = 0;
@@ -143,7 +143,7 @@ AsciiSequence::print_ascii_rows(ostream &os, BaseTypeRow outer_vars)
 	if (i > rows)
 	    done = true;
 	else
-	    os << endl;
+	    fprintf(os, "\n");
     } while (!done);
 }
 
@@ -151,12 +151,13 @@ AsciiSequence::print_ascii_rows(ostream &os, BaseTypeRow outer_vars)
 // table style headers for complex sequences. 
 
 void
-AsciiSequence::print_header(ostream &os)
+AsciiSequence::print_header(FILE *os)
 {
     Vars_iter p = var_begin();
     while (p != var_end()) {
 	if ((*p)->is_simple_type())
-	    os << names.lookup(dynamic_cast<AsciiOutput*>((*p))->get_full_name(), translate);
+	    fprintf(os, "%s",
+                names.lookup(dynamic_cast<AsciiOutput*>((*p))->get_full_name(), translate).c_str());
 	else if ((*p)->type() == dods_sequence_c)
 	    dynamic_cast<AsciiSequence *>((*p))->print_header(os);
 	else if ((*p)->type() == dods_structure_c)
@@ -165,17 +166,17 @@ AsciiSequence::print_header(ostream &os)
 	    throw InternalErr(__FILE__, __LINE__,
 "This method should only be called by instances for which `is_simple_sequence' returns true.");
 	if (++p != var_end())
-	    os << ", ";
+	    fprintf(os, ", ");
     }
 }
 
 void
-AsciiSequence::print_ascii(ostream &os, bool print_name) throw(InternalErr)
+AsciiSequence::print_ascii(FILE *os, bool print_name) throw(InternalErr)
 {
     if (is_linear()) {
 	if (print_name) {
 	    print_header(os);
-	    os << endl;
+	    fprintf(os, "\n");
 	}
 	
 	BaseTypeRow outer_vars(0);
@@ -199,14 +200,14 @@ AsciiSequence::print_ascii(ostream &os, bool print_name) throw(InternalErr)
 		if (j > elements)
 		    vars_done = true;
 		else
-		    os << endl;
+		    fprintf(os, "\n");
 	    } while (!vars_done);
 	    
 	    i++;
 	    if (i > rows)
 		rows_done = true;
 	    else
-		os << endl;
+		fprintf(os, "\n");
 	} while (!rows_done);
     }
 }

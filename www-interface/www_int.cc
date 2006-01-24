@@ -37,7 +37,7 @@ static char rcsid[] not_used = {"$Id$"};
 
 #include <stdio.h>
 
-#include <fstream>
+#include <sstream>
 #include <string>
 
 #include <GetOpt.h>
@@ -62,7 +62,7 @@ const char *version = PACKAGE_VERSION;
 
 // A better way to do this would have been to make WWWStructure, ..., inherit
 // from both Structure and WWWOutput. But I didn't... jhrg 8/29/05
-WWWOutput wo(cout);
+WWWOutput wo(stdout);
 
 static void
 usage(string name)
@@ -242,10 +242,10 @@ main(int argc, char * argv[])
 
 	if (regular_header || nph_header)
 	    wo.write_html_header(nph_header);
-
-	cout << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n"
+        ostringstream oss;
+	oss << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n"
 	     << "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n"
-	     << "<html><head><title>DODS Dataset Query Form</title>\n"
+	     << "<html><head><title>OPeNDAP Server Dataset Query Form</title>\n"
 	     << "<base href=\"" << help_location << "\">\n"
 	     << "<script type=\"text/javascript\">\n"
 	     << "<!--\n"
@@ -256,16 +256,24 @@ main(int argc, char * argv[])
 	     << "</script>\n"
 	     << "</head>\n" 
 	     << "<body>\n"
-	     << "<p><h2 align='center'>DODS Dataset Access Form</h2>\n"
+	     << "<p><h2 align='center'>OPeNDAP Server Dataset Access Form</h2>\n"
 	     << "<hr>\n"
 	     << "<form action=\"\">\n"
 	     << "<table>\n";
+        fprintf(stdout, "%s", oss.str().c_str());
+        
 	wo.write_disposition(url);
-	cout << "<tr><td><td><hr>\n\n";
+        
+        fprintf(stdout, "<tr><td><td><hr>\n\n");
+        
 	wo.write_global_attributes(*wo.get_das());
-	cout << "<tr><td><td><hr>\n\n";
-	wo.write_variable_entries(*wo.get_das(), dds);
-	cout << "</table></form>\n\n"
+        
+        fprintf(stdout, "<tr><td><td><hr>\n\n");
+
+        wo.write_variable_entries(*wo.get_das(), dds);
+
+        oss.str("");
+	oss << "</table></form>\n\n"
 #if 0
 	     << "<hr>\n"
 	     << "<font size=-1>Tested on: "
@@ -279,16 +287,22 @@ main(int argc, char * argv[])
 #endif
 	     << "<hr>\n\n";
 	if (admin_name != "") {
-	    cout << "<address>Send questions or comments to: <a href=\"mailto:"
+	    oss << "<address>Send questions or comments to: <a href=\"mailto:"
 		 << admin_name << "\">" << admin_name << "</a></address>\n\n"
 		 << "<address>For general help with OPeNDAP software, see: "
 		 << "<a href=\"http://www.opendap.org/\">"
 		 << "http://www.opendap.org/</a></address>\n\n";
 	}
 	else {
-	    cout << "<address>Send questions or comments to: <a href=\"mailto:support@unidata.ucar.edu\">support@unidata.ucar.edu</a></address>"
+	    oss << "<address>Send questions or comments to: <a href=\"mailto:support@unidata.ucar.edu\">support@unidata.ucar.edu</a></address>"
+                << "<p>\n\
+                    <a href=\"http://validator.w3.org/check?uri=referer\"><img\n\
+                        src=\"http://www.w3.org/Icons/valid-html40\"\n\
+                        alt=\"Valid HTML 4.0 Transitional\" height=\"31\" width=\"88\">\n\
+                    </a></p>\n"
 		 << "</body></html>\n";
-	}
+}
+        fprintf(stdout, "%s", oss.str().c_str());
 
 	delete wof; wof = 0;
     }

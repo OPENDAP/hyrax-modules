@@ -42,6 +42,7 @@
 static char rcsid[] not_used = {"$Id$"};
 
 #include <iostream>
+#include <sstream>
 #include <string>
 
 #include "InternalErr.h"
@@ -81,9 +82,10 @@ WWWArray::read(const string &)
 }
 
 void 
-WWWArray::print_val(ostream &os, string, bool /*print_decl_p*/)
+WWWArray::print_val(FILE *os, string, bool /*print_decl_p*/)
 {
-    os << "<script type=\"text/javascript\">\n"
+    ostringstream ss;
+    ss << "<script type=\"text/javascript\">\n"
        << "<!--\n"
        << name_for_js_code(name()) << " = new dods_var(\"" 
        << id2www_ce(name())
@@ -92,7 +94,7 @@ WWWArray::print_val(ostream &os, string, bool /*print_decl_p*/)
        << "// -->\n"
        << "</script>\n";
 
-    os << "<b>" 
+    ss << "<b>" 
        << "<input type=\"checkbox\" name=\"get_" << name_for_js_code(name())
        << "\"\n"
        << "onclick=\"" << name_for_js_code(name())
@@ -106,19 +108,21 @@ WWWArray::print_val(ostream &os, string, bool /*print_decl_p*/)
 	int size = dimension_size(p, true);
 	string n = dimension_name(p);
 	if (n != "")
-	    os << n << ":";
-	os << "<input type=\"text\" name=\"" << name_for_js_code(name())
+	    ss << n << ":";
+	ss << "<input type=\"text\" name=\"" << name_for_js_code(name())
 	   << "_" << i 
 	   << "\" size=8 onfocus=\"describe_index()\""
 	   << " onChange=\"DODS_URL.update_url()\">\n";
-	os << "<script type=\"text/javascript\">\n"
+	ss << "<script type=\"text/javascript\">\n"
 	   << "<!--\n"
 	   << name_for_js_code(name()) << ".add_dim(" << size << ");\n"
 	   << "// -->\n"
 	   << "</script>\n";
     }
     
-    os << "<br>\n\n";
+    ss << "<br>\n\n";
+    
+    fprintf(os, "%s", ss.str().c_str());
 }
 
 // $Log: WWWArray.cc,v $

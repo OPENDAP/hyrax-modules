@@ -74,7 +74,7 @@ AsciiArray::read(const string &)
 }
 
 void
-AsciiArray::print_ascii(ostream &os, bool print_name) throw(InternalErr)
+AsciiArray::print_ascii(FILE *os, bool print_name) throw(InternalErr)
 {
     // This works for simple types only. 9/12/2001 jhrg
     if (var()->is_simple_type()) {
@@ -90,15 +90,16 @@ AsciiArray::print_ascii(ostream &os, bool print_name) throw(InternalErr)
 
 // Print out a values for a vector (one dimensional array) of simple types.
 void
-AsciiArray::print_vector(ostream &os, bool print_name)
+AsciiArray::print_vector(FILE *os, bool print_name)
 {
     if (print_name)
-	os << names.lookup(dynamic_cast<AsciiOutput*>(this)->get_full_name(), translate) << ", ";
+	fprintf(os, "%s, ",
+                names.lookup(dynamic_cast<AsciiOutput*>(this)->get_full_name(), translate).c_str());
 
     int end = dimension_size(first_dim(), true) - 1; // only one dimension
     for (int i = 0; i < end; ++i) {
 	dynamic_cast<AsciiOutput *>(var(i))->print_ascii(os, false);
-	os << ", ";
+	fprintf(os, ", ");
     }
     dynamic_cast<AsciiOutput *>(var(end))->print_ascii(os, false);
 }
@@ -115,11 +116,11 @@ AsciiArray::print_vector(ostream &os, bool print_name)
     row's first value).
     @see print\_array */
 int
-AsciiArray::print_row(ostream &os, int index, int number)
+AsciiArray::print_row(FILE *os, int index, int number)
 {
     for (int i = 0; i < number; ++i) {
 	dynamic_cast<AsciiOutput *>(var(index++))->print_ascii(os, false);
-	os << ", ";
+        fprintf(os, ", ");
     }
     dynamic_cast<AsciiOutput *>(var(index++))->print_ascii(os, false);
 
@@ -206,7 +207,7 @@ AsciiArray::get_nth_dim_size(size_t n) throw(InternalErr)
 }
 
 void 
-AsciiArray::print_array(ostream &os, bool /*print_name*/)
+AsciiArray::print_array(FILE *os, bool /*print_name*/)
 {
     DBG(cerr << "Entering AsciiArray::print_array" << endl);
 
@@ -230,16 +231,17 @@ AsciiArray::print_array(ostream &os, bool /*print_name*/)
     int index = 0;
     do {
 	// Print indices for all dimensions except the last one.
-	os << names.lookup(dynamic_cast<AsciiOutput*>(this)->get_full_name(), translate);
+	fprintf(os, "%s",
+                names.lookup(dynamic_cast<AsciiOutput*>(this)->get_full_name(), translate).c_str());
 	for (int i = 0; i < dims - 1; ++i) {
-	    os << "[" << state[i] << "]";
+	    fprintf(os, "[%d]", state[i]);
 	}
-	os << ", ";
+	fprintf(os, ", ");
 
 	index = print_row(os, index, rightmost_dim_size - 1);
 	more_indices = increment_state(&state, shape);
 	if (more_indices)
-	    os << endl;
+	    fprintf(os, "\n");
 
     } while (more_indices);
 
@@ -247,7 +249,7 @@ AsciiArray::print_array(ostream &os, bool /*print_name*/)
 }
 
 void 
-AsciiArray::print_complex_array(ostream &os, bool /*print_name*/)
+AsciiArray::print_complex_array(FILE *os, bool /*print_name*/)
 {
     DBG(cerr << "Entering AsciiArray::print_complex_array" << endl);
 
@@ -265,18 +267,19 @@ AsciiArray::print_complex_array(ostream &os, bool /*print_name*/)
     bool more_indices;
     do {
 	// Print indices for all dimensions except the last one.
-	os << names.lookup(dynamic_cast<AsciiOutput*>(this)->get_full_name(), translate);
+	fprintf(os, "%s", 
+                names.lookup(dynamic_cast<AsciiOutput*>(this)->get_full_name(), translate).c_str());
 	for (int i = 0; i < dims; ++i) {
-	    os << "[" << state[i] << "]";
+	    fprintf(os, "[%d]", state[i]);
 	}
-	os << endl;
+        fprintf(os, "\n");
 
 	dynamic_cast<AsciiOutput*>(var(get_index(state)))
 	    ->print_ascii(os, true);
 	
 	more_indices = increment_state(&state, shape);
 	if (more_indices)
-	    os << endl;
+            fprintf(os, "\n");
 
     } while (more_indices);
 
