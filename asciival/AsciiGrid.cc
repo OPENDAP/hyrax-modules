@@ -90,12 +90,11 @@ AsciiGrid::print_vector(FILE *os, bool print_name)
 {
     DBG(cerr << "AsciiGrid::print_vector" << endl);
 
-    dynamic_cast<AsciiArray *>(map_var(first_map_var()))
-	->print_ascii(os, print_name);
+    dynamic_cast<AsciiArray&>(**map_begin()).print_ascii(os, print_name);
     
     fprintf(os, "\n");
 
-    dynamic_cast<AsciiArray *>(array_var())->print_ascii(os, print_name);
+    dynamic_cast<AsciiArray&>(*array_var()).print_ascii(os, print_name);
 }
 
 void 
