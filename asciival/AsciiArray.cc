@@ -96,7 +96,7 @@ AsciiArray::print_vector(FILE *os, bool print_name)
 	fprintf(os, "%s, ",
                 names.lookup(dynamic_cast<AsciiOutput*>(this)->get_full_name(), translate).c_str());
 
-    int end = dimension_size(first_dim(), true) - 1; // only one dimension
+    int end = dimension_size(dim_begin(), true) - 1; // only one dimension
     for (int i = 0; i < end; ++i) {
 	dynamic_cast<AsciiOutput *>(var(i))->print_ascii(os, false);
 	fprintf(os, ", ");
