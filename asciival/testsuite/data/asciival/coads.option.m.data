@@ -1,9 +1,10 @@
 HTTP/1.0 200 OK
-XDODS-Server: *
+XDODS-Server: 
+XDAP-Protocol: *
 Date: *
 Last-Modified: *
-Content-type: text/plain
-Content-Description: dods_data
+Content-Type: *
+Content-Description: *
 
 Dataset: coads_climatology.nc
 SST.COADSX, 121, 123, 125, 127, 129, 131, 133, 135, 137, 139, 141
