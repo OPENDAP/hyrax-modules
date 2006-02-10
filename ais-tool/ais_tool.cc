@@ -29,7 +29,7 @@
 
     @author: jhrg */
 
-#include "config_ais_tool.h"
+#include "config.h"
 
 static char rcsid[] not_used = {"$Id$"};
 
