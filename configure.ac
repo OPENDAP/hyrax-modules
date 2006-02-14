@@ -51,7 +51,7 @@ AC_HEADER_STDBOOL
 AC_C_CONST
 AC_TYPE_SIZE_T
 
-AC_ARG_ENABLE([modulesdir],
+AC_ARG_WITH([modulesdir],
    [AS_HELP_STRING([--with-modulesdir],[perl modules dir (default ${datadir}/dap-server)])],
    [
         dap_modulesdir="$withval"
@@ -63,7 +63,7 @@ AC_ARG_ENABLE([modulesdir],
 
 AC_SUBST([dap_modulesdir])
 
-AC_ARG_ENABLE([cgidir],
+AC_ARG_WITH([cgidir],
    [AS_HELP_STRING([--with-cgidir],[CGI scripts dir (default ${datadir}/dap-server-cgi)])],
    [
         dap_cgidir="$withval"
