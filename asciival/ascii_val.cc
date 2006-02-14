@@ -68,11 +68,11 @@ using namespace std;
 #include <fcntl.h>
 #endif
 
-#include "BaseType.h"
-#include "Connect.h"
-#include "name_map.h"
-#include "cgi_util.h"
-#include "debug.h"
+#include <BaseType.h>
+#include <Connect.h>
+#include <PipeResponse.h>
+#include <cgi_util.h>
+#include <debug.h>
 
 #include "AsciiByte.h"
 #include "AsciiInt32.h"
@@ -86,6 +86,8 @@ using namespace std;
 #include "AsciiGrid.h"
 
 #include "AsciiOutputFactory.h"
+
+#include "name_map.h"
 
 name_map names;
 bool translate = false;
@@ -172,14 +174,14 @@ read_from_file(DataDDS &dds, const string &handler,
     DBG(cerr << "DDS Command: " << command << endl);
 
     FILE *in = popen(command.c_str(), "r");
+    PipeResponse pr(in);
+#if 1
     // Cheat: Instead of using our own code, use code from Connect. Really we should
     // make a FILEConnect (just like there's an HTTPConnnect) to process inputs
     // from files. For now, use the read_data() method. jhrg 2/9/06
     Connect c("local_pipe");
-    c.read_data(dds, in);
-    pclose(in);
-
-#if 0
+    c.read_data(dds, &pr);
+#else
     if (in && remove_mime_header(in)) {
 	XDR *xdr_stream = 0;
 
