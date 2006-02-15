@@ -152,7 +152,8 @@ main(int argc, char * argv[])
     bool handler = false;
     bool url_given = false;
     // Note that the help file is stored as part of the web page source and
-    // not with this source code. jhrg 7/21/05
+    // not with this source code. If this URL is edited, may sure to also
+    // edit the corresponding URL in www.js. jhrg 7/21/05
     string help_location = "http://www.opendap.org/online_help_files/opendap_form_help.html";
     string admin_name = "";
     string handler_name = "";

@@ -104,53 +104,13 @@ function help_button() {
     // the root window's document gets reloaded. This does not happen on IE5.
     // regardless, with scrollbars we don't absolutely need to be able to
     // resize. 10/8/99 jhrg
-    help = window.open("", "help", "scrollbars,dependent,width=600,height=400");
-    write_help_contents(help);
+    help = window.open("http://www.opendap.org/online_help_files/opendap_form_help.html",
+                       "help", "scrollbars,dependent,width=600,height=400");
 }
 
-function write_help_contents() {
-    help.document.writeln("<html><head><title> " +
-"Help for the DODS Dataset Access Form</title></head><body><form> " +
-"<center><h2>Help for the DODS Dataset Access Form</h2></center> " +
-"This form displays information from the dataset whose URL is shown in " +
-"the <em>DataURL</em> field. Each variable in this dataset is shown " +
-"below in the section labeled <em>Variables</em>. " +
-"<ul>" +
-"<li>To select a variable click on the checkbox to its left. " +
-"<li>To constrain a variable that you've selected, edit the information " +
-"that appears in the text boxes below the variable. " +
-"When entering values for selections on String variables, you may need " +
-"to quote those values. " +
-"<li>To get data in ASCII, various common formats or DODS binary objects, click on " +
-"one of the buttons labeled <em>Get ...</em>. The <em>Get ASCII</em> and " +
-"<em>Get DODS Data Object</em> buttons will always be present. Other buttons " +
-"may be present providing access other types of return formats such as NetCDF, " +
-"HDF, et cetera. Note that in order to use the DODS Data Objects, you'll need " +
-"to download software from the <a href=\"http://www.opendap.org/download/\">OPeNDAP web site</a> " +
-"to decode them. " +
-//  "<li>To use the <em>Send to Program</em> feature you must install a web " +
-//  "helper application that can route the DODS URL built by this form to a " +
-//  "client. Look on the <a " +
-//  "href=\"http://unidata.ucar.edu/packages/dods/\" target=\"DODS\"> " +
-//  "DODS home page (http://unidata.ucar.edu/packages/dods/)</a> " +
-//  "for a suitable client. " +
-//  "</ul>" +
-"Also note that the URL displayed in the <em>DataURL</em> field is updated " +
-"as you select and/or constrain variables. The URL in this field can be " +
-"cut and pasted in various clients such as the Matlab, ferret, GrADS " +
-"et cetera. See the <a " +
-"href=\"http://www.opendap.org/\" target=\"DODS\"> " +
-"OPeNDAP home page</a> for " +
-"information about those clients. " +
-"<p><hr><p> " + 
-"<center> " +
-"<input type=\"button\" value=\"Close\" onclick=\"self.close()\"> " +
-"</center></form></body></html>");
-}
-
-function open_dods_home() {
-    window.open("http://www.opendap.org/", "DODS_HOME_PAGE");
-}
+//function open_dods_home() {
+//    window.open("http://www.opendap.org/", "DODS_HOME_PAGE");
+//}
 
 
 // Helper functions for the form.

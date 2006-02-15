@@ -144,7 +144,7 @@ WWWOutput::write_disposition(string url)
     fprintf(d_os, "<tr>\n\
 <td align=\"right\">\n\
 <h3>\n\
-<a href=\"opendap_form_help.html#disposition\">Action:</a></h3>\n\
+<a href=\"opendap_form_help.html#disposition\" target=\"help\">Action:</a></h3>\n\
 <td>\n\
 <input type=\"button\" value=\"Get ASCII\" onclick=\"ascii_button()\">\n");
 
@@ -189,7 +189,7 @@ WWWOutput::write_disposition(string url)
 <input type=\"button\" value=\"Show Help\" onclick=\"help_button()\">\n\
 \n\
 <tr>\n\
-<td align=\"right\"><h3><a href=\"opendap_form_help.html#data_url\">Data URL:</a>\n\
+<td align=\"right\"><h3><a href=\"opendap_form_help.html#data_url\" target=\"help\">Data URL:</a>\n\
 </h3>\n\
 <td><input name=\"url\" type=\"text\" size=\"%d\" value=\"%s\">\n",
 _attr_cols, url.c_str());
@@ -241,7 +241,7 @@ WWWOutput::write_global_attributes(DAS &das)
     fprintf(d_os,
 "<tr>\n\
 <td align=\"right\" valign=\"top\"><h3>\n\
-<a href=\"opendap_form_help.html#global_attr\">Global Attributes:</a></h3>\n\
+<a href=\"opendap_form_help.html#global_attr\" target=\"help\">Global Attributes:</a></h3>\n\
 <td><textarea name=\"global_attr\" rows=\"%d\" cols=\"%d\">\n",
 _attr_rows, _attr_cols);
 
@@ -282,7 +282,7 @@ void
 WWWOutput::write_variable_list(DDS &dds)
 {
     fprintf(d_os,
-"<a href=\"opendap_form_help.html#dataset_variables\"><h4>Dataset Variables</a>:</h4>\n\
+"<a href=\"opendap_form_help.html#dataset_variables\" target=\"help\"><h4>Dataset Variables</a>:</h4>\n\
 <select name=\"variables\" multiple size=5 onChange=\"variables_obj.var_selection()\">\n");
 
     for (DDS::Vars_iter p = dds.var_begin(); p != dds.var_end(); ++p) {
@@ -313,7 +313,7 @@ WWWOutput::write_variable_entries(DAS &das, DDS &dds)
     fprintf(d_os,
 "<tr>\n\
 <td align=\"right\" valign=\"top\">\n\
-<h3><a href=\"opendap_form_help.html#dataset_variables\">Variables:</a></h3>\n\
+<h3><a href=\"opendap_form_help.html#dataset_variables\" target=\"help\">Variables:</a></h3>\n\
 <td>");
     
     for (DDS::Vars_iter p = dds.var_begin(); p != dds.var_end(); ++p) {
