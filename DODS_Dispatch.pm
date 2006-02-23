@@ -937,9 +937,8 @@ sub command {
             ($server_url) = ( $server_url =~ m@(.*)\?.*@ );
         }
         my $excludes          = $self->exclude();
-        my $filtered_dir_html =
-          new FilterDirHTML( $server_url, $url,
-                             dataset_regexes( "./dap-server.rc", @$excludes ) );
+        my $filtered_dir_html = FilterDirHTML->new;
+        $filtered_dir_html->initialize( $server_url, $url, dataset_regexes( "./dap-server.rc", @$excludes ) );
 
         # Print HTTP response headers. 06/25/04 jhrg
         print( STDOUT "HTTP/1.1 200 OK\n" );
