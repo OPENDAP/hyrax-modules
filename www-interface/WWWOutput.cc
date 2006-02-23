@@ -29,10 +29,6 @@
 // Authors:
 //      jhrg,jimg       James Gallagher <jgallagher@gso.uri.edu>
 
-#ifdef __GNUG__
-//#pragma implementation
-#endif
-
 #include "config_www_int.h"
 
 static char rcsid[] not_used = {"$Id$"};
@@ -50,16 +46,16 @@ static char rcsid[] not_used = {"$Id$"};
 #include <io.h>
 #endif
 
-#include "GNURegex.h"
+#include <GNURegex.h>
 
-#include "BaseType.h"
-#include "Array.h"
-#include "DAS.h"
-#include "DDS.h"
-#include "InternalErr.h"
-#include "escaping.h"
-#include "cgi_util.h"
-#include "util.h"
+#include <BaseType.h>
+#include <Array.h>
+#include <DAS.h>
+#include <DDS.h>
+#include <InternalErr.h>
+#include <escaping.h>
+#include <cgi_util.h>
+#include <util.h>
 
 #include "WWWOutput.h"
 
@@ -122,15 +118,6 @@ WWWOutput::WWWOutput(FILE *os, int rows, int cols):
 void
 WWWOutput::write_html_header(bool nph_header)
 {
-#if 0
-    if (nph_header)
-	_os << "HTTP/1.0 200 OK" << endl;
-    _os << "XDODS-Server: " << dap_version() << endl;
-    _os << "Content-type: text/html" << endl; 
-    _os << "Content-Description: opendap_form" << endl;
-    _os << endl;		// MIME header ends with a blank line
-#endif
-
     set_mime_html(d_os, unknown_type, dap_version(), x_plain);
 }
 
@@ -148,13 +135,6 @@ WWWOutput::write_disposition(string url)
 <td>\n\
 <input type=\"button\" value=\"Get ASCII\" onclick=\"ascii_button()\">\n");
 
-#if 0
-    _os << "<tr>\n\
-<td align=\"right\"><h3><a href=\"opendap_form_help.html#disposition\">Action:</a></h3>\n";
-    _os << "<td>";
-
-    _os << "<input type=\"button\" value=\"Get ASCII\" onclick=\"ascii_button()\">\n";
-#endif
 #if 0
     // See the comment above about the 'drop in' format handler support that
     // was never needed. jhrg 7/22/05
@@ -174,16 +154,7 @@ WWWOutput::write_disposition(string url)
     if (acceos(dods2idl, X_OK) == 0)
 	_os << "<input type=\"button\" value=\"Get IDL\" onclick=\"binary_button('idl')\">\n";
 #endif
-#if 0
-    _os << "<input type=\"button\" value=\"Binary Data Object \" onclick=\"binary_button('dods')\">\n\
-<input type=\"button\" value=\"Show Help\" onclick=\"help_button()\">\n\
-\n\
-<tr>\n\
-<td align=\"right\"><h3><a href=\"opendap_form_help.html#data_url\">Data URL:</a>\n\
-</h3>\n\
-<td><input name=\"url\" type=\"text\" size=" << _attr_cols << " value=\"" 
-<< url << "\">";
-#endif
+
     fprintf(d_os,
 "<input type=\"button\" value=\"Binary Data Object \" onclick=\"binary_button('dods')\">\n\
 <input type=\"button\" value=\"Show Help\" onclick=\"help_button()\">\n\
@@ -195,11 +166,6 @@ WWWOutput::write_disposition(string url)
 _attr_cols, url.c_str());
 }
 
-#if 0
-//I cut the following from the above.
-//<input type=\"button\" value=\"Send to Program\" onclick=\"program_button()\">
-#endif
-
 void
 WWWOutput::write_attributes(AttrTable *attr, const string prefix)
 {
@@ -210,17 +176,6 @@ WWWOutput::write_attributes(AttrTable *attr, const string prefix)
 				 (prefix == "") ? attr->get_name(a) 
 				 : prefix + string(".") + attr->get_name(a));
 	    else {
-#if 0
-		if (prefix != "")
-		    _os << prefix << "." << attr->get_name(a) << ": ";
-		else
-		    _os << attr->get_name(a) << ": ";
-
-		int num_attr = attr->get_attr_num(a) - 1 ;
-		for (int i = 0; i < num_attr; ++i)
-		    _os << attr->get_attr(a, i) << ", ";
-		_os << attr->get_attr(a, num_attr) << endl;
-#endif
                 if (prefix != "")
                     fprintf(d_os, "%s.%s: ", prefix.c_str(),  attr->get_name(a).c_str());
                 else
@@ -255,25 +210,6 @@ _attr_rows, _attr_cols);
     }
 
     fprintf(d_os, "</textarea><p>\n\n");
-#if 0
-    _os << \
-"<tr>\n\
-<td align=\"right\" valign=\"top\"><h3>\n\
-<a href=\"opendap_form_help.html#global_attr\">Global Attributes:</a></h3>\n\
-<td><textarea name=\"global_attr\" rows=" << _attr_rows << " cols=" 
-<< _attr_cols << ">\n";
-
-    for (AttrTable::Attr_iter p = das.var_begin(); p != das.var_end(); ++p) {
-        string name = das.get_name(p);
-
-        if (!name_in_kill_file(name) && name_is_global(name)) {
-            AttrTable *attr = das.get_table(p);
-            write_attributes(attr);
-        }
-    }
-
-    _os << "</textarea><p>\n\n";
-#endif
 }
 
 // deprecated
@@ -291,18 +227,6 @@ WWWOutput::write_variable_list(DDS &dds)
     }
 
     fprintf(d_os, "</select>\n");
-#if 0
-    _os << \
-"<a href=\"opendap_form_help.html#dataset_variables\"><h4>Dataset Variables</a>:</h4>\n\
-<select name=\"variables\" multiple size=5 onChange=\"variables_obj.var_selection()\">" << endl;
-
-    for (DDS::Vars_iter p = dds.var_begin(); p != dds.var_end(); ++p) {
-        _os << "<option value=\"" << (*p)->name() << "\"> "
-            << (*p)->name() << endl;
-    }
-
-    _os << "</select>" << endl;
-#endif
 }
 
 void
@@ -322,20 +246,6 @@ WWWOutput::write_variable_entries(DAS &das, DDS &dds)
 	fprintf(d_os, "\n<p><p>\n\n");		// End the current var's section
 	fprintf(d_os, "<tr><td><td>\n\n");	// Start the next var in column two
     }
-#if 0
-    _os << \
-"<tr>\n\
-<td align=\"right\" valign=\"top\">\n\
-<h3><a href=\"opendap_form_help.html#dataset_variables\">Variables:</a></h3>\n\
-<td>";
-    
-    for (DDS::Vars_iter p = dds.var_begin(); p != dds.var_end(); ++p) {
-        (*p)->print_val(_os);
-        write_variable_attributes((*p), das);
-        _os << "\n<p><p>\n\n";          // End the current var's section
-        _os << "<tr><td><td>\n\n";      // Start the next var in column two
-    }
-#endif
 }
 
 void
@@ -350,12 +260,6 @@ WWWOutput::write_variable_attributes(BaseType *btp, DAS &das)
         btp->name().c_str(), _attr_rows, _attr_cols);
     write_attributes(attr);
     fprintf(d_os, "</textarea>\n\n");
-#if 0
-    _os << "<textarea name=\"" << btp->name() << "_attr" << "\" rows="
-	<< _attr_rows << " cols=" << _attr_cols << ">\n";
-    write_attributes(attr);
-    _os << "</textarea>\n\n";
-#endif
 }
 
 string
@@ -417,13 +321,6 @@ name_is_global(string &name)
 {
     static Regex global("(.*global.*)|(.*dods.*)", 1);
     downcase(name);
-#if 0
-    cerr << "attribute container name: " << name << endl;
-    int match = global.match(name.c_str(), name.length());
-    cerr << "match: " << match << endl;
-    if (match != -1)
-        cerr << "       is global/dods" << endl;
-#endif        
     return global.match(name.c_str(), name.length()) != -1;
 }
 
@@ -471,80 +368,3 @@ write_simple_variable(FILE *os, const string &name, const string &type)
     // Now write that string to os
     fprintf(os, "%", ss.str().c_str());
 }
-
-// $Log: WWWOutput.cc,v $
-// Revision 1.15  2004/07/08 22:32:19  jimg
-// Merged with relese-3-4-3FCS
-//
-// Revision 1.10.4.3  2004/07/06 02:29:45  rmorris
-// Make the javascript interface work correctly when served from win32.
-//
-// Revision 1.10.4.2  2004/06/28 12:12:41  rmorris
-// Porting for for www_int under win32.
-//
-// Revision 1.14  2004/01/28 16:47:49  jimg
-// Removed case for dods_list_c since List has been removed from the DAP.
-// Fixed a missed conflict fromthe last merge.
-//
-// Revision 1.13  2004/01/26 18:58:48  jimg
-// Build fixes
-//
-// Revision 1.12  2003/12/08 18:08:02  edavis
-// Merge release-3-4 into trunk
-//
-// Revision 1.11  2003/05/08 00:38:20  jimg
-// Fixed multi-line string literals.
-//
-// Revision 1.10.4.1  2003/05/07 22:08:51  jimg
-// Added 'using namespace std;', fixed multi-line string literals and replaced
-// sstrstream with sstringstream.
-//
-// Revision 1.10  2003/01/27 23:53:54  jimg
-// Merged with release-3-2-7.
-//
-// Revision 1.6.2.6  2002/03/27 14:54:45  jimg
-// Changed write_attributes so that nested attribtues `work.' The names of
-// nested attribtues are printed using the dot notation (cont1.cont2.attr).
-//
-// Revision 1.6.2.5  2002/02/04 17:11:07  jimg
-// Added code that checks for several `file out' tools in the CWD. If found, extra buttons are displayed. These buttons route the URL built in the form through the tool and ultimately return data to the client in the given file type. NB: The DODS server dispatch script (DODS_Dispatch.pm) must be modified also.
-//
-// Revision 1.9  2001/09/28 23:51:32  jimg
-// Merged with 3.2.4.
-//
-// Revision 1.6.2.4  2001/09/10 21:48:07  jimg
-// Removed the `Send to Program' button and its help text.
-//
-// Revision 1.6.2.3  2001/09/10 19:32:28  jimg
-// Fixed two problems: 1) Variable names in the JavaScript code sometimes
-// contained spaces since they were made using the dataset's variable name.
-// The names are now filtered through id2www and esc2underscore. 2) The CE
-// sometimes contained spaces, again, because dataset variable names were
-// used to build the CE. I filtered the names with id2www_ce before passing
-// them to the JavaScript code.
-//
-// Revision 1.8  2001/08/27 17:53:07  jimg
-// Merged with release-3-2-3.
-//
-// Revision 1.6.2.2  2001/07/13 20:23:31  jimg
-// The string (dods_) used to prefix variable names so that variables which have
-// the same name as a JavaScript reserved word was not `unique enough' to avoid
-// other conflicts. I changed it to `org_dods_dcz' and added www_int's process
-// ID. That should eliminate all conflicts in practice.
-//
-// Revision 1.7  2001/01/26 19:17:36  jimg
-// Merged with release-3-2.
-//
-// Revision 1.6.2.1  2001/01/26 04:04:33  jimg
-// Fixed a bug in the JavaScript code. Now the name of the JS variables
-// are prefixed by `dods_'. This means that DODS variables whsse names are
-// also reserved words in JS work break the JS code.
-//
-// Revision 1.6  2000/11/09 21:04:37  jimg
-// Merged changes from release-3-1. There was a goof and a bunch of the
-// changes never made it to the branch. I merged the entire branch.
-// There maybe problems still...
-//
-// Revision 1.5  2000/10/03 20:07:21  jimg
-// Moved Logs to the end of each file.
-//
