@@ -13,7 +13,7 @@ URL:             http://www.opendap.org/
 
 BuildRoot:       %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:   curl libdap-devel
-Requires:        curl webserver
+Requires:        curl webserver perl-HTML-Parser
 
 %description
 This is base software for our workhorse server. Written using the DAP++ C++ 

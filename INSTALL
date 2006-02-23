@@ -59,11 +59,9 @@ REQUIREMENTS
     configure; if you call autoconf directly the aclocal.m4 file won't get
     built from acinclude.m4 correctly.
 
-  o This software uses the HTML::Parser package but requires an older version.
-    For this reason, until we bring the data server into sync with the 
-    current version of the package, we're including a local copy. If you want
-    to experiment with the latest version of HTML:Parser, here's how to
-    get it:
+  o This software uses the HTML::Parser package. Red Hat, Fedora Core and
+    many other distributions include this as standard equipment. If the 
+    distribution you're using lacks HTML:Parser, here's how to get it:
   
     Using CPAN:
 	    
