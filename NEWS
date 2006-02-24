@@ -1,5 +1,14 @@
 
-Updated for version 3.5.3
+Version 3.5.4
+
+This package no longer includes its own copy of the Perl HTML::Parser
+module. The FilterDirHTML code now uses the current distribution's version
+of the Filter.pm module. That module is deprecated, so we'll need to rewrite
+our code or come up with a different solution. I hope that before too long 
+our servers will all use THREDDS catalogs in place of the 'filtered HTML'
+approach.
+
+Version 3.5.3
 
 ASCII returns for entire data source (i.e., with an empty Constraint 
 expression) were failing. Fixed.
@@ -11,7 +20,7 @@ New to this distribtion in the opendap_apache.conf file. Edit this, replacing
 Apache's configuration file directory (/etc/httpd/conf.d on many linux 
 distributions) and restart Apache. No need to edit your main httpd.conf file!
 
-Updated for version 3.5.2
+Version 3.5.2
 
 A bug in the HTML form and info response generators caused global attributes 
 to be 'lost.'
