@@ -4,7 +4,7 @@
 
 Summary:         Basic request handling for DAP servers 
 Name:            dap-server
-Version:         3.5.3
+Version:         3.6.0
 Release:         1
 License:         GPL
 Group:           System Environment/Daemons 
@@ -13,7 +13,7 @@ URL:             http://www.opendap.org/
 
 BuildRoot:       %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:   curl libdap-devel
-Requires:        curl webserver perl-HTML-Parser
+Requires:        curl webserver perl
 
 %description
 This is base software for our workhorse server. Written using the DAP++ C++ 

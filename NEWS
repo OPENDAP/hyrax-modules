@@ -1,5 +1,5 @@
 
-Version 3.5.4
+Version 3.6.0
 
 This package no longer includes its own copy of the Perl HTML::Parser
 module. The FilterDirHTML code now uses the current distribution's version
@@ -7,6 +7,18 @@ of the Filter.pm module. That module is deprecated, so we'll need to rewrite
 our code or come up with a different solution. I hope that before too long 
 our servers will all use THREDDS catalogs in place of the 'filtered HTML'
 approach.
+
+In the past the Web Interface (or HTML response) used its own built-in help
+text. This was fairly simple and not very helpful. I changed the interface
+so that it now uses a web page stored at the opendap web site.
+
+The dap_asciival filter now uses a new variant of the Response class which
+reads and stores the version number correctly.
+
+This code has been updated to use libdap 3.6.0.
+
+Fixed a bug where getting data without providing a constraint expression 
+failed.
 
 Version 3.5.3
 

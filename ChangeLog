@@ -1,9 +1,129 @@
+2006-02-24  James Gallagher <jgallagher@opendap.org>
+
+	Updated NEWS
+
+2006-02-23  James Gallagher <jgallagher@opendap.org>
+
+	Removed the HTML package; use the OS's copy.
+
+2006-02-23  James Gallagher <jgallagher@opendap.org>
+
+	Removed old code and the old cvs log
+
+2006-02-23  James Gallagher <jgallagher@opendap.org>
+
+	Removed old code and the old cvs log
+
+2006-02-23  James Gallagher <jgallagher@opendap.org>
+
+	Updated INSTALL and dap-server.spec so that they include
+	information about the perl-HTML-Parser module. This code now uses
+	the newest version.
+
+2006-02-23  James Gallagher <jgallagher@opendap.org>
+
+	I've modified FilterDirHTML.pm so that it can use a modern version
+	of HTLP::Filter (even though that particular class is deprecated).
+	This also caused some minor changes in DODS_Dispatch. Now, since
+	the stock HTML::Parser package can be used by the code, I no
+	longer install the old version and the Makefile.am has changed as
+	a result.
+
+2006-02-15  James Gallagher <jgallagher@opendap.org>
+
+	Changed www_int.cc, www.js and WWWOutput.cc so that the html help
+	page on the opendap.org web site is the only source of help
+	information.
+
+2006-02-14  James Gallagher <jgallagher@opendap.org>
+
+	Updated configure.ac and dap-server.spec using a patch from
+	Patrice Dumas.
+
+2006-02-14  James Gallagher <jgallagher@opendap.org>
+
+	ascii_val.cc: Now uses the new PipeResponse class to get a DataDDS
+	object from a server filter program. This means that the version
+	information encoded in the handler's response is now used and
+	Sequences will be handled correctly.
+
+2006-02-09  James Gallagher <jgallagher@opendap.org>
+
+	ais_tool.cc: Fixed the config.h include.
+
+2006-02-09  James Gallagher <jgallagher@opendap.org>
+
+	ascii_val.cc: Maybe fixed bug 248. The remove_mime_headers was not
+	setting the DAP version properly so I switched to using Connect::
+	read_data().
+
+2006-02-01  James Gallagher <jgallagher@opendap.org>
+
+	asciival/testsuite: Massive test fixes to accommodate the new MIME
+	header
+
+2006-02-01  James Gallagher <jgallagher@opendap.org>
+
+	AsciiAray.cc: removed last of the Pix code
+
+2006-02-01  James Gallagher <jgallagher@opendap.org>
+
+	AsciiGrid.cc: removed last of the Pix code
+
+2006-01-24  James Gallagher <jgallagher@opendap.org>
+
+	Massive changes to accommodate removeal of iostreams code from
+	libdap. Also, the help file for the HTML form was changed to the
+	web site link and the form run through a 4.0 Transitional
+	verifier. It's valid HTML and now has the fancy little logo
+	showing that ;-)
+
+2006-01-19  James Gallagher <jgallagher@opendap.org>
+
+	Removed unused parameters from WWWArray.cc. Byte.cc, Float64.cc,
+	Grid.cc, Int16.cc, Int32.cc, Sequence.cc, Str.cc, Structure.cc,
+	UInt16.cc and UInt32.cc.
+
+2006-01-19  James Gallagher <jgallagher@opendap.org>
+
+	Removed an unneeded test (testing if an unsigned int was less than
+	zero) and an unused parameter from AsciiArray.cc
+
+2006-01-19  James Gallagher <jgallagher@opendap.org>
+
+	Changed set_mime-test() in ascii_val.cc so that it uses stdout and
+	not cout. I removed the iostreams versions of the set_mime...()
+	function from libdap in version 3.6.
+
+2005-12-21  James Gallagher <jgallagher@opendap.org>
+
+	Last minute changes to dap-server.spec
+
+2005-12-21  James Gallagher <jgallagher@opendap.org>
+
+	Updated ChangeLog for version 3.5.3
+
+2005-12-21  James Gallagher <jgallagher@opendap.org>
+
+	Updated the Documentation files for version 3.5.3
+
 2005-12-20  James Gallagher <jgallagher@opendap.org>
 
-	Fixed bug 276; getting ascii data with no CE failed. The problem was that the software that parses the CE from the URL
-	when no CE is explicitly passed to ascii_val was assigned the entire URL (argument to -u) to the CE. Fixed by
-	adding code to test for '?' and making sure to quote the CE (to handle the case when it's an empty string and/or
-	if it needs to be quoted (i.e., there was another bug lurking there ...).
+	AIS now uses the dap-server config.h header.
+
+2005-12-20  James Gallagher <jgallagher@opendap.org>
+
+	MOved the location of the debug log to the CWD for the perl modules.
+
+2005-12-20  James Gallagher <jgallagher@opendap.org>
+
+	Fixed bug 276; getting ascii data with no CE failed. The problem
+	was that the software that parses the CE from the URL when no CE
+	is explicitly passed to ascii_val was assigned the entire URL
+	(argument to -u) to the CE. Fixed by adding code to test for '?'
+	and making sure to quote the CE (to handle the case when it's an
+	empty string and/or if it needs to be quoted (i.e., there was
+	another bug lurking there ...).
 
 2005-12-20  James Gallagher <jgallagher@opendap.org>
 
@@ -11,7 +131,8 @@
 
 2005-11-28  James Gallagher <jgallagher@opendap.org>
 
-	Removed HTML from EXTRA_DIST since the files are listed in a SOURCE variable.
+	Removed HTML from EXTRA_DIST since the files are listed in a
+	SOURCE variable.
 
 2005-11-28  James Gallagher <jgallagher@opendap.org>
 
@@ -19,9 +140,11 @@
 
 2005-11-28  James Gallagher <jgallagher@opendap.org>
 
-	Fixed a bug where the HTML form and info responses lacked global attributes. This bug was the
-	result of changes to the Regex class. The metachars () and | no longer need to be escaped. I
-	also removed all use of Pix from this code. Finally, I added support for bzip2 to DODS_Cache.pm.
+	Fixed a bug where the HTML form and info responses lacked global
+	attributes. This bug was the result of changes to the Regex class.
+	The metachars () and | no longer need to be escaped. I also
+	removed all use of Pix from this code. Finally, I added support
+	for bzip2 to DODS_Cache.pm.
 
 2005-11-28  James Gallagher <jgallagher@opendap.org>
 
@@ -73,8 +196,9 @@
 
 2005-10-18  James Gallagher <jgallagher@opendap.org>
 
-	DDX now works. Patched a bug in asciival where the DAP version was hardcoded to 2.0. It's now
-	hardcoded to 3.5, whcih works but is not a real fix. See trac#248.
+	DDX now works. Patched a bug in asciival where the DAP version was
+	hardcoded to 2.0. It's now hardcoded to 3.5, whcih works but is
+	not a real fix. See trac#248.
 
 2005-10-12  James Gallagher <jgallagher@opendap.org>
 
@@ -94,7 +218,8 @@
 
 2005-10-11  James Gallagher <jgallagher@opendap.org>
 
-	was passing in the url to handlers with a ? appended even when there was no constraint
+	was passing in the url to handlers with a ? appended even when
+	there was no constraint
 
 2005-10-08  James Gallagher <jgallagher@opendap.org>
 
@@ -110,17 +235,19 @@
 
 2005-10-07  James Gallagher <jgallagher@opendap.org>
 
-	Removed the old ascii_val.cc since this was not used and confused the eclipse debugger.
+	Removed the old ascii_val.cc since this was not used and confused
+	the eclipse debugger.
 
 2005-10-07  James Gallagher <jgallagher@opendap.org>
 
-	Fixed the call to esc2underscore() which had to be changed since that function is no longer
-	implemented using the Regex class.
+	Fixed the call to esc2underscore() which had to be changed since
+	that function is no longer implemented using the Regex class.
 
 2005-10-07  James Gallagher <jgallagher@opendap.org>
 
-	Fixed a bug where the options used to start the data handler were hosed. Also fixed a bad
-	xdr delete which caused a seg fault on some exceptions.
+	Fixed a bug where the options used to start the data handler were
+	hosed. Also fixed a bad xdr delete which caused a seg fault on
+	some exceptions.
 
 2005-10-07  James Gallagher <jgallagher@opendap.org>
 
@@ -136,8 +263,8 @@
 
 2005-10-07  James Gallagher <jgallagher@opendap.org>
 
-	Modified the rpm/srpm targets so that they take the package name from configure and build dist
-	as a prerequisite.
+	Modified the rpm/srpm targets so that they take the package name
+	from configure and build dist as a prerequisite.
 
 2005-10-07  James Gallagher <jgallagher@opendap.org>
 
@@ -149,8 +276,9 @@
 
 2005-09-19  James Gallagher <jgallagher@opendap.org>
 
-	Patched: Updated INSTALL for the new layout and added conf to the directories
-	aclocal searches (both changes are from a patch by Patrice Dumas).
+	Patched: Updated INSTALL for the new layout and added conf to the
+	directories aclocal searches (both changes are from a patch by
+	Patrice Dumas).
 
 2005-09-14  James Gallagher <jgallagher@opendap.org>
 
@@ -186,10 +314,11 @@
 
 2005-09-09  James Gallagher <jgallagher@opendap.org>
 
-	Applied patches from Patrice Dumas which addressed several problems in the
-	build process. I also changed the install directory from $prefix/sbin to
-	$prefix/bin to reduce exposure of suid binaries in sbin in case the server
-	is compromised (also suggested by Patrice). Add a .spec file from Patrice.
+	Applied patches from Patrice Dumas which addressed several
+	problems in the build process. I also changed the install
+	directory from $prefix/sbin to $prefix/bin to reduce exposure of
+	suid binaries in sbin in case the server is compromised (also
+	suggested by Patrice). Add a .spec file from Patrice.
 
 2005-09-08  James Gallagher <jgallagher@opendap.org>
 
@@ -197,24 +326,25 @@
 
 2005-09-06  James Gallagher <jgallagher@opendap.org>
 
-	Modified INSTALL to include the requirement that HTML::Parser be installed.
-	Changed Makefile.am so that the perl modules are not installed as scripts but
-	as data.
+	Modified INSTALL to include the requirement that HTML::Parser be
+	installed. Changed Makefile.am so that the perl modules are not
+	installed as scripts but as data.
 
 2005-09-06  James Gallagher <jgallagher@opendap.org>
 
-	Removed libnc-dap dir; not sure how it got here. Added spec file from Patrice
-	Dumas. Patched Makefile.am (patch from Patrice also).
+	Removed libnc-dap dir; not sure how it got here. Added spec file
+	from Patrice Dumas. Patched Makefile.am (patch from Patrice also).
 
 2005-09-06  James Gallagher <jgallagher@opendap.org>
 
-	Fixed an error where dap_ww_int seg faulted when no arguments were given.
+	Fixed an error where dap_ww_int seg faulted when no arguments were
+	given.
 
 2005-09-06  James Gallagher <jgallagher@opendap.org>
 
-	Fixed a problem where dap_asciival with no arguments seg faulted. Also
-	corrected a problem where arguments were not tested correctly when a per-url
-	options was used
+	Fixed a problem where dap_asciival with no arguments seg faulted.
+	Also corrected a problem where arguments were not tested correctly
+	when a per-url options was used
 
 2005-09-03  James Gallagher <jgallagher@opendap.org>
 
@@ -226,9 +356,9 @@
 
 2005-09-01  James Gallagher <jgallagher@opendap.org>
 
-	Fixed bug 149. make distcheck now works. In the process, I fixed the dejagnu
-	tests and moved the unit-test to their own subdir (which was the fix for the
-	bug).
+	Fixed bug 149. make distcheck now works. In the process, I fixed
+	the dejagnu tests and moved the unit-test to their own subdir
+	(which was the fix for the bug).
 
 2005-08-31  James Gallagher <jgallagher@opendap.org>
 
@@ -244,22 +374,22 @@
 
 2005-07-22  James Gallagher <jgallagher@opendap.org>
 
-	Fixed #134 in Trac and also updated the build scripts to recent versions of
-	autoconf, et al.
+	Fixed #134 in Trac and also updated the build scripts to recent
+	versions of autoconf, et al.
 
 2005-07-21  James Gallagher <jgallagher@opendap.org>
 
-	The Version response which uses the format handler now gets a version number
-	from the Perl code, which means it will behave like the other responses.
-	Also, updated the makefile for the dist and distcheck targets (the latter
-	still fails on RHEL 3).
+	The Version response which uses the format handler now gets a
+	version number from the Perl code, which means it will behave like
+	the other responses. Also, updated the makefile for the dist and
+	distcheck targets (the latter still fails on RHEL 3).
 
 2005-07-21  James Gallagher <jgallagher@opendap.org>
 
-	Fixed ticket 121: The code was missing a needed factory class. Also updated
-	the Makefile.am so as to not define DEFAULT_BASETYPE_FACTORY and fixed the
-	help text in www.js and the reference to the help page in www_int.cc (bug
-	106).
+	Fixed ticket 121: The code was missing a needed factory class.
+	Also updated the Makefile.am so as to not define
+	DEFAULT_BASETYPE_FACTORY and fixed the help text in www.js and the
+	reference to the help page in www_int.cc (bug 106).
 
 2005-07-21  James Gallagher <jgallagher@opendap.org>
 
@@ -298,7 +428,8 @@
 
 2005-07-19  James Gallagher <jgallagher@opendap.org>
 
-	Switched to the Factory class for DDS and fixed all but two of the tests.
+	Switched to the Factory class for DDS and fixed all but two of the
+	tests.
 
 2005-07-19  James Gallagher <jgallagher@opendap.org>
 
@@ -314,9 +445,10 @@
 
 2005-07-07  James Gallagher <jgallagher@opendap.org>
 
-	Fixed bug #72. The regex \.gz|\.Z was matching anything followed by gz or Z
-	and not a literal dot followed by gz or Z. Replaced \. with \\. as suggested
-	by someone whose name didn't get into the bug report.
+	Fixed bug #72. The regex \.gz|\.Z was matching anything followed
+	by gz or Z and not a literal dot followed by gz or Z. Replaced \.
+	with \\. as suggested by someone whose name didn't get into the
+	bug report.
 
 2005-07-07  James Gallagher <jgallagher@opendap.org>
 
@@ -341,9 +473,9 @@
 
 2005-06-15  James Gallagher <jgallagher@opendap.org>
 
-	Added config.h.in and regenerated Makefile.in.
-	Fixed a bug in usage.cc: No space separated the end of the handler andits
-	first option.
+	Added config.h.in and regenerated Makefile.in. Fixed a bug in
+	usage.cc: No space separated the end of the handler andits first
+	option.
 
 2005-06-13  James Gallagher <jgallagher@opendap.org>
 
@@ -387,15 +519,15 @@
 
 2005-06-10  James Gallagher <jgallagher@opendap.org>
 
-	Set properties on all the files here: most are text eol-style: natvie,
-	keyword: Id, and exectuable only for a few files. There are two files that
-	have binary content named stdin_test.
+	Set properties on all the files here: most are text eol-style:
+	natvie, keyword: Id, and exectuable only for a few files. There
+	are two files that have binary content named stdin_test.
 
 2005-06-10  James Gallagher <jgallagher@opendap.org>
 
-	Added build for usage.cc and fixed a number of small problems in usage.cc.
-	The code builds but has not been tested. The 'user supplied docs' feature
-	is almost certainly hosed.
+	Added build for usage.cc and fixed a number of small problems in
+	usage.cc. The code builds but has not been tested. The 'user
+	supplied docs' feature is almost certainly hosed.
 
 2005-05-27  James Gallagher <jgallagher@opendap.org>
 
@@ -423,11 +555,12 @@
 
 2005-05-27  James Gallagher <jgallagher@opendap.org>
 
-	Used the value of the configuration param data_root along with PATH_INFO
-	to figure out where the data are. The data_root path is essentially a substitute
-	for DocumentRoot. If data_root is not set in the config file, DocumentRoot is
-	used in its place (by falling back to the old behavior of using PATH_TRANSLATED
-	to find the data file).
+	Used the value of the configuration param data_root along with
+	PATH_INFO to figure out where the data are. The data_root path is
+	essentially a substitute for DocumentRoot. If data_root is not set
+	in the config file, DocumentRoot is used in its place (by falling
+	back to the old behavior of using PATH_TRANSLATED to find the data
+	file).
 
 2005-05-27  James Gallagher <jgallagher@opendap.org>
 
@@ -451,9 +584,9 @@
 
 2005-05-25  James Gallagher <jgallagher@opendap.org>
 
-	Changes to mesh with the new netcdf handler project/module. make install in
-	both will now yield a running server when nph-dods and dods.rc are copied to
-	a cgi-bin directory.
+	Changes to mesh with the new netcdf handler project/module. make
+	install in both will now yield a running server when nph-dods and
+	dods.rc are copied to a cgi-bin directory.
 
 2005-05-23  James Gallagher <jgallagher@opendap.org>
 
@@ -580,10 +713,11 @@
 
 2004-01-28  James Gallagher <jgallagher@opendap.org>
 
-	I modified the DODS_MATLAB macro: it was not setting the matlab_lib-dir
-	correctly because the wrong test was used when initially checking the value
-	of MATLAB_LIB. In fact I cannot see hoe MATLAB_LIB can ever be non-zero, but
-	I've left it alone because these macros are so inter-woven.
+	I modified the DODS_MATLAB macro: it was not setting the
+	matlab_lib-dir correctly because the wrong test was used when
+	initially checking the value of MATLAB_LIB. In fact I cannot see
+	hoe MATLAB_LIB can ever be non-zero, but I've left it alone
+	because these macros are so inter-woven.
 
 2004-01-26  James Gallagher <jgallagher@opendap.org>
 
@@ -636,13 +770,13 @@
 
 2003-05-22  James Gallagher <jgallagher@opendap.org>
 
-	Changes that add support for the DDX response. I've based this on Nathan
-	Potter's work in the Java DAP software. At this point the code can
-	produce a DDX from a DDS and it can merge attributes from a DAS into a
-	DDS to produce a DDX fully loaded with attributes. Attribute aliases
-	are not supported yet. I've also removed all traces of strstream in
-	favor of stringstream. This code should no longer generate warnings
-	about the use of deprecated headers.
+	Changes that add support for the DDX response. I've based this on
+	Nathan Potter's work in the Java DAP software. At this point the
+	code can produce a DDX from a DDS and it can merge attributes from
+	a DAS into a DDS to produce a DDX fully loaded with attributes.
+	Attribute aliases are not supported yet. I've also removed all
+	traces of strstream in favor of stringstream. This code should no
+	longer generate warnings about the use of deprecated headers.
 
 2003-05-08  Patrick West <pwest@ucar.edu>
 
@@ -654,10 +788,10 @@
 
 2003-05-02  James Gallagher <jgallagher@opendap.org>
 
-	Fixed a problem in DODS_IDL where the IDL root directory was found only if
-	the idl executable found by 'which' was a symbolic link to the real
-	executable. This corrupted the idl library path which broke the idl command
-	line client link.
+	Fixed a problem in DODS_IDL where the IDL root directory was found
+	only if the idl executable found by 'which' was a symbolic link to
+	the real executable. This corrupted the idl library path which
+	broke the idl command line client link.
 
 2003-05-02  James Gallagher <jgallagher@opendap.org>
 
@@ -669,13 +803,14 @@
 
 2003-05-02  James Gallagher <jgallagher@opendap.org>
 
-	Switched to a DODS-specific log for the diagnostic messages. Also, boosted
-	the filtering of environment variables so that taint mode works with perl 5.8.
+	Switched to a DODS-specific log for the diagnostic messages. Also,
+	boosted the filtering of environment variables so that taint mode
+	works with perl 5.8.
 
 2003-04-29  James Gallagher <jgallagher@opendap.org>
 
-	Removed old, out of date, information. Added a pointer to the INSTALL-servers
-	file.
+	Removed old, out of date, information. Added a pointer to the
+	INSTALL-servers file.
 
 2003-04-28  James Gallagher <jgallagher@opendap.org>
 
@@ -700,24 +835,25 @@
 
 2003-03-14  James Gallagher <jgallagher@opendap.org>
 
-	Added CE; This is passed to ais_tool. The AISDODSFilter object parses it from
-	the command line options.
+	Added CE; This is passed to ais_tool. The AISDODSFilter object
+	parses it from the command line options.
 
 2003-03-14  James Gallagher <jgallagher@opendap.org>
 
-	Once the client part of the gateway has a full DataDDS, the AISDODSFilter
-	object's constraint expression must be zeroed before calling
-	DODSFilter::send_data().
+	Once the client part of the gateway has a full DataDDS, the
+	AISDODSFilter object's constraint expression must be zeroed before
+	calling DODSFilter::send_data().
 
 2003-03-14  James Gallagher <jgallagher@opendap.org>
 
-	Added call to set_read_p() for all the variables in a DataDDS before the call
-	to send_data(). This prevents the read() methods from being called.
+	Added call to set_read_p() for all the variables in a DataDDS
+	before the call to send_data(). This prevents the read() methods
+	from being called.
 
 2003-03-13  James Gallagher <jgallagher@opendap.org>
 
-	Added. Some of these files are from the asciival testsuite and will
-	need editing before they can be used.
+	Added. Some of these files are from the asciival testsuite and
+	will need editing before they can be used.
 
 2003-03-13  James Gallagher <jgallagher@opendap.org>
 
@@ -726,7 +862,8 @@
 2003-03-06  James Gallagher <jgallagher@opendap.org>
 
 	Replaced call to Connect::disable_cache() with a call to
-	Connect::set_cache_enable(false). The disable_cache() method no longer exists.
+	Connect::set_cache_enable(false). The disable_cache() method no
+	longer exists.
 
 2003-02-27  James Gallagher <jgallagher@opendap.org>
 
@@ -738,13 +875,14 @@
 
 2003-02-10  James Gallagher <jgallagher@opendap.org>
 
-	Fixed the DODS_MATLAB macro so that it links the Matkab server correctly
-	under ML 6 (which lacks the libmi.so library).
+	Fixed the DODS_MATLAB macro so that it links the Matkab server
+	correctly under ML 6 (which lacks the libmi.so library).
 
 2003-01-28  James Gallagher <jgallagher@opendap.org>
 
-	Moved a fix from release-3-2 *by hand* here. The variable path_info was not
-	being sanitized correctly. It's such a simple fix...
+	Moved a fix from release-3-2 *by hand* here. The variable
+	path_info was not being sanitized correctly. It's such a simple
+	fix...
 
 2003-01-27  James Gallagher <jgallagher@opendap.org>
 
@@ -764,8 +902,8 @@
 
 2003-01-27  James Gallagher <jgallagher@opendap.org>
 
-	This now works for trunk version numbers (which have two parts like 3.3
-	instead of three like 3.2.3).
+	This now works for trunk version numbers (which have two parts
+	like 3.3 instead of three like 3.2.3).
 
 2003-01-27  James Gallagher <jgallagher@opendap.org>
 
@@ -777,8 +915,7 @@
 
 2003-01-27  James Gallagher <jgallagher@opendap.org>
 
-	Updated the copyright information.
-	Merged with release-3-2-6.
+	Updated the copyright information. Merged with release-3-2-6.
 
 2003-01-22  James Gallagher <jgallagher@opendap.org>
 
@@ -786,8 +923,8 @@
 
 2003-01-22  James Gallagher <jgallagher@opendap.org>
 
-	Updated the copyrights on various source files. OPeNDAP is adopting the
-	GNU Lesser GPL.
+	Updated the copyrights on various source files. OPeNDAP is
+	adopting the GNU Lesser GPL.
 
 2003-01-22  James Gallagher <jgallagher@opendap.org>
 
@@ -804,9 +941,9 @@
 
 2003-01-10  James Gallagher <jgallagher@opendap.org>
 
-	Merged with code tagged release-3-2-10 on the release-3-2 branch. In many
-	cases files were added on that branch (so they appear on the trunk for
-	the first time).
+	Merged with code tagged release-3-2-10 on the release-3-2 branch.
+	In many cases files were added on that branch (so they appear on
+	the trunk for the first time).
 
 2002-12-31  James Gallagher <jgallagher@opendap.org>
 
@@ -878,7 +1015,8 @@
 
 2001-06-15  James Gallagher <jgallagher@opendap.org>
 
-	Merged with release-3-2-1 (the first merge from the release-3-2 branch).
+	Merged with release-3-2-1 (the first merge from the release-3-2
+	branch).
 
 2001-06-15  James Gallagher <jgallagher@opendap.org>
 
@@ -906,9 +1044,9 @@
 
 2000-11-09  James Gallagher <jgallagher@opendap.org>
 
-	Merged changes from release-3-1. There was a goof and a bunch of the
-	changes never made it to the branch. I merged the entire branch.
-	There maybe problems still...
+	Merged changes from release-3-1. There was a goof and a bunch of
+	the changes never made it to the branch. I merged the entire
+	branch. There maybe problems still...
 
 2000-10-30  James Gallagher <jgallagher@opendap.org>
 
@@ -932,20 +1070,21 @@
 
 2000-10-19  James Gallagher <jgallagher@opendap.org>
 
-	Moved the CVS Log to t eh end of the file.
-	Added Shekhar's changes.
-	Added a call to handler_name(); The DODS_Dispatch object now uses the
-	handler_name() routine to choose which handler to use. This makes it possible
-	to use a single dispatch script for all types of data served by dods.
+	Moved the CVS Log to t eh end of the file. Added Shekhar's
+	changes. Added a call to handler_name(); The DODS_Dispatch object
+	now uses the handler_name() routine to choose which handler to
+	use. This makes it possible to use a single dispatch script for
+	all types of data served by dods.
 
 2000-10-19  James Gallagher <jgallagher@opendap.org>
 
-	Added functions to complete the caching system. It is still pretty basic...
+	Added functions to complete the caching system. It is still pretty
+	basic...
 
 2000-10-18  James Gallagher <jgallagher@opendap.org>
 
-	Fixed an error in get_user_supplied_docs() which caused the data file to be
-	read instead of a <data file>.html file.
+	Fixed an error in get_user_supplied_docs() which caused the data
+	file to be read instead of a <data file>.html file.
 
 2000-10-16  James Gallagher <jgallagher@opendap.org>
 
@@ -953,8 +1092,8 @@
 
 2000-10-16  James Gallagher <jgallagher@opendap.org>
 
-	Removed old and unused macros. Modified some of the old macros to use
-	newer autoconf message macros.
+	Removed old and unused macros. Modified some of the old macros to
+	use newer autoconf message macros.
 
 2000-10-03  James Gallagher <jgallagher@opendap.org>
 
@@ -978,7 +1117,8 @@
 
 2000-10-02  James Gallagher <jgallagher@opendap.org>
 
-	Replaced DVR constant from config_dap.h with the dap_version function
+	Replaced DVR constant from config_dap.h with the dap_version
+	function
 
 2000-10-02  James Gallagher <jgallagher@opendap.org>
 
@@ -998,10 +1138,11 @@
 
 2000-09-21  James Gallagher <jgallagher@opendap.org>
 
-	Rearranged source files so that the CVS logs appear at the end rather than
-	the start. Also made the ifdef guard symbols use the same naming scheme and
-	wrapped headers included in other headers in those guard symbols (to cut
-	down on extraneous file processing - See Lakos).
+	Rearranged source files so that the CVS logs appear at the end
+	rather than the start. Also made the ifdef guard symbols use the
+	same naming scheme and wrapped headers included in other headers
+	in those guard symbols (to cut down on extraneous file processing
+	- See Lakos).
 
 2000-08-29  James Gallagher <jgallagher@opendap.org>
 
@@ -1026,8 +1167,8 @@
 
 2000-06-16  James Gallagher <jgallagher@opendap.org>
 
-	Changed the DODS_GUILIBS macro so that it includes -ldl. I used the $TK_LIBS
-	variable from tkConfig.sh.
+	Changed the DODS_GUILIBS macro so that it includes -ldl. I used
+	the $TK_LIBS variable from tkConfig.sh.
 
 2000-06-07  James Gallagher <jgallagher@opendap.org>
 
@@ -1047,10 +1188,11 @@
 
 2000-03-28  James Gallagher <jgallagher@opendap.org>
 
-	Fixes for the DODS_PROG_PERL macro. It now substitutes the whole path.
-	Added/changed macros for finding the various libraries used by DODS. There
-	are now three marcos/variables: GUILIBS, LIBS and XTRALIBS. This makes it
-	simpler to link with or without GUI support (see also the new libdap++-gui).
+	Fixes for the DODS_PROG_PERL macro. It now substitutes the whole
+	path. Added/changed macros for finding the various libraries used
+	by DODS. There are now three marcos/variables: GUILIBS, LIBS and
+	XTRALIBS. This makes it simpler to link with or without GUI
+	support (see also the new libdap++-gui).
 
 2000-01-27  James Gallagher <jgallagher@opendap.org>
 
@@ -1062,8 +1204,8 @@
 
 2000-01-10  James Gallagher <jgallagher@opendap.org>
 
-	Fixed up the DODS_PACKAGES_SUPPORT macro given that TK now needs to included
-	with dap++.
+	Fixed up the DODS_PACKAGES_SUPPORT macro given that TK now needs
+	to included with dap++.
 
 1999-11-04  James Gallagher <jgallagher@opendap.org>
 
@@ -1087,14 +1229,15 @@
 
 1999-08-09  James Gallagher <jgallagher@opendap.org>
 
-	Changes for the new organization of the source code - may be incomplete
+	Changes for the new organization of the source code - may be
+	incomplete
 
 1999-08-03  James Gallagher <jgallagher@opendap.org>
 
-	Added the DODS_FIND_CWD macro. This sets DODS_CWD to the name of current
-	directory. The macro name is somewhat misleading since DODS_CWD is the
-	filename of the CWD, not the pathname. Suppose you're in /usr/local/src.
-	DODS_CWD would be src.
+	Added the DODS_FIND_CWD macro. This sets DODS_CWD to the name of
+	current directory. The macro name is somewhat misleading since
+	DODS_CWD is the filename of the CWD, not the pathname. Suppose
+	you're in /usr/local/src. DODS_CWD would be src.
 
 1999-07-30  James Gallagher <jgallagher@opendap.org>
 
@@ -1106,7 +1249,8 @@
 
 1999-07-30  James Gallagher <jgallagher@opendap.org>
 
-	Added these perl 5 libraries for the directory navigation feature of DODS_Dispatch.pm
+	Added these perl 5 libraries for the directory navigation feature
+	of DODS_Dispatch.pm
 
 1999-07-29  James Gallagher <jgallagher@opendap.org>
 
@@ -1138,18 +1282,20 @@
 
 1999-07-22  James Gallagher <jgallagher@opendap.org>
 
-	Fixed up the GNU tar test so that only a single line with the version number
-	gets printed. Not necessary, but this makes the output of configure less
-	confusing.
+	Fixed up the GNU tar test so that only a single line with the
+	version number gets printed. Not necessary, but this makes the
+	output of configure less confusing.
 
 1999-07-22  James Gallagher <jgallagher@opendap.org>
 
-	Changed the DODS_PROG_PERL yet again because the sed regexp was setting
-	$perl_ver to 5.004 and test, on Linuk, whined about expecting integers.
+	Changed the DODS_PROG_PERL yet again because the sed regexp was
+	setting $perl_ver to 5.004 and test, on Linuk, whined about
+	expecting integers.
 
 1999-07-22  James Gallagher <jgallagher@opendap.org>
 
-	Added test for the endian.h header. If present, don't define ENDIANness.
+	Added test for the endian.h header. If present, don't define
+	ENDIANness.
 
 1999-07-21  James Gallagher <jgallagher@opendap.org>
 
@@ -1177,8 +1323,8 @@
 
 1999-06-22  James Gallagher <jgallagher@opendap.org>
 
-	Changed the name of the `Disposition' section to `Data' and made the button
-	names easier to understand.
+	Changed the name of the `Disposition' section to `Data' and made
+	the button names easier to understand.
 
 1999-06-22  James Gallagher <jgallagher@opendap.org>
 
@@ -1190,24 +1336,22 @@
 
 1999-06-22  James Gallagher <jgallagher@opendap.org>
 
-	Added comments to describe what the overloads do.
-	Reduced the number of parameters given to the ctor.
-	Modified so that README, .html and directory sorting URLs are not routed to
-	the html form filter.
-	This code is now called from DODS_Dispatch.pm.
+	Added comments to describe what the overloads do. Reduced the
+	number of parameters given to the ctor. Modified so that README,
+	.html and directory sorting URLs are not routed to the html form
+	filter. This code is now called from DODS_Dispatch.pm.
 
 1999-06-11  James Gallagher <jgallagher@opendap.org>
 
-	Added server_name and request_uri procedure/fields.
-	Added code that translates the extension .html into a call to the www_int
-	filter. This uses the new server_name and request_uri information to run the
-	filter with a complete url, which might be wasteful but is quick and keeps
-	the server programs modular.
-	Fixed the call to asciival so that security features are no longer
-	circumvented. I used the same call-with-url technique that I used with
-	www_int.
-	Some of the help text was updated to include mention of the new .html
-	feature.
+	Added server_name and request_uri procedure/fields. Added code
+	that translates the extension .html into a call to the www_int
+	filter. This uses the new server_name and request_uri information
+	to run the filter with a complete url, which might be wasteful but
+	is quick and keeps the server programs modular. Fixed the call to
+	asciival so that security features are no longer circumvented. I
+	used the same call-with-url technique that I used with www_int.
+	Some of the help text was updated to include mention of the new
+	.html feature.
 
 1999-06-10  James Gallagher <jgallagher@opendap.org>
 
@@ -1223,9 +1367,9 @@
 
 1999-05-27  James Gallagher <jgallagher@opendap.org>
 
-	Moved the code that escapes the query into the section for asciival. Since
-	the security fixes only asciival needs special characters escaped (since it
-	is still run using a subshell).
+	Moved the code that escapes the query into the section for
+	asciival. Since the security fixes only asciival needs special
+	characters escaped (since it is still run using a subshell).
 
 1999-05-27  James Gallagher <jgallagher@opendap.org>
 
@@ -1266,7 +1410,8 @@
 
 1999-05-25  James Gallagher <jgallagher@opendap.org>
 
-	Merged Nathan's fixes for the -t option and some debugging instrumentation.
+	Merged Nathan's fixes for the -t option and some debugging
+	instrumentation.
 
 1999-05-25  James Gallagher <jgallagher@opendap.org>
 
@@ -1274,7 +1419,7 @@
 
 1999-05-25  James Gallagher <jgallagher@opendap.org>
 
-	Nathan added asciival checks and  for the test-coverage target.
+	Nathan added asciival checks and for the test-coverage target.
 
 1999-05-25  James Gallagher <jgallagher@opendap.org>
 
@@ -1303,27 +1448,29 @@
 
 1999-05-21  James Gallagher <jgallagher@opendap.org>
 
-	Retracted some of the security stuff when using the ASCII mode of the
-	servers. In order to run a pipe from Perl you must use an intermediate shell
-	or (maybe) explicitly open the two processes using open("|", ...). The later
-	might work but does not fit well into the design of DODS_Dispatch.pm. In the
-	long run, we'll have to change DODS_Dispatch, but for now I'm running that
-	part of the server through a shell.
+	Retracted some of the security stuff when using the ASCII mode of
+	the servers. In order to run a pipe from Perl you must use an
+	intermediate shell or (maybe) explicitly open the two processes
+	using open("|", ...). The later might work but does not fit well
+	into the design of DODS_Dispatch.pm. In the long run, we'll have
+	to change DODS_Dispatch, but for now I'm running that part of the
+	server through a shell.
 
 1999-05-21  James Gallagher <jgallagher@opendap.org>
 
-	Changed quoting of various strings, esp the $query. Since the command
-	arguments are now stored in a Perl list and passes to exec in that list (and
-	not a single string), the command is not evaluated by the shell. Thus, quotes
-	won't be removed by the shell and wind up confusing the parsers.
+	Changed quoting of various strings, esp the $query. Since the
+	command arguments are now stored in a Perl list and passes to exec
+	in that list (and not a single string), the command is not
+	evaluated by the shell. Thus, quotes won't be removed by the shell
+	and wind up confusing the parsers.
 
 1999-05-19  James Gallagher <jgallagher@opendap.org>
 
-	Fixes for security holes. The CWD module is no longer used; this makes it
-	simpler to run perl using the -T (taint) mode.
-	Variables passed to executables are scanned for nasty things (shell meta
-	characters).
-	The commands are run straight from perl, not using an intermediate shell.
+	Fixes for security holes. The CWD module is no longer used; this
+	makes it simpler to run perl using the -T (taint) mode. Variables
+	passed to executables are scanned for nasty things (shell meta
+	characters). The commands are run straight from perl, not using an
+	intermediate shell.
 
 1999-05-18  James Gallagher <jgallagher@opendap.org>
 
@@ -1339,10 +1486,10 @@
 
 1999-05-18  James Gallagher <jgallagher@opendap.org>
 
-	Fixed version feature and help feature so that they work with nph-*/version,
-	nph-*/version/, and nph-*/ (the latter for help).
-	Fixed the help message so that it does not say `Error...' (suggested by
-	the GCMD).
+	Fixed version feature and help feature so that they work with
+	nph-*/version, nph-*/version/, and nph-*/ (the latter for help).
+	Fixed the help message so that it does not say `Error...'
+	(suggested by the GCMD).
 
 1999-05-08  James Gallagher <jgallagher@opendap.org>
 
@@ -1370,11 +1517,11 @@
 
 1999-05-04  James Gallagher <jgallagher@opendap.org>
 
-	Fixed the help message so that it no longer says `Error'.
-	When a URL with no extension is used the help message, not the error message,
-	is printed.
-	Added use of the -v option to all calls to the server filter programs.
-	The .ver/version extension now uses the new -V option (see DODSFilter).
+	Fixed the help message so that it no longer says `Error'. When a
+	URL with no extension is used the help message, not the error
+	message, is printed. Added use of the -v option to all calls to
+	the server filter programs. The .ver/version extension now uses
+	the new -V option (see DODSFilter).
 
 1999-05-04  James Gallagher <jgallagher@opendap.org>
 
@@ -1404,10 +1551,11 @@
 
 1999-04-21  James Gallagher <jgallagher@opendap.org>
 
-	Fixed, I hope, the DODS_MATLAB test which looks around in the matlab root
-	directory and finds libraries for DODS to link with. The code was confused
-	because looking for libmat* in the matlab root finds several files under ML
-	5. I fixed this by starting the search in ML ROOT/extend.
+	Fixed, I hope, the DODS_MATLAB test which looks around in the
+	matlab root directory and finds libraries for DODS to link with.
+	The code was confused because looking for libmat* in the matlab
+	root finds several files under ML 5. I fixed this by starting the
+	search in ML ROOT/extend.
 
 1999-04-19  James Gallagher <jgallagher@opendap.org>
 
@@ -1415,9 +1563,8 @@
 
 1999-04-09  James Gallagher <jgallagher@opendap.org>
 
-	Added support for the new datatypes.
-	Removed old code.
-	Changed header generated to include XDODS-Server.
+	Added support for the new datatypes. Removed old code. Changed
+	header generated to include XDODS-Server.
 
 1999-03-29  edavis
 
@@ -1453,9 +1600,9 @@
 
 1999-02-19  James Gallagher <jgallagher@opendap.org>
 
-	Recognizes the XDODS-Accept-Types header (passed to the CGI using an
-	environment variable). Passes along the value to the _dds and _dods filters
-	using the -t option.
+	Recognizes the XDODS-Accept-Types header (passed to the CGI using
+	an environment variable). Passes along the value to the _dds and
+	_dods filters using the -t option.
 
 1999-02-08  James Gallagher <jgallagher@opendap.org>
 
@@ -1475,11 +1622,13 @@
 
 1998-12-16  James Gallagher <jgallagher@opendap.org>
 
-	Added support for XDODS-Server MIME header. This fixes a problem where our use of Server clashed with Java
+	Added support for XDODS-Server MIME header. This fixes a problem
+	where our use of Server clashed with Java
 
 1998-11-29  James Gallagher <jgallagher@opendap.org>
 
-	Added the -T option to control truncation of names longer than 19 characters
+	Added the -T option to control truncation of names longer than 19
+	characters
 
 1998-11-29  James Gallagher <jgallagher@opendap.org>
 
@@ -1551,13 +1700,14 @@
 
 1998-10-06  James Gallagher <jgallagher@opendap.org>
 
-	configure now includes the values of the environment variables LDFLAGS,
-	CFLAGS and CXXFLAGS when setting the corresponding Makefile variables.
+	configure now includes the values of the environment variables
+	LDFLAGS, CFLAGS and CXXFLAGS when setting the corresponding
+	Makefile variables.
 
 1998-09-29  James Gallagher <jgallagher@opendap.org>
 
-	Fixed a bug where the protocol and machine part of a dataset URL were
-	repeated (meaning that they appeared twice in the same URL).
+	Fixed a bug where the protocol and machine part of a dataset URL
+	were repeated (meaning that they appeared twice in the same URL).
 
 1998-09-17  James Gallagher <jgallagher@opendap.org>
 
@@ -1569,7 +1719,8 @@
 
 1998-09-16  James Gallagher <jgallagher@opendap.org>
 
-	Change process_data() so that it calls print_all_vals() for Structure.
+	Change process_data() so that it calls print_all_vals() for
+	Structure.
 
 1998-09-16  James Gallagher <jgallagher@opendap.org>
 
@@ -1590,9 +1741,10 @@
 
 1998-08-12  James Gallagher <jgallagher@opendap.org>
 
-	Added the `server' param to those that are passed to sub query_dir.pl
-	calls. This fixes a bug where going into nested directories caused dataset
-	URLs to be built without server information.
+	Added the `server' param to those that are passed to sub
+	query_dir.pl calls. This fixes a bug where going into nested
+	directories caused dataset URLs to be built without server
+	information.
 
 1998-08-12  James Gallagher <jgallagher@opendap.org>
 
@@ -1616,19 +1768,21 @@
 
 1998-07-31  James Gallagher <jgallagher@opendap.org>
 
-	Fixed a bug in process_data() where deserialize() was not called before the
-	call to print_all_vals().
+	Fixed a bug in process_data() where deserialize() was not called
+	before the call to print_all_vals().
 
 1998-07-30  James Gallagher <jgallagher@opendap.org>
 
-	Fixed the call to usage; passing a char * invoked cgi-util.cc:usage which was
-	not what we wanted. Also added help about the -m option.
+	Fixed the call to usage; passing a char * invoked
+	cgi-util.cc:usage which was not what we wanted. Also added help
+	about the -m option.
 
 1998-07-30  James Gallagher <jgallagher@opendap.org>
 
-	Changes to all macros that depend on the packages directory. A new macro
-	now finds the correct name for that directory (tagged with a version number).
-	The changed macros use the variable set by that macro.
+	Changes to all macros that depend on the packages directory. A new
+	macro now finds the correct name for that directory (tagged with a
+	version number). The changed macros use the variable set by that
+	macro.
 
 1998-07-22  James Gallagher <jgallagher@opendap.org>
 
@@ -1652,9 +1806,9 @@
 
 1998-04-17  James Gallagher <jgallagher@opendap.org>
 
-	Replaced use of DEFS with CPPFLAGS. The configure script sets DEFS without
-	using/including the value of $DEFS so any additions to that variable will
-	be lost.
+	Replaced use of DEFS with CPPFLAGS. The configure script sets DEFS
+	without using/including the value of $DEFS so any additions to
+	that variable will be lost.
 
 1998-04-03  James Gallagher <jgallagher@opendap.org>
 
@@ -1662,8 +1816,8 @@
 
 1998-03-31  James Gallagher <jgallagher@opendap.org>
 
-	Added -lstdc++ to the libraries g++ 2.8.x lists explicitly on the command
-	line. (from Jake Hamby).
+	Added -lstdc++ to the libraries g++ 2.8.x lists explicitly on the
+	command line. (from Jake Hamby).
 
 1998-03-20  James Gallagher <jgallagher@opendap.org>
 
@@ -1683,8 +1837,8 @@
 
 1998-03-17  James Gallagher <jgallagher@opendap.org>
 
-	Added patch for the new ASCII filter. Use either the suffix .ascii or .asc
-	to get data back in ASCII form from a DODS server.
+	Added patch for the new ASCII filter. Use either the suffix .ascii
+	or .asc to get data back in ASCII form from a DODS server.
 
 1998-03-16  James Gallagher <jgallagher@opendap.org>
 
@@ -1728,8 +1882,8 @@
 
 1998-03-10  James Gallagher <jgallagher@opendap.org>
 
-	Removed -fno-exceptions at the suggestion of Jake Hamby. new() might throw
-	exceptions.
+	Removed -fno-exceptions at the suggestion of Jake Hamby. new()
+	might throw exceptions.
 
 1998-03-05  James Gallagher <jgallagher@opendap.org>
 
@@ -1741,14 +1895,15 @@
 
 1998-02-11  James Gallagher <jgallagher@opendap.org>
 
-	Added tests and an accessor function for the Accept-Encoding header (which
-	CGI 1.1 passes to the cgi program using the environment variable
-	HTTP_ACCEPT_ENCODING). When found with the value `deflate' the data filter
-	(nc_dods, ...) is called with the -c flag which causes DODSFilter::send_data
-	to try to compress the data stream using deflate (LZW from zlib 1.0.4).
-	Also added a help message (activated with /help or /help).
-	Fixed the error text (but it is often blocked by clients because of the http
-	400 code).
+	Added tests and an accessor function for the Accept-Encoding
+	header (which CGI 1.1 passes to the cgi program using the
+	environment variable HTTP_ACCEPT_ENCODING). When found with the
+	value `deflate' the data filter
+	(nc_dods, ...) is called with the -c flag which causes
+	DODSFilter::send_data to try to compress the data stream using
+	deflate (LZW from zlib 1.0.4). Also added a help message
+	(activated with /help or /help). Fixed the error text (but it is
+	often blocked by clients because of the http 400 code).
 
 1998-02-09  James Gallagher <jgallagher@opendap.org>
 
@@ -1760,8 +1915,8 @@
 
 1998-02-04  James Gallagher <jgallagher@opendap.org>
 
-	Reorganized the macros.
-	Added fixed macros to support the new packages tree under DODS_ROOT.
+	Reorganized the macros. Added fixed macros to support the new
+	packages tree under DODS_ROOT.
 
 1997-12-16  James Gallagher <jgallagher@opendap.org>
 
@@ -1777,8 +1932,8 @@
 
 1997-12-15  James Gallagher <jgallagher@opendap.org>
 
-	Added MAT_VERSION_FLAG.
-	Moved install locations; mostly from etcdir to bindir.
+	Added MAT_VERSION_FLAG. Moved install locations; mostly from
+	etcdir to bindir.
 
 1997-10-31  James Gallagher <jgallagher@opendap.org>
 
@@ -1798,7 +1953,8 @@
 
 1997-10-03  James Gallagher <jgallagher@opendap.org>
 
-	Added changes to support the new deserialize() mfunc and write_val().
+	Added changes to support the new deserialize() mfunc and
+	write_val().
 
 1997-10-03  James Gallagher <jgallagher@opendap.org>
 
@@ -1822,9 +1978,10 @@
 
 1997-08-26  James Gallagher <jgallagher@opendap.org>
 
-	Modified to accommodate the new DODSFilter class; added `-e' for the
-	constraint expression. Hack the nph-* script to add -d and -f to $command
-	to specify various weird filename/directory locations for ancillary files.
+	Modified to accommodate the new DODSFilter class; added `-e' for
+	the constraint expression. Hack the nph-* script to add -d and -f
+	to $command to specify various weird filename/directory locations
+	for ancillary files.
 
 1997-08-18  James Gallagher <jgallagher@opendap.org>
 
@@ -1872,8 +2029,8 @@
 
 1997-06-05  James Gallagher <jgallagher@opendap.org>
 
-	Added to the accesser functions so that they can be used to set the field
-	values in addition to reading values from the `object'.
+	Added to the accesser functions so that they can be used to set
+	the field values in addition to reading values from the `object'.
 
 1997-06-02  James Gallagher <jgallagher@opendap.org>
 
@@ -1881,12 +2038,12 @@
 
 1997-05-22  James Gallagher <jgallagher@opendap.org>
 
-	Changed the way global attributes are ferreted out. Previously I had assumed
-	that any attribute group that was not also the name of a variable was a group
-	of `global' attributes. However, the new aliases change this. In response
-	I've changed the way usage looks for global attributes; it looks for
-	attribute groups which contain the strings `global' and/or `dods'. Case is
-	not important.
+	Changed the way global attributes are ferreted out. Previously I
+	had assumed that any attribute group that was not also the name of
+	a variable was a group of `global' attributes. However, the new
+	aliases change this. In response I've changed the way usage looks
+	for global attributes; it looks for attribute groups which contain
+	the strings `global' and/or `dods'. Case is not important.
 
 1997-05-05  James Gallagher <jgallagher@opendap.org>
 
@@ -1991,8 +2148,8 @@
 
 1997-02-06  James Gallagher <jgallagher@opendap.org>
 
-	DODS_SWAP now defines either BIG_ENDIAN or LITTLE_ENDIAN (in addition to
-	doing other things).
+	DODS_SWAP now defines either BIG_ENDIAN or LITTLE_ENDIAN (in
+	addition to doing other things).
 
 1997-02-06  James Gallagher <jgallagher@opendap.org>
 
@@ -2004,11 +2161,13 @@
 
 1997-01-23  James Gallagher <jgallagher@opendap.org>
 
-	Fixed problems in setting LDFLAGS when matlab dirs is not found. Fixed code that sets SIZEOF_* defines
+	Fixed problems in setting LDFLAGS when matlab dirs is not found.
+	Fixed code that sets SIZEOF_* defines
 
 1997-01-09  James Gallagher <jgallagher@opendap.org>
 
-	Added to lookup mfunc the ability to map non-alphanmerics to underscore.
+	Added to lookup mfunc the ability to map non-alphanmerics to
+	underscore.
 
 1996-12-23  James Gallagher <jgallagher@opendap.org>
 
@@ -2016,10 +2175,10 @@
 
 1996-12-18  James Gallagher <jgallagher@opendap.org>
 
-	Added massive fixes for the processing of attributes to sort out the `global
-	attributes'. Also added changes to the overall layout of the resulting
-	document so that the hierarchy of the data is represented. Added some new
-	utility functions.
+	Added massive fixes for the processing of attributes to sort out
+	the `global attributes'. Also added changes to the overall layout
+	of the resulting document so that the hierarchy of the data is
+	represented. Added some new utility functions.
 
 1996-12-18  James Gallagher <jgallagher@opendap.org>
 
@@ -2051,8 +2210,8 @@
 
 1996-11-22  James Gallagher <jgallagher@opendap.org>
 
-	Switched to the new dependencies file based depend.
-	Fixed bad line at depend target.
+	Switched to the new dependencies file based depend. Fixed bad line
+	at depend target.
 
 1996-11-22  James Gallagher <jgallagher@opendap.org>
 
@@ -2080,8 +2239,8 @@
 
 1996-11-07  James Gallagher <jgallagher@opendap.org>
 
-	Fixed expect macro to test for more library combinations.
-	Added tests for DSP, WWW, HDF and Exceptions.
+	Fixed expect macro to test for more library combinations. Added
+	tests for DSP, WWW, HDF and Exceptions.
 
 1996-11-04  James Gallagher <jgallagher@opendap.org>
 
@@ -2089,12 +2248,13 @@
 
 1996-11-02  James Gallagher <jgallagher@opendap.org>
 
-	Added to DODS_MATLAB so that it finds the correct extern/lib directory
+	Added to DODS_MATLAB so that it finds the correct extern/lib
+	directory
 
 1996-11-01  James Gallagher <jgallagher@opendap.org>
 
-	Added to DODS_FIND_EXPECT macro so that it checks for expect 5.21 in addition
-	to 5.20 and 5.19.
+	Added to DODS_FIND_EXPECT macro so that it checks for expect 5.21
+	in addition to 5.20 and 5.19.
 
 1996-10-31  James Gallagher <jgallagher@opendap.org>
 
@@ -2122,14 +2282,14 @@
 
 1996-10-23  James Gallagher <jgallagher@opendap.org>
 
-	Corrected. Includes information about the new -f option to writeval, the new
-	`recursive' output format and new loaddods. Also, the new grammar is
-	documented.
+	Corrected. Includes information about the new -f option to
+	writeval, the new `recursive' output format and new loaddods.
+	Also, the new grammar is documented.
 
 1996-10-10  James Gallagher <jgallagher@opendap.org>
 
-	Fixed a problem in DODS_FIND_WWW_INCLUDES where the []'s were lost when m4
-	processed the macro.
+	Fixed a problem in DODS_FIND_WWW_INCLUDES where the []'s were lost
+	when m4 processed the macro.
 
 1996-10-08  James Gallagher <jgallagher@opendap.org>
 
@@ -2137,21 +2297,23 @@
 
 1996-10-08  James Gallagher <jgallagher@opendap.org>
 
-	Added to DODS_PROG_BISON so that it defines DODS_BISON_VER as the bison
-	version number. This can be used to test for the various versions of bison
-	(which between 1.22 and 1.25 have three different ways of handling parameters
-	passed to yyparse).
+	Added to DODS_PROG_BISON so that it defines DODS_BISON_VER as the
+	bison version number. This can be used to test for the various
+	versions of bison
+	(which between 1.22 and 1.25 have three different ways of handling
+	parameters passed to yyparse).
 
 1996-10-07  James Gallagher <jgallagher@opendap.org>
 
-	Fixed some of the dependencies so that new *.o files are linked into the
-	executables.
-	No longer build posturl since the Perl version is simpler.
+	Fixed some of the dependencies so that new *.o files are linked
+	into the executables. No longer build posturl since the Perl
+	version is simpler.
 
 1996-10-07  James Gallagher <jgallagher@opendap.org>
 
-	Swapped the C version of posturl with the Perl version; only a few users will
-	need the program so make it using Perl. Keep the C version around though.
+	Swapped the C version of posturl with the Perl version; only a few
+	users will need the program so make it using Perl. Keep the C
+	version around though.
 
 1996-10-07  James Gallagher <jgallagher@opendap.org>
 
@@ -2167,9 +2329,9 @@
 
 1996-10-01  James Gallagher <jgallagher@opendap.org>
 
-	Fixed a bug in DODS_FIND_WWW where dods_root was used without being defined.
-	I now use ../../ and the like since it is hard to get dods_root defined in
-	general.
+	Fixed a bug in DODS_FIND_WWW where dods_root was used without
+	being defined. I now use ../../ and the like since it is hard to
+	get dods_root defined in general.
 
 1996-09-30  James Gallagher <jgallagher@opendap.org>
 
@@ -2181,13 +2343,14 @@
 
 1996-09-20  James Gallagher <jgallagher@opendap.org>
 
-	Removed keyword `extern' from egrep pattern used to check sem.h for the
-	presence of the semctl prototype. This caused problems with the SGI.
+	Removed keyword `extern' from egrep pattern used to check sem.h
+	for the presence of the semctl prototype. This caused problems
+	with the SGI.
 
 1996-09-20  James Gallagher <jgallagher@opendap.org>
 
-	Fixed the EXPECT marco - it was not checking for the file tclRegex.h
-	correctly.
+	Fixed the EXPECT marco - it was not checking for the file
+	tclRegex.h correctly.
 
 1996-09-17  James Gallagher <jgallagher@opendap.org>
 
@@ -2195,24 +2358,27 @@
 
 1996-09-10  James Gallagher <jgallagher@opendap.org>
 
-	Added to HAVE_EXPECT to find tcl include files when they are not in the
-	standard includes directories searched by the compiler.
+	Added to HAVE_EXPECT to find tcl include files when they are not
+	in the standard includes directories searched by the compiler.
 
 1996-09-10  James Gallagher <jgallagher@opendap.org>
 
-	Added Fix for DODS_SEM on the SGI IRIX 5.3 (optional space in grep pattern).
+	Added Fix for DODS_SEM on the SGI IRIX 5.3 (optional space in grep
+	pattern).
 
 1996-08-15  James Gallagher <jgallagher@opendap.org>
 
-	Added DODS_SEM macro which checks for sys/sem.h and then figures out whether
-	the semaphore union and/or prototypes are present. The defines HAVE_SEM_UNION
-	and HAVE_SEM_PROTO are set to 0 or 1 accordingly.
+	Added DODS_SEM macro which checks for sys/sem.h and then figures
+	out whether the semaphore union and/or prototypes are present. The
+	defines HAVE_SEM_UNION and HAVE_SEM_PROTO are set to 0 or 1
+	accordingly.
 
 1996-08-09  James Gallagher <jgallagher@opendap.org>
 
-	Changed `DODS_DEBUG' to `DODS_DEBUG_OPTION' since I changed the shell
-	variables `DEBUG' and `DEBUG2' to `DODS_DEBUG', etc. This change was to
-	accommodate the use of the preprocessor symbol `DEBUG' by the WWW library.
+	Changed `DODS_DEBUG' to `DODS_DEBUG_OPTION' since I changed the
+	shell variables `DEBUG' and `DEBUG2' to `DODS_DEBUG', etc. This
+	change was to accommodate the use of the preprocessor symbol
+	`DEBUG' by the WWW library.
 
 1996-06-24  James Gallagher <jgallagher@opendap.org>
 
@@ -2240,8 +2406,8 @@
 
 1995-11-17  James Gallagher <jgallagher@opendap.org>
 
-	Fixed DODS_BISON and DODS_FLEX tests so that they work with old versions
-	of those programs.
+	Fixed DODS_BISON and DODS_FLEX tests so that they work with old
+	versions of those programs.
 
 1995-10-31  James Gallagher <jgallagher@opendap.org>
 
@@ -2258,8 +2424,8 @@
 1995-07-09  James Gallagher <jgallagher@opendap.org>
 
 	Removed (for the time being at least) the GNU copyright files.
-	Added our own copyright based on the UCAR/Unidata copyright (used by
-	permission).
+	Added our own copyright based on the UCAR/Unidata copyright (used
+	by permission).
 
 1995-06-12  James Gallagher <jgallagher@opendap.org>
 
@@ -2271,20 +2437,15 @@
 
 1995-05-10  James Gallagher <jgallagher@opendap.org>
 
-	Added GNU licenses.
-	Added depend script.
+	Added GNU licenses. Added depend script.
 
 1995-04-25  James Gallagher <jgallagher@opendap.org>
 
 	Makefile.in and configure.in are the master MAkefile and configure
 	init files. Use these as templates when creating new instances of
-	Makefile.in or configure.in.
-	throwout is used with dbnew to process the raw log file.
+	Makefile.in or configure.in. throwout is used with dbnew to
+	process the raw log file.
 
 1994-12-05  James Gallagher <jgallagher@opendap.org>
 
 	added.
-
-;; Local Variables:
-;; coding: utf-8
-;; End:
