@@ -80,7 +80,7 @@ AC_CHECK_FUNCS([putenv strtol])
 
 dnl Checks for specific libraries
 
-AC_CHECK_LIBDAP([3.5.0],
+AC_CHECK_LIBDAP([3.6.0],
  [
   LIBS="$LIBS $DAP_LIBS"
   CPPFLAGS="$CPPFLAGS $DAP_CFLAGS"

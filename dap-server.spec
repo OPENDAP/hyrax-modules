@@ -12,7 +12,7 @@ Source0:         ftp://ftp.unidata.ucar.edu/pub/opendap/source/%{name}-%{version
 URL:             http://www.opendap.org/
 
 BuildRoot:       %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires:   curl libdap-devel
+BuildRequires:   curl libdap-devel >= 3.6.0
 Requires:        curl webserver perl
 
 %description
