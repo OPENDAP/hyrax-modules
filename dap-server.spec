@@ -1,26 +1,30 @@
 %define dap_cachedir     /var/cache/dap-server
 %define dap_webconfdir   %{_sysconfdir}/httpd/conf.d
 %define dap_cgidir       /var/www/opendap
+%define __perl_provides %{nil}
+%define __perl_requires %{nil}
 
-Summary:         Basic request handling for DAP servers 
+Summary:         Basic request handling for OPeNDAP servers 
 Name:            dap-server
 Version:         3.6.0
 Release:         1
-License:         GPL
+License:         LGPL
 Group:           System Environment/Daemons 
 Source0:         ftp://ftp.unidata.ucar.edu/pub/opendap/source/%{name}-%{version}.tar.gz
 URL:             http://www.opendap.org/
 
 BuildRoot:       %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:   curl libdap-devel >= 3.6.0
-Requires:        curl webserver perl
+Requires:        curl webserver
+Requires:        perl perl(HTML::Filter) perl(Time::Local) perl(POSIX)
 
 %description
-This is base software for our workhorse server. Written using the DAP++ C++ 
-library and Perl, this handles processing compressed files and arranging for 
-the correct server module to process the file. The base software also 
-provides support for the ASCII response and HTML data-request form. Use this 
-in combination with one or more of the format-specific handlers.
+This is base software for the OPeNDAP (Open-source Project for a Network 
+Data Access Protocol) server. Written using the DAP++ C++ library and Perl, 
+this handles processing compressed files and arranging for the correct 
+server module to process the file. The base software also provides support 
+for the ASCII response and HTML data-request form. Use this in combination 
+with one or more of the format-specific handlers.
 
 This package contains all the executable and perl modules. The scripts 
 and config files that should be installed in a cgi directory are in the 
@@ -89,6 +93,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Mar  3 2006 Patrice Dumas <dumas@centre-cired.fr> 3.6.0-1
+- new release
+
+* Wed Feb 22 2006 Ignacio Vazquez-Abrams <ivazquez@ivazquez.net> 3.5.3-1.2
+- Small fix for Perl provides
+
 * Thu Feb  2 2006 Patrice Dumas <dumas@centre-cired.fr> 3.5.3-1
 - add a cgi subpackage
 
