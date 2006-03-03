@@ -7,7 +7,7 @@
 Summary:         Basic request handling for OPeNDAP servers 
 Name:            dap-server
 Version:         3.6.0
-Release:         1
+Release:         2
 License:         LGPL
 Group:           System Environment/Daemons 
 Source0:         ftp://ftp.unidata.ucar.edu/pub/opendap/source/%{name}-%{version}.tar.gz
