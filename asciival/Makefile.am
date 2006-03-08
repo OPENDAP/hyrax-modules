@@ -36,6 +36,6 @@ ASCIIOBJS = AsciiByte.o AsciiInt32.o AsciiFloat64.o AsciiStr.o AsciiUrl.o     \
 DEJATOOL = dap_asciival
 RUNTESTDEFAULTFLAGS = --tool $$tool --srcdir testsuite
 
-EXTRA_DIST = ChangeLog testsuite
+EXTRA_DIST = ChangeLog testsuite common_tests.exp
 
 CLEANFILES = *~ *.log *.sum
