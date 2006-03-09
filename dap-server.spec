@@ -34,7 +34,9 @@ is usable without manual configuration, install %{name}-cgi.
 %package cgi
 Summary:        A CGI interface for the DAP server
 Requires:       %{name} = %{version}-%{release}
-Requires:       freeform_handler netcdf_handler hdf_handler
+# I removed this because dap-server-cgi mightbe used with other handlers
+# (e.g., jgofs) and not these. jhrg 3/9/06
+# Requires:       freeform_handler netcdf_handler hdf_handler
 Group:          System Environment/Daemons
 
 %description cgi
