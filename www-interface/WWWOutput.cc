@@ -183,7 +183,7 @@ WWWOutput::write_attributes(AttrTable *attr, const string prefix)
 
                 int num_attr = attr->get_attr_num(a) - 1 ;
                 for (int i = 0; i < num_attr; ++i)
-                    fprintf(d_os, "%, ", attr->get_attr(a, i).c_str());
+                    fprintf(d_os, "%s, ", attr->get_attr(a, i).c_str());
                 fprintf(d_os, "%s\n", attr->get_attr(a, num_attr).c_str());
 	    }
 	}
@@ -366,5 +366,5 @@ write_simple_variable(FILE *os, const string &name, const string &type)
     ss << "<br>\n\n";
     
     // Now write that string to os
-    fprintf(os, "%", ss.str().c_str());
+    fprintf(os, "%s", ss.str().c_str());
 }
