@@ -57,7 +57,7 @@ use read_config;
 use dods_logging;
 use DODS_Cache;
 
-my $debug = 0;
+my $debug = 2;
 my $test  = 0;
 
 # Error message for bad extensions.
@@ -261,7 +261,7 @@ is not in your client, please contact the ", 0
         exit 1;
     }
     $self->{query} =~ tr/+/ /;    # Undo escaping by client.
-    print( DBG_LOG "query: ", $self->{query}, "\n" ) if $debug > 1;
+    print( DBG_LOG "QS: ", $self->{query}, "\n" ) if $debug > 1;
 
     # Get the filename's ext. This tells us which filter to run. It
     # will be something like `.dods' (for data) or `.dds' (for the DDS
@@ -383,7 +383,14 @@ information. If you think this is a server problem please contanct the\n"
     # Slight modification: If the handler is null ("") and the extension is a
     # slash ("/"), that's OK. See Bug 334. 12/27/2001 jhrg
 
-    $self->{handler} = handler_name( $self->{path_info}, $self->{config_file} );
+    # $self->{handler} = handler_name( $self->{path_info}, $self->{config_file} );
+
+    # This code knows how to read 0 .. n command line switche/params from the 
+    # dap-server.rc config file, but I have not modified this file to pass those
+    # into the various handlers.
+    ($self->{handler}, $self->{handler_switches})
+	   = handler_name( $self->{path_info}, $self->{config_file} );
+    
     if (    $self->{ext} ne "/"
          && $self->{ext} ne "stats"
          && $self->{ext} ne "version"
@@ -394,7 +401,8 @@ information. If you think this is a server problem please contanct the\n"
         exit(1);
     }
 
-    print DBG_LOG "Server type: $self->{handler}\n" if $debug > 1;
+    print DBG_LOG "Server type: $self->{handler}, $self->{handler_switches}\n"
+        if $debug > 1;
 
     # Look for the Accept-Encoding header. Does it exist? If so, store the
     # value.
@@ -568,192 +576,193 @@ sub full_uri {
     return $self->{full_uri};
 }
 
+
 sub maintainer {
     my $self  = shift;
-    my $value = shift;    # Optional, use to set.
+    # my $value = shift;    # Optional, use to set.
 
-    if ( $value eq "" ) {
+    if ( $#_ == -1 ) {
         return $self->{maintainer};
     } else {
-        return $self->{maintainer} = $value;
+        return $self->{maintainer} = shift;
     }
 }
 
 sub exclude {
     my $self   = shift;
-    my $values = @_;
+    # my @values = @_;
 
-    if ( $#value == 0 ) {
+    if ( $#_ == -1 ) {
         return $self->{exclude};
     } else {
-        return $self->{exclude} = $values;
+        return $self->{exclude} = shift;
     }
 }
 
 # Return the query string given with the URL.
 sub query {
     my $self  = shift;
-    my $query = shift;    # The second arg is optional
+    # my $query = shift;    # The second arg is optional
 
-    if ( $query eq "" ) {
+    if ( $#_ == -1 ) {
         return $self->{query};
     } else {
-        return $self->{query} = $query;
+        return $self->{query} = shift;
     }
 }
 
 # If the second argument is given, use it to set the filename member.
 sub filename {
     my $self     = shift;
-    my $filename = shift;    # The second arg is optional
+    # my $filename = shift;    # The second arg is optional
 
-    if ( $filename eq "" ) {
+    if ( $#_ == -1 ) {
         return $self->{filename};
     } else {
-        return $self->{filename} = $filename;
+        return $self->{filename} = shift;
     }
 }
 
 sub ext {
     my $self      = shift;
-    my $extension = shift;    # The second arg is optional
+    # my $extension = shift;    # The second arg is optional
 
-    if ( $extension eq "" ) {
+    if ( $#_ == -1 ) {
         return $self->{ext};
     } else {
-        return $self->{ext} = $extension;
+        return $self->{ext} = shift;
     }
 }
 
 sub cgi_dir {
     my $self    = shift;
-    my $cgi_dir = shift;      # The second arg is optional
+    # my $cgi_dir = shift;      # The second arg is optional
 
-    if ( $cgi_dir eq "" ) {
+    if ( $#_ == -1 ) {
         return $self->{cgi_dir};
     } else {
-        return $self->{cgi_dir} = $cgi_dir;
+        return $self->{cgi_dir} = shift;
     }
 }
 
 sub cache_dir {
     my $self      = shift;
-    my $cache_dir = shift;    # The second arg is optional
+    # my $cache_dir = shift;    # The second arg is optional
 
-    if ( $cache_dir eq "" ) {
+    if ( $#_ == -1 ) {
         return $self->{cache_dir};
     } else {
-        return $self->{cache_dir} = $cache_dir;
+        return $self->{cache_dir} = shift;
     }
 }
 
 sub cache_size {
     my $self       = shift;
-    my $cache_size = shift;    # The second arg is optional
+    #my $cache_size = shift;    # The second arg is optional
 
-    if ( $cache_size == 0 ) {
+    if ( $#_ == -1 ) {
         return $self->{cache_size};
     } else {
-        return $self->{cache_size} = $cache_size;
+        return $self->{cache_size} = shift;
     }
 }
 
 sub timeout {
     my $self    = shift;
-    my $timeout = shift;       # The second arg is optional
+    # my $timeout = shift;       # The second arg is optional
 
-    if ( $timeout eq "" ) {
+    if ( $#_ == -1 ) {
         return $self->{timeout};
     } else {
-        return $self->{timeout} = $timeout;
+        return $self->{timeout} = shift;
     }
 }
 
 sub curl {
     my $self = shift;
-    my $curl = shift;          # The second arg is optional
+    # my $curl = shift;          # The second arg is optional
 
-    if ( $curl eq "" ) {
+    if ( $#_ == -1 ) {
         return $self->{curl};
     } else {
-        return $self->{curl} = $curl;
+        return $self->{curl} = shift;
     }
 }
 
 sub usage {
     my $self = shift;
-    my $usage = shift;          # The second arg is optional
+    # my $usage = shift;          # The second arg is optional
 
-    if ( $usage eq "" ) {
+    if ( $#_ == -1 ) {
         return $self->{usage};
     } else {
-        return $self->{usage} = $usage;
+        return $self->{usage} = shift;
     }
 }
 
 sub www_int {
     my $self = shift;
-    my $www_int = shift;          # The second arg is optional
+    # my $www_int = shift;          # The second arg is optional
 
-    if ( $www_int eq "" ) {
+    if ( $#_ == -1 ) {
         return $self->{www_int};
     } else {
-        return $self->{www_int} = $www_int;
+        return $self->{www_int} = shift;
     }
 }
 
 sub asciival {
     my $self = shift;
-    my $asciival = shift;          # The second arg is optional
+    # my $asciival = shift;          # The second arg is optional
 
-    if ( $asciival eq "" ) {
+    if ( $#_ == -1 ) {
         return $self->{asciival};
     } else {
-        return $self->{asciival} = $asciival;
+        return $self->{asciival} = shift;
     }
 }
 
 sub access_log {
     my $self       = shift;
-    my $access_log = shift;    # The second arg is optional
+    # my $access_log = shift;    # The second arg is optional
 
-    if ( $access_log eq "" ) {
+    if ( $#_ == -1 ) {
         return $self->{access_log};
     } else {
-        return $self->{access_log} = $access_log;
+        return $self->{access_log} = shift;
     }
 }
 
 sub error_log {
     my $self      = shift;
-    my $error_log = shift;     # The second arg is optional
+    # my $error_log = shift;     # The second arg is optional
 
-    if ( $error_log eq "" ) {
+    if ( $#_ == -1 ) {
         return $self->{error_log};
     } else {
-        return $self->{error_log} = $error_log;
+        return $self->{error_log} = shift;
     }
 }
 
 sub machine_names {
     my $self          = shift;
-    my $machine_names = shift;    # The second arg is optional
+    # my $machine_names = shift;    # The second arg is optional
 
-    if ( $machine_names eq "" ) {
+    if ( $#_ == -1 ) {
         return $self->{machine_names};
     } else {
-        return $self->{machine_names} = $machine_names;
+        return $self->{machine_names} = shift;
     }
 }
 
 sub is_stat_on {
     my $self  = shift;
-    my $value = shift;
+    # my $value = shift;
 
-    if ( $value eq "" ) {
+    if ( $#_ == -1 ) {
         return $self->{is_stat_on};
     } else {
-        return $self->{is_stat_on} = $value;
+        return $self->{is_stat_on} = shift;
     }
 }
 
@@ -761,12 +770,12 @@ sub is_stat_on {
 # is read from the dap-server.rc file during initialization. 
 sub handler {
     my $self   = shift;
-    my $handler = shift;    # The second arg is optional
+    # my $handler = shift;    # The second arg is optional
 
-    if ( $handler eq "" ) {
+    if ( $#_ == -1 ) {
         return $self->{handler};
     } else {
-        return $self->{handler} = $handler;
+        return $self->{handler} = shift;
     }
 }
 
@@ -774,23 +783,34 @@ sub handler {
 # configuration file (dap-server.rc).
 sub bin_dir {
     my $self   = shift;
-    my $bin_dir = shift;    # The second arg is optional
+    # my $bin_dir = shift;    # The second arg is optional
 
-    if ( $bin_dir eq "" ) {
+    if ( $#_ == -1 ) {
         return $self->{bin_dir};
     } else {
-        return $self->{bin_dir} = $bin_dir;
+        return $self->{bin_dir} = shift;
     }
 }
 
 sub data_path {
     my $self   = shift;
-    my $data_path = shift;    # The second arg is optional
+    # my $data_path = shift;    # The second arg is optional
 
-    if ( $data_path eq "" ) {
+    if ( $#_ == -1 ) {
         return $self->{data_path};
     } else {
-        return $self->{data_path} = $data_path;
+        return $self->{data_path} = shift;
+    }
+}
+
+sub handler_switches {
+    my $self   = shift;
+    # my $data_path = shift;    # The second arg is optional
+
+    if ( $#_ == -1 ) {
+        return $self->{handler_switches};
+    } else {
+        return $self->{handler_switches} = shift;
     }
 }
 
@@ -869,6 +889,9 @@ sub command {
         $options    = "'-v " . $self->caller_revision() . " ";
         if ( $self->cache_dir() ne "" ) {
             $options .= "-r " . $self->cache_dir() . "'";
+        }
+        else {
+            $options .= "'";
         }
 
         @command = ( $self->usage(), $options, $self->filename(), $self->handler() );
@@ -955,7 +978,7 @@ sub command {
         @command = (
                      $self->handler(), "-v", $self->caller_revision(),
                      "-o", $self->ext(), "-u", $self->full_uri(),
-                     $self->filename()
+                     $self->filename(), $self->handler_switches()
         );
         if ( $self->query() ne "" ) {
             @command = ( @command, "-e", $self->query() );
@@ -1185,38 +1208,45 @@ if ($test) {
     $ENV{SERVER_NAME}  = "dcz.dods.org";
     $ENV{SERVER_ADMIN} = "jimbo";
     $ENV{QUERY_STRING} = "x,y,z&x<x&z>10.0";
-    $ENV{PATH_INFO}    = "/data/x.nc.dods";
+    $ENV{PATH_INFO}    = "/data/nc/x.nc.dods";
     $ENV{SCRIPT_NAME}  = "/test-3.2/nph-dods";
+    $ENV{PATH_TRANSLATED} = "/usr/local/dap_data/data/nc/x.nc.dods";
+
+    my $dd = new DODS_Dispatch( "2.0", "./dap-server.rc" );
+    print $dd->ext(), "\n";
+    print $dd->handler(), "\n";
+    # print $dd->handler_switches(), "\n";
+    
+    print $dd->command(), "\n";
 
    # Replaced the use of this environment variable since it is not part of
    # the CGI 1.1 spec and not provided by Netscape's FastTrack server.
    # 4/30/2001 jhrg.
    # $ENV{REQUEST_URI} = "http://dcz.dods.org/test-3.2/nph-dods/data/x.nc.dods";
     $ENV{HTTP_ACCEPT_ENCODING} = "deflate";
-    $self->data_path("/home/httpd/html/htdocs/data/x.nc.dods");
+    # $self->data_path("/home/httpd/html/htdocs/data/x.nc.dods");
 
     print "Simple file access\n";
-    my $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dap-server.rc" );
+    $dd = new DODS_Dispatch( "2.0", "dap-server.rc" );
     $dd->ext()    eq "dods" || die;
-    $dd->handler() eq "nc_handler"   || die;
+    $dd->handler() eq "/usr/local/bin/dap_nc_handler"   || die;
 
     print "Files with extra dots on their names\n";
 
     # Test files which have more than one dot in their names.
     $ENV{PATH_INFO}       = "/data/tmp.x.nc.dods";
-    $self->data_path("/home/httpd/html/htdocs/data/tmp.x.nc.dods");
-    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dap-server.rc" );
-
+    $dd = new DODS_Dispatch( "2.0", "dap-server.rc" );
     $dd->ext()    eq "dods" || die;
-    $dd->handler() eq "nc_handler"   || die;
+    $dd->handler() eq "/usr/local/bin/dap_nc_handler"   || die;
 
     print "Directory names ending in a slash\n";
 
     # Directory ending in a slash.
     # NOTE: The directory must really exist!
-    $ENV{PATH_INFO}       = "/data/";
-    $self->data_path("/var/www/html/data/");
-    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dap-server.rc" );
+    $ENV{PATH_INFO}       = "/data/nc/";
+    # The following must be a real path on the system running the tests
+    $ENV{PATH_TRANSLATED} = "/usr/local/dap_data/data/nc/";
+    $dd = new DODS_Dispatch( "2.0", "dap-server.rc" );
     $dd->ext()    eq "/" || die;
     $dd->handler() eq ""  || die;    # a weird anomaly of handler.pm
 
@@ -1224,18 +1254,17 @@ if ($test) {
 
     # Directory ending in a slash with a query string
     $ENV{QUERY_STRING}    = "M=A";
-    $ENV{PATH_INFO}       = "/data/";
-#    $ENV{PATH_TRANSLATED} = "/var/www/html/data/";
-    $self->data_path("/var/www/html/data/");
-    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dap-server.rc" );
+    $ENV{PATH_INFO}       = "/data/nc/";
+    $ENV{PATH_TRANSLATED} = "/usr/local/dap_data/data/nc/";
+    $dd = new DODS_Dispatch( "2.0", "dap-server.rc" );
     $dd->ext() eq "/" || die;
 
     print "Directory names not ending in a slash\n";
 
     # Directory, not ending in a slash
-    $ENV{PATH_INFO}       = "/data";
-    $ENV{PATH_TRANSLATED} = "/var/www/html/data";
-    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dap-server.rc" );
+    $ENV{PATH_INFO}       = "/data/nc";
+    $ENV{PATH_TRANSLATED} = "/usr/local/dap_data/data/nc";
+    $dd = new DODS_Dispatch( "2.0", "dap-server.rc" );
     $dd->ext() eq "/" || die;
 
     print "Directory names not ending in a slash with a M=A query\n";
@@ -1243,8 +1272,7 @@ if ($test) {
     # Directory, not ending in a slash with a M=A query
     $ENV{QUERY_STRING}    = "M=A";
     $ENV{PATH_INFO}       = "/data";
-    $self->data_path("/var/www/html/data");
-    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dap-server.rc" );
+    $dd = new DODS_Dispatch( "2.0", "dap-server.rc" );
     $dd->ext() eq "/" || die;
 
     # Test the RFC822_to_time function.
@@ -1293,8 +1321,7 @@ if ($test) {
 
     $ENV{PATH_INFO} =
       "/http://dcz.dods.org/dods-3.2/nph-dods/data/nc/fnoc1.nc.das";
-    $self->data_path("/var/www/html$ENV{PATH_INFO}");
-    $dd = new DODS_Dispatch( "dods/3.2.0", "jimg\@dcz.dods.org", "dap-server.rc" );
+    $dd = new DODS_Dispatch( "2.0", "dap-server.rc" );
 
     print "All tests successful\n";
 }
