@@ -177,7 +177,8 @@ The dap-server.rc Configuration File
   When data files are stored in a compressed format such as gzip or UNIX
   compress, the OPeNDAP server first decompresses them and then serves the
   decompressed file. The files are cached as they are decompressed. This
-  parameter tells the server where to put that cache. Default: /usr/tmp.
+  parameter tells the server where to put that cache. Default: /usr/tmp. In
+  the RPM package, this defaults to /var/cache/dap-server.
 
   cache_size <size in MB>
 
@@ -228,8 +229,8 @@ The dap-server.rc Configuration File
 
   Here are the default values for 'handler:'
 
-    handler .*\.(HDF|hdf|EOS|eos)(.Z|.gz)*$ /usr/local/bin/dap_hdf_handler
-    handler .*\.(NC|nc|cdf|CDF)$ /usr/local/bin/dap_nc_handler
+    handler .*\.(HDF|hdf|EOS|eos)(.Z|.gz|bz2)*$ /usr/local/bin/dap_hdf_handler
+    handler .*\.(NC|nc|cdf|CDF)(.Z|.gz|bz2)*$ /usr/local/bin/dap_nc_handler
     handler .*\.(dat|bin)$ /usr/local/bin/dap_ff_handler
 
   "Regular expressions", advanced pattern-matching languages, are a powerful

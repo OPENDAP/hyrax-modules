@@ -1,3 +1,51 @@
+2006-03-16  James Gallagher <jgallagher@opendap.org>
+
+	read_config.pl: now reads switches/params given after the handler
+	name in the config file.
+
+2006-03-16  James Gallagher <jgallagher@opendap.org>
+
+	DODS_Dispatch.pm: Added some code to read handler flags returned
+	by handler_name(). Also fixed a number of warnings issues when
+	the DODS_Dispatch code was run using perl -w.
+
+2006-03-14  James Gallagher <jgallagher@opendap.org>
+
+	Removed the log file from nph-dods.in
+
+2006-03-10  James Gallagher <jgallagher@opendap.org>
+
+	WWWWOutput.cc: Found two places where fprintf() calles used bad
+	format control strings.
+
+2006-03-09  James Gallagher <jgallagher@opendap.org>
+
+	Removed the Requires: line from dap-server-cgi (in dap-server.spec).
+	The CGI should not require a specific set of handlers.
+
+2006-03-08  James Gallagher <jgallagher@opendap.org>
+
+	Added common_tests.exp to EXTRA_DIST in Makefile.am.
+
+2006-03-03  James Gallagher <jgallagher@opendap.org>
+
+	Applied a patch from Patrice Dumas to dap-server.spec. Bumped the release
+	code. The patch fixes the Requires lines and includes update descriptive text.
+
+2006-03-03  James Gallagher <jgallagher@opendap.org>
+
+	Applied a patch from Patrice Dumas that updates the package description and
+	fixes problems with the Requires lines.
+
+2006-02-27  James Gallagher <jgallagher@opendap.org>
+
+	Updated version numbers.
+
+2006-02-27  James Gallagher <jgallagher@opendap.org>
+
+	Updated NEWS, README, ChangeLog, configure.ac and dap-server.spec For version
+	3.6.0. Also fixed the COADS asciival option m test.
+
 2006-02-24  James Gallagher <jgallagher@opendap.org>
 
 	Updated NEWS

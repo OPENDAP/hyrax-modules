@@ -1,4 +1,20 @@
 
+Version 3.6.1
+
+Fixed a bug where the helper that builds the info response was not getting
+the cache_dir param (so the hdf4 handler would dump the cache files in the
+same directory as the data _or_ exit with a very obscure error message).
+
+The server should now return an error message when the configuration file
+cannot be read.
+
+The configuration file now supports data handler switches. Include these 
+right after the handler name in the configuration file. 
+
+Two formatting errors in the HTML form generator were fixed.
+
+Added common_tests.exp to the distribution.
+
 Version 3.6.0
 
 This package no longer includes its own copy of the Perl HTML::Parser
