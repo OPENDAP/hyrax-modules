@@ -31,6 +31,8 @@ require Exporter;
 
 use strict;
 
+# The test and debug code make many assumptions about your installation.
+# In particular, it assumes a 'default' installation of the server.
 my $debug = 0;
 my $test  = 0;
 
@@ -41,7 +43,7 @@ my $test  = 0;
 
 sub get_params {
     my ($server_config_file) = @_;
-    my $timeout              = 0;                              # Never timeout
+    my $timeout              = 0;                             # Never timeout
     my $cache_dir            = "/usr/tmp";
     my $maintainer           = "support\@unidata.ucar.edu";
     my $cache_size           = 50;
@@ -50,9 +52,11 @@ sub get_params {
     my $www_int              = "dap_www_int";
     my $asciival             = "dap_asciival";
     my $data_root            = "";
-    my @exclude;    # Default is empty
+    my @exclude;                                              # Default is empty
+    my $error = "";
 
-    open( DODSINI, $server_config_file );
+    open( DODSINI, $server_config_file )
+      or $error = "OPeNDAP server: Could not open the configuarion file.";
 
   LINE:
     while (<DODSINI>) {
@@ -67,15 +71,18 @@ sub get_params {
         if ( $keyword eq "timeout" ) {
             $value[0] =~ /^(.*)$/;
             $timeout = $1;
-        } elsif ( $keyword eq "cache_dir" ) {
+        }
+        elsif ( $keyword eq "cache_dir" ) {
             print STDERR "Cache Dir: $value[0]\n" if $debug;
             $value[0] =~ /^(.*)$/;
             $cache_dir = $1;
             print STDERR "Cache Dir: $cache_dir\n" if $debug;
-        } elsif ( $keyword eq "cache_size" ) {
+        }
+        elsif ( $keyword eq "cache_size" ) {
             $value[0] =~ /^(.*)$/;
             $cache_size = $1;
-        } elsif ( $keyword eq "maintainer" ) {
+        }
+        elsif ( $keyword eq "maintainer" ) {
             $value[0] =~ /^(.*)$/;
             $maintainer = $1;
 
@@ -84,22 +91,28 @@ sub get_params {
             if ( $maintainer !~ /\\\@/ ) {
                 $maintainer =~ s/\@/\\\@/;
             }
-        } elsif ( $keyword eq "curl" ) {
+        }
+        elsif ( $keyword eq "curl" ) {
             $value[0] =~ /^(.*)$/;
             $curl = $1;
-        } elsif ( $keyword eq "usage" ) {
+        }
+        elsif ( $keyword eq "usage" ) {
             $value[0] =~ /^(.*)$/;
             $usage = $1;
-        } elsif ( $keyword eq "www_int" ) {
+        }
+        elsif ( $keyword eq "www_int" ) {
             $value[0] =~ /^(.*)$/;
             $www_int = $1;
-        } elsif ( $keyword eq "asciival" ) {
+        }
+        elsif ( $keyword eq "asciival" ) {
             $value[0] =~ /^(.*)$/;
             $asciival = $1;
-        } elsif ( $keyword eq "data_root" ) {
+        }
+        elsif ( $keyword eq "data_root" ) {
             $value[0] =~ /^(.*)$/;
             $data_root = $1;
-        } elsif ( $keyword eq "exclude" ) {
+        }
+        elsif ( $keyword eq "exclude" ) {
 
             # These are only used internally, no need to sanitize (which is
             # good because I can't figure out how to sanitize a list...)
@@ -108,8 +121,11 @@ sub get_params {
         }
     }
 
-    return ( $timeout, $cache_dir, $cache_size, $maintainer, $curl, $usage,
-	     $www_int, $asciival, $data_root, @exclude );
+    return (
+        $timeout,   $cache_dir, $cache_size, $maintainer,
+        $curl,      $usage,     $www_int,    $asciival,
+        $data_root, $error,     @exclude
+    );
 }
 
 # Lookup the handler name using the regular expressions from the
@@ -132,23 +148,34 @@ sub handler_name {
         next LINE if /^$/;
         next LINE if !/^handler/;
 
-        my ( $keyword, $regex, $handler ) = split;
+        my ( $keyword, $regex, $handler, $switches ) = split /\s+/, $_, 4;
 
         print STDERR "Keyword: $keyword, Regex: $regex, Handler: $handler \n"
           if $debug >= 2;
 
         if ( $pathname =~ $regex ) {
             print STDERR "match $handler\n" if $debug >= 1;
+            print STDERR "Handler returned: $handler, $switches\n" if $debug;
 
             # Sanitize data read from configuration file. 04/28/03 jhrg
             $handler =~ /^([^#!:;]+)$/;
             $handler = $1;
-            print STDERR "Handler returned: $handler\n" if $debug;
-            return $handler;
+
+            # Make sure to sanitise $switches even if it's null.
+            if ( $switches eq "" ) {
+                $switches = "";
+            }
+            else {
+                $switches =~ /^([^#!:;\n]+.*)$/;
+                $switches = $1;
+                # chop $switches;
+            }
+
+            return ( $handler , $switches );
         }
     }
 
-    return "";
+    return ( "", "" );
 }
 
 # Collect the regexes that describe the files this server is configured to
@@ -190,29 +217,57 @@ sub dataset_regexes {
 }
 
 # Tests
+#
+# These tests work only if you use the default values in the dap-server.rc.
+
+if ($debug) {
+    my ($handler, $switches) = handler_name( "/stuff/file.nc", "./dap-server.rc" );
+    print "Handler: $handler\n";
+    print "Switches: $switches\n";
+}
+
 if ($test) {
-    ( "/usr/local/bin/dap_hdf4_handler" eq handler_name( "/stuff/file.HDF", "./dap-server.rc" ) ) || die;
-    ( "/usr/local/bin/dap_hdf4_handler" eq handler_name( "/stuff/file.hdf", "./dap-server.rc" ) ) || die;
-    ( "/usr/local/bin/dap_nc_handler"  eq handler_name( "/stuff/file.nc",  "./dap-server.rc" ) ) || die;
-    ( "/usr/local/bin/dap_nc_handler"  eq handler_name( "/stuff/file.NC",  "./dap-server.rc" ) ) || die;
-    ( "/usr/local/bin/dap_nc_handler"  eq handler_name( "/stuff/file.cdf", "./dap-server.rc" ) ) || die;
-    ( "/usr/local/bin/dap_nc_handler"  eq handler_name( "/stuff/file.CDF", "./dap-server.rc" ) ) || die;
-    ( "/usr/local/bin/dap_ff_handler"  eq handler_name( "/stuff/test.dat", "./dap-server.rc" ) ) || die;
-    ( "/usr/local/bin/dap_ff_handler"  eq handler_name( "/stuff/test.bin", "./dap-server.rc" ) ) || die;
-    ( ""    eq handler_name( "/stuff/file.bob", "./dap-server.rc" ) ) || die;
+    ( "/usr/local/bin/dap_hdf4_handler" eq
+          handler_name( "/stuff/file.HDF", "./dap-server.rc" ) )
+      || die;
+    ( "/usr/local/bin/dap_hdf4_handler" eq
+          handler_name( "/stuff/file.hdf", "./dap-server.rc" ) )
+      || die;
+    ( "/usr/local/bin/dap_nc_handler" eq
+          handler_name( "/stuff/file.nc", "./dap-server.rc" ) )
+      || die;
+    ( "/usr/local/bin/dap_nc_handler" eq
+          handler_name( "/stuff/file.NC", "./dap-server.rc" ) )
+      || die;
+    ( "/usr/local/bin/dap_nc_handler" eq
+          handler_name( "/stuff/file.cdf", "./dap-server.rc" ) )
+      || die;
+    ( "/usr/local/bin/dap_nc_handler" eq
+          handler_name( "/stuff/file.CDF", "./dap-server.rc" ) )
+      || die;
+    ( "/usr/local/bin/dap_ff_handler" eq
+          handler_name( "/stuff/test.dat", "./dap-server.rc" ) )
+      || die;
+    ( "/usr/local/bin/dap_ff_handler" eq
+          handler_name( "/stuff/test.bin", "./dap-server.rc" ) )
+      || die;
+    ( "" eq handler_name( "/stuff/file.bob", "./dap-server.rc" ) ) || die;
     (
-       "/usr/local/bin/dap_hdf4_handler" eq handler_name(
-                    "/usr/tmp/dods_cache#home#httpd#html#data#hdf#S1700101.HDF",
-                    "./dap-server.rc"
-       )
+        "/usr/local/bin/dap_hdf4_handler" eq handler_name(
+            "/usr/tmp/dods_cache#home#httpd#html#data#hdf#S1700101.HDF",
+            "./dap-server.rc"
+        )
       )
       || die;
 
     print STDERR "first: ",
-      dataset_regexes( "./dap-server.rc", ( "hdf", "nc", "mat", "ff", "dsp", "jg" ) ),
+      dataset_regexes(
+        "./dap-server.rc", ( "hdf", "nc", "mat", "ff", "dsp", "jg" )
+      ),
       "\n";
     print STDERR "second: ",
-      dataset_regexes( "./dap-server.rc", ( "nc", "mat", "ff", "dsp", "jg" ) ), "\n";
+      dataset_regexes( "./dap-server.rc", ( "nc", "mat", "ff", "dsp", "jg" ) ),
+      "\n";
     print STDERR "third: ", dataset_regexes( "./dap-server.rc", ("jg") ), "\n";
 
     my @params = get_params("./dap-server.rc");
@@ -225,9 +280,9 @@ if ($test) {
     shift @params;
     ( $params[0] == "support\@unidata.ucar.edu" ) || die;
     shift @params;
-     ( $params[0] == "curl" ) || die;
+    ( $params[0] == "curl" ) || die;
     shift @params;
-     ( $params[0] == "" ) || die;
+    ( $params[0] == "" ) || die;
     shift @params;
     print STDERR "Exclude: @params\n";
     my @exclude_test = ();
