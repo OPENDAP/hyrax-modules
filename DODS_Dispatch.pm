@@ -902,12 +902,11 @@ sub command {
             $self->send_dods_version();
             exit(0);
         } else {
-            $server_pgm = $self->handler();
             @command = (
                          $self->handler(),
-			 "-v", $self->caller_revision(),
-			 "-o", "Version",
-			 "-u", $self->full_uri(),
+			             "-v", $self->caller_revision(),
+			             "-o", "Version",
+			             "-u", $self->full_uri(),
                          $self->filename()
             );
         }
