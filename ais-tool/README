@@ -8,6 +8,8 @@ ABOUT
   service. This implementation is experimental; what we've learned from it
   will be used to derive requirements for a better version. This software
   should not be included in the dap-server distributions.
+  
+  Update: Build with libdap 3.7.x. jhrg 05/03/06
 
 COPYRIGHT INFORMATION
 

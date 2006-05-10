@@ -1,95 +1,103 @@
 
-dnl -*- m4 -*-
+dnl -*- autoconf -*-
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id$)
-AC_INIT
-AC_CONFIG_SRCDIR([ais_tool.cc])
-AC_CONFIG_HEADER(config_ais_tool.h)
-AC_CONFIG_AUX_DIR(../../../etc)
+AC_PREREQ(2.59)
+AC_INIT([ais], [0.2], [dods-tech@unidata.ucar.edu])
+AC_CONFIG_AUX_DIR([conf])
 
-AC_PREFIX_DEFAULT("\$(DODS_ROOT)")
+AM_INIT_AUTOMAKE
+AC_CONFIG_SRCDIR([nph-ais.in])
+AM_CONFIG_HEADER([config.h])
 
-dnl DODS_ROOT is the fully qualified pathname to the root of the DODS
-dnl subtree. 
+AC_DEFINE([DAP_VERSION], ["2.0"], [What version of the data server is this?])
 
-DODS_GET_DODS_ROOT
-DODS_DIRECTORY_VERSION
+dnl flags for the compilers and linkers - set these before locating the
+dnl actual tools since some of the AC_PROG macros set these `flag variables'
+dnl to default values otherwise.
 
-dnl `depend' is the command to use to generate dependencies for Makefiles.
+AC_CANONICAL_HOST
+AC_SUBST(host)
 
-depend=${dods_relative}/etc/depend.sh
-AC_SUBST(depend)
-
-CFLAGS="-gstabs -O2 $CFLAGS"
-CXXFLAGS="-gstabs -O2 $CXXFLAGS"
-
-dnl Checks for programs.
-
-AC_PROG_AWK
-AC_PROG_CC
+# Checks for programs.
 AC_PROG_CXX
-AC_ISC_POSIX
-AC_PROG_LN_S
-AC_PROG_MAKE_SET
-AC_PROG_RANLIB
-AC_PROG_CPP
+AC_PROG_CC
+AC_PROG_AWK
 AC_PROG_INSTALL
-DODS_GCC
+AM_PROG_LEX
+AC_PROG_RANLIB
+AC_PROG_YACC
+AC_PROG_MAKE_SET
 
-DODS_PROG_LEX
-DODS_PROG_GTAR
-DODS_PROG_BISON
+DODS_PROG_PERL
 
-CXX=${CXX-g++}
-AC_MSG_RESULT(Setting CXX to $CXX)
-AC_SUBST(CXX)
-
-dnl Checks for header files.
-AC_HEADER_STDC
-AC_CHECK_HEADERS(fcntl.h limits.h unistd.h)
-
-dnl Checks for typedefs, structures, and compiler characteristics.
-AC_C_CONST
-AC_TYPE_OFF_T
-AC_TYPE_SIZE_T
-
-dnl Checks for specific libraries
-AC_CHECK_LIB(pthread, pthread_testcancel, 
-	[LIBS="$LIBS -lpthread"
-	 AC_DEFINE(_REENTRANT, , [Define this if libpthread is available])])
-
-dnl Checks for library functions.
-AC_FUNC_VPRINTF
-AC_CHECK_FUNCS(strerror strtol)
-
-DODS_CHECK_SIZES
-
-DODS_COMPRESSION_LIB
-DODS_RX_LIB
-DODS_WWW_LIB
-DODS_XML_LIB
-
-DODS_EFENCE
-DODS_DBNEW
-DODS_DEBUG_OPTION
-
-if test $ac_cv_sizeof_long -eq 4 
-then
-	ARCHFLAG=-DARCH_32BIT
-	AC_SUBST(ARCHFLAG)
-elif test $ac_cv_sizeof_long -eq 8
-then
-	ARCHFLAG=-DARCH_64BIT
-	AC_SUBST(ARCHFLAG)
-else
-	AC_MSG_ERROR(Could not determine architecture size - 32 or 64 bits)
+dods_HTML_Filter=no
+if $PERL -e "use HTML::Filter;" > /dev/null 2>&1; then 
+   dods_HTML_Filter=yes
+else 
+   dods_HTML_Filter=no
 fi
 
-dnl autoheader macros; tack some text at the top and bottom of config_dap.h.in
+if test "z$dods_HTML_Filter" = "zno"; then
+   AC_MSG_WARN([HTML::Filter not found. See INSTALL])
+fi  
 
-AH_TOP([#ifndef _config_dap_h
-#define _config_dap_h])
+# Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS([fcntl.h stdlib.h unistd.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_HEADER_STDBOOL
+AC_C_CONST
+AC_TYPE_SIZE_T
+
+AC_ARG_WITH([modulesdir],
+   [AS_HELP_STRING([--with-modulesdir],[perl modules dir (default ${datadir}/dap-server)])],
+   [
+        dap_modulesdir="$withval"
+   ],
+   [
+        dap_modulesdir=${datadir}/dap-server
+   ]
+)
+
+AC_SUBST([dap_modulesdir])
+
+AC_ARG_WITH([cgidir],
+   [AS_HELP_STRING([--with-cgidir],[CGI scripts dir (default ${datadir}/dap-server-cgi)])],
+   [
+        dap_cgidir="$withval"
+   ],
+   [
+        dap_cgidir=${datadir}/dap-server-cgi
+   ]
+)
+
+AC_SUBST([dap_cgidir])
+
+# Checks for library functions.
+AC_CHECK_FUNCS([putenv strtol])
+
+dnl Checks for specific libraries
+
+AC_CHECK_LIBDAP([3.7.0],
+ [
+  LIBS="$LIBS $DAP_CLIENT_LIBS $DAP_SERVER_LIBS"
+  CPPFLAGS="$CPPFLAGS $DAP_CFLAGS"
+ ],
+ [ AC_MSG_ERROR([Cannot find libdap])
+])
+
+dnl I wrote these checks because we need the *-config scripts to build, so 
+dnl the AC_CHECK_LIB macro is not needed.
+
+AC_PATH_PROG([CURL], [curl], [*** Where is curl? ***], [/bin:/usr/bin])
+
+OPENDAP_DEBUG_OPTION
+
+dnl autoheader macros; tack some text at the top and bottom of config.h.in
+AH_TOP([#ifndef _config_h
+#define _config_h])
 
 AH_BOTTOM([/* Shorthand for gcc's unused attribute feature */
 #if defined(__GNUG__) || defined(__GNUC__)
@@ -98,8 +106,11 @@ AH_BOTTOM([/* Shorthand for gcc's unused attribute feature */
 #define not_used 
 #endif /* __GNUG__ || __GNUC__ */
 
-#endif /* _config_dap_h */])
+#endif /* _config_h */])
 
 AC_CONFIG_FILES([Makefile])
+                 
+AC_CONFIG_FILES([nph-ais], [chmod +x nph-ais; touch stamp-nph-ais])
+
 AC_OUTPUT
 

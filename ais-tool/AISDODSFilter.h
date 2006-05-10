@@ -48,7 +48,6 @@
 
 class AISDODSFilter :public DODSFilter {
 private:
-    ObjectType d_object;
     string d_ais_db;
 
 public:
@@ -59,7 +58,6 @@ public:
     virtual int process_options(int argc, char *argv[]) throw(Error);
 
     string get_ais_db() { return d_ais_db; }
-    ObjectType get_object() { return d_object; }
 
     virtual void print_usage() throw(Error) { 
 	cerr << "AISDODSFilter::print_usage: FIX ME" << endl;

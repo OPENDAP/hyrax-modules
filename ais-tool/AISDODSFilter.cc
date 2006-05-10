@@ -51,37 +51,37 @@ AISDODSFilter::process_options(int argc, char *argv[]) throw(Error)
 {
     DBG(cerr << "Entering process_options... ");
 
-    d_object = unknown_type;
     d_ais_db = "";
 
-    GetOpt getopt (argc, argv, "asDB:Vce:v:d:f:r:t:l:h?");
+    DBG(cerr << "Entering process_options... ");
+
     int option_char;
+    GetOpt getopt (argc, argv, "B:ce:v:d:f:r:l:o:u:t:");
+
     while ((option_char = getopt()) != EOF) {
-	switch (option_char) {
-	  case 'a': d_object = dods_das; break;
-	  case 's': d_object = dods_dds; break;
-	  case 'D': d_object = dods_data; break;
-	  case 'B': d_ais_db = getopt.optarg; break;
-	    // case 'V': {cerr << "ais_tool: " << VERSION << endl; exit(0);}
-	  case 'c': d_comp = true; break;
-	  case 'e': d_ce = getopt.optarg; break;
-	  case 'v': d_cgi_ver = getopt.optarg; break;
-#if 0
-	  case 'V': d_ver = true; break;
-#endif
-	  case 'd': d_anc_dir = getopt.optarg; break;
-	  case 'f': d_anc_file = getopt.optarg; break;
-	  case 'r': d_cache_dir = getopt.optarg; break;
-	  case 'l': 
-	    d_conditional_request = true;
-	    d_if_modified_since 
-		= static_cast<time_t>(strtol(getopt.optarg, NULL, 10));
-	    break;
-	  default: d_bad_options = true; break;
-	}
+        switch (option_char) {
+          // This is the one new option.
+          case 'B': d_ais_db = getopt.optarg; break;                
+                
+          case 'c': d_comp = true; break;
+          case 'e': set_ce(getopt.optarg); break;
+          case 'v': set_cgi_version(getopt.optarg); break;
+          case 'd': d_anc_dir = getopt.optarg; break;
+          case 'f': d_anc_file = getopt.optarg; break;
+          case 'r': d_cache_dir = getopt.optarg; break;
+          case 'o': set_response(getopt.optarg); break;
+          case 'u': set_URL(getopt.optarg); break;
+          case 't': d_timeout = atoi(getopt.optarg); break;
+          case 'l': 
+            d_conditional_request = true;
+            d_if_modified_since 
+                = static_cast<time_t>(strtol(getopt.optarg, NULL, 10));
+            break;
+          default: print_usage(); // Throws Error
+        }
     }
 
     DBGN(cerr << "exiting." << endl);
 
-    return getopt.optind;	// Index of next option.
+    return getopt.optind;       // return the index of the next argument
 }

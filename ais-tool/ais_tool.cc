@@ -87,7 +87,7 @@ In the DODS server script (nph-ais), set the name of the AIS database.");
 	// *** Set accept_deflate ???
 	url->set_cache_enabled(false);
 
-	switch(df.get_object()) {
+	switch(df.get_response()) {
 	  case dods_das: {
 	    DAS das;
 	    DBG(cerr << "About to get the DAS object." << endl);
@@ -98,14 +98,17 @@ In the DODS server script (nph-ais), set the name of the AIS database.");
 	  }
 
 	  case dods_dds: {
-	    DDS dds;
+            BaseTypeFactory btf;
+	    DDS dds(&btf, df.get_dataset_name());
 	    url->request_dds(dds);
-	    df.send_dds(stdout, dds);
+            ConstraintEvaluator ce;
+	    df.send_dds(stdout, dds, ce);
 	    break;
 	  }
 
 	  case dods_data: {
-	    DataDDS dds;
+            BaseTypeFactory btf;
+	    DataDDS dds(&btf, df.get_dataset_name());
 	    DBG(cerr << "URL: " << url->URL(false) << endl);
 	    DBG(cerr << "CE: " << df.get_ce() << endl);
 	    url->request_data(dds, df.get_ce()); // other requests ignore this
@@ -117,7 +120,8 @@ In the DODS server script (nph-ais), set the name of the AIS database.");
 		(*i)->set_read_p(true);
 	    df.set_ce("");	// zero CE to avoid re-applying
 
-	    df.send_data(dds, stdout);
+            ConstraintEvaluator ce;
+	    df.send_data(dds, ce, stdout);
 	    break;
 	  }
 
@@ -128,7 +132,7 @@ In the DODS server script (nph-ais), set the name of the AIS database.");
     catch (Error &e) {
 	DBG(cerr << "Caught an Error: " << e.get_error_message() 
 	    << endl);
-	set_mime_text(cout, dods_error, df.get_cgi_version());
+	set_mime_text(stdout, dods_error, df.get_cgi_version());
 	e.print(stdout);
 	return 1;
     }
