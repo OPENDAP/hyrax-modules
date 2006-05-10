@@ -31,9 +31,8 @@ require Exporter;
 
 use strict;
 
-# The test and debug code make many assumptions about your installation.
+# The test code make many assumptions about your installation.
 # In particular, it assumes a 'default' installation of the server.
-my $debug = 0;
 my $test  = 0;
 
 # Read the values of various configuration parameters. Return a list with the
@@ -65,18 +64,13 @@ sub get_params {
 
         my ( $keyword, @value ) = split;
 
-        print STDERR "Keyword: $keyword, Value: @value\n"
-          if $debug >= 2;
-
         if ( $keyword eq "timeout" ) {
             $value[0] =~ /^(.*)$/;
             $timeout = $1;
         }
         elsif ( $keyword eq "cache_dir" ) {
-            print STDERR "Cache Dir: $value[0]\n" if $debug;
             $value[0] =~ /^(.*)$/;
             $cache_dir = $1;
-            print STDERR "Cache Dir: $cache_dir\n" if $debug;
         }
         elsif ( $keyword eq "cache_size" ) {
             $value[0] =~ /^(.*)$/;
@@ -138,8 +132,6 @@ sub get_params {
 sub handler_name {
     my ( $pathname, $server_config_file ) = @_;
 
-    print STDERR "Pathanme: ", $pathname, "\n" if $debug;
-
     open( DODSINI, $server_config_file );
 
   LINE:
@@ -150,13 +142,7 @@ sub handler_name {
 
         my ( $keyword, $regex, $handler, $switches ) = split /\s+/, $_, 4;
 
-        print STDERR "Keyword: $keyword, Regex: $regex, Handler: $handler \n"
-          if $debug >= 2;
-
         if ( $pathname =~ $regex ) {
-            print STDERR "match $handler\n" if $debug >= 1;
-            print STDERR "Handler returned: $handler, $switches\n" if $debug;
-
             # Sanitize data read from configuration file. 04/28/03 jhrg
             $handler =~ /^([^#!:;]+)$/;
             $handler = $1;
@@ -208,7 +194,6 @@ sub dataset_regexes {
         # problem could be solved by concatenating a bunch of patterns with
         # logical ORs, but the resulting pattern could get really large.
         if ( !grep { $handler =~ $_ } @exclude ) {
-            print STDERR "Including $regex\n" if $debug >= 1;
             @regexes = ( @regexes, $regex );
         }
     }
@@ -220,13 +205,11 @@ sub dataset_regexes {
 #
 # These tests work only if you use the default values in the dap-server.rc.
 
-if ($debug) {
+if ($test) {
     my ($handler, $switches) = handler_name( "/stuff/file.nc", "./dap-server.rc" );
     print "Handler: $handler\n";
     print "Switches: $switches\n";
-}
 
-if ($test) {
     ( "/usr/local/bin/dap_hdf4_handler" eq
           handler_name( "/stuff/file.HDF", "./dap-server.rc" ) )
       || die;
@@ -271,7 +254,7 @@ if ($test) {
     print STDERR "third: ", dataset_regexes( "./dap-server.rc", ("jg") ), "\n";
 
     my @params = get_params("./dap-server.rc");
-    print STDERR "params: @params\n" if $debug;
+    print STDERR "params: @params\n";
     ( $params[0] == 0 ) || die;
     shift @params;
     ( $params[0] == "/usr/tmp" ) || die;
