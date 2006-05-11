@@ -1,7 +1,7 @@
 #
 # 5/3/2006 jhrg
 #
-# $Id: Makefile.am 13257 2006-02-23 17:58:26Z jimg $
+# $Id$
 
 AUTOMAKE_OPTIONS = foreign check-news
 ACLOCAL_AMFLAGS = -I conf
