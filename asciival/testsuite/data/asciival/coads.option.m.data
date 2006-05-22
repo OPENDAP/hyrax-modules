@@ -1,7 +1,7 @@
 HTTP/1.0 200 OK
 XDODS-Server: 
 XOPeNDAP-Server: 
-XDAP: 3.0
+XDAP: 3.*
 Date: *
 Last-Modified: *
 Content-Type: text/plain
