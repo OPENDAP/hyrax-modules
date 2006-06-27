@@ -47,6 +47,10 @@ More Sophisticated Installation
   Usage information
   Logging accesses
 
+About Data Security
+Using A Secure OPeNDAP Server
+Configuring a (Secure) Server
+
 Server Installation Tips
   Tip 1: Which directory is the cgi-bin directory?
   Tip 2: Which directory is used by your WWW server as the document root?
@@ -56,6 +60,8 @@ Server Installation Tips
   Tip 6: How do I set up a server that limits access to only a few people?
   Tip 7: Is there a registry of datasets?
   Tip 8: Customizing the DODS Directory response (from Joe McLean)
+  Tip 9: Secure servers
+  Tip 10: Shorten URLs
 
 More Questions...
 
@@ -451,6 +457,24 @@ server, it should be simple to perform the equivalent steps for any other WWW
 server that supports the set of required security features (See ABOUT DATA
 SECURITY).
 
+Note: 
+    I have installed a secured server using dap-server 3.5 and Apache
+    2.0.54 and have found that installing the dap-server.rc and nph-dods
+    files in their own directory, making that a ScriptAlias directory and
+    using the directives shown below works. That is, there's no need with
+    Apache 2.x to place the CGI under the document root. Two addition bits of
+    information regarding this option: 1. The 'Options' directive is not
+    needed since the directory is named as a ScriptAlias; and 2. There's no
+    need to user the '.cgi' extension on the nph-dods executable.
+
+    I also have found that using the ScriptAliasMatch directive can be used
+    to shorten the URL quite a bit. I included the following in httpd.conf:
+
+      ScriptAliasMatch ^/secure(.*) "/usr/local/secure-3.5/nph-dods$1
+
+    so that a url like http://test.opendap.org/secure/data/nc/fnoc1.nc will
+    access the fnoc1.nc dataset using the secured server.
+
 I. Create a directory for the server.
 
 To limit access to a  dataset to particular machine, begin by creating a
@@ -753,6 +777,26 @@ Tip 9: Secure servers
   in some browers. Also, the getdap tool supplied with OPeNDAP's libdap (which
   is required to build the server) can be useful to test the server since it
   will not remember passwords between runs.
+
+Tip 10: Shorten URLs
+
+  Use the ScriptAliasMatch directive in Apache 2.x to shorten URLs. Suppose
+  you have a server installed in /usr/local/opendap-3.5/share/dap-server-cgi/.
+  The following:
+
+    ScriptAliasMatch ^/dap(.*) "/usr/local/opendap-3.5/share/dap-server-cgi/
+    nph-dods$1
+ 
+  (without the line break) will cause a URL like:
+
+  http://test.opendap.org/dap/data/nc/fnoc1.nc to work where with just the
+  ScriptAlias 
+
+    ScriptAlias /opendap-3.5/ "/usr/local/opendap-3.5/share/dap-server-cgi/"
+
+  users would need the more cumbersome:
+
+    http://test.opendap.org/opendap-3.5/nph-dods/data/nc/fnoc1.nc      
 
 More Questions...
 
