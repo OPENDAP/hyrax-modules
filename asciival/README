@@ -1,5 +1,15 @@
 
  $Id$
+ 
+Update for version 3.6 of the dap server
+
+I have modified the software here so that a module for the BES is built 
+in addition to the dap_asciival executable for use with Server3. The new 
+module is called libascii_module.so and it has one entry point:
+    
+    void get_data_values_as_ascii(DataDDS *dds, FILE *dest)
+    
+Make sure the DataDDS contains data values!
 
 Updated for version 3.5.1 of the dap server
 
