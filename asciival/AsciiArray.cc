@@ -51,7 +51,7 @@ using namespace std;
 #include "name_map.h"
 
 extern bool translate;
-extern name_map names;
+extern name_map *names;
 
 BaseType *
 AsciiArray::ptr_duplicate()
@@ -94,7 +94,7 @@ AsciiArray::print_vector(FILE *os, bool print_name)
 {
     if (print_name)
 	fprintf(os, "%s, ",
-                names.lookup(dynamic_cast<AsciiOutput*>(this)->get_full_name(), translate).c_str());
+                names->lookup(dynamic_cast<AsciiOutput*>(this)->get_full_name(), translate).c_str());
 
     int end = dimension_size(dim_begin(), true) - 1; // only one dimension
     for (int i = 0; i < end; ++i) {
@@ -232,7 +232,7 @@ AsciiArray::print_array(FILE *os, bool /*print_name*/)
     do {
 	// Print indices for all dimensions except the last one.
 	fprintf(os, "%s",
-                names.lookup(dynamic_cast<AsciiOutput*>(this)->get_full_name(), translate).c_str());
+                names->lookup(dynamic_cast<AsciiOutput*>(this)->get_full_name(), translate).c_str());
 	for (int i = 0; i < dims - 1; ++i) {
 	    fprintf(os, "[%d]", state[i]);
 	}
@@ -268,7 +268,7 @@ AsciiArray::print_complex_array(FILE *os, bool /*print_name*/)
     do {
 	// Print indices for all dimensions except the last one.
 	fprintf(os, "%s", 
-                names.lookup(dynamic_cast<AsciiOutput*>(this)->get_full_name(), translate).c_str());
+                names->lookup(dynamic_cast<AsciiOutput*>(this)->get_full_name(), translate).c_str());
 	for (int i = 0; i < dims; ++i) {
 	    fprintf(os, "[%d]", state[i]);
 	}

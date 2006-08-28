@@ -50,7 +50,7 @@ using namespace std;
 #include "debug.h"
 
 extern bool translate;
-extern name_map names;
+extern name_map *names;
 
 BaseType *
 AsciiGrid::ptr_duplicate()
@@ -140,7 +140,7 @@ AsciiGrid::print_grid(FILE *os, bool print_name)
 	// index. Note that the successive elements of state give the indeces
 	// of each of the N-1 dimensions for the current row.
 	fprintf(os, "%s",
-                names.lookup(dynamic_cast<AsciiOutput*>(grid_array)->get_full_name(), translate).c_str());
+                names->lookup(dynamic_cast<AsciiOutput*>(grid_array)->get_full_name(), translate).c_str());
 	vector<int>::iterator state_iter = state.begin();
 	Grid::Map_iter p = map_begin();
 	while (state_iter != state.end()) {

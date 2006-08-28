@@ -80,7 +80,7 @@ public:
 	method increments #state# to the next dimension, varying the
 	rightmost fastest. 
 
-	to print DODS Array and Grid objects according to the DAP 2.0
+	To print DODS Array and Grid objects according to the DAP 2.0
 	specification, #state# and #shape# should be vectors of length N-1
 	for an object of dimension N. 
 	@return True if there are more states, false if not. */

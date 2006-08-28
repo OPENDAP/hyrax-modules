@@ -50,7 +50,7 @@ using std::endl ;
 #include "name_map.h"
 
 extern bool translate;
-extern name_map names;
+extern name_map *names;
 
 #if 0
 Sequence *
@@ -157,7 +157,7 @@ AsciiSequence::print_header(FILE *os)
     while (p != var_end()) {
 	if ((*p)->is_simple_type())
 	    fprintf(os, "%s",
-                names.lookup(dynamic_cast<AsciiOutput*>((*p))->get_full_name(), translate).c_str());
+                names->lookup(dynamic_cast<AsciiOutput*>((*p))->get_full_name(), translate).c_str());
 	else if ((*p)->type() == dods_sequence_c)
 	    dynamic_cast<AsciiSequence *>((*p))->print_header(os);
 	else if ((*p)->type() == dods_structure_c)

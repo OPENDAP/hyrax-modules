@@ -49,7 +49,7 @@
 #include "name_map.h"
 
 extern bool translate;
-extern name_map names;
+extern name_map *names;
 
 string
 AsciiOutput::get_full_name()
@@ -81,17 +81,19 @@ AsciiOutput::print_ascii(FILE *os, bool print_name) throw(InternalErr)
 #endif
 
     if (print_name)
-        fprintf(os, "%s, ", names.lookup(get_full_name(), translate).c_str());
+        fprintf(os, "%s, ", names->lookup(get_full_name(), translate).c_str());
 
     BTptr->print_val(os, "", false);
 }
 
+#if 0
 template<class T>
 static void
 print(T &t)
 {
     cerr << t << ", ";
 }
+#endif
 
 // This code implements simple modulo arithmetic. The vector shape contains
 // the maximum count value for each dimension, state contains the current

@@ -50,7 +50,7 @@ using std::endl ;
 #include "name_map.h"
 
 extern bool translate;
-extern name_map names;
+extern name_map *names;
 
 #if 0
 Structure *
@@ -91,7 +91,7 @@ AsciiStructure::print_header(FILE *os)
     while (p != var_end()) {
 	if ((*p)->is_simple_type())
 	    fprintf(os, "%s",
-                names.lookup(dynamic_cast<AsciiOutput*>((*p))->get_full_name(), translate).c_str());
+                names->lookup(dynamic_cast<AsciiOutput*>((*p))->get_full_name(), translate).c_str());
 	else if ((*p)->type() == dods_structure_c)
 	    dynamic_cast<AsciiStructure*>((*p))->print_header(os);
 	// May need a case here for Sequence 2/18/2002 jhrg

@@ -87,10 +87,13 @@ using namespace std;
 
 #include "AsciiOutputFactory.h"
 
-#include "name_map.h"
+// #include "name_map.h"
+#include "get_ascii.h"
 
+#if 0
 name_map names;
 bool translate = false;
+#endif
 
 static void
 usage()
@@ -106,12 +109,13 @@ usage()
 	 << "       u <url>: URL to the referenced data source.\n"
 	 << "       r <dir>: Path to the cache directory.\n"
 	 << "       e <expr>: Constraint expression.\n"
-	 << "       V: Print the version number and exit.\n" 
+	 << "       V: Print the version number and exit.\n"
+         << "       h: Print this information.\n"
 	 << "<url> may be a true URL, which asciival will dereference,\n" 
 	 << "it may be a local file or it may be standard input.\n"
 	 << "In the later case use `-' for <url>.\n";
 }
-
+#if 0
 static void
 process_per_url_options(int &i, int argc, char *argv[], bool verbose = false)
 {
@@ -143,6 +147,7 @@ process_per_url_options(int &i, int argc, char *argv[], bool verbose = false)
            break;
        }
 }
+#endif
 
 static void
 read_from_url(DataDDS &dds, const string &url, const string &expr)
@@ -208,6 +213,7 @@ read_from_file(DataDDS &dds, const string &handler,
 #endif
 }
 
+#if 0
 static void
 process_data(DDS *dds)
 {
@@ -219,6 +225,7 @@ process_data(DDS *dds)
 	cout << endl;
     }
 }
+#endif
 
 /** Write out the given error object. If the Error object #e# is empty, don't
     write anything out (since that will confuse loaddods).
@@ -286,7 +293,7 @@ main(int argc, char * argv[])
 	// After processing options, test for errors. There must be a single
 	// argument in addition to any given with the options. This will be
 	// either a file or a URL, depending on the options supplied and will
-	// be the source from whic to read the data.
+	// be the source from which to read the data.
 	if (getopt.optind >= argc) {
 	    usage();
 	    throw Error("Expected a file or URL argument.");
@@ -328,14 +335,20 @@ main(int argc, char * argv[])
 	else {
 	    if (verbose)
 		cerr << "Reading: " << url << endl;
+#if 0
 	    process_per_url_options(getopt.optind, argc, argv, verbose);
+#endif
 	    read_from_url(dds, url, expr);
 	}
 
         if (mime_header)
 	    set_mime_text(stdout, dods_data);
 
+#if 0
 	process_data(&dds);
+#endif
+        get_data_values_as_ascii(&dds, stdout);
+        
 	delete aof; aof = 0;
     }
     catch (Error &e) {
