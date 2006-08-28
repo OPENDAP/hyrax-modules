@@ -3,7 +3,7 @@ dnl -*- autoconf -*-
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([dap-server], [3.6.1], [dods-tech@unidata.ucar.edu])
+AC_INIT([dap-server], [3.6.1], [opendap-tech@unidata.ucar.edu])
 AC_CONFIG_AUX_DIR([conf])
 
 AM_INIT_AUTOMAKE
@@ -22,12 +22,13 @@ AC_SUBST(host)
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
-AC_PROG_AWK
 AC_PROG_INSTALL
-AM_PROG_LEX
-AC_PROG_RANLIB
-AC_PROG_YACC
 AC_PROG_MAKE_SET
+AC_PROG_LIBTOOL
+
+dnl AC_PROG_AWK
+dnl AM_PROG_LEX
+dnl AC_PROG_YACC
 
 DODS_PROG_PERL
 
@@ -87,6 +88,33 @@ AC_CHECK_LIBDAP([3.7.0],
  ],
  [ AC_MSG_ERROR([Cannot find libdap])
 ])
+
+AC_ARG_WITH([bes],
+            [AS_HELP_STRING([--with-bes=PATH],[bes install root directory])],
+            [BES_PATH=${withval}], 
+            [BES_PATH=""])
+
+if test -x "${BES_PATH}/bin/bes-config"
+then
+    AM_CONDITIONAL([OPENDAPSERVER], [true])
+    BES_CPPFLAGS="`${BES_PATH}/bin/bes-config --cflags`"
+    AC_SUBST([BES_CPPFLAGS])
+    BES_LDFLAGS="`${BES_PATH}/bin/bes-config --libs`"
+    AC_SUBST([BES_LDFLAGS])
+    BES_MODULE_DIR="`${BES_PATH}/bin/bes-config --prefix`/lib/bes"
+    AC_SUBST([BES_MODULE_DIR])
+else
+    AC_CHECK_BES([3.1.0],
+    [
+        BES_LDFLAGS=$BES_LIBS
+        # I think the AC_SUBST([BES_MODULE_DIR]) in bes.m4 will put that 
+        # symbol in the output. Same for BES_CPPFLAGS. jhrg 5/1/06
+        AM_CONDITIONAL([OPENDAPSERVER], [true])
+    ],
+    [ AM_CONDITIONAL([OPENDAPSERVER], [false])
+    ])
+
+fi
 
 dnl I wrote these checks because we need the *-config scripts to build, so 
 dnl the AC_CHECK_LIB macro is not needed.
