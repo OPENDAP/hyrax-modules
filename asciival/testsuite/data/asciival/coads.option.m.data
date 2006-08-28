@@ -1,6 +1,6 @@
 HTTP/1.0 200 OK
-XDODS-Server: 
-XOPeNDAP-Server: 
+XDODS-Server: *
+XOPeNDAP-Server: *
 XDAP: 3.*
 Date: *
 Last-Modified: *

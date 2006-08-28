@@ -43,9 +43,6 @@ compare_stdout "testsuite/data/asciival/data.1.data5" "$test_name: jg test (sequ
 dap_asciival_start " " "${fnoc1}?${fnoc1_ce} -r u:u1"
 compare_stdout "testsuite/data/asciival/data.1.data" "$test_name: fnoc1"
 
-#dap_asciival_start " " "${fnoc1}?${fnoc1_ce} -r u:u1 ${fnoc2}?${fnoc2_ce} -r u:u2"
-#compare_stdout "testsuite/data/asciival/data.1.data2" "$test_name: fnoc1 & fnoc2"
-
 # get two variables
-dap_asciival_start " " "${fnoc3}?${fnoc3_ce} -r u:u3 -r v:v3"
+dap_asciival_start " " "${fnoc3}?${fnoc3_ce}
 compare_stdout "testsuite/data/asciival/data.1.data3" "$test_name: fnoc3 (two variables)"
