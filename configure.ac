@@ -101,7 +101,7 @@ then
     AC_SUBST([BES_CPPFLAGS])
     BES_LDFLAGS="`${BES_PATH}/bin/bes-config --libs`"
     AC_SUBST([BES_LDFLAGS])
-    BES_MODULE_DIR="`${BES_PATH}/bin/bes-config --prefix`/lib/bes"
+    BES_MODULE_DIR="`${BES_PATH}/bin/bes-config --modulesdir`"
     AC_SUBST([BES_MODULE_DIR])
 else
     AC_CHECK_BES([3.1.0],
