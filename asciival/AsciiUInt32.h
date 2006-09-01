@@ -45,7 +45,8 @@
 
 class AsciiUInt32: public UInt32, public AsciiOutput {
 public:
-    AsciiUInt32(const string &n = (char *)0);
+    AsciiUInt32(const string &n = (char *)0) : UInt32( n ) {}
+    AsciiUInt32( UInt32 *bt ) : AsciiOutput( bt ) { set_name( bt->name() ) ; }
     virtual ~AsciiUInt32() {}
 
     virtual BaseType *ptr_duplicate();

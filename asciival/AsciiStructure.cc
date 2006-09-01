@@ -39,15 +39,13 @@
 
 #include "config_asciival.h"
 
-#include <iostream>
 #include <string>
-
-using std::endl ;
 
 #include "InternalErr.h"
 #include "AsciiStructure.h"
 #include "AsciiSequence.h"
 #include "name_map.h"
+#include "get_ascii.h"
 
 extern bool translate;
 extern name_map *names;
@@ -68,6 +66,23 @@ AsciiStructure::ptr_duplicate()
 
 AsciiStructure::AsciiStructure(const string &n) : Structure(n)
 {
+}
+
+AsciiStructure::AsciiStructure( Structure *bt ) : AsciiOutput( bt )
+{
+    // Let's make the alternative structure of Ascii types now so that we
+    // don't have to do it on the fly. This will also set the parents of
+    // each of the underlying vars of the structure.
+    Vars_iter p = bt->var_begin();
+    while( p != bt->var_end() )
+    {
+	BaseType *new_bt = basetype_to_asciitype( *p ) ;
+	add_var( new_bt ) ;
+	// FIX: Should I do this? I won't until I get it working.
+	//delete new_bt ;
+	p++ ;
+    }
+    set_name( bt->name() ) ;
 }
 
 AsciiStructure::~AsciiStructure()

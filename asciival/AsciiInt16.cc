@@ -52,10 +52,6 @@ NewInt16(const string &n)
 }
 #endif
 
-AsciiInt16::AsciiInt16(const string &n) : Int16(n)
-{
-}
-
 BaseType *
 AsciiInt16::ptr_duplicate()
 {

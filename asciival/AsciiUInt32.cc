@@ -52,10 +52,6 @@ NewUInt32(const string &n)
 }
 #endif
 
-AsciiUInt32::AsciiUInt32(const string &n) : UInt32(n)
-{
-}
-
 BaseType *
 AsciiUInt32::ptr_duplicate()
 {

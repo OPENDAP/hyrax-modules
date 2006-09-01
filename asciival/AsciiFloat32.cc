@@ -52,10 +52,6 @@ NewFloat32(const string &n)
 }
 #endif
 
-AsciiFloat32::AsciiFloat32(const string &n) : Float32(n)
-{
-}
-
 BaseType *
 AsciiFloat32::ptr_duplicate()
 {

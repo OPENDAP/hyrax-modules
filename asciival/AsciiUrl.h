@@ -45,7 +45,8 @@
 
 class AsciiUrl: public Url, public AsciiOutput {
 public:
-    AsciiUrl(const string &n = (char *)0);
+    AsciiUrl(const string &n = (char *)0) : Url( n ) {}
+    AsciiUrl( Url *bt ) : AsciiOutput( bt ) { set_name( bt->name() ) ; }
     virtual ~AsciiUrl() {}
 
     virtual BaseType *ptr_duplicate();

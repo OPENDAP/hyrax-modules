@@ -45,7 +45,8 @@
 
 class AsciiInt32: public Int32, public AsciiOutput {
 public:
-    AsciiInt32(const string &n = (char *)0);
+    AsciiInt32(const string &n = (char *)0) : Int32( n ) {}
+    AsciiInt32( Int32 *bt ) : AsciiOutput( bt ) { set_name( bt->name() ) ; }
     virtual ~AsciiInt32() {}
 
     virtual BaseType *ptr_duplicate();

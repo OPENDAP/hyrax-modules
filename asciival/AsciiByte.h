@@ -47,7 +47,8 @@
 
 class AsciiByte: public Byte, public AsciiOutput {
 public:
-    AsciiByte(const string &n = (char *)0);
+    AsciiByte(const string &n = (char *)0) : Byte( n ) {}
+    AsciiByte( Byte *bt ) : AsciiOutput( bt ) { set_name( bt->name() ) ; }
     virtual ~AsciiByte() {}
 
     virtual BaseType *ptr_duplicate();

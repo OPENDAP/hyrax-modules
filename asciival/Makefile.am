@@ -21,9 +21,9 @@ bin_PROGRAMS = dap_asciival
 # lib_LTLIBRARIES = libascii_handler.la
 
 if OPENDAPSERVER
-    lib_besdir=$(prefix)/lib/bes
+    lib_besdir=$(BES_MODULE_DIR)
     lib_bes_LTLIBRARIES = libascii_module.la
-    libascii_module_la_SOURCES = $(ASCII_SOURCES)
+    libascii_module_la_SOURCES = $(ASCII_SOURCES) $(BES_SOURCES)
     libascii_module_la_CPPFLAGS = $(BES_CPPFLAGS)
     libascii_module_la_LDFLAGS = $(BES_LDFLAGS)
 endif
@@ -41,7 +41,11 @@ ASCII_SOURCES = AsciiArray.cc AsciiInt16.cc AsciiStructure.cc	     \
 		AsciiUrl.h AsciiFloat32.h AsciiSequence.h AsciiFloat64.h \
 		AsciiStr.h AsciiGrid.h AsciiStructure.h AsciiInt16.h \
 		AsciiUInt16.h AsciiOutputFactory.cc AsciiOutputFactory.h \
-		get_ascii.cc get_ascii.h name_map.cc name_map.h config_asciival.h 
+		get_ascii.cc get_ascii.h name_map.cc name_map.h \
+		config_asciival.h 
+
+BES_SOURCES = BESAsciiModule.cc BESAsciiResponseHandler.cc BESAsciiTransmit.cc \
+		BESAsciiModule.h BESAsciiResponseHandler.h BESAsciiTransmit.h
 
 # ASCIIOBJS = AsciiByte.o AsciiInt32.o AsciiFloat64.o AsciiStr.o AsciiUrl.o     \
 #	AsciiArray.o AsciiStructure.o AsciiSequence.o AsciiGrid.o	      \

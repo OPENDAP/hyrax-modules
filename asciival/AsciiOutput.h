@@ -50,7 +50,11 @@ class AsciiOutput {
 
     friend class AsciiOutputTest;
 
+protected:
+    BaseType *_redirect ;
 public:
+    AsciiOutput( BaseType *bt ) : _redirect( bt ) {}
+    AsciiOutput() : _redirect( 0 ) {}
     virtual ~AsciiOutput() {}
 
     /** Get the fully qualified name of this object. Names of nested

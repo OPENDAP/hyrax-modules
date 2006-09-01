@@ -46,6 +46,7 @@
 class AsciiSequence: public Sequence, public AsciiOutput {
 public:
     AsciiSequence(const string &n = (char *)0);
+    AsciiSequence( Sequence *bt ) ;
     virtual ~AsciiSequence();
 
     virtual BaseType *ptr_duplicate();

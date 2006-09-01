@@ -54,13 +54,16 @@ extern name_map *names;
 string
 AsciiOutput::get_full_name()
 {
-    BaseType *btp = dynamic_cast<BaseType*>(this);
+    BaseType *this_btp = dynamic_cast<BaseType*>( this ) ;
+    BaseType *btp = _redirect ;
+    if( !_redirect )
+	btp = this_btp ;
     if (!btp)
 	throw InternalErr(__FILE__, __LINE__, 
 			  "Instance of AsciiOuput must also be a BaseType.");
 
-    BaseType *btp2 = btp->get_parent();
-    if (!btp2)
+    BaseType *btp2 = this_btp->get_parent();
+    if( !btp2 )
 	return btp->name();	// Must be top-level node/variable.
     else 
 	return dynamic_cast<AsciiOutput*>(btp2)->get_full_name() 
@@ -70,7 +73,10 @@ AsciiOutput::get_full_name()
 void 
 AsciiOutput::print_ascii(FILE *os, bool print_name) throw(InternalErr)
 {
-    BaseType *BTptr = dynamic_cast<BaseType *>(this);
+    BaseType *BTptr = _redirect ;
+    if( !_redirect )
+	BTptr = dynamic_cast<BaseType *>(this);
+
     if (!BTptr)
 	throw InternalErr(__FILE__, __LINE__, 
 		  "An instance of AsciiOutput failed to cast to BaseType.");

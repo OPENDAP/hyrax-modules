@@ -47,6 +47,7 @@ private:
 
 public:
     AsciiArray(const string &n = (char *)0, BaseType *v = 0);
+    AsciiArray( Array *bt ) ;
     virtual ~AsciiArray();
 
     virtual BaseType *ptr_duplicate();

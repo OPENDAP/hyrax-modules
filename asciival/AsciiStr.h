@@ -45,7 +45,8 @@
 
 class AsciiStr: public Str, public AsciiOutput {
 public:
-    AsciiStr(const string &n = (char *)0);
+    AsciiStr(const string &n = (char *)0) : Str( n ) {}
+    AsciiStr( Str *bt ) : AsciiOutput( bt ) { set_name( bt->name() ) ; }
     virtual ~AsciiStr() {}
 
     virtual BaseType *ptr_duplicate();

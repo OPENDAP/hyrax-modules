@@ -52,10 +52,6 @@ NewInt32(const string &n)
 }
 #endif
 
-AsciiInt32::AsciiInt32(const string &n) : Int32(n)
-{
-}
-
 BaseType *
 AsciiInt32::ptr_duplicate()
 {

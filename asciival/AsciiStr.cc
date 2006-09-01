@@ -52,10 +52,6 @@ NewStr(const string &n)
 }
 #endif
 
-AsciiStr::AsciiStr(const string &n) : Str(n)
-{
-}
-
 BaseType *
 AsciiStr::ptr_duplicate()
 {

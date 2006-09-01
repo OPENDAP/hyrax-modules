@@ -70,10 +70,6 @@ NewByte(const string &n)
 }
 #endif
 
-AsciiByte::AsciiByte(const string &n) : Byte(n)
-{
-}
-
 BaseType *
 AsciiByte::ptr_duplicate()
 {

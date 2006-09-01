@@ -53,6 +53,7 @@ private:
 
 public:
     AsciiGrid(const string &n = (char *)0);
+    AsciiGrid( Grid *grid ) ;
     virtual ~AsciiGrid();
     
     virtual BaseType *ptr_duplicate();

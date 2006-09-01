@@ -52,10 +52,6 @@ NewUInt16(const string &n)
 }
 #endif
 
-AsciiUInt16::AsciiUInt16(const string &n) : UInt16(n)
-{
-}
-
 BaseType *
 AsciiUInt16::ptr_duplicate()
 {

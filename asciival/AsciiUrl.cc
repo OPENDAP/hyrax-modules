@@ -51,10 +51,6 @@ NewUrl(const string &n)
 }
 #endif
 
-AsciiUrl::AsciiUrl(const string &n) : Url(n)
-{
-}
-
 BaseType *
 AsciiUrl::ptr_duplicate()
 {

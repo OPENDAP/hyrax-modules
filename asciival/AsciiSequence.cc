@@ -48,6 +48,7 @@ using std::endl ;
 #include "AsciiSequence.h"
 #include "AsciiStructure.h"
 #include "name_map.h"
+#include "get_ascii.h"
 
 extern bool translate;
 extern name_map *names;
@@ -68,6 +69,21 @@ AsciiSequence::ptr_duplicate()
 
 AsciiSequence::AsciiSequence(const string &n) : Sequence(n)
 {
+}
+
+AsciiSequence::AsciiSequence( Sequence *bt ) : AsciiOutput( bt )
+{
+    // Let's make the alternative structure of Ascii types now so that we
+    // don't have to do it on the fly.
+    Vars_iter p = bt->var_begin();
+    while( p != var_end() )
+    {
+	BaseType *new_bt = basetype_to_asciitype( *p ) ;
+	add_var( new_bt ) ;
+	// FIX: Should I do this? I won't until I get it working.
+	//delete new_bt ;
+    }
+    set_name( bt->name() ) ;
 }
 
 AsciiSequence::~AsciiSequence()

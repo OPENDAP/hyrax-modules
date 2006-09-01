@@ -52,10 +52,6 @@ NewFloat64(const string &n)
 }
 #endif
 
-AsciiFloat64::AsciiFloat64(const string &n) : Float64(n)
-{
-}
-
 BaseType *
 AsciiFloat64::ptr_duplicate()
 {

@@ -46,6 +46,7 @@
 class AsciiStructure: public Structure, public AsciiOutput {
 public:
     AsciiStructure(const string &n = (char *)0);
+    AsciiStructure( Structure *bt ) ;
     virtual ~AsciiStructure();
 
     virtual BaseType *ptr_duplicate();
