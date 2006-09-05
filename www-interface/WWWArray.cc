@@ -32,12 +32,8 @@
 // Implementation for WWWArray. See WWWByte.cc
 //
 //  4/7/99 jhrg
-#if 0
-#ifdef __GNUG__
-//#pragma implementation
-#endif
-#endif
-#include "config_www_int.h"
+
+#include "config.h"
 
 static char rcsid[] not_used = {"$Id$"};
 
@@ -54,20 +50,6 @@ static char rcsid[] not_used = {"$Id$"};
 
 using namespace dap_html_form;
 
-#if 0
-#ifdef TRACE_NEW
-#include "trace_new.h"
-#endif
-#endif
-
-#if 0
-Array *
-NewArray(const string &n, BaseType *v)
-{
-    return new WWWArray(n, v);
-}
-#endif
-
 BaseType *
 WWWArray::ptr_duplicate()
 {
@@ -80,9 +62,6 @@ WWWArray::WWWArray(const string &n, BaseType *v) : Array(n, v)
 
 WWWArray::WWWArray( Array *bt ) : Array( bt->name() )
 {
-    // By calling var() without any parameters we get back the template
-    // itself, then we can add it to this Array as the template. By doing
-    // this we set the parent as well, which is what we need.
     add_var( basetype_to_wwwtype( bt->var() ) ) ;
 }
 
@@ -90,14 +69,6 @@ WWWArray::WWWArray( Array *bt ) : Array( bt->name() )
 WWWArray::~WWWArray()
 {
 }
-
-#if 0
-bool
-WWWArray::read(const string &)
-{
-  throw InternalErr(__FILE__, __LINE__, "Called unimplemented read method");
-}
-#endif
 
 void 
 WWWArray::print_val(FILE *os, string, bool /*print_decl_p*/)
@@ -142,50 +113,3 @@ WWWArray::print_val(FILE *os, string, bool /*print_decl_p*/)
     
     fprintf(os, "%s", ss.str().c_str());
 }
-
-// $Log: WWWArray.cc,v $
-// Revision 1.8  2003/12/08 18:08:02  edavis
-// Merge release-3-4 into trunk
-//
-// Revision 1.7.4.1  2003/07/11 05:27:02  jimg
-// Changed <iostream.h> to <iostream>. This will build with both 3.2, 2.95
-// and most other current compilers.
-//
-// Revision 1.7  2003/01/27 23:53:54  jimg
-// Merged with release-3-2-7.
-//
-// Revision 1.4.2.3  2002/09/05 22:27:29  pwest
-// Removed includes to SLList and DLList. These are not necessary and no longer
-// supported.
-//
-// Revision 1.6  2001/09/28 23:51:32  jimg
-// Merged with 3.2.4.
-//
-// Revision 1.4.2.2  2001/09/10 19:32:28  jimg
-// Fixed two problems: 1) Variable names in the JavaScript code sometimes
-// contained spaces since they were made using the dataset's variable name.
-// The names are now filtered through id2www and esc2underscore. 2) The CE
-// sometimes contained spaces, again, because dataset variable names were
-// used to build the CE. I filtered the names with id2www_ce before passing
-// them to the JavaScript code.
-//
-// Revision 1.5  2001/01/26 19:17:36  jimg
-// Merged with release-3-2.
-//
-// Revision 1.4.2.1  2001/01/26 04:04:33  jimg
-// Fixed a bug in the JavaScript code. Now the name of the JS variables
-// are prefixed by `dods_'. This means that DODS variables whose names are
-// also reserved words in JS work break the JS code.
-//
-// Revision 1.4  2000/10/03 20:07:20  jimg
-// Moved Logs to the end of each file.
-//
-// Revision 1.3  2000/10/02 22:42:44  jimg
-// Modified the read method to match the new definition in the dap
-//
-// Revision 1.2  1999/05/09 04:14:50  jimg
-// String --> string
-//
-// Revision 1.1  1999/04/20 00:21:02  jimg
-// First version
-//

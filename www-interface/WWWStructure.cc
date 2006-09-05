@@ -33,11 +33,7 @@
 //
 // 4/7/99 jhrg
 
-#ifdef _GNUG_
-//#pragma implementation
-#endif
-
-#include "config_www_int.h"
+#include "config.h"
 
 static char rcsid[] not_used = {"$Id$"};
 
@@ -53,15 +49,6 @@ static char rcsid[] not_used = {"$Id$"};
 #include "get_html_form.h"
 
 using namespace dap_html_form;
-#if 0
-extern WWWOutput *wo;
-#endif
-
-Structure *
-NewStructure(const string &n)
-{
-    return new WWWStructure(n);
-}
 
 BaseType *
 WWWStructure::ptr_duplicate()
@@ -92,12 +79,6 @@ WWWStructure::~WWWStructure()
 
 // For this `WWW' class, run the read mfunc for each of variables which
 // comprise the structure. 
-
-bool
-WWWStructure::read(const string &)
-{
-  throw InternalErr(__FILE__, __LINE__, "Called unimplemented read method");
-}
 
 // As is the case with geturl, use print_all_vals to print all the values of
 // a sequence. 

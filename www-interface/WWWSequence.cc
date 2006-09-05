@@ -33,11 +33,7 @@
 //
 // 4/7/99 jhrg
 
-#ifdef _GNUG_
-//#pragma implementation
-#endif
-
-#include "config_www_int.h"
+#include "config.h"
 
 static char rcsid[] not_used = {"$Id$"};
 
@@ -52,16 +48,6 @@ static char rcsid[] not_used = {"$Id$"};
 #include "get_html_form.h"
 
 using namespace dap_html_form;
-
-#if 0
-//extern WWWOutput *wo;
-#endif
-
-Sequence *
-NewSequence(const string &n)
-{
-    return new WWWSequence(n);
-}
 
 BaseType *
 WWWSequence::ptr_duplicate()
@@ -88,12 +74,6 @@ WWWSequence::WWWSequence( Sequence *bt ) : Sequence( bt->name() )
 
 WWWSequence::~WWWSequence()
 {
-}
-
-bool 
-WWWSequence::read(const string &)
-{
-  throw InternalErr(__FILE__, __LINE__, "Called unimplemented read method");
 }
 
 int

@@ -36,12 +36,6 @@
 #ifndef _wwwurl_h
 #define _wwwurl_h 1
 
-#ifndef __POWERPC__
-#ifdef __GNUG__
-//#pragma interface
-#endif
-#endif
-
 #include "WWWOutput.h"
 #include "Url.h"
 
@@ -53,27 +47,6 @@ public:
 
     virtual BaseType *ptr_duplicate();
 };
-
-// $Log: WWWUrl.h,v $
-// Revision 1.5  2003/12/08 18:08:02  edavis
-// Merge release-3-4 into trunk
-//
-// Revision 1.4.4.1  2003/06/26 07:53:39  rmorris
-// #ifdef'd out //#pragma interface directive under OS X.  It makes the dynamic
-// typing system not work.
-//
-// Revision 1.4  2003/01/27 23:53:54  jimg
-// Merged with release-3-2-7.
-//
-// Revision 1.3  2000/10/03 20:07:21  jimg
-// Moved Logs to the end of each file.
-//
-// Revision 1.2  1999/05/09 04:14:52  jimg
-// String --> string
-//
-// Revision 1.1  1999/04/20 00:21:05  jimg
-// First version
-//
 
 #endif
 

@@ -31,7 +31,7 @@
 /** 
     @author: jhrg */
 
-#include "config_www_int.h"
+#include "config.h"
 
 static char rcsid[] not_used = {"$Id$"};
 

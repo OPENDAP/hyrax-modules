@@ -29,7 +29,7 @@
 // Authors:
 //      jhrg,jimg       James Gallagher <jgallagher@gso.uri.edu>
 
-#include "config_www_int.h"
+#include "config.h"
 
 static char rcsid[] not_used = {"$Id$"};
 
@@ -53,7 +53,7 @@ static char rcsid[] not_used = {"$Id$"};
 #include <DAS.h>
 #include <DDS.h>
 #include <InternalErr.h>
-#include <escaping.h>
+//#include <escaping.h>
 #include <cgi_util.h>
 #include <util.h>
 
@@ -91,23 +91,24 @@ char* dods2idl = "dods2idl";
 
 #endif
 
-const string allowable = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
+// This code could use a real `kill-file' some day - about the same time that
+// the rest of the server gets a `rc' file... For the present just see if a
+// small collection of regexs match the name.
 
-// This function adds some text to the variable name so that conflicts with
-// JavaScript's reserved words and other conflicts are avoided (or
-// minimized...) 7/13/2001 jhrg
-string
-name_for_js_code(const string &dods_name)
+static bool
+name_in_kill_file(const string &name)
 {
-    int pid = getpid();
+    static Regex dim(".*_dim_[0-9]*", 1); // HDF `dimension' attributes.
 
-    ostringstream oss;
-    // Calling id2www with a different set of allowable chars gets an
-    // identifier with chars allowable for JavaScript. Then turn the `%' sign
-    // into an underscore.
-    oss << "org_dods_dcz" << pid 
-	<< esc2underscore(id2www(dods_name, allowable));// << ends;
-    return oss.str();
+    return dim.match(name.c_str(), name.length()) != -1;
+}
+
+static bool
+name_is_global(string &name)
+{
+    static Regex global("(.*global.*)|(.*dods.*)", 1);
+    downcase(name);
+    return global.match(name.c_str(), name.length()) != -1;
 }
 
 WWWOutput::WWWOutput(FILE *os, int rows, int cols):
@@ -262,109 +263,3 @@ WWWOutput::write_variable_attributes(BaseType *btp, DAS &das)
     fprintf(d_os, "</textarea>\n\n");
 }
 
-string
-fancy_typename(BaseType *v)
-{
-    switch (v->type()) {
-      case dods_byte_c:
-	return "Byte";
-      case dods_int16_c:
-	return "16 bit Integer";
-      case dods_uint16_c:
-	return "16 bit Unsigned integer";
-      case dods_int32_c:
-	return "32 bit Integer";
-      case dods_uint32_c:
-	return "32 bit Unsigned integer";
-      case dods_float32_c:
-	return "32 bit Real";
-      case dods_float64_c:
-	return "64 bit Real";
-      case dods_str_c:
-	return "string";
-      case dods_url_c:
-	return "URL";
-      case dods_array_c: {
-	  ostringstream type;
-	  Array *a = (Array *)v;
-	  type << "Array of " << fancy_typename(a->var()) <<"s ";
-          for (Array::Dim_iter p = a->dim_begin(); p != a->dim_end(); ++p)
-	      type << "[" << a->dimension_name(p) << " = 0.." 
-		   << a->dimension_size(p, false)-1 << "]";
-	  return type.str();
-      }
-      case dods_structure_c:
-	return "Structure";
-      case dods_sequence_c:
-	return "Sequence";
-      case dods_grid_c:
-	return "Grid";
-      default:
-	return "Unknown";
-    }
-}
-
-// This code could use a real `kill-file' some day - about the same time that
-// the rest of the server gets a `rc' file... For the present just see if a
-// small collection of regexs match the name.
-
-static bool
-name_in_kill_file(const string &name)
-{
-    static Regex dim(".*_dim_[0-9]*", 1); // HDF `dimension' attributes.
-
-    return dim.match(name.c_str(), name.length()) != -1;
-}
-
-static bool
-name_is_global(string &name)
-{
-    static Regex global("(.*global.*)|(.*dods.*)", 1);
-    downcase(name);
-    return global.match(name.c_str(), name.length()) != -1;
-}
-
-void
-write_simple_variable(FILE *os, const string &name, const string &type)
-{
-    ostringstream ss;
-    ss << "<script type=\"text/javascript\">\n"
-       << "<!--\n"
-       << name_for_js_code(name) <<" = new dods_var(\"" << id2www_ce(name) 
-       << "\", \"" 
-       << name_for_js_code(name) << "\", 0);\n"
-       << "DODS_URL.add_dods_var(" << name_for_js_code(name) << ");\n"
-       << "// -->\n"
-       << "</script>\n";
-
-    ss << "<b>" 
-       << "<input type=\"checkbox\" name=\"get_" << name_for_js_code(name) 
-       << "\"\n"
-       << "onclick=\"" 
-       << name_for_js_code(name) << ".handle_projection_change(get_"
-       << name_for_js_code(name) << ")\">\n" 
-       << "<font size=\"+1\">" << name << "</font>" 
-       << ": " << type << "</b><br>\n\n";
-
-    ss << name << " <select name=\"" << name_for_js_code(name)<< "_operator\""
-       << " onfocus=\"describe_operator()\""
-       << " onchange=\"DODS_URL.update_url()\">\n"
-       << "<option value=\"=\" selected>=\n"
-       << "<option value=\"!=\">!=\n"
-       << "<option value=\"<\"><\n"
-       << "<option value=\"<=\"><=\n"
-       << "<option value=\">\">>\n"
-       << "<option value=\">=\">>=\n"
-       << "<option value=\"-\">--\n"
-       << "</select>\n";
-
-    ss << "<input type=\"text\" name=\"" << name_for_js_code(name)
-       << "_selection"
-       << "\" size=12 onFocus=\"describe_selection()\" "
-       << "onChange=\"DODS_URL.update_url()\">\n";
-    
-    ss << "<br>\n\n";
-    
-    // Now write that string to os
-    fprintf(os, "%s", ss.str().c_str());
-}

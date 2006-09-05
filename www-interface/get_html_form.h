@@ -40,4 +40,36 @@ void write_html_form_interface(FILE *dest, DDS *dds, DAS *das, const string &url
                           bool html_header = true,
                           const string &admin_name = "support@unidata.ecar.edu", 
                           const string &help_location = "http://www.opendap.org/online_help_files/opendap_form_help.html");
-}
+        
+/** Write out the HTML for simple type variables. This is used not only for
+    single instances of simple types, but also for those types when they
+    appear within Structure and Sequence types.
+
+    @param name The name of the varaible. */
+void write_simple_variable(FILE *os, const string &name, 
+                           const string &type);
+
+/** Return a string which describes the datatype of a DODS variable.
+
+    @param v The variable.
+    @return A string describing the variable's type. */
+string fancy_typename(BaseType *v);
+
+/** Generate variable names to be used by the JavaScript code. These names
+    must not interfere with JavaScript itself, which seems to have an always
+    expanding set of reserved words. Maybe that's stopped now (1/25/2001
+    jhrg) but the set is large and includes words such as `Location' which is
+    also a dataset variable name. By making the JS variable names
+    `dods_<var>' the HTML/JS page/code is still readable without stepping on
+    JS' reserved words.
+
+    Note that this is a function and not a class member; I included it in the
+    WWWOutput class since it seems to fit here. 
+
+    @param dods_name A string that contains the name of a variable.
+    @return A name suitable for use in JavaScript code similar to the
+    #dods_name# parameter. */
+
+string name_for_js_code(const string &dods_name);
+
+} // namespace dap_html_form

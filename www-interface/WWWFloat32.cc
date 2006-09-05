@@ -33,11 +33,7 @@
 //
 // 4/7/99 jhrg
 
-#ifdef __GNUG__
-//#pragma implementation
-#endif
-
-#include "config_www_int.h"
+#include "config.h"
 
 static char rcsid[] not_used = {"$Id$"};
 
@@ -48,12 +44,9 @@ static char rcsid[] not_used = {"$Id$"};
 
 #include "WWWFloat32.h"
 #include "WWWOutput.h"
+#include "get_html_form.h"
 
-Float32 *
-NewFloat32(const string &n)
-{
-    return new WWWFloat32(n);
-}
+using namespace dap_html_form;
 
 WWWFloat32::WWWFloat32(const string &n) : Float32(n)
 {
@@ -64,12 +57,6 @@ WWWFloat32::ptr_duplicate()
 {
     return new WWWFloat32(*this);
 }
- 
-bool
-WWWFloat32::read(const string &)
-{
-  throw InternalErr(__FILE__, __LINE__, "Called unimplemented read method");
-}
 
 void 
 WWWFloat32::print_val(FILE *os, string, bool /*print_decl_p*/)
@@ -77,26 +64,3 @@ WWWFloat32::print_val(FILE *os, string, bool /*print_decl_p*/)
     write_simple_variable(os, (string)name().c_str(), fancy_typename(this));
 }
 
-// $Log: WWWFloat32.cc,v $
-// Revision 1.6  2003/12/08 18:08:02  edavis
-// Merge release-3-4 into trunk
-//
-// Revision 1.5.4.1  2003/07/11 05:27:02  jimg
-// Changed <iostream.h> to <iostream>. This will build with both 3.2, 2.95
-// and most other current compilers.
-//
-// Revision 1.5  2003/01/27 23:53:54  jimg
-// Merged with release-3-2-7.
-//
-// Revision 1.4  2000/10/03 20:07:20  jimg
-// Moved Logs to the end of each file.
-//
-// Revision 1.3  2000/10/02 22:42:44  jimg
-// Modified the read method to match the new definition in the dap
-//
-// Revision 1.2  1999/05/09 04:14:51  jimg
-// String --> string
-//
-// Revision 1.1  1999/04/20 00:21:02  jimg
-// First version
-//
