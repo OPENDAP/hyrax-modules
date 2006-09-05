@@ -85,12 +85,6 @@ AsciiGrid::~AsciiGrid()
 {
 }
 
-bool
-AsciiGrid::read(const string &)
-{
-  throw InternalErr(__FILE__, __LINE__, "Called unimplemented read method");
-}
-
 void
 AsciiGrid::print_ascii(FILE *os, bool print_name) throw(InternalErr)
 {
@@ -201,31 +195,3 @@ AsciiGrid::print_grid(FILE *os, bool print_name)
 
     } while (more_indices);
 }
-
-// $Log: AsciiGrid.cc,v $
-// Revision 1.6  2003/01/27 19:38:23  jimg
-// Updated the copyright information.
-// Merged with release-3-2-6.
-//
-// Revision 1.4.4.2  2002/12/18 23:41:25  pwest
-// gcc3.2 compile corrections, mainly regarding using statements
-//
-// Revision 1.5  2001/09/28 23:46:06  jimg
-// merged with 3.2.3.
-//
-// Revision 1.4.4.1  2001/09/18 23:29:26  jimg
-// Massive changes to use the new AsciiOutput class. Output more or less
-// conforms to the DAP Spec. draft.
-//
-// Revision 1.4  2000/10/02 20:09:52  jimg
-// Moved Log entries to the end of the files
-//
-// Revision 1.3  1999/07/28 23:00:53  jimg
-// Separated from the writeval directory, moved to tools
-//
-// Revision 1.2  1999/03/24 06:23:42  brent
-// convert String.h to std lib <string>, convert to packages regex -- B^2
-//
-// Revision 1.1  1998/03/13 21:25:16  jimg
-// Added
-//

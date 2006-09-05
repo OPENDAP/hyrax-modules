@@ -33,10 +33,6 @@
 //
 // 3/12/98 jhrg
 
-#ifdef __GNUG__
-//#pragma implementation
-#endif
-
 #include "config_asciival.h"
 
 #include <algorithm>
@@ -81,25 +77,11 @@ AsciiOutput::print_ascii(FILE *os, bool print_name) throw(InternalErr)
 	throw InternalErr(__FILE__, __LINE__, 
 		  "An instance of AsciiOutput failed to cast to BaseType.");
 
-#if 0
-    if (print_name)
-	os << names.lookup(get_full_name(), translate) << ", ";
-#endif
-
     if (print_name)
         fprintf(os, "%s, ", names->lookup(get_full_name(), translate).c_str());
 
     BTptr->print_val(os, "", false);
 }
-
-#if 0
-template<class T>
-static void
-print(T &t)
-{
-    cerr << t << ", ";
-}
-#endif
 
 // This code implements simple modulo arithmetic. The vector shape contains
 // the maximum count value for each dimension, state contains the current
@@ -138,15 +120,4 @@ AsciiOutput::increment_state(vector<int> *state, const vector<int> &shape)
     return false;
 }
 
-// $Log: AsciiOutput.cc,v $
-// Revision 1.3  2003/01/27 19:38:23  jimg
-// Updated the copyright information.
-// Merged with release-3-2-6.
-//
-// Revision 1.2  2001/09/28 23:46:06  jimg
-// merged with 3.2.3.
-//
-// Revision 1.1.2.1  2001/09/18 22:06:16  jimg
-// Added
-//
 

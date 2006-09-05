@@ -52,8 +52,6 @@ public:
 
     virtual BaseType *ptr_duplicate();
 
-    virtual bool read(const string &dataset);
-
     int print_row(FILE *os, int index, int number);
 
     int get_index(vector<int> indices) throw(InternalErr);
@@ -73,28 +71,6 @@ public:
     virtual void print_ascii(FILE *os, bool print_name = true) 
 	throw(InternalErr);
 };
-
-// $Log: AsciiArray.h,v $
-// Revision 1.5  2003/01/27 19:38:22  jimg
-// Updated the copyright information.
-// Merged with release-3-2-6.
-//
-// Revision 1.4  2001/09/28 23:46:06  jimg
-// merged with 3.2.3.
-//
-// Revision 1.3.4.1  2001/09/18 23:29:26  jimg
-// Massive changes to use the new AsciiOutput class. Output more or less
-// conforms to the DAP Spec. draft.
-//
-// Revision 1.3  2000/10/02 20:09:52  jimg
-// Moved Log entries to the end of the files
-//
-// Revision 1.2  1999/04/30 17:06:53  jimg
-// Merged with no-gnu and release-2-24
-//
-// Revision 1.1  1998/03/13 21:25:20  jimg
-// Added
-//
 
 #endif
 

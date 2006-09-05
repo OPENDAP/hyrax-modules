@@ -35,10 +35,6 @@
 #ifndef _asciioutput_h
 #define _asciioutput_h 1
 
-#ifdef __GNUG__
-//#pragma interface
-#endif
-
 #include <stdio.h>
 #include <vector>
 
@@ -90,21 +86,5 @@ public:
 	@return True if there are more states, false if not. */
     bool increment_state(vector<int> *state, const vector<int> &shape);
 };
-
-// $Log: AsciiOutput.h,v $
-// Revision 1.3  2003/01/27 19:38:23  jimg
-// Updated the copyright information.
-// Merged with release-3-2-6.
-//
-// Revision 1.1.2.2  2002/01/31 15:44:29  jimg
-// Fixed the tests. These should be migrated to a more comprehensive set of
-// test datasets.
-//
-// Revision 1.2  2001/09/28 23:46:06  jimg
-// merged with 3.2.3.
-//
-// Revision 1.1.2.1  2001/09/18 22:06:16  jimg
-// Added
-//
 
 #endif

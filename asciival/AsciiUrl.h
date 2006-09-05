@@ -36,10 +36,6 @@
 #ifndef _asciiurl_h
 #define _asciiurl_h 1
 
-#ifdef __GNUG__
-//#pragma interface
-#endif
-
 #include "Url.h"
 #include "AsciiOutput.h"
 
@@ -51,21 +47,6 @@ public:
 
     virtual BaseType *ptr_duplicate();
 };
-
-// $Log: AsciiUrl.h,v $
-// Revision 1.4  2003/01/27 19:38:23  jimg
-// Updated the copyright information.
-// Merged with release-3-2-6.
-//
-// Revision 1.3  2000/10/02 20:09:52  jimg
-// Moved Log entries to the end of the files
-//
-// Revision 1.2  1999/04/30 17:06:54  jimg
-// Merged with no-gnu and release-2-24
-//
-// Revision 1.1  1998/03/13 21:25:26  jimg
-// Added
-//
 
 #endif
 

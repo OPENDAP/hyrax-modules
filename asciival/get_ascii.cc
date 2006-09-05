@@ -88,6 +88,10 @@ get_data_values_as_ascii(DataDDS *dds, FILE *dest)
 DataDDS *
 datadds_to_ascii_datadds( DataDDS *dds )
 {
+    // Should the following use AsciiOutputFactory instead of the source DDS'
+    // factory class? It doesn't matter for the following since the function
+    // basetype_to_asciitype() doesn't use the factory. So long as no other
+    // code uses the DDS' factory, this is fine. jhrg 9/5/06 
     DataDDS *asciidds = new DataDDS( dds->get_factory(),
     				     dds->get_dataset_name(),
                                      dds->get_version(),

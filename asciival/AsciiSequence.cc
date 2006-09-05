@@ -33,10 +33,6 @@
 //
 // 3/12/98 jhrg
 
-#ifdef _GNUG_
-//#pragma implementation
-#endif
-
 #include "config_asciival.h"
 
 #include <iostream>
@@ -52,14 +48,6 @@ using std::endl ;
 
 extern bool translate;
 extern name_map *names;
-
-#if 0
-Sequence *
-NewSequence(const string &n)
-{
-    return new AsciiSequence(n);
-}
-#endif
 
 BaseType *
 AsciiSequence::ptr_duplicate()
@@ -88,12 +76,6 @@ AsciiSequence::AsciiSequence( Sequence *bt ) : AsciiOutput( bt )
 
 AsciiSequence::~AsciiSequence()
 {
-}
-
-bool 
-AsciiSequence::read(const string &)
-{
-  throw InternalErr(__FILE__, __LINE__, "Called unimplemented read method");
 }
 
 int
@@ -228,44 +210,4 @@ AsciiSequence::print_ascii(FILE *os, bool print_name) throw(InternalErr)
     }
 }
 
-// $Log: AsciiSequence.cc,v $
-// Revision 1.7  2004/02/03 17:23:40  jimg
-// Removed Pix code which was not building (???). Removed AsciiList from
-// Build.
-//
-// Revision 1.6  2003/01/27 19:38:23  jimg
-// Updated the copyright information.
-// Merged with release-3-2-6.
-//
-// Revision 1.4.4.3  2002/12/18 23:41:25  pwest
-// gcc3.2 compile corrections, mainly regarding using statements
-//
-// Revision 1.4.4.2  2002/02/18 19:26:36  jimg
-// Fixed bug 329. In cases where a Structure was inside a Sequence,
-// print_header was being called (correctly). However, the method flagged
-// this as an error because it thought that such a sequence was not `linear.'
-// That is, it thought it could not be flattened and printed as a column. I
-// fixed AsciiSequence::print_header so that it calls AsciiStructure::print
-// _header. Note that the complimentary change is not needed since Structures
-// are printed one elment after the other.
-//
-// Revision 1.5  2001/09/28 23:46:06  jimg
-// merged with 3.2.3.
-//
-// Revision 1.4.4.1  2001/09/18 23:29:26  jimg
-// Massive changes to use the new AsciiOutput class. Output more or less
-// conforms to the DAP Spec. draft.
-//
-// Revision 1.4  2000/10/02 20:09:52  jimg
-// Moved Log entries to the end of the files
-//
-// Revision 1.3  1999/07/28 23:00:53  jimg
-// Separated from the writeval directory, moved to tools
-//
-// Revision 1.2  1999/03/24 06:23:42  brent
-// convert String.h to std lib <string>, convert to packages regex -- B^2
-//
-// Revision 1.1  1998/03/13 21:25:18  jimg
-// Added
-//
 

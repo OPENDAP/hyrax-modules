@@ -82,12 +82,6 @@ AsciiArray::~AsciiArray()
 {
 }
 
-bool
-AsciiArray::read(const string &)
-{
-  throw InternalErr(__FILE__, __LINE__, "Called unimplemented read method");
-}
-
 void
 AsciiArray::print_ascii(FILE *os, bool print_name) throw(InternalErr)
 {
@@ -349,37 +343,3 @@ AsciiArray::print_complex_array(FILE *os, bool /*print_name*/)
 
     DBG(cerr << "ExitingAsciiArray::print_complex_array" << endl);
 }
-
-// $Log: AsciiArray.cc,v $
-// Revision 1.6  2003/01/27 19:38:22  jimg
-// Updated the copyright information.
-// Merged with release-3-2-6.
-//
-// Revision 1.4.4.4  2002/12/18 23:41:25  pwest
-// gcc3.2 compile corrections, mainly regarding using statements
-//
-// Revision 1.5  2001/09/28 23:46:06  jimg
-// merged with 3.2.3.
-//
-// Revision 1.4.4.3  2001/09/25 22:38:32  jimg
-// Fixed an off-by-one error in get_nth_dim_size.
-//
-// Revision 1.4.4.2  2001/09/25 22:00:50  jimg
-// Fixed an off-by-one error in print_row; i<number-1 --> i<number.
-//
-// Revision 1.4.4.1  2001/09/18 23:29:26  jimg
-// Massive changes to use the new AsciiOutput class. Output more or less
-// conforms to the DAP Spec. draft.
-//
-// Revision 1.4  2000/10/02 20:09:52  jimg
-// Moved Log entries to the end of the files
-//
-// Revision 1.3  1999/07/28 23:00:53  jimg
-// Separated from the writeval directory, moved to tools
-//
-// Revision 1.2  1999/03/24 06:23:42  brent
-// convert String.h to std lib <string>, convert to packages regex -- B^2
-//
-// Revision 1.1  1998/03/13 21:25:14  jimg
-// Added
-//

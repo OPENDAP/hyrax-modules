@@ -87,13 +87,7 @@ using namespace std;
 
 #include "AsciiOutputFactory.h"
 
-// #include "name_map.h"
 #include "get_ascii.h"
-
-#if 0
-name_map names;
-bool translate = false;
-#endif
 
 static void
 usage()
@@ -115,39 +109,6 @@ usage()
 	 << "it may be a local file or it may be standard input.\n"
 	 << "In the later case use `-' for <url>.\n";
 }
-#if 0
-static void
-process_per_url_options(int &i, int argc, char *argv[], bool verbose = false)
-{
-    names.delete_all();        // Clear the global name map for this URL.
-  
-    // Test for per-url option. Set variables accordingly.
-    while (i < argc && argv[i+1] && argv[i+1][0] == '-')
-       switch (argv[++i][1]) {
-         case 'r':
-           ++i;        // Move past option to argument.
-           if (verbose)
-               cerr << "  Renaming: " << argv[i] << endl;
-           // Note that NAMES is a global variable so that all the
-           // writeval() mfuncs can access it without having to pass
-           // it into each function call.
-           names.add(argv[i]);
-           break;
-
-         default:
-	   // if this was an option
-	   if (argv[i+1][0] == '-') {
-	       string msg = "Unknown option `";
-	       msg += argv[i][1] + "' paired with URL has been ignored.";
-	       throw Error(msg);
-	   }
-	   else {		// not an option
-	       throw Error("More than one URL of file was supplied to dap_asciival.");
-	   }
-           break;
-       }
-}
-#endif
 
 static void
 read_from_url(DataDDS &dds, const string &url, const string &expr)
@@ -212,20 +173,6 @@ read_from_file(DataDDS &dds, const string &handler,
     }
 #endif
 }
-
-#if 0
-static void
-process_data(DDS *dds)
-{
-    cout << "Dataset: " << dds->get_dataset_name() << endl;
-
-    DDS::Vars_iter i = dds->var_begin();
-    while (i != dds->var_end()) {
-	dynamic_cast<AsciiOutput &>(**i++).print_ascii(stdout);
-	cout << endl;
-    }
-}
-#endif
 
 /** Write out the given error object. If the Error object #e# is empty, don't
     write anything out (since that will confuse loaddods).
@@ -335,18 +282,12 @@ main(int argc, char * argv[])
 	else {
 	    if (verbose)
 		cerr << "Reading: " << url << endl;
-#if 0
-	    process_per_url_options(getopt.optind, argc, argv, verbose);
-#endif
 	    read_from_url(dds, url, expr);
 	}
 
         if (mime_header)
 	    set_mime_text(stdout, dods_data);
 
-#if 0
-	process_data(&dds);
-#endif
         get_data_values_as_ascii(&dds, stdout);
         
 	delete aof; aof = 0;

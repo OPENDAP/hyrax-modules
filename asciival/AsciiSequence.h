@@ -36,10 +36,6 @@
 #ifndef _asciisequence_h
 #define _asciisequence_h 1
 
-#ifdef _GNUG_
-//#pragma interface
-#endif
-
 #include "Sequence.h"
 #include "AsciiOutput.h"
 
@@ -51,8 +47,6 @@ public:
 
     virtual BaseType *ptr_duplicate();
 
-    virtual bool read(const string &dataset);
-
     virtual int length();
 
     virtual void print_ascii(FILE *os, bool print_name) throw(InternalErr);
@@ -62,36 +56,5 @@ public:
     virtual void print_ascii_row(FILE *os, int row, BaseTypeRow out_vars);
     virtual void print_ascii_rows(FILE *os, BaseTypeRow out_vars);
 };
-
-// $Log: AsciiSequence.h,v $
-// Revision 1.5  2003/01/27 19:38:23  jimg
-// Updated the copyright information.
-// Merged with release-3-2-6.
-//
-// Revision 1.3.4.2  2002/02/18 19:26:36  jimg
-// Fixed bug 329. In cases where a Structure was inside a Sequence,
-// print_header was being called (correctly). However, the method flagged
-// this as an error because it thought that such a sequence was not `linear.'
-// That is, it thought it could not be flattened and printed as a column. I
-// fixed AsciiSequence::print_header so that it calls AsciiStructure::print
-// _header. Note that the complimentary change is not needed since Structures
-// are printed one elment after the other.
-//
-// Revision 1.4  2001/09/28 23:46:06  jimg
-// merged with 3.2.3.
-//
-// Revision 1.3.4.1  2001/09/18 23:29:26  jimg
-// Massive changes to use the new AsciiOutput class. Output more or less
-// conforms to the DAP Spec. draft.
-//
-// Revision 1.3  2000/10/02 20:09:52  jimg
-// Moved Log entries to the end of the files
-//
-// Revision 1.2  1999/04/30 17:06:54  jimg
-// Merged with no-gnu and release-2-24
-//
-// Revision 1.1  1998/03/13 21:25:24  jimg
-// Added
-//
 
 #endif
