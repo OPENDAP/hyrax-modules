@@ -48,7 +48,7 @@
 // The declarations for these fuctions (in util.h) should *not* need
 // changing. 
 
-#include "config_asciival.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <assert.h>

@@ -33,7 +33,7 @@
 //
 // 3/12/98 jhrg
 
-#include "config_asciival.h"
+#include "config.h"
 
 #include <iostream>
 #include <string>
@@ -50,8 +50,7 @@ using namespace std;
 #include "debug.h"
 #include "get_ascii.h"
 
-extern bool translate;
-extern name_map *names;
+using namespace dap_asciival;
 
 BaseType *
 AsciiGrid::ptr_duplicate()

@@ -33,7 +33,7 @@
 //
 // 3/12/98 jhrg
 
-#include "config_asciival.h"
+#include "config.h"
 
 #include <string>
 

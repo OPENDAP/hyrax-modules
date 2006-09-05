@@ -33,7 +33,7 @@
 //#pragma implementation
 #endif
 
-#include "config_asciival.h"
+#include "config.h"
 
 static char rcsid[] not_used = {"$Id$"};
 

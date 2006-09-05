@@ -32,10 +32,6 @@
 #ifndef _name_map_h
 #define _name_map_h
 
-#ifdef __GNUG__
-//#pragma interface
-#endif
-
 #include <vector>
 #include <string>
 
@@ -107,63 +103,5 @@ public:
     /** Delete all the entries from the thesaurus. */
     void delete_all();
 };
-
-// $Log: name_map.h,v $
-// Revision 1.12  2004/07/08 22:18:25  jimg
-// Merged with release-3-4-3FCS
-//
-// Revision 1.11.4.3  2004/07/05 03:12:10  rmorris
-// Use "using std::*" in the standard way.
-//
-// Revision 1.11.4.2  2003/07/11 04:28:18  jimg
-// Boldly (ahem) removed the GNUG interface/implementation //#pragma.
-// compared object sizes; there's a little difference, but it looks like a
-// draw as to which is bigger.
-//
-// Revision 1.11.4.1  2003/06/26 07:38:59  rmorris
-// #ifdef'd out //#pragma interface directives under OS X.  They cause problems
-// with the dynamic typing system under Jaguar.
-//
-// Revision 1.11  2003/01/27 19:38:23  jimg
-// Updated the copyright information.
-// Merged with release-3-2-6.
-//
-// Revision 1.10  2001/09/28 23:46:06  jimg
-// merged with 3.2.3.
-//
-// Revision 1.9.4.1  2001/09/18 23:29:26  jimg
-// Massive changes to use the new AsciiOutput class. Output more or less
-// conforms to the DAP Spec. draft.
-//
-// Revision 1.9  2000/10/02 20:09:52  jimg
-// Moved Log entries to the end of the files
-//
-// Revision 1.8  1999/07/24 00:10:07  jimg
-// Repaired the munge function and removed SLList.
-//
-// Revision 1.7  1999/04/30 17:06:58  jimg
-// Merged with no-gnu and release-2-24
-//
-// Revision 1.6  1999/03/24 06:40:48  brent
-// convert String.h to std lib <string>, convert to packages regex -- B^2
-//
-// Revision 1.5.18.1  1999/03/30 20:26:02  jimg
-// Added include of SLList
-//
-// Revision 1.5  1998/03/13 21:24:26  jimg
-// Fixed up comments
-//
-// Revision 1.4  1997/02/06 20:44:52  jimg
-// Fixed log messages
-//
-// Revision 1.3  1997/01/10 06:50:32  jimg
-// Added to lookup mfunc the ability to map non-alphanmerics to underscore.
-//
-// Revision 1.2  1996/11/23 05:17:56  jimg
-// Added name_map().
-//
-// Revision 1.1  1996/11/22 23:50:21  jimg
-// Created.
-//
 
 #endif // _name_map_h

@@ -50,7 +50,7 @@
 
     @author: jhrg */
 
-#include "config_asciival.h"
+#include "config.h"
 
 static char rcsid[] not_used = {"$Id$"};
 
@@ -89,13 +89,17 @@ using namespace std;
 
 #include "get_ascii.h"
 
+using namespace dap_asciival;
+
 static void
 usage()
 {
     cerr << "Usage: \n"
 	 << " [mnhwvruVt] -- [<url> | <file> ]\n" 
 	 << "       m: Output a MIME header.\n" 
+#if 0
 	 << "       n: Turn on name canonicalization.\n"
+#endif
 	 << "       f <handler pathname>: Use a local handler instead of reading from a URL\n"
 	 << "          This assumes a local file, not a url.\n"
 	 << "       w: Verbose (wordy) output.\n"
@@ -186,6 +190,19 @@ output_error_object(const Error &e)
 	cout << "Error: " << e.get_error_message() << endl;
 }
 
+/*
+ *     } elsif ( $self->ext() eq "ascii" || $self->ext() eq "asc" ) {
+        $options    = "-v " . $self->caller_revision() . " ";
+        if ( $self->cache_dir() ne "" ) {
+            $options .= "-r " . $self->cache_dir();
+        }
+
+        @command = ( $self->asciival(), $options, "-m", 
+                     "-u", $self->url_text(),
+                     "-f", $self->handler(), 
+                     "--", $self->filename() ); #. "?" . $self->query() );
+ */
+ 
 // Read a DODS data object. The object maybe specified by a URL (which will
 // be dereferenceed using Connect, it maybe read from a file or it maybe read
 // from stdin. Use `-' in the command line to indicate the next input should
@@ -197,7 +214,9 @@ main(int argc, char * argv[])
     GetOpt getopt (argc, argv, "nf:mv:r:u:e:wVh?");
     int option_char;
     bool verbose = false;
+#if 0
     bool translate = false;
+#endif
     bool handler = false;
     bool mime_header = false;
     bool version = false;
@@ -220,7 +239,9 @@ main(int argc, char * argv[])
 
     while ((option_char = getopt()) != EOF)
 	switch (option_char) {
+#if 0
 	  case 'n': translate = true; break;
+#endif
 	  case 'f': handler = true; handler_name = getopt.optarg; break;
 	  case 'm': mime_header = true; break;
 	  case 'w': verbose = true; break;

@@ -25,10 +25,18 @@
 
 class DataDDS ;
 class BaseType ;
+class name_map ;
+
+namespace dap_asciival {
+
+extern bool translate;
+extern name_map *names;
 
 void get_data_values_as_ascii(DataDDS *dds, FILE *dest);
 DataDDS *datadds_to_ascii_datadds( DataDDS *dds ) ;
 BaseType *basetype_to_asciitype( BaseType *bt ) ;
+
+}
 
 #endif // E_get_ascii_h
 

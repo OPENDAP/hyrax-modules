@@ -53,7 +53,8 @@ using std::endl ;
 #include "AsciiSequence.h"
 #include "AsciiGrid.h"
 
-
+namespace dap_asciival {
+        
 // These are likely relics from olders versions of dap_asciival. See ticket
 // 515 about their removal.
 name_map *names = 0;
@@ -181,3 +182,4 @@ basetype_to_asciitype( BaseType *bt )
     }
 }
 
+} // namespace dap_asciival

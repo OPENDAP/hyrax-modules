@@ -46,6 +46,8 @@
 
 #include "BESLog.h"
 
+using namespace dap_asciival;
+
 void
 BESAsciiTransmit::send_basic_ascii( DODSResponseObject *obj,
                                     BESDataHandlerInterface &dhi )

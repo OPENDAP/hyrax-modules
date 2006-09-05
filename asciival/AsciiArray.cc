@@ -38,7 +38,7 @@
 using std::cerr ;
 using std::endl ;
 
-#include "config_asciival.h"
+#include "config.h"
 
 #include <iostream>
 #include <string>
@@ -56,8 +56,7 @@ using namespace std;
 #include "name_map.h"
 #include "get_ascii.h"
 
-extern bool translate;
-extern name_map *names;
+using namespace dap_asciival;
 
 BaseType *
 AsciiArray::ptr_duplicate()
