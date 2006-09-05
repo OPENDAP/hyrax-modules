@@ -32,11 +32,11 @@
 // Implementation for WWWArray. See WWWByte.cc
 //
 //  4/7/99 jhrg
-
+#if 0
 #ifdef __GNUG__
 //#pragma implementation
 #endif
-
+#endif
 #include "config_www_int.h"
 
 static char rcsid[] not_used = {"$Id$"};
@@ -50,16 +50,23 @@ static char rcsid[] not_used = {"$Id$"};
 
 #include "WWWArray.h"
 #include "WWWOutput.h"
+#include "get_html_form.h"
 
+using namespace dap_html_form;
+
+#if 0
 #ifdef TRACE_NEW
 #include "trace_new.h"
 #endif
+#endif
 
+#if 0
 Array *
 NewArray(const string &n, BaseType *v)
 {
     return new WWWArray(n, v);
 }
+#endif
 
 BaseType *
 WWWArray::ptr_duplicate()
@@ -71,15 +78,26 @@ WWWArray::WWWArray(const string &n, BaseType *v) : Array(n, v)
 {
 }
 
+WWWArray::WWWArray( Array *bt ) : Array( bt->name() )
+{
+    // By calling var() without any parameters we get back the template
+    // itself, then we can add it to this Array as the template. By doing
+    // this we set the parent as well, which is what we need.
+    add_var( basetype_to_wwwtype( bt->var() ) ) ;
+}
+
+
 WWWArray::~WWWArray()
 {
 }
 
+#if 0
 bool
 WWWArray::read(const string &)
 {
   throw InternalErr(__FILE__, __LINE__, "Called unimplemented read method");
 }
+#endif
 
 void 
 WWWArray::print_val(FILE *os, string, bool /*print_decl_p*/)

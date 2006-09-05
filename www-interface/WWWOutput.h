@@ -83,7 +83,7 @@ private:
     DAS *get_das() const { return d_das; }
 
     /** Write out the header for the HTML document. */
-    void write_html_header(bool nph_header);
+    void write_html_header();
 
     /** Write the disposition section of the HTML page. This section shows
 	the URL and provides buttons with which the user can choose the type

@@ -48,6 +48,7 @@
 class WWWUInt16: public UInt16 {
 public:
     WWWUInt16(const string &n = (char *)0);
+    WWWUInt16( UInt16 *bt ) : UInt16( bt->name() ) {}
     virtual ~WWWUInt16() {}
 
     virtual BaseType *ptr_duplicate();

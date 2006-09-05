@@ -49,6 +49,7 @@
 class WWWStr: public Str {
 public:
     WWWStr(const string &n = (char *)0);
+    WWWStr( Str *bt ) : Str( bt->name() ) {}
     virtual ~WWWStr() {}
 
     virtual BaseType *ptr_duplicate();

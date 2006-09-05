@@ -36,10 +36,11 @@
 #ifndef _wwwarray_h
 #define _wwwarray_h 1
 
-
+#if 0
 #ifndef __POWERPC__
 #ifdef __GNUG__
 //#pragma interface
+#endif
 #endif
 #endif
 
@@ -49,12 +50,14 @@ class WWWArray: public Array {
 
 public:
     WWWArray(const string &n = (char *)0, BaseType *v = 0);
+    WWWArray( Array *bt ) ;
     virtual ~WWWArray();
 
     virtual BaseType *ptr_duplicate();
 
+#if 0
     virtual bool read(const string &dataset);
-
+#endif
     /// Overload of BaseType mfunc. This prints arrays using commas and CRs.
     virtual void print_val(FILE *os, string space = "", 
 			   bool print_decl_p = true);

@@ -56,13 +56,12 @@ static char rcsid[] not_used = {"$Id$"};
 
 #include "WWWOutput.h"
 #include "WWWOutputFactory.h"
-#include "javascript.h"		// Try to hide this stuff...
+
+#include "get_html_form.h"
+
+using namespace dap_html_form;
 
 const char *version = PACKAGE_VERSION;
-
-// A better way to do this would have been to make WWWStructure, ..., inherit
-// from both Structure and WWWOutput. But I didn't... jhrg 8/29/05
-WWWOutput wo(stdout);
 
 static void
 usage(string name)
@@ -125,6 +124,20 @@ read_from_file(DAS &das, DDS &dds, const string &handler,
     }
 }
 
+/* How this code is called from server3
+ * 
+ *     } elsif ( $self->ext() eq "html" ) {
+        $options    = "-v " . $self->caller_revision() . " ";
+        if ( $self->cache_dir() ne "" ) {
+            $options .= "-r " . $self->cache_dir();
+        }
+
+        @command = ( $self->www_int(), $options, "-m", "-n", 
+                     "-u", $self->url_text(),
+                     "-f", $self->handler(), 
+                     "--", $self->filename() ); #. "?" . $self->query() );
+ */
+ 
 /** 
     Build an HTML page which both describes the data and provides a way for
     users to query the dataset. The page prompts for the input of query
@@ -190,9 +203,6 @@ main(int argc, char * argv[])
 	}
     }
 
-    // Init this to null so that if we throw an Error before it is allocated
-    // the delte call in the catch block won't seg fault.
-    WWWOutputFactory *wof = 0;
     try {
 	// After processing options, test for errors. There must be a single
 	// argument in addition to any given with the options. This will be
@@ -223,8 +233,8 @@ main(int argc, char * argv[])
 	if (handler && !url_given)
 	    throw Error("Internal configuration error: Handler supplied but no matching URL given.");
 
-	wof = new WWWOutputFactory;
-	DDS dds(wof, "WWW Interface");
+        WWWOutputFactory wof;
+	DDS dds(&wof, "WWW Interface");
 
 	DAS das;
 
@@ -239,64 +249,11 @@ main(int argc, char * argv[])
 	else
 	    read_from_url(das, dds, url);
 
-	wo.set_das(&das);
-
-	if (regular_header || nph_header)
-	    wo.write_html_header(nph_header);
-        ostringstream oss;
-	oss << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n"
-	     << "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n"
-	     << "<html><head><title>OPeNDAP Server Dataset Query Form</title>\n"
-	     << "<base href=\"" << help_location << "\">\n"
-	     << "<script type=\"text/javascript\">\n"
-	     << "<!--\n"
-	    // Javascript code here
-	     << java_code << "\n"
-	     << "DODS_URL = new dods_url(\"" << url << "\");\n"
-	     << "// -->\n"
-	     << "</script>\n"
-	     << "</head>\n" 
-	     << "<body>\n"
-	     << "<p><h2 align='center'>OPeNDAP Server Dataset Access Form</h2>\n"
-	     << "<hr>\n"
-	     << "<form action=\"\">\n"
-	     << "<table>\n";
-        fprintf(stdout, "%s", oss.str().c_str());
-        
-	wo.write_disposition(url);
-        
-        fprintf(stdout, "<tr><td><td><hr>\n\n");
-        
-	wo.write_global_attributes(*wo.get_das());
-        
-        fprintf(stdout, "<tr><td><td><hr>\n\n");
-
-        wo.write_variable_entries(*wo.get_das(), dds);
-
-        oss.str("");
-	oss << "</table></form>\n\n" << "<hr>\n\n";
-	if (admin_name != "") {
-	    oss << "<address>Send questions or comments to: <a href=\"mailto:"
-		 << admin_name << "\">" << admin_name << "</a></address>\n\n"
-		 << "<address>For general help with OPeNDAP software, see: "
-		 << "<a href=\"http://www.opendap.org/\">"
-		 << "http://www.opendap.org/</a></address>\n\n";
-	}
-	else {
-	    oss << "<address>Send questions or comments to: <a href=\"mailto:support@unidata.ucar.edu\">support@unidata.ucar.edu</a></address>"
-                << "<p>\n\
-                    <a href=\"http://validator.w3.org/check?uri=referer\"><img\n\
-                        src=\"http://www.w3.org/Icons/valid-html40\"\n\
-                        alt=\"Valid HTML 4.0 Transitional\" height=\"31\" width=\"88\">\n\
-                    </a></p>\n"
-		 << "</body></html>\n";
-}
-        fprintf(stdout, "%s", oss.str().c_str());
-
-	delete wof; wof = 0;
+        write_html_form_interface(stdout, &dds, &das, url,
+                                  regular_header || nph_header,
+                                  admin_name, help_location);
     }
     catch (Error &e) {
-	delete wof; wof = 0;
 	string error_msg = e.get_error_message();
 	cout << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n"
 	     << "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n"

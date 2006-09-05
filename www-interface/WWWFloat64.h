@@ -48,6 +48,7 @@
 class WWWFloat64: public Float64 {
 public:
     WWWFloat64(const string &n = (char *)0);
+    WWWFloat64( Float64 *bt ) : Float64( bt->name() ) {}
     virtual ~WWWFloat64() {}
 
     virtual BaseType *ptr_duplicate();

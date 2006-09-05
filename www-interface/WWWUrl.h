@@ -48,6 +48,7 @@
 class WWWUrl: public Url {
 public:
     WWWUrl(const string &n = (char *)0);
+    WWWUrl( Url *bt ) : Url( bt->name() ) {}
     virtual ~WWWUrl() {}
 
     virtual BaseType *ptr_duplicate();

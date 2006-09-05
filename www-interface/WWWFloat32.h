@@ -48,6 +48,7 @@
 class WWWFloat32: public Float32 {
 public:
     WWWFloat32(const string &n = (char *)0);
+    WWWFloat32( Float32 *bt ) : Float32( bt->name() ) {}
     virtual ~WWWFloat32() {}
 
     virtual BaseType *ptr_duplicate();

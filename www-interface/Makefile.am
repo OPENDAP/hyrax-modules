@@ -22,7 +22,7 @@ dap_www_int_SOURCES = WWWArray.cc WWWFloat64.cc WWWInt32.cc WWWSequence.cc   \
 	WWWFloat32.h WWWInt16.h WWWSequence.h WWWUInt16.h WWWArray.h	     \
 	WWWFloat64.h WWWInt32.h WWWStr.h WWWUInt32.h WWWByte.h WWWGrid.h     \
 	WWWOutput.h WWWStructure.h WWWUrl.h javascript.h config_www_int.h    \
-	WWWOutputFactory.cc WWWOutputFactory.h
+	WWWOutputFactory.cc WWWOutputFactory.h get_html_form.cc get_html_form.h 
 
 EXTRA_DIST = ChangeLog js2h.pl www.js
 

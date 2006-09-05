@@ -45,6 +45,7 @@
 class WWWGrid: public Grid {
 public:
     WWWGrid(const string &n = (char *)0);
+    WWWGrid( Grid *bt );
     virtual ~WWWGrid();
     
     virtual BaseType *ptr_duplicate();

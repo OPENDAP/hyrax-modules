@@ -48,6 +48,7 @@
 class WWWInt16: public Int16 {
 public:
     WWWInt16(const string &n = (char *)0);
+    WWWInt16( Int16 *bt ) : Int16( bt->name() ) {}
     virtual ~WWWInt16() {}
 
     virtual BaseType *ptr_duplicate();

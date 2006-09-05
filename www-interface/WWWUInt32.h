@@ -48,6 +48,7 @@
 class WWWUInt32: public UInt32 {
 public:
     WWWUInt32(const string &n = (char *)0);
+    WWWUInt32( UInt32 *bt ) : UInt32( bt->name() ) {}
     virtual ~WWWUInt32() {}
 
     virtual BaseType *ptr_duplicate();

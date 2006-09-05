@@ -49,6 +49,7 @@ private:
 
 public:
     WWWStructure(const string &n = (char *)0);
+    WWWStructure( Structure *bt );
     virtual ~WWWStructure();
 
     virtual BaseType *ptr_duplicate();

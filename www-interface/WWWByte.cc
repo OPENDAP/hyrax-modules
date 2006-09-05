@@ -61,16 +61,18 @@ static char rcsid[] not_used = {"$Id$"};
 #include <iostream>
 #include <string>
 
-#include "InternalErr.h"
+//#include "InternalErr.h"
 
 #include "WWWByte.h"
 #include "WWWOutput.h"
 
+#if 0
 Byte *
 NewByte(const string &n)
 {
     return new WWWByte(n);
 }
+#endif
 
 WWWByte::WWWByte(const string &n) : Byte(n)
 {
@@ -82,11 +84,13 @@ WWWByte::ptr_duplicate()
     return new WWWByte(*this);
 }
 
+#if 0
 bool
 WWWByte::read(const string &)
 {
   throw InternalErr(__FILE__, __LINE__, "Called unimplemented read method");
 }
+#endif
 
 void 
 WWWByte::print_val(FILE *os, string, bool /*print_decl_p*/)

@@ -49,6 +49,7 @@ private:
 
 public:
     WWWSequence(const string &n = (char *)0);
+    WWWSequence( Sequence *bt );
     virtual ~WWWSequence();
 
     virtual BaseType *ptr_duplicate();

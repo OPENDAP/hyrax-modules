@@ -52,6 +52,9 @@ static char rcsid[] not_used = {"$Id$"};
 
 #include "WWWGrid.h"
 #include "WWWOutput.h"
+#include "get_html_form.h"
+
+using namespace dap_html_form;
 
 Grid *
 NewGrid(const string &n)
@@ -68,6 +71,23 @@ WWWGrid::ptr_duplicate()
 WWWGrid::WWWGrid(const string &n) : Grid(n)
 {
 }
+
+WWWGrid::WWWGrid( Grid *grid ) : Grid( grid->name() )
+{
+    BaseType *bt = basetype_to_wwwtype( grid->array_var() ) ;
+    add_var( bt, array ) ;
+    delete bt ; bt = 0 ;
+
+    Grid::Map_iter i = grid->map_begin() ;
+    Grid::Map_iter e = grid->map_end() ;
+    for( ; i != e; i++ )
+    {
+        bt = basetype_to_wwwtype( *i ) ;
+        add_var( bt, maps ) ;
+        delete bt ; bt = 0 ;
+    }
+}
+
 
 WWWGrid::~WWWGrid()
 {

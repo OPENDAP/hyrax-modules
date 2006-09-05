@@ -116,7 +116,7 @@ WWWOutput::WWWOutput(FILE *os, int rows, int cols):
 }
 
 void
-WWWOutput::write_html_header(bool nph_header)
+WWWOutput::write_html_header()
 {
     set_mime_html(d_os, unknown_type, dap_version(), x_plain);
 }

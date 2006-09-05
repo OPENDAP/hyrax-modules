@@ -48,12 +48,13 @@
 class WWWByte: public Byte {
 public:
     WWWByte(const string &n = (char *)0);
+    WWWByte( Byte *bt ) : Byte( bt->name() ) {}
     virtual ~WWWByte() {}
 
     virtual BaseType *ptr_duplicate();
-
+#if 0
     virtual bool read(const string &dataset);
-
+#endif
     virtual void print_val(FILE *os, string space = "", 
 			   bool print_decl_p = true);
 };
