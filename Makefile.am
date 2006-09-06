@@ -12,17 +12,24 @@ SUBDIRS = . asciival www-interface
 
 bin_PROGRAMS = dap_usage
 
-dap_usage_SOURCES = usage.cc
+dap_usage_SOURCES = usage_main.cc $(USAGE_SOURCES)
+
+if OPENDAPSERVER
+    lib_besdir=$(BES_MODULE_DIR)
+    lib_bes_LTLIBRARIES = libusage_module.la
+    libusage_module_la_SOURCES = $(USAGE_SOURCES) $(BES_SOURCES)
+    libusage_module_la_CPPFLAGS = $(BES_CPPFLAGS)
+    libusage_module_la_LDFLAGS = $(BES_LDFLAGS)
+endif
+
+USAGE_SOURCES = usage.cc usage.h 
+
+BES_SOURCES = 
 
 modulesdir = $(dap_modulesdir)
 
-# HTML_FILTER = HTML/Filter.pm HTML/LinkExtor.pm HTML/TokeParser.pm \
-# 	HTML/Entities.pm HTML/HeadParser.pm HTML/Parser.pm
-
-# nobase_
 dist_modules_DATA = DODS_Dispatch.pm DODS_Cache.pm dods_logging.pm \
        FilterDirHTML.pm read_config.pm
-# $(HTML_FILTER)
 
 cgidir = $(dap_cgidir)
 

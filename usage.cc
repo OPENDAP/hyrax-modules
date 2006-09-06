@@ -62,8 +62,10 @@ static char rcsid[] not_used = {"$Id$"};
 #include <DAS.h>
 
 #include <debug.h>
+#include "usage.h"
 
 using namespace std;
+using namespace dap_usage;
 
 #ifdef WIN32
 #define popen _popen
@@ -78,15 +80,8 @@ using namespace std;
 #define RETURN_TYPE int
 #endif 
 
-static void
-usage(char *argv[])
-{
-    cerr << argv[0] << " <options> <filename> <CGI prefix>" << endl
-         << "Takes three required arguments; command options to be" << endl
-	 << "passed to the filter programs, the dataset filename and" << endl
-	 << "the directory and api prefix for the filter program." << endl; 
-}
-
+namespace dap_usage {
+        
 // This code could use a real `kill-file' some day - about the same time that
 // the rest of the server gets a `rc' file... For the present just see if a
 // small collection of regexs match the name.
@@ -221,7 +216,7 @@ write_attributes(ostringstream &oss, AttrTable *attr, const string prefix = "")
     @return A string object containing the global attributes in human
     readable form (as an HTML* document).
 */
-string
+static string
 build_global_attributes(DAS &das, DDS &)
 {
     bool found = false;
@@ -375,7 +370,7 @@ write_variable(BaseType *btp, DAS &das, ostringstream &vs)
     human readable form (as an HTML* document).
 */
 
-string
+static string
 build_variable_summaries(DAS &das, DDS &dds)
 {
     ostringstream vs;
@@ -393,7 +388,7 @@ build_variable_summaries(DAS &das, DDS &dds)
     return vs.str();
 }
 
-static void
+void
 html_header()
 {
     fprintf( stdout, "HTTP/1.0 200 OK\n" ) ;
@@ -404,332 +399,55 @@ html_header()
     fprintf( stdout, "\n" ) ;	// MIME header ends with a blank line
 }
 
-// This program is passes a collection of Unix-style options, the pathname
-// of the data source and the pathname of the handler.
-RETURN_TYPE
-main(int argc, char *argv[])
+/** Build an HTML page that summarizes the information held int eh DDS/DAS.
+    This also uses the dataset and server name to lookup extra information
+    that the data provider has made available (using libdap's 
+    cgi_util.cc:get_user_supplied_docs().
+    
+    @note This function is faithful to the original server3 'info' response
+    in all ways \e except that it does not handle the 'override' document
+    feature of that server. This feature was never used outside of testing,
+    to the best of our knowledge.
+    
+    @todo Update this to use the DDX.
+    
+    @param os Write the HTML to this stream
+    @param dds The DDS
+    @param das THe DAS
+    @param dataset_name Use this name to find dataset-specific info added by
+    the provider.
+    @param server_name Use this name to find server-specific info. */
+void
+write_usage_response(FILE *os, DDS &dds, DAS &das, const string &dataset_name,
+                     const string &server_name) throw(Error)
 {
-    if (argc != 4) {
-	usage(argv);
-	exit(1);
-    }
-
-    string options = argv[1];
-
-    string name = argv[2];
-    string doc;
-
-    if (found_override(name, doc)) {
-	html_header();
-	fprintf( stdout, "%s", doc.c_str() ) ;
-	exit(0);
-    }
-
-    // The site is not overriding the DAS/DDS generated information, so read
-    // the DAS, DDS and user supplied documents. 
-
-    string handler = argv[3];
-
-    DAS das;
-    string command = handler + " -o DAS " + options + " \"" + name + "\"";
-
-    DBG(cerr << "DAS Command: " << command << endl);
-
-    BaseTypeFactory *factory = new BaseTypeFactory;
-
-    try {
-	FILE *in = popen(command.c_str(), "r");
-
-	if (in && remove_mime_header(in)) {
-	    das.parse(in);
-	    pclose(in);
-	}
-
-	DDS dds(factory);
-	string command = handler + " -o DDS " + options + " \"" + name + "\"";
-	DBG(cerr << "DDS Command: " << command << endl);
-
-	in = popen(command.c_str(), "r");
-
-	if (in && remove_mime_header(in)) {
-	    dds.parse(in);
-	    pclose(in);
-	}
-
-	// Build the HTML* documents.
-
         // This will require some hacking in libdap; maybe that code should
         // move here? jhrg
-	string user_html = get_user_supplied_docs(name, handler);
+        string user_html = get_user_supplied_docs(dataset_name, server_name);
 
-	string global_attrs = build_global_attributes(das, dds);
+        string global_attrs = build_global_attributes(das, dds);
 
-	string variable_sum = build_variable_summaries(das, dds);
+        string variable_sum = build_variable_summaries(das, dds);
 
-	// Write out the HTML document.
+        // Write out the HTML document.
 
-	html_header();
+        html_header();
 
-	if (global_attrs.length()) {
-	    fprintf(stdout, "%s\n%s\n%s\n%s\n",
-		    "<html><head><title>Dataset Information</title></head>",
-		    "<body>",
-		    global_attrs.c_str(),
-		    "<hr>" ) ;
-	}
+        if (global_attrs.length()) {
+            fprintf(os, "%s\n%s\n%s\n%s\n",
+                    "<html><head><title>Dataset Information</title></head>",
+                    "<body>",
+                    global_attrs.c_str(),
+                    "<hr>" ) ;
+        }
 
-	fprintf( stdout, "%s\n", variable_sum.c_str() ) ;
+        fprintf( os, "%s\n", variable_sum.c_str() ) ;
 
-	fprintf( stdout, "<hr>\n" ) ;
+        fprintf( os, "<hr>\n" ) ;
 
-	fprintf( stdout, "%s\n", user_html.c_str() ) ;
+        fprintf( os, "%s\n", user_html.c_str() ) ;
 
-	fprintf( stdout, "</body>\n</html>\n" ) ;
-
-	delete factory;
-    }
-    catch (Error &e) {
-	string error_msg = e.get_error_message();
-	fprintf( stdout, "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n" ) ;
-	fprintf( stdout, "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n") ;
-	fprintf( stdout, "<html><head><title>DODS Error</title>\n" ) ;
-	fprintf( stdout, "</head>\n" ) ;
-	fprintf( stdout, "<body>\n" ) ;
-	fprintf( stdout, "<h3>Error building the DODS dataset usage repsonse</h3>:\n" ) ;
-	fprintf( stdout, "%s", error_msg.c_str() ) ;
-	fprintf( stdout, "<hr>\n" ) ;
-
-	delete factory;
-	return EXIT_FAILURE;
-    }
-
-    return EXIT_SUCCESS;
+        fprintf( os, "</body>\n</html>\n" ) ;
 }
 
-// $Log: usage.cc,v $
-// Revision 1.29  2005/01/28 17:25:13  jimg
-// Resolved conflicts from merge with release-3-4-9
-//
-// Revision 1.23.2.7  2005/01/18 23:26:02  jimg
-// FIxed documentation.
-//
-// Revision 1.23.2.6  2004/10/08 22:40:07  jimg
-// Bug fixes: see bug 813, et c., from Brandon Casey.
-//
-// Revision 1.23.2.5  2004/10/08 21:19:34  jimg
-// Changed the way the DAS and DDS handlers are called. I added the options to
-// the DDS handler, which fixes an obscure problem with the HDF handler. Also,
-// made the WIN32 and UNIX code the same since there was no real difference...
-//
-// Revision 1.28  2004/07/07 21:08:49  jimg
-// Merged with release-3-4-8FCS
-//
-// Revision 1.23.2.4  2004/04/25 00:33:06  rmorris
-// Mod's to get the usage functionality of Dods serving to run under win32.
-//
-// Revision 1.27  2004/02/19 19:42:53  jimg
-// Merged with release-3-4-2FCS and resolved conflicts.
-//
-// Revision 1.23.2.3  2004/02/05 16:08:32  jimg
-// Resolved conflict from an update (fprintf() on line 480).
-//
-// Revision 1.23.2.2  2004/01/30 18:07:24  jimg
-// Fixed bug 692. The switch from strstream to stringstream was partially
-// botched because we left ends operator calls in the code. This ended the
-// strings that were generated in some of the functions. When that was
-// concatenated with the stringstream is ended the string, typically after the
-// first variable or attribute was written. I removed the calls to ends.
-//
-// Revision 1.26  2003/12/10 21:11:58  jimg
-// Merge with 3.4. Some of the files contains erros (some tests fail). See
-// the ChangeLog for information about fixes.
-//
-// Revision 1.25  2003/12/08 18:02:31  edavis
-// Merge release-3-4 into trunk
-//
-// Revision 1.23.2.1  2003/11/25 18:18:43  jimg
-// I changed this so that it uses the stringstream classes and so that the
-// pathnames to the handlers maybe absolute (before the paths were prefixed by
-// "./" which made them always relative).
-//
-// Revision 1.24  2003/05/23 03:24:58  jimg
-// Changes that add support for the DDX response. I've based this on Nathan
-// Potter's work in the Java DAP software. At this point the code can
-// produce a DDX from a DDS and it can merge attributes from a DAS into a
-// DDS to produce a DDX fully loaded with attributes. Attribute aliases
-// are not supported yet. I've also removed all traces of strstream in
-// favor of stringstream. This code should no longer generate warnings
-// about the use of deprecated headers.
-//
-// Revision 1.23  2003/04/22 19:40:29  jimg
-// Merged with 3.3.1.
-//
-// Revision 1.22  2003/02/21 00:14:25  jimg
-// Repaired copyright.
-//
-// Revision 1.21.2.1  2003/02/21 00:10:08  jimg
-// Repaired copyright.
-//
-// Revision 1.21  2003/01/23 00:22:25  jimg
-// Updated the copyright notice; this implementation of the DAP is
-// copyrighted by OPeNDAP, Inc.
-//
-// Revision 1.20  2003/01/10 19:46:41  jimg
-// Merged with code tagged release-3-2-10 on the release-3-2 branch. In many
-// cases files were added on that branch (so they appear on the trunk for
-// the first time).
-//
-// Revision 1.16.2.16  2002/12/17 22:35:03  pwest
-// Added and updated methods using stdio. Deprecated methods using iostream.
-//
-// Revision 1.16.2.15  2002/11/18 03:18:35  rmorris
-// Minor porting change - VC++ required an explicit cast.
-//
-// Revision 1.16.2.14  2002/11/06 21:53:06  jimg
-// I changed the includes of Regex.h from <Regex.h> to "Regex.h". This means
-// make depend will include the header in the list of dependencies.
-//
-// Revision 1.16.2.13  2002/10/28 21:17:45  pwest
-// Converted all return values and method parameters to use non-const iterator.
-// Added operator== and operator!= methods to IteratorAdapter to handle Pix
-// problems.
-//
-// Revision 1.16.2.12  2002/09/05 22:52:55  pwest
-// Replaced the GNU data structures SLList and DLList with the STL container
-// class vector<>. To maintain use of Pix, changed the Pix.h header file to
-// redefine Pix to be an IteratorAdapter. Usage remains the same and all code
-// outside of the DAP should compile and link with no problems. Added methods
-// to the different classes where Pix is used to include methods to use STL
-// iterators. Replaced the use of Pix within the DAP to use iterators instead.
-// Updated comments for documentation, updated the test suites, and added some
-// unit tests. Updated the Makefile to remove GNU/SLList and GNU/DLList.
-//
-// Revision 1.16.2.11  2002/08/06 21:24:03  jimg
-// Made MT-Safe. Uses/requires pthreads; if configure cannot find pthreads,
-// then this code is *not* MT-Safe.
-//
-// Revision 1.16.2.10  2002/06/18 22:49:19  jimg
-// Added include of util.h and DAS.h. This was necessary because I removed the
-// an include of Connect.h in cgi_util.h (a bad idea anyway).
-//
-// Revision 1.16.2.9  2002/06/06 01:03:37  jimg
-// I modified main() so that it accepts (and expects) a third argument which
-// holds command line options which are to be passed to the filter programs.
-// This enables the dispatch code to pass along various options/arguments to the
-// filters. Most important of these is the -r <cache_dir> option because the
-// .info service for HDF files was often broken without it (see bug 453).
-//
-// Revision 1.19  2002/06/03 22:21:16  jimg
-// Merged with release-3-2-9
-//
-// Revision 1.16.2.8  2002/05/09 22:00:22  jimg
-// Fixed a bug in usage. If the CWD is not on the PATH (that is if `.' is not
-// onthe PATH) then usage was not finding the das and dds handlers. I changed
-// the code so that it now looks for ./<api>_das, ... where the `./' is new.
-// This fixes the bug.
-//
-// Revision 1.16.2.7  2002/03/27 17:37:49  jimg
-// Fixed printing of nested attributes. I replaced code that wrote out the
-// attributes so that nested attributes are printed using the dot notation
-// (before tehy were ignored). Look at write_attributes and
-// write_global_attributes. Bug 167.
-//
-// Revision 1.16.2.6  2002/02/04 19:05:20  jimg
-// Moved code duplicated in www_int into cgi_util.cc/h
-//
-// Revision 1.16.2.5  2002/01/23 03:17:32  jimg
-// Fixed bug 122. The group ancillary files (01base.hdf, 02base.hdf, ...) ->
-// base.html) was broken. I added a new function to cgi_util.cc and used
-// that to fix this bug.
-//
-// Revision 1.16.2.4  2001/10/30 06:55:45  rmorris
-// Win32 porting changes.  Brings core win32 port up-to-date.
-//
-// Revision 1.18  2001/10/14 01:28:38  jimg
-// Merged with release-3-2-8.
-//
-// Revision 1.16.2.3  2001/10/09 01:18:16  jimg
-// Fixed bug 300. Usage now returns 1 when it encounters an error.
-//
-// Revision 1.16.2.2  2001/10/02 16:57:18  jimg
-// Fixed a documentation bug.
-//
-// Revision 1.17  2001/08/24 17:46:23  jimg
-// Resolved conflicts from the merge of release 3.2.6
-//
-// Revision 1.16.2.1  2001/08/17 23:59:42  jimg
-// Removed WIN32 compile guards from using statements.
-//
-// Revision 1.16  2000/10/18 17:24:59  jimg
-// Fixed an error in get_user_supplied_docs() which caused the data file to be
-// read instead of a <data file>.html file.
-//
-// Revision 1.15  2000/09/22 02:17:23  jimg
-// Rearranged source files so that the CVS logs appear at the end rather than
-// the start. Also made the ifdef guard symbols use the same naming scheme and
-// wrapped headers included in other headers in those guard symbols (to cut
-// down on extraneous file processing - See Lakos).
-//
-// Revision 1.14  2000/07/09 22:05:37  rmorris
-// Changes to increase portability, minimize ifdef's for win32 and account
-// for differences in the iostreams implementations.
-//
-// Revision 1.13  2000/06/07 18:07:01  jimg
-// Merged the pc port branch
-//
-// Revision 1.12.20.1  2000/06/02 18:39:04  rmorris
-// Mod's for port to win32.
-//
-// Revision 1.12  1999/05/04 19:47:24  jimg
-// Fixed copyright statements. Removed more of the GNU classes.
-//
-// Revision 1.11  1999/04/29 02:29:37  jimg
-// Merge of no-gnu branch
-//
-// Revision 1.10  1999/04/22 22:30:52  jimg
-// Uses dynamic_cast
-//
-// Revision 1.9  1999/04/09 17:17:30  jimg
-// Added support for the new datatypes.
-// Removed old code.
-// Changed header generated to include XDODS-Server.
-//
-// Revision 1.8  1999/03/24 23:27:49  jimg
-// Added support for the new Int16, UInt16 and Float32 types.
-//
-// Revision 1.7  1998/12/16 19:10:53  jimg
-// Added support for XDODS-Server MIME header. This fixes a problem where our
-// use of Server clashed with Java.
-//
-// Revision 1.6  1998/10/21 16:56:24  jimg
-// Removed name_in_dds using #if 0 ... #endif
-//
-// Revision 1.5.6.2  1999/02/05 09:32:37  jimg
-// Fixed __unused__ so that it not longer clashes with Red Hat 5.2 inlined
-// math code. 
-//
-// Revision 1.5.6.1  1999/02/02 21:57:08  jimg
-// String to string version
-//
-// Revision 1.5  1998/02/09 20:11:43  jimg
-// Added/fixed doc++ comments.
-//
-// Revision 1.4  1998/02/05 20:14:07  jimg
-// DODS now compiles with gcc 2.8.x
-//
-// Revision 1.3  1997/05/22 22:32:04  jimg
-// Changed the way global attributes are ferreted out. Previously I had
-// assumed that any attribute group that was not also the name of a variable
-// was a group of `global' attributes. However, the new aliases change this.
-// In response I've changed the way usage looks for global attributes; it
-// looks for attribute groups which contain the strings `global' and/or
-// `dods'. Case is not important.
-//
-// Revision 1.2  1996/12/18 18:41:33  jimg
-// Added massive fixes for the processing of attributes to sort out the `global
-// attributes'. Also added changes to the overall layout of the resulting
-// document so that the hierarchy of the data is represented. Added some new
-// utility functions.
-//
-// Revision 1.1  1996/12/11 19:55:18  jimg
-// Created.
+} // namespace dap_usage
