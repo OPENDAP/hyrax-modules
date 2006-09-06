@@ -24,7 +24,9 @@ endif
 
 USAGE_SOURCES = usage.cc usage.h 
 
-BES_SOURCES = 
+BES_SOURCES = BESUsageModule.h BESUsageNames.h BESUsageResponseHandler.h \
+			  BESUsageTransmit.h BESUsageModule.cc BESUsageResponseHandler.cc \
+			  BESUsageTransmit.cc
 
 modulesdir = $(dap_modulesdir)
 

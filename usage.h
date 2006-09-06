@@ -26,7 +26,7 @@
 namespace dap_usage {
  
 void write_usage_response(FILE *os, DDS &dds, DAS &das, 
-                          const string &dataset_name,
-                          const string &server_name) throw(Error);
+                          const string &dataset_name = "",
+                          const string &server_name = "") throw(Error);
 void html_header();    
 }
