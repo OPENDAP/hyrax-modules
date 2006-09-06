@@ -102,7 +102,10 @@ datadds_to_ascii_datadds( DataDDS *dds )
     while( i != dds->var_end() )
     {
 	//cerr << "converting " << (*i)->name() << " of type " << (*i)->type_name() << endl ;
-	asciidds->add_var( basetype_to_asciitype( *i ) ) ;
+	if( (*i)->send_p() )
+	{
+	    asciidds->add_var( basetype_to_asciitype( *i ) ) ;
+	}
 	i++ ;
     }
 
