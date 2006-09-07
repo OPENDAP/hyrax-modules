@@ -92,6 +92,13 @@ BESAsciiTransmit::send_basic_ascii( DODSResponseObject *obj,
 		throw Error(unknown_error, "Error calling the CE function.");
 
 	    var->read( dataset_name ) ;
+
+	    // FIX ME: Do I need to delete the other DataDDS? Do I need it
+	    // anymore. I've got what I need doing the eval_function call
+	    // and I'm going to create a new DataDDS with it. So I don't
+	    // think I need the old one.
+	    //
+	    // delete dds ;
 	    dds = new DataDDS( NULL, "virtual" ) ;
 	    dds->add_var( var ) ;
 	}
@@ -99,6 +106,13 @@ BESAsciiTransmit::send_basic_ascii( DODSResponseObject *obj,
 	{
 	    // Iterate through the variables in the DataDDS and read in the data
 	    // if the variable has the send flag set.
+	    //
+	    // FIX ME: What if the var is a Sequence. Just doing one read
+	    // won't be enough. What does read return to let me know that
+	    // there is nothing more to read? It might be that I have to
+	    // call read multiple times to get all of the data, such as in a
+	    // Sequence. And I need to convert the data into something more
+	    // for a Sequence, filling in the d_values variable.
 	    for( DDS::Vars_iter i = dds->var_begin(); i != dds->var_end(); i++ )
 	    {
 		if( (*i)->send_p() )

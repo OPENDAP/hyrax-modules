@@ -35,7 +35,7 @@
 #include "BESResponseNames.h"
 #include "BESDataNames.h"
 #include "BESUsageNames.h"
-#include "DataDDS.h"
+#include "BESUsage.h"
 #include "BESUsageTransmit.h"
 
 BESUsageResponseHandler::BESUsageResponseHandler( string name )
@@ -55,6 +55,9 @@ BESUsageResponseHandler::~BESUsageResponseHandler( )
  * object. The DAS response object is built within this method and passed
  * to the request handler list.
  *
+ * Once the DAS has been filled in do the same for a DDS. We only need the
+ * description of the data and not the data itself.
+ *
  * @param dhi structure that holds request and response information
  * @throws BESHandlerException if there is a problem building the
  * response object
@@ -68,17 +71,26 @@ void
 BESUsageResponseHandler::execute( BESDataHandlerInterface &dhi )
 {
     dhi.action_name = Usage_RESPONSE_STR ;
+
     // Create the DDS.
     // NOTE: It is the responsbility of the specific request handler to set
     // the BaseTypeFactory. It is set to NULL here
-    DataDDS *dds = new DataDDS( NULL, "virtual" ) ;
+    DDS *dds = new DDS( NULL, "virtual" ) ;
     _response = dds ;
-    _response_name = DATA_RESPONSE ;
-    dhi.action = DATA_RESPONSE ;
+    _response_name = DDS_RESPONSE ;
+    dhi.action = DDS_RESPONSE ;
     BESRequestHandlerList::TheList()->execute_each( dhi ) ;
 
+    // Fill the DAS
+    DAS *das = new DAS ;
+    _response = das ;
+    _response_name = DAS_RESPONSE ;
+    dhi.action = DAS_RESPONSE ;
+    BESRequestHandlerList::TheList()->execute_each( dhi ) ;
+
+    BESUsage *usage = new BESUsage( das, dds ) ;
+    _response = usage ;
     dhi.action = Usage_RESPONSE ;
-    _response = dds ;
 }
 
 /** @brief transmit the response object built by the execute command

@@ -91,7 +91,7 @@ namespace dap_usage {
 // once. If the pthread package is not present when libdap++ is built, this
 // code is *not* MT-Safe.
 
-static Regex *dim_ptr;
+static Regex *dim_ptr = 0 ;
 #if HAVE_PTHREAD_H
 static pthread_once_t dim_once_control = PTHREAD_ONCE_INIT;
 #endif
@@ -111,13 +111,16 @@ name_in_kill_file(const string &name)
     pthread_once(&dim_once_control, init_dim_regex);
 #else
     if (!dim_ptr)
+    {
 	init_dim_regex();
+    }
 #endif
 
-    return dim_ptr->match(name.c_str(), name.length()) != -1;
+    bool ret = dim_ptr->match(name.c_str(), name.length()) != -1;
+    return ret ;
 }
 
-static Regex *global_ptr;
+static Regex *global_ptr = 0 ;
 #if HAVE_PTHREAD_H
 static pthread_once_t global_once_control = PTHREAD_ONCE_INIT;
 #endif
@@ -231,10 +234,13 @@ build_global_attributes(DAS &das, DDS &)
 	// because aliases between groups of attributes can result in
 	// attribute group names which are not in the DDS and are *not*
 	// global attributes. jhrg. 5/22/97
-	if (!name_in_kill_file(name) && name_is_global(name)) {
-	    AttrTable *attr = das.get_table(p);
-	    found = true;
-	    write_global_attributes(ga, attr, "");
+	if (!name_in_kill_file(name) )
+	{
+	    if( name_is_global(name)) {
+		AttrTable *attr = das.get_table(p);
+		found = true;
+		write_global_attributes(ga, attr, "");
+	    }
 	}
     }
 

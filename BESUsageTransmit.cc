@@ -37,9 +37,7 @@
 #include "BESContainer.h"
 #include "BESDataNames.h"
 #include "cgi_util.h"
-#include "DataDDS.h"
-#include "BaseType.h"
-#include "ConstraintEvaluator.h"
+#include "BESUsage.h"
 #include "usage.h"
 #include "Error.h"
 #include "BESTransmitException.h"
@@ -52,20 +50,19 @@ void
 BESUsageTransmit::send_basic_usage( DODSResponseObject *obj,
                                     BESDataHandlerInterface &dhi )
 {
-    DataDDS *dds = dynamic_cast<DataDDS *>(obj) ;
+    BESUsage *usage = dynamic_cast<BESUsage *>(obj) ;
+    DAS *das = usage->get_das() ;
+    DDS *dds = usage->get_dds() ;
 
     dhi.first_container() ;
 
     string dataset_name = dhi.container->access() ;
 
-    // How do I get the DAS?
-    DAS das;
-    
     try
     {
 	(*BESLog::TheLog()) << "writing usage/info" << endl;
         
-	write_usage_response(stdout, *dds, das, dataset_name);
+	write_usage_response(stdout, *dds, *das, dataset_name);
 
 	(*BESLog::TheLog()) << "done transmitting usage/info" << endl;
     }
@@ -87,7 +84,7 @@ void
 BESUsageTransmit::send_http_usage( DODSResponseObject *obj,
                                    BESDataHandlerInterface &dhi )
 {
-    set_mime_text( stdout, dods_data ) ;
+    set_mime_text( stdout, unknown_type ) ;
     BESUsageTransmit::send_basic_usage( obj, dhi ) ;
 }
 

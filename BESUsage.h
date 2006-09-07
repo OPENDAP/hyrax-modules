@@ -1,4 +1,4 @@
-// BESUsageNames.h
+// BESUsage.h
 
 // This file is part of bes, A C++ back-end server implementation framework
 // for the OPeNDAP Data Access Protocol.
@@ -30,20 +30,43 @@
 //      pwest       Patrick West <pwest@ucar.edu>
 //      jgarcia     Jose Garcia <jgarcia@ucar.edu>
 
-#ifndef D_BESUsageNames_H
-#define D_BESUsageNames_H 1
+#ifndef I_BESUsage_h
+#define I_BESUsage_h 1
 
-/** @brief macros representing the Usage response objects handled
+#include "DODSResponseObject.h"
+#include "DAS.h"
+#include "DDS.h"
+
+/** @brief container for a DAS and DDS needed to write out the usage
+ * information for a dataset.
  *
- * These include
- * <pre>
- * get
- *     Usage
- * </pre>
+ * This is a container for the usage response information, which needs a DAS
+ * and a DDS. An instances of BESUsage takes ownership of the das and dds
+ * passed to it and deletes it in the destructor.
+ *
+ * @see DODSResponseObject
+ * @see DAS
+ * @see DDS
  */
+class BESUsage : public DODSResponseObject
+{
+private:
+    DAS *			_das ;
+    DDS *			_dds ;
 
-#define Usage_RESPONSE "get.info_page"
-#define Usage_RESPONSE_STR "getInfoPage"
+				BESUsage() {}
+public:
+    				BESUsage( DAS *das, DDS *dds )
+				    : _das( das ), _dds( dds ) {}
+    virtual			~BESUsage()
+				{
+				    if( _das ) delete _das ;
+				    if( _dds ) delete _dds ;
+				}
 
-#endif // E_BESUsageNames_H
+    DAS *			get_das() { return _das ; }
+    DDS *			get_dds() { return _dds ; }
+} ;
+
+#endif // I_BESUsage_h
 
