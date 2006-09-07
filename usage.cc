@@ -425,7 +425,7 @@ html_header()
     @param server_name Use this name to find server-specific info. */
 void
 write_usage_response(FILE *os, DDS &dds, DAS &das, const string &dataset_name,
-                     const string &server_name) throw(Error)
+                     const string &server_name, bool httpheader) throw(Error)
 {
         // This will require some hacking in libdap; maybe that code should
         // move here? jhrg
@@ -437,7 +437,8 @@ write_usage_response(FILE *os, DDS &dds, DAS &das, const string &dataset_name,
 
         // Write out the HTML document.
 
-        html_header();
+	if( httpheader )
+	    html_header();
 
         if (global_attrs.length()) {
             fprintf(os, "%s\n%s\n%s\n%s\n",

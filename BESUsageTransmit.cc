@@ -62,7 +62,7 @@ BESUsageTransmit::send_basic_usage( DODSResponseObject *obj,
     {
 	(*BESLog::TheLog()) << "writing usage/info" << endl;
         
-	write_usage_response(stdout, *dds, *das, dataset_name);
+	write_usage_response(stdout, *dds, *das, dataset_name, "", false);
 
 	(*BESLog::TheLog()) << "done transmitting usage/info" << endl;
     }
