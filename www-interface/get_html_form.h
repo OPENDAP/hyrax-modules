@@ -27,7 +27,7 @@
 // Server3.
 
 #include <BaseType.h>
-#include <DataDDS.h>
+#include <DDS.h>
 #include "WWWOutput.h"
 
 namespace dap_html_form {
@@ -35,7 +35,7 @@ namespace dap_html_form {
 extern WWWOutput *wo;
 
 BaseType *basetype_to_wwwtype( BaseType *bt );
-DataDDS *datadds_to_www_datadds( DataDDS *dds );
+DDS *dds_to_www_dds( DDS *dds );
 void write_html_form_interface(FILE *dest, DDS *dds, DAS *das, const string &url,
                           bool html_header = true,
                           const string &admin_name = "support@unidata.ecar.edu", 

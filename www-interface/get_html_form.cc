@@ -144,17 +144,14 @@ basetype_to_wwwtype( BaseType *bt )
     
     @param dds A DDS
     @return A DDS where each variable in \e dds is now a WWW* variable. */
-DataDDS *
-datadds_to_www_datadds( DataDDS *dds )
+DDS *
+dds_to_www_dds( DDS *dds )
 {
     // Should the following use WWWOutputFactory instead of the source DDS'
     // factory class? It doesn't matter for the following since the function
     // basetype_to_asciitype() doesn't use the factory. So long as no other
     // code uses the DDS' factory, this is fine. jhrg 9/5/06 
-    DataDDS *wwwdds = new DataDDS( dds->get_factory(),
-                                   dds->get_dataset_name(),
-                                   dds->get_version(),
-                                   dds->get_protocol() ) ;
+    DDS *wwwdds = new DDS( dds->get_factory(), dds->get_dataset_name() ) ;
 
     DDS::Vars_iter i = dds->var_begin();
     while( i != dds->var_end() )

@@ -56,11 +56,11 @@ WWWArray::ptr_duplicate()
     return new WWWArray(*this);
 }
 
-WWWArray::WWWArray(const string &n, BaseType *v) : Array(n, v)
+WWWArray::WWWArray(const string &n, BaseType *v) : Array(n, v), _redirect( 0 )
 {
 }
 
-WWWArray::WWWArray( Array *bt ) : Array( bt->name() )
+WWWArray::WWWArray( Array *bt ) : Array( bt->name() ), _redirect( bt )
 {
     add_var( basetype_to_wwwtype( bt->var() ) ) ;
 }
@@ -73,6 +73,11 @@ WWWArray::~WWWArray()
 void 
 WWWArray::print_val(FILE *os, string, bool /*print_decl_p*/)
 {
+    // We have the name, so no need to change any of that code for BES, but
+    // for dimensions we need the redirected array.
+    Array *arr = _redirect ;
+    if( !arr ) arr = this ;
+
     ostringstream ss;
     ss << "<script type=\"text/javascript\">\n"
        << "<!--\n"
@@ -90,12 +95,12 @@ WWWArray::print_val(FILE *os, string, bool /*print_decl_p*/)
        << ".handle_projection_change(get_"
        << name_for_js_code(name()) << ")\">\n" 
        << "<font size=\"+1\">" << name() << "</font>"
-       << ": " << fancy_typename(this) << "</b><br>\n\n";
+       << ": " << fancy_typename(arr) << "</b><br>\n\n";
 
-    Array::Dim_iter p = dim_begin();
-    for (int i = 0; p != dim_end(); ++i, ++p) {
-	int size = dimension_size(p, true);
-	string n = dimension_name(p);
+    Array::Dim_iter p = arr->dim_begin();
+    for (int i = 0; p != arr->dim_end(); ++i, ++p) {
+	int size = arr->dimension_size(p, true);
+	string n = arr->dimension_name(p);
 	if (n != "")
 	    ss << n << ":";
 	ss << "<input type=\"text\" name=\"" << name_for_js_code(name())
@@ -113,3 +118,4 @@ WWWArray::print_val(FILE *os, string, bool /*print_decl_p*/)
     
     fprintf(os, "%s", ss.str().c_str());
 }
+

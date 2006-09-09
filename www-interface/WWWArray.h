@@ -38,8 +38,10 @@
 
 #include "Array.h"
 
-class WWWArray: public Array {
-
+class WWWArray: public Array
+{
+private:
+    Array * _redirect ;
 public:
     WWWArray(const string &n = (char *)0, BaseType *v = 0);
     WWWArray( Array *bt ) ;
