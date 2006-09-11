@@ -49,6 +49,19 @@ public:
 
     virtual int length();
 
+    bool transfer_data(const string &dataset, ConstraintEvaluator &eval,
+                       DDS &dds, bool ce_eval);
+                                    
+    virtual bool serialize_parent_part_one(const string &dataset, DDS &dds, 
+                                    ConstraintEvaluator &eval, XDR *sink);
+                                    
+    virtual void serialize_parent_part_two(const string &dataset, DDS &dds, 
+                                    ConstraintEvaluator &eval, XDR *sink);
+                                    
+    bool transfer_data_for_leaf(const string &dataset, DDS &dds, 
+                                ConstraintEvaluator &eval, bool ce_eval);
+                         
+                         
     virtual void print_ascii(FILE *os, bool print_name) throw(InternalErr);
     virtual void print_header(FILE *os);
 

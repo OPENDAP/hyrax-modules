@@ -63,7 +63,9 @@ bool translate = false;
 /** Using the AsciiOutput::print_ascii(), write the data values to an 
     output file/stream as ASCII.
     
-    @param dds A DataDDS loaded with data.
+    @param dds A DataDDS loaded with data. The variables must use the AsciiByte,
+    et c., type classes. Use the function datadds_to_ascii_datadds() to
+    build such a DataDDS from one whose types are, say NCByte, et cetera.
     @param dest Write ASCII here. */  
 void
 get_data_values_as_ascii(DataDDS *dds, FILE *dest)
@@ -108,7 +110,11 @@ datadds_to_ascii_datadds( DataDDS *dds )
 	}
 	i++ ;
     }
-
+    
+    // Calling tag_nested_sequences() makes it easier to figure out if a 
+    // sequence has parent or child sequences or if it is a 'flat' sequence.
+    asciidds->tag_nested_sequences();
+    
     return asciidds ;
 }
 
