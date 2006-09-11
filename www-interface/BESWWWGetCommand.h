@@ -1,4 +1,4 @@
-// BESWWWNames.h
+// BESWWWGetCommand.h
 
 // This file is part of bes, A C++ back-end server implementation framework
 // for the OPeNDAP Data Access Protocol.
@@ -30,22 +30,23 @@
 //      pwest       Patrick West <pwest@ucar.edu>
 //      jgarcia     Jose Garcia <jgarcia@ucar.edu>
 
-#ifndef D_BESWWWNames_H
-#define D_BESWWWNames_H 1
+#ifndef A_BESWWWGetCommand_h
+#define A_BESWWWGetCommand_h 1
 
-/** @brief macros representing the WWW response objects handled
- *
- * These include
- * <pre>
- * get
- *     WWW
- * </pre>
- */
+#include "BESCommand.h"
 
-#define WWW_RESPONSE "get.html_form"
-#define WWW_RESPONSE_STR "getHtmlForm"
+class BESWWWGetCommand : public BESCommand
+{
+private:
+protected:
+public:
+    					BESWWWGetCommand( const string &cmd )
+					    : BESCommand( cmd ) {}
+    virtual				~BESWWWGetCommand() {}
 
-#define WWW_URL "www_url"
+    virtual BESResponseHandler *	parse_request( BESTokenizer &tokens,
+					  BESDataHandlerInterface &dhi ) ;
+} ;
 
-#endif // E_BESWWWNames_H
+#endif // A_BESWWWGetCommand_h
 

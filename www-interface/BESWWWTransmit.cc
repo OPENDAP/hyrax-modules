@@ -36,6 +36,7 @@
 #include "DODSFilter.h"
 #include "BESContainer.h"
 #include "BESDataNames.h"
+#include "BESWWWNames.h"
 #include "cgi_util.h"
 #include "BESWWW.h"
 #include "Error.h"
@@ -67,7 +68,8 @@ BESWWWTransmit::send_basic_form( DODSResponseObject *obj,
 
 	(*BESLog::TheLog()) << "writing form" << endl;
         
-	write_html_form_interface( stdout, wwwdds, das, "", false ) ;
+	string url = dhi.data[WWW_URL] ;
+	write_html_form_interface( stdout, wwwdds, das, url, false ) ;
 
 	(*BESLog::TheLog()) << "done transmitting form" << endl;
     }

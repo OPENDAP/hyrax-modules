@@ -46,6 +46,7 @@ using std::endl ;
 #include "BESReturnManager.h"
 #include "BESTransmitterNames.h"
 
+#include "BESWWWGetCommand.h"
 
 void
 BESWWWModule::initialize( const string &modname )
@@ -72,6 +73,11 @@ BESWWWModule::initialize( const string &modname )
 	    (*BESLog::TheLog()) << "    adding http " << WWW_TRANSMITTER << " transmit function" << endl ;
 	t->add_method( WWW_TRANSMITTER, BESWWWTransmit::send_http_form ) ;
     }
+
+    if( BESLog::TheLog()->is_verbose() )
+	(*BESLog::TheLog()) << "    adding " << WWW_RESPONSE << " command" << endl;
+    BESCommand *cmd = new BESWWWGetCommand( WWW_RESPONSE ) ;
+    BESCommand::add_command( WWW_RESPONSE, cmd ) ;
 }
 
 void
