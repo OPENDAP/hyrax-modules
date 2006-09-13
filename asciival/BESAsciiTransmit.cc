@@ -39,6 +39,7 @@
 #include "cgi_util.h"
 #include "DataDDS.h"
 #include "BaseType.h"
+#include "Sequence.h"
 #include "ConstraintEvaluator.h"
 #include "get_ascii.h"
 #include "Error.h"
@@ -105,20 +106,22 @@ BESAsciiTransmit::send_basic_ascii( DODSResponseObject *obj,
 	else
 	{
 	    // Iterate through the variables in the DataDDS and read in the data
-	    // if the variable has the send flag set.
-	    //
-	    // FIX ME: What if the var is a Sequence. Just doing one read
-	    // won't be enough. What does read return to let me know that
-	    // there is nothing more to read? It might be that I have to
-	    // call read multiple times to get all of the data, such as in a
-	    // Sequence. And I need to convert the data into something more
-	    // for a Sequence, filling in the d_values variable.
+	    // if the variable has the send flag set. 
+            // Note the special case for Sequence. The transfer_data() method
+            // uses the same logic as serialize() to read values but transfers
+            // them to the d_values field instead of writing them to a XDR sink
+            // pointer. jhrg 9/13/06
 	    for( DDS::Vars_iter i = dds->var_begin(); i != dds->var_end(); i++ )
 	    {
 		if( (*i)->send_p() )
 		{
 		    (*BESLog::TheLog()) << "reading some data" << endl;
-		    (*i)->read( dataset_name ) ;
+                    if( (*i)->type() == dods_sequence_c ) {
+                        dynamic_cast<Sequence&>( **i ).transfer_data( dataset_name, dhi.ce, *dds );
+                    }
+                    else {
+		        (*i)->read( dataset_name ) ;
+                    }
 		}
 	    }
 	}

@@ -78,7 +78,7 @@ AsciiSequence::AsciiSequence( Sequence *bt ) : AsciiOutput( bt )
 AsciiSequence::~AsciiSequence()
 {
 }
-
+#if 0
 /** Serialize a Sequence. 
 
     Leaf Sequences must be marked as such (see DDS::tag_nested_sequence()),
@@ -322,6 +322,7 @@ AsciiSequence::transfer_data_for_leaf(const string &dataset, DDS &dds,
 
     return true;                // Signal errors with exceptions.
 }
+#endif
 
 int
 AsciiSequence::length()
