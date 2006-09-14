@@ -147,6 +147,7 @@ BESAsciiTransmit::send_basic_ascii( DODSResponseObject *obj,
 	DataDDS *ascii_dds = datadds_to_ascii_datadds( dds ) ;
 	(*BESLog::TheLog()) << "getting ascii values" << endl;
 	get_data_values_as_ascii( ascii_dds, stdout ) ;
+	fflush( stdout ) ;
 
 	(*BESLog::TheLog()) << "done transmitting ascii" << endl;
     }

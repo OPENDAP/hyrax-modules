@@ -63,16 +63,14 @@ AsciiSequence::AsciiSequence( Sequence *bt ) : AsciiOutput( bt )
     // Let's make the alternative structure of Ascii types now so that we
     // don't have to do it on the fly.
     Vars_iter p = bt->var_begin();
-    while( p != var_end() )
+    while( p != bt->var_end() )
     {
 	BaseType *new_bt = basetype_to_asciitype( *p ) ;
 	add_var( new_bt ) ;
-	// FIX: Should I do this? I won't until I get it working.
-	//delete new_bt ;
+	delete new_bt ;
+	p++ ;
     }
     set_name( bt->name() ) ;
-    
-    // Read values, evaluate the constraint and fill the d_values field.
 }
 
 AsciiSequence::~AsciiSequence()
@@ -335,21 +333,30 @@ AsciiSequence::length()
 void
 AsciiSequence::print_ascii_row(FILE *os, int row, BaseTypeRow outer_vars)
 {
+    Sequence *seq = dynamic_cast<Sequence *>( _redirect ) ;
+    if( !seq )
+	seq = this ;
+
     // Print the values from this sequence.
-    int elements = element_count() - 1;
+    int elements = seq->element_count() - 1;
     int j = 0;
     bool done = false;
     do {
-	BaseType *bt_ptr = var_value(row, j++);
+	BaseType *bt_ptr = seq->var_value(row, j++);
 	if (bt_ptr) {		// Check for data.
+	    BaseType *abt_ptr = basetype_to_asciitype( bt_ptr ) ;
 	    if (bt_ptr->type() == dods_sequence_c) {
-		dynamic_cast<AsciiSequence*>(bt_ptr)->print_ascii_rows
+		dynamic_cast<AsciiSequence*>(abt_ptr)->print_ascii_rows
 		    (os, outer_vars);
 	    }
 	    else {
+		// push the real base type pointer instead of the ascii one.
+		// We can cast it again later from the outer_vars vector.
 		outer_vars.push_back(bt_ptr);
-		dynamic_cast<AsciiOutput*>(bt_ptr)->print_ascii(os, false);
+		dynamic_cast<AsciiOutput*>(abt_ptr)->print_ascii(os, false);
 	    }
+	    // we only need the ascii type here, so delete it
+	    delete abt_ptr ;
 	}
 
 	// When we're finally done, set the flag and omit the comma.
@@ -365,17 +372,24 @@ void
 AsciiSequence::print_leading_vars(FILE *os, BaseTypeRow &outer_vars)
 {
     BaseTypeRow::iterator BTR_iter = outer_vars.begin();
-    for (BTR_iter = outer_vars.begin(); BTR_iter != outer_vars.end(); 
-	 BTR_iter++) {
-	dynamic_cast<AsciiOutput*>(*BTR_iter)->print_ascii(os, false);
+    for(BTR_iter = outer_vars.begin(); BTR_iter != outer_vars.end(); BTR_iter++)
+    {
+	BaseType *abt_ptr = basetype_to_asciitype( *BTR_iter ) ;
+	dynamic_cast<AsciiOutput*>(abt_ptr)->print_ascii(os, false);
 	fprintf(os, ", ");
+	// we only need the ascii base type locally, so delete it
+	delete abt_ptr ;
     }
 }
 
 void
 AsciiSequence::print_ascii_rows(FILE *os, BaseTypeRow outer_vars)
 {
-    int rows = number_of_rows() - 1;
+    Sequence *seq = dynamic_cast<Sequence *>( _redirect ) ;
+    if( !seq )
+	seq = this ;
+
+    int rows = seq->number_of_rows() - 1;
     int i = 0;
     bool done = false;
     do {
@@ -417,7 +431,11 @@ AsciiSequence::print_header(FILE *os)
 void
 AsciiSequence::print_ascii(FILE *os, bool print_name) throw(InternalErr)
 {
-    if (is_linear()) {
+    Sequence *seq = dynamic_cast<Sequence *>( _redirect ) ;
+    if( !seq )
+	seq = this ;
+
+    if (seq->is_linear()) {
 	if (print_name) {
 	    print_header(os);
 	    fprintf(os, "\n");
@@ -427,8 +445,8 @@ AsciiSequence::print_ascii(FILE *os, bool print_name) throw(InternalErr)
 	print_ascii_rows(os, outer_vars);
     }
     else {
-	int rows = number_of_rows() - 1;
-	int elements = element_count() - 1;
+	int rows = seq->number_of_rows() - 1;
+	int elements = seq->element_count() - 1;
 
 	// For each row of the Sequence...
 	bool rows_done = false;
@@ -438,8 +456,9 @@ AsciiSequence::print_ascii(FILE *os, bool print_name) throw(InternalErr)
 	    bool vars_done = false;
 	    int j = 0;
 	    do {
-		BaseType *bt_ptr = var_value(i, j++);
-		dynamic_cast<AsciiOutput*>(bt_ptr)->print_ascii(os, true);
+		BaseType *bt_ptr = seq->var_value(i, j++);
+		BaseType *abt_ptr = basetype_to_asciitype( bt_ptr ) ;
+		dynamic_cast<AsciiOutput*>(abt_ptr)->print_ascii(os, true);
 
 		if (j > elements)
 		    vars_done = true;
