@@ -190,7 +190,7 @@ write_html_form_interface(FILE *dest, DDS *dds, DAS *das, const string &url,
                           bool html_header,
                           const string &admin_name, const string &help_location)
 {
-        WWWOutput *wo = new WWWOutput(dest);
+        wo = new WWWOutput(dest);
         wo->set_das(das);
 
         if (html_header)
