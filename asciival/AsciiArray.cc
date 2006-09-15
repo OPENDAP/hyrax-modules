@@ -73,7 +73,10 @@ AsciiArray::AsciiArray( Array *bt ) : AsciiOutput( bt )
     // By calling var() without any parameters we get back the template
     // itself, then we can add it to this Array as the template. By doing
     // this we set the parent as well, which is what we need.
-    add_var( basetype_to_asciitype( bt->var() ) ) ;
+    BaseType *abt = basetype_to_asciitype( bt->var() ) ;
+    add_var( abt ) ;
+    // add_var makes a copy of the base type passed, so delete it
+    delete abt ;
     set_name( bt->name() ) ;
 }
 
@@ -128,9 +131,13 @@ AsciiArray::print_vector(FILE *os, bool print_name)
 	BaseType *curr_var = basetype_to_asciitype( bt->var(i) ) ;
 	dynamic_cast<AsciiOutput *>(curr_var)->print_ascii(os, false);
 	fprintf(os, ", ");
+	// we're not saving curr_var for future use, so delete it here
+	delete curr_var ;
     }
     BaseType *curr_var = basetype_to_asciitype( bt->var(end) ) ;
     dynamic_cast<AsciiOutput *>(curr_var)->print_ascii(os, false);
+    // we're not saving curr_var for future use, so delete it here
+    delete curr_var ;
 }
 
 /** Print a single row of values for a N-dimensional array. Since we store
@@ -158,9 +165,13 @@ AsciiArray::print_row(FILE *os, int index, int number)
 	BaseType *curr_var = basetype_to_asciitype( bt->var(index++) ) ;
 	dynamic_cast<AsciiOutput *>(curr_var)->print_ascii(os, false);
         fprintf(os, ", ");
+	// we're not saving curr_var for future use, so delete it here
+	delete curr_var ;
     }
     BaseType *curr_var = basetype_to_asciitype( bt->var(index++) ) ;
     dynamic_cast<AsciiOutput *>(curr_var)->print_ascii(os, false);
+    // we're not saving curr_var for future use, so delete it here
+    delete curr_var ;
 
     return index;
 }
@@ -333,6 +344,8 @@ AsciiArray::print_complex_array(FILE *os, bool /*print_name*/)
 
 	BaseType *curr_var = basetype_to_asciitype( bt->var( get_index( state ) ) );
 	dynamic_cast<AsciiOutput*>(curr_var)->print_ascii(os, true);
+	// we are not saving curr_var for future reference, so delete it
+	delete curr_var ;
 	
 	more_indices = increment_state(&state, shape);
 	if (more_indices)

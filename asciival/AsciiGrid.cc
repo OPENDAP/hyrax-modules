@@ -66,16 +66,17 @@ AsciiGrid::AsciiGrid( Grid *grid ) : AsciiOutput( grid )
 {
     BaseType *bt = basetype_to_asciitype( grid->array_var() ) ;
     add_var( bt, array ) ;
-    // FIX: probably need to do this, but let's get it working first
-    // delete bt ; bt = 0 ;
+    // add_var makes a copy of the base type passed to it, so delete it here
+    delete bt ; bt = 0 ;
+
     Grid::Map_iter i = grid->map_begin() ;
     Grid::Map_iter e = grid->map_end() ;
     for( ; i != e; i++ )
     {
 	bt = basetype_to_asciitype( *i ) ;
 	add_var( bt, maps ) ;
-	// FIX: probably need to do this, but let's get it working first
-	// delete bt ; bt = 0 ;
+	// add_var makes a copy of the base type passed to it, so delete it here
+	delete bt ; bt = 0 ;
     }
     set_name( grid->name() ) ;
 }
@@ -180,6 +181,8 @@ AsciiGrid::print_grid(FILE *os, bool print_name)
 	    BaseType *avar = basetype_to_asciitype( map->var( *state_iter ) ) ;
 	    AsciiOutput *aovar = dynamic_cast<AsciiOutput *>( avar ) ;
 	    aovar->print_ascii( os, false ) ;
+	    // we aren't saving avar for future reference so need to delete
+	    delete avar ;
 	    fprintf(os, "]");
 
 	    state_iter++; p++; ap++;

@@ -156,7 +156,11 @@ dds_to_www_dds( DDS *dds )
     DDS::Vars_iter i = dds->var_begin();
     while( i != dds->var_end() )
     {
-        wwwdds->add_var( basetype_to_wwwtype( *i ) ) ;
+	BaseType *abt = basetype_to_wwwtype( *i ) ;
+        wwwdds->add_var( abt ) ;
+	// add_var makes a copy of the base type passed to it, so delete it
+	// here
+	delete abt ;
         i++ ;
     }
 

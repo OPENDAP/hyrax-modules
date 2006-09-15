@@ -65,8 +65,8 @@ AsciiStructure::AsciiStructure( Structure *bt ) : AsciiOutput( bt )
     {
 	BaseType *new_bt = basetype_to_asciitype( *p ) ;
 	add_var( new_bt ) ;
-	// FIX: Should I do this? I won't until I get it working.
-	//delete new_bt ;
+	// add_var makes a copy of the base type passed to it, so delete it here
+	delete new_bt ;
 	p++ ;
     }
     set_name( bt->name() ) ;

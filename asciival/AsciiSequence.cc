@@ -214,6 +214,8 @@ AsciiSequence::print_ascii(FILE *os, bool print_name) throw(InternalErr)
 		BaseType *bt_ptr = seq->var_value(i, j++);
 		BaseType *abt_ptr = basetype_to_asciitype( bt_ptr ) ;
 		dynamic_cast<AsciiOutput*>(abt_ptr)->print_ascii(os, true);
+		// abt_ptr is not stored for future use, so delete it
+		delete abt_ptr ;
 
 		if (j > elements)
 		    vars_done = true;

@@ -94,7 +94,7 @@ BESAsciiTransmit::send_basic_ascii( DODSResponseObject *obj,
 
 	    var->read( dataset_name ) ;
 
-	    // FIX ME: Do I need to delete the other DataDDS? Do I need it
+	    // FIXME: Do I need to delete the other DataDDS? Do I need it
 	    // anymore. I've got what I need doing the eval_function call
 	    // and I'm going to create a new DataDDS with it. So I don't
 	    // think I need the old one.

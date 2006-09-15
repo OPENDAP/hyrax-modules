@@ -66,7 +66,6 @@ WWWSequence::WWWSequence( Sequence *bt ) : Sequence( bt->name() )
     {
         BaseType *new_bt = basetype_to_wwwtype( *p ) ;
         add_var( new_bt ) ;
-
         delete new_bt ;
         p++ ;
     }

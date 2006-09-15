@@ -62,7 +62,10 @@ WWWArray::WWWArray(const string &n, BaseType *v) : Array(n, v), _redirect( 0 )
 
 WWWArray::WWWArray( Array *bt ) : Array( bt->name() ), _redirect( bt )
 {
-    add_var( basetype_to_wwwtype( bt->var() ) ) ;
+    BaseType *abt = basetype_to_wwwtype( bt->var() ) ;
+    add_var( abt ) ;
+    // add_var makes a copy of the base type passed to it, so delete it here
+    delete abt ;
 }
 
 
