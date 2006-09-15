@@ -19,7 +19,8 @@ if OPENDAPSERVER
     lib_bes_LTLIBRARIES = libusage_module.la
     libusage_module_la_SOURCES = $(USAGE_SOURCES) $(BES_SOURCES)
     libusage_module_la_CPPFLAGS = $(BES_CPPFLAGS)
-    libusage_module_la_LDFLAGS = $(BES_LDFLAGS)
+    libusage_module_la_LDFLAGS = -avoid-version -module 
+    libusage_module_la_LIBADD = $(BES_LIBS)
 endif
 
 USAGE_SOURCES = usage.cc usage.h 

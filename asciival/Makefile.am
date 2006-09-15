@@ -25,7 +25,8 @@ if OPENDAPSERVER
     lib_bes_LTLIBRARIES = libascii_module.la
     libascii_module_la_SOURCES = $(ASCII_SOURCES) $(BES_SOURCES)
     libascii_module_la_CPPFLAGS = $(BES_CPPFLAGS)
-    libascii_module_la_LDFLAGS = $(BES_LDFLAGS)
+    libascii_module_la_LDFLAGS = -avoid-version -module 
+    libascii_module_la_LIBADD = $(BES_LIBS)
 endif
 
 # libascii_handler_la_SOURCES = 
