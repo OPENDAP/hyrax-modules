@@ -3,6 +3,12 @@
 
 PREFACE
 
+  NOTE
+
+      This software now builds plugins for use with the BES. See the BES
+      documentation for information about configuration. To build the
+      plugins, just run 'make' and 'make install'.
+
   This is a general guide for the OPeNDAP data servers. There is a more 
   detailed guide available online at http://opendap.org/support at the link 
   'Server Installation Guide.'
@@ -13,11 +19,12 @@ PREFACE
   specific data format. Those handlers are available as separate items from
   our web site or from other sites.
 
-  Version 3.5 and later of the server, described in this file, differ in some
-  important ways from previous versions of the server. In version 3.5 only
-  one executable file is located in a web daemon's CGI binary directory. In
-  addition, it's no longer necessary to locate the data in your web daemon's
-  DocumentRoot directory. Both of these changes increase server robustness.
+  Version 3.5 and later of the server, described in this file, differs in
+  some important ways from previous versions of the server. In version 3.5
+  only one executable file is located in a web daemon's CGI binary directory.
+  In addition, it's no longer necessary to locate the data in your web
+  daemon's DocumentRoot directory. Both of these changes increase server
+  robustness.
 
   Though not absolutely essential, it will be useful to understand the
   structure of the software. You can find general descriptions of the system
@@ -30,7 +37,7 @@ PREFACE
 
   See NEWS for recent changes to the server software.
 
-  Updated for version 3.6.0 of the OPeNDAP Server Software.
+  Updated for version 3.7.0 of the OPeNDAP Server Software.
 
 -----------------------------------------------------------------------------
 

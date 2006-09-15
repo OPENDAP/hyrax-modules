@@ -1,4 +1,11 @@
 
+Version 3.7.0
+
+This version includes a number of improvements/features/fixes needed for
+Server4. The BES (soon to be named besdaemon) now supports its own ascii,
+html and info commands using plugins built from this code. Previous versions
+of server4 used the Java front end to return these responses.
+
 Version 3.6.1
 
 Fixed a bug where the helper that builds the info response was not getting

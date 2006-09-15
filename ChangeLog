@@ -1,3 +1,343 @@
+2006-09-15  James Gallagher <jgallagher@opendap.org>
+
+	Fixed an error in data.1.exp
+	Removed the option n test since that option has been removed.
+
+2006-09-15  James Gallagher <jgallagher@opendap.org>
+
+	Added get_ascii.o to the set of objects linked to the tests.
+
+	M    unit-tests/Makefile.am
+
+2006-09-15  Patrick West <pwest@ucar.edu>
+
+	the functions add-var on a dds for base type makes a copy of the
+	passed base type, so needed to delete the temporary base types
+	created by calling the basetype_to_(ascii|www|)type. Any other
+	time we call the basetype_to_(ascii|www)type functions cleaned up
+	any temporary base types created and not stored.
+	
+	M    www-interface/WWWStructure.cc
+	M    www-interface/get_html_form.cc
+	M    www-interface/WWWSequence.cc
+	M    www-interface/WWWArray.cc
+	M    asciival/BESAsciiTransmit.cc
+	M    asciival/AsciiStructure.cc
+	M    asciival/AsciiGrid.cc
+	M    asciival/AsciiSequence.cc
+	M    asciival/AsciiArray.cc
+	M    asciival/get_ascii.cc
+
+2006-09-15  James Gallagher <jgallagher@opendap.org>
+
+	AsciiSequence: Removed failed attempt at reading values into the
+	local Sequence. The code has to be part of libdap.
+
+2006-09-14  Patrick West <pwest@ucar.edu>
+
+	Single layer sequences now work. More testing is required for
+	nested sequences. AsciiSeqeunces only copies the vars in the
+	original sequence, it doesn't copy the d_values. So, use the
+	_redirect whenever necessary.
+	
+	M    asciival/BESAsciiTransmit.cc
+	M    asciival/AsciiSequence.cc
+
+2006-09-14  Patrick West <pwest@ucar.edu>
+
+	local version of variable wo, a WWWOutput instance, was being
+	created instead of using the global one.
+	
+	M    www-interface/get_html_form.cc
+
+2006-09-13  James Gallagher <jgallagher@opendap.org>
+
+	AsciiSequence: Removed the lame transfer_data/serialize method;
+	see libdap's Sequence class for transfer_data().
+	BESAsciiTransmit.cc: Modified the basic get ascii function so that
+	it calls transfer_data for a sequence in the section that uses
+	read() to load the variables with data.
+
+2006-09-12  James Gallagher <jgallagher@opendap.org>
+
+	Auto reset of Subversion properties
+
+2006-09-11  James Gallagher <jgallagher@opendap.org>
+
+	get_ascii.cc: Calls DDS::tag_nested_sequences() on the new ascii
+	DDS. AsciiSequence: Added transfer_data() and
+	transfer_data_for_leaf() which read data using read_row() and copy
+	it to d_values where the print_ascii() methods expect to find it.
+	This version of transfer_data() only works for single level
+	sequences. Untested.
+
+2006-09-11  Patrick West <pwest@ucar.edu>
+
+	Changed the get command for get html_form to include a 'using url'.
+	M    www-interface/BESWWWTransmit.cc
+	M    www-interface/BESWWWNames.h
+	M    www-interface/BESWWWModule.cc
+	A    www-interface/BESWWWGetCommand.cc
+	A    www-interface/BESWWWGetCommand.h
+	M    www-interface/Makefile.am
+
+2006-09-09  James Gallagher <jgallagher@opendap.org>
+
+	Auto reset of Subversion properties
+
+2006-09-08  Patrick West <pwest@ucar.edu>
+
+	First pass at providing the html_form output from the BES. Limited
+	testing seems to work. Added a new www_module library to the
+	Makefile to include the BESWWWModule for a 'get html_form for
+	<def>;' command.
+	
+	A    www-interface/BESWWWTransmit.cc
+	A    www-interface/BESWWWNames.h
+	A    www-interface/BESWWWModule.cc
+	M    www-interface/get_html_form.cc
+	A    www-interface/BESWWWResponseHandler.cc
+	A    www-interface/BESWWWResponseHandler.h
+	A    www-interface/BESWWWTransmit.h
+	A    www-interface/BESWWW.h
+	M    www-interface/WWWArray.cc
+	M    www-interface/Makefile.am
+	M    www-interface/WWWArray.h
+	A    www-interface/BESWWWModule.h
+	M    www-interface/get_html_form.h
+
+2006-09-08  James Gallagher <jgallagher@opendap.org>
+
+	Auto reset of Subversion properties
+
+2006-09-07  Patrick West <pwest@ucar.edu>
+
+	Added flag to write_usage_response to let it know if it should
+	write out an http header.
+	
+	M    usage.cc
+	M    BESUsageTransmit.cc
+	M    usage.h
+
+2006-09-07  Patrick West <pwest@ucar.edu>
+
+	Changed name to info_page instead of usage. Modified bes.m4 to use
+	the --modulesdir directive on bes-config. Added a BESUsage
+	response object to contain both a das and a dds, since the usage
+	code needs both.
+	
+	A    BESUsage.h
+	M    conf/bes.m4
+	M    usage.cc
+	M    asciival/BESAsciiTransmit.cc
+	M    BESUsageTransmit.cc
+	M    BESUsageNames.h
+	M    BESUsageResponseHandler.cc
+	M    Makefile.am
+
+2006-09-07  James Gallagher <jgallagher@opendap.org>
+
+	Auto reset of Subversion properties
+
+2006-09-06  Patrick West <pwest@ucar.edu>
+
+	When transferring datadds to ascii datadds wasn't checking the
+	send_p flag to see if I should have transferred it.
+	
+	M    get_ascii.cc
+
+2006-09-06  James Gallagher <jgallagher@opendap.org>
+
+	Added BESUsage* files. Added BESUsage* files to Makefile.am and
+	added default ("") values for the dataset and server name parameters
+	of write_usage_html() (see usage.h). Note that BESUsageTransmit.cc
+	won't work because I don't know how to get the DAS out of the input
+	arg list.
+
+2006-09-06  James Gallagher <jgallagher@opendap.org>
+
+	usage.cc, usage.h: These now hold function used to build and write
+	the info response.
+	usage_main.cc: Holds main() for server3's usage executable.
+	Makefile.am: Now builds the info module.
+
+2006-09-06  James Gallagher <jgallagher@opendap.org>
+
+	Auto reset of Subversion properties
+
+2006-09-05  James Gallagher <jgallagher@opendap.org>
+
+	config_asciival.h: Removed. Use config.h instead. Other changes:
+	The code now puts all non-static functions in the dap_asciival
+	namespace. The name_map object and translate flag are also in the
+	namespace.
+
+2006-09-05  James Gallagher <jgallagher@opendap.org>
+
+	Just about every file in asciival: Removed old code from the
+	Ascii* classes (ticket #533). A bit more to go...
+
+2006-09-05  James Gallagher <jgallagher@opendap.org>
+
+	Makefile.am: Added code for the bes module.
+	config_www_int.h: Removed, using config.h instead.
+	Type classes: Removed old code (see ticket #533)
+	Put all functions into the dap_html_form namespace.
+
+2006-09-05  James Gallagher <jgallagher@opendap.org>
+
+	Added get_html_form.cc/h, Modifications to all of the WWW* type
+	classes. This code now can be called using a functional interface
+	similar to the one built for ascii_val. There's also two functions
+	which help to make a DDS with WWW* type variables given a DDS
+	with some other set of BaseType specializations (e.g., NCTypes).
+	I have not tested the DDS conversion code since it's based on
+	code from the ascii_val mods and that has been tested already.
+
+2006-09-02  James Gallagher <jgallagher@opendap.org>
+
+	Auto reset of Subversion properties
+
+2006-09-01  Patrick West <pwest@ucar.edu>
+
+	changed the BES_MODULE_DIR variable to use the new modulesdir
+	argument of bes-config
+
+2006-09-01  Patrick West <pwest@ucar.edu>
+
+	Creating 'get ascii for <def>' command in the bes. James created
+	get_data_values_as_ascii function. Needed to convert the DataDDS
+	variables that is build in the data handlers into a DataDDS with
+	Ascii types in it. Sequence still does not work properly. added a
+	BES Module class to add the ascii response and ascii transmit
+	functions.
+	
+	M    asciival/AsciiGrid.h
+	A    asciival/BESAsciiTransmit.cc
+	A    asciival/BESAsciiNames.h
+	M    asciival/AsciiStructure.cc
+	M    asciival/AsciiOutput.cc
+	M    asciival/AsciiInt32.h
+	M    asciival/AsciiUrl.cc
+	M    asciival/AsciiStructure.h
+	M    asciival/AsciiOutput.h
+	M    asciival/AsciiInt16.h
+	M    asciival/AsciiUrl.h
+	M    asciival/AsciiByte.h
+	M    asciival/AsciiStr.cc
+	M    asciival/AsciiStr.h
+	A    asciival/BESAsciiModule.cc
+	M    asciival/AsciiFloat64.h
+	M    asciival/AsciiUInt32.cc
+	M    asciival/AsciiGrid.cc
+	M    asciival/AsciiUInt32.h
+	M    asciival/AsciiUInt16.cc
+	A    asciival/BESAsciiResponseHandler.cc
+	A    asciival/BESAsciiResponseHandler.h
+	M    asciival/AsciiUInt16.h
+	A    asciival/BESAsciiTransmit.h
+	M    asciival/AsciiInt32.cc
+	M    asciival/AsciiInt16.cc
+	M    asciival/AsciiByte.cc
+	M    asciival/AsciiSequence.cc
+	M    asciival/AsciiSequence.h
+	M    asciival/AsciiFloat32.cc
+	M    asciival/Makefile.am
+	M    asciival/AsciiFloat32.h
+	M    asciival/AsciiArray.cc
+	M    asciival/get_ascii.cc
+	M    asciival/AsciiFloat64.cc
+	M    asciival/AsciiArray.h
+	M    asciival/get_ascii.h
+	A    asciival/BESAsciiModule.h
+
+2006-08-29  James Gallagher <jgallagher@opendap.org>
+
+	Auto reset of Subversion properties
+
+2006-08-28  James Gallagher <jgallagher@opendap.org>
+
+	README: Added a blurb about the module interface.
+
+2006-08-28  James Gallagher <jgallagher@opendap.org>
+
+	config.h.in: removed from svn.
+
+2006-08-28  James Gallagher <jgallagher@opendap.org>
+
+	configure.ac: has the tests needed for the BES module build
+	option.
+
+2006-08-28  James Gallagher <jgallagher@opendap.org>
+
+	get_ascii: added to provide an entry point for the BES module.
+	AsciiOutput, AsciiArray, Grid, Sequence, Structure: modified so
+	that names() no longer is a global static object.
+	Makefile.am: now builds the BES module in additon to the Server3
+	executable.
+
+2006-08-28  James Gallagher <jgallagher@opendap.org>
+
+	bes.m4, ltmain.sh: Added so that BES modules can be built.
+	mkinstalldirs: modified so that the module build will work.
+
+2006-08-28  James Gallagher <jgallagher@opendap.org>
+
+	Tests for ascii_val: Updated to work with the newly hacked version.
+	This version has a function that can be used as the entry point to
+	a SO module loaded by the BES as well as the older front end for
+	Server4.
+
+2006-08-28  James Gallagher <jgallagher@opendap.org>
+
+	ascii_val.cc: removed CVS commit log.
+
+2006-06-27  James Gallagher <jgallagher@opendap.org>
+
+	README: Added a blurb about using ScriptAliasMatch and also about
+	Apache 2.x and just using a regular CGI directory and not putting
+	the server under the DocumentRoot.
+
+2006-05-22  James Gallagher <jgallagher@opendap.org>
+
+	coads.option.m.data: Made the XDAP version 3.*
+
+2006-05-22  James Gallagher <jgallagher@opendap.org>
+
+	Makefile.in.orig: Added just in case.
+
+2006-05-11  James Gallagher <jgallagher@opendap.org>
+
+	Auto reset of Subversion properties
+
+2006-05-10  James Gallagher <jgallagher@opendap.org>
+
+	ais-tool: updates to get the code to build with the latest
+	libdap
+
+2006-05-10  James Gallagher <jgallagher@opendap.org>
+
+	ReadConfig.pm: Added $debug
+
+2006-05-10  James Gallagher <jgallagher@opendap.org>
+
+	conf/libdap.m4, configure.ac: Build changes for the new organization
+	of libdap.
+
+2006-03-24  James Gallagher <jgallagher@opendap.org>
+
+	DODS_Dispatch.pm: Removed an unused variable in command().
+
+2006-03-16  James Gallagher <jgallagher@opendap.org>
+
+	Version 3.6.1
+
+2006-03-16  James Gallagher <jgallagher@opendap.org>
+
+	DODS_Dipatch.pm: Removed debug = 2 for the release. Fixed call
+	to dap_usage; it now gets the cache dir value. Tests have been
+	fixed and run corectly with a default dap-server.rc file.
+
 2006-03-16  James Gallagher <jgallagher@opendap.org>
 
 	read_config.pl: now reads switches/params given after the handler
@@ -29,13 +369,14 @@
 
 2006-03-03  James Gallagher <jgallagher@opendap.org>
 
-	Applied a patch from Patrice Dumas to dap-server.spec. Bumped the release
-	code. The patch fixes the Requires lines and includes update descriptive text.
+	Applied a patch from Patrice Dumas to dap-server.spec. Bumped the
+	release code. The patch fixes the Requires lines and includes
+	update descriptive text.
 
 2006-03-03  James Gallagher <jgallagher@opendap.org>
 
-	Applied a patch from Patrice Dumas that updates the package description and
-	fixes problems with the Requires lines.
+	Applied a patch from Patrice Dumas that updates the package
+	description and fixes problems with the Requires lines.
 
 2006-02-27  James Gallagher <jgallagher@opendap.org>
 
@@ -43,8 +384,8 @@
 
 2006-02-27  James Gallagher <jgallagher@opendap.org>
 
-	Updated NEWS, README, ChangeLog, configure.ac and dap-server.spec For version
-	3.6.0. Also fixed the COADS asciival option m test.
+	Updated NEWS, README, ChangeLog, configure.ac and dap-server.spec
+	For version 3.6.0. Also fixed the COADS asciival option m test.
 
 2006-02-24  James Gallagher <jgallagher@opendap.org>
 
