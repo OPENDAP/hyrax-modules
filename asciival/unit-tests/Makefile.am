@@ -31,7 +31,7 @@ ASCIIOBJS = ../AsciiByte.o ../AsciiInt32.o ../AsciiFloat64.o ../AsciiStr.o   \
 	../AsciiUrl.o ../AsciiArray.o ../AsciiStructure.o ../AsciiSequence.o \
 	../AsciiGrid.o ../AsciiUInt32.o ../AsciiInt16.o ../AsciiUInt16.o     \
 	../AsciiFloat32.o ../AsciiOutput.o ../AsciiOutputFactory.o	     \
-	../name_map.o
+	../name_map.o ../get_ascii.o
 
 UNIT_TESTS = AsciiArrayTest AsciiOutputTest
 
