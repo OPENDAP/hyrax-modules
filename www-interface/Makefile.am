@@ -45,6 +45,6 @@ EXTRA_DIST = js2h.pl www.js
 javascript.h: www.js js2h.pl js2h.pl.in
 	./js2h.pl $< > $@
 
-www_int.o: javascript.h
+get_html_form.cc: javascript.h
 
 CLEANFILES = *~ javascript.h
