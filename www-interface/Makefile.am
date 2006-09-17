@@ -27,6 +27,8 @@ endif
 
 dap_www_int_SOURCES =  www_int.cc $(WWW_SOURCES)
 
+BUILT_SOURCES = javascript.h
+
 WWW_SOURCES = WWWArray.cc WWWFloat64.cc WWWInt32.cc WWWSequence.cc	 \
 	WWWUInt16.cc WWWByte.cc WWWGrid.cc WWWStr.cc WWWUInt32.cc	 \
 	WWWFloat32.cc WWWInt16.cc WWWOutput.cc WWWStructure.cc WWWUrl.cc \
@@ -45,6 +47,6 @@ EXTRA_DIST = js2h.pl www.js
 javascript.h: www.js js2h.pl js2h.pl.in
 	./js2h.pl $< > $@
 
-get_html_form.cc: javascript.h
+#get_html_form.cc: javascript.h
 
 CLEANFILES = *~ javascript.h
