@@ -1,3 +1,71 @@
+2006-09-16  Patrick West <pwest@ucar.edu>
+
+	javascript.h needs to be built before get_html_form.cc is built.
+	Using BUILT_SOURCES to have javascript.h built first.
+
+	M    www-interface/Makefile.am
+
+2006-09-16  Patrick West <pwest@ucar.edu>
+
+	Forcing javascript.h to be built by putting in a dependency in
+	Makefile.am for get_html_form.cc for javascript.h.
+
+	M    www-interface/Makefile.am
+
+2006-09-15  James Gallagher <jgallagher@opendap.org>
+
+	Minor fixes to Makefile.am in asciival and www-interface to get
+	distcheck to build.
+
+2006-09-15  Patrick West <pwest@ucar.edu>
+
+	Removed version information from building of the modules
+	www_module, ascii_module and usage_module
+
+	M    www-interface/Makefile.am
+	M    asciival/Makefile.am
+	M    Makefile.am
+
+2006-09-15  James Gallagher <jgallagher@opendap.org>
+
+	Removed the www-interface/ and asciival/ChangeLog files.
+	Updated the README, et c., files for version 3.7.0
+
+2006-09-15  James Gallagher <jgallagher@opendap.org>
+
+	Fixed an error in data.1.exp
+	Removed the option n test since that option has been removed.
+
+2006-09-15  James Gallagher <jgallagher@opendap.org>
+
+	Added get_ascii.o to the set of objects linked to the tests.
+
+	M    unit-tests/Makefile.am
+
+2006-09-15  Patrick West <pwest@ucar.edu>
+
+	The functions add-var on a dds for base type makes a copy of the
+	passed base type, so needed to delete the temporary base types
+	created by calling the basetype_to_(ascii|www|)type. Any other
+	time we call the basetype_to_(ascii|www)type functions cleaned up
+	any temporary base types created and not stored.
+
+	M    www-interface/WWWStructure.cc
+	M    www-interface/get_html_form.cc
+	M    www-interface/WWWSequence.cc
+	M    www-interface/WWWArray.cc
+	M    asciival/BESAsciiTransmit.cc
+	M    asciival/AsciiStructure.cc
+	M    asciival/AsciiGrid.cc
+	M    asciival/AsciiSequence.cc
+	M    asciival/AsciiArray.cc
+	M    asciival/get_ascii.cc
+
+2006-09-15  James Gallagher <jgallagher@opendap.org>
+
+	AsciiSequence: Removed failed attempt at reading values into the
+	local Sequence. The code has to be part of libdap.
+
 2006-09-15  James Gallagher <jgallagher@opendap.org>
 
 	Fixed an error in data.1.exp

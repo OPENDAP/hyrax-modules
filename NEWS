@@ -1,4 +1,9 @@
 
+Version 3.7.1
+
+We (I) hosed the source distribution; the www interface would not build the
+javascript.h file. Patrick and Nathan fixed this.
+
 Version 3.7.0
 
 This version includes a number of improvements/features/fixes needed for
