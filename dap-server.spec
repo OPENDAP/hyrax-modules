@@ -32,15 +32,21 @@ documentation directory with -sample appended. If you want a package that
 is usable without manual configuration, install %{name}-cgi.
 
 %package cgi
-Summary:        A CGI interface for the DAP server
+Summary:        A preconfigured CGI interface for the OPeNDAP server
 Requires:       %{name} = %{version}-%{release}
-# I removed this because dap-server-cgi mightbe used with other handlers
-# (e.g., jgofs) and not these. jhrg 3/9/06
-# Requires:       freeform_handler netcdf_handler hdf_handler
+Requires:       freeform_handler netcdf_handler hdf4_handler
 Group:          System Environment/Daemons
 
 %description cgi
-A CGI interface for the DAP server that works without manual configuration.
+A CGI interface for the OPeNDAP server that works without manual 
+configuration. The web server is setup such that the CGI directory is
+at %{dap_cgidir}. 
+
+The default configuration allows for the use of the following handlers:
+freeform, netcdf and hdf4.
+
+The dataset directory is to be set in dap-server.rc, it defaults to the 
+web server DocumentRoot.
 
 %prep 
 %setup -q
@@ -53,13 +59,16 @@ make %{?_smp_mflags}
 cp opendap_apache.conf opendap_apache.conf-sample
 cp dap-server.rc dap-server.rc-sample
 cp nph-dods nph-dods-sample
+# adjust jgofs paths
+sed -i -e 's:^\$ENV{"JGOFS_METHOD"} = "`pwd`";:\$ENV{"JGOFS_METHOD"} = "%{_bindir}";:' nph-dods
+sed -i -e 's:^\$ENV{"JGOFS_OBJECT"} = "`pwd`";:\$ENV{"JGOFS_OBJEXT"} = "%{dap_cgidir}";:' nph-dods
 
 # /usr/tmp isn't a safe place, substitute to a dir in 
 # /var/cache
 sed -e 's:cache_dir /usr/tmp:cache_dir %{dap_cachedir}:' \
    dap-server.rc-sample > dap-server.rc
 
-# cgi-bin dir for the dap-server is in %{ dap_cgidir}, substitute that in
+# cgi-bin dir for the dap-server is in %%{dap_cgidir}, substitute that in
 # opendap_apache.conf
 sed -e 's:<<prefix>>/share/dap-server-cgi:%{dap_cgidir}:' \
     opendap_apache.conf-sample > opendap_apache.conf
@@ -95,6 +104,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Sep 20 2006 Patrice Dumas <dumas@centre-cired.fr> 3.7.1-1
+- update to 3.7.1
+
 * Fri Mar  3 2006 Patrice Dumas <dumas@centre-cired.fr> 3.6.0-1
 - new release
 

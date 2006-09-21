@@ -62,6 +62,6 @@ handler .*\.(pvu)(.Z|.gz)?$ @prefix@/bin/dap_dsp_handler
 # For JGOFS datasets, match either the dataset name or the absence of an
 # extension. The later case is sort of risky, but if you have lots of JGOFS
 # datasets might be appealing.
-handler .*/test$ @prefix@/bin/jg_handler
-# handler .*/[^/]+$ @prefix@/bin/jg_handler
+handler .*/test$ @prefix@/bin/dap_jg_handler
+# handler .*/[^/]+$ @prefix@/bin/dap_jg_handler
 
