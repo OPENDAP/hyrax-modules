@@ -35,23 +35,26 @@ dist_modules_DATA = DODS_Dispatch.pm DODS_Cache.pm dods_logging.pm \
        FilterDirHTML.pm read_config.pm
 
 cgidir = $(dap_cgidir)
+cgiconfdir = $(dap_cgiconfdir)
 
 nodist_cgi_SCRIPTS = nph-dods
 
-nodist_cgi_DATA = dap-server.rc
+nodist_cgiconf_DATA = dap-server.rc
 
-# don't need to add nph-dods.in or dap-server.rc.in here because they are
-# listed in the configure.ac file; automake figures they should be
-# distributed.
 EXTRA_DIST = EXAMPLE_OPENDAP_STATISTICS COPYING COPYRIGHT_URI \
-  nph-dods.in dap-server.spec opendap_apache.conf
+  nph-dods.in dap-server.rc.in dap-server.spec opendap_apache.conf
 
-stamp-nph-dods: nph-dods.in configure
-	sed -e "s%[@]PERL[@]%${PERL}%" \
-		-e "s%[@]prefix[@]%${prefix}%" \
-		-e "s%[@]PACKAGE_VERSION[@]%${PACKAGE_VERSION}%" $< > nph-dods
+nph-dods: nph-dods.in config.status
+	sed -e 's%[@]PERL[@]%${PERL}%' \
+		-e 's%[@]bindir[@]%${bindir}%' \
+		-e 's%[@]dap_modulesdir[@]%${dap_modulesdir}%' \
+		-e 's%[@]PACKAGE_VERSION[@]%${PACKAGE_VERSION}%' \
+		-e 's%[@]dap_cgiconfdir[@]%${dap_cgiconfdir}%' $(srcdir)/nph-dods.in > nph-dods
 	chmod +x nph-dods
-	touch stamp-nph-dods
+
+dap-server.rc: dap-server.rc.in config.status
+	sed -e 's%[@]CURL[@]%${CURL}%' \
+		-e 's%[@]bindir[@]%${bindir}%' $(srcdir)/dap-server.rc.in > dap-server.rc
 
 DISTCLEANFILES = nph-dods dap-server.rc stamp-nph-dods
 

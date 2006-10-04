@@ -76,6 +76,19 @@ AC_ARG_WITH([cgidir],
 
 AC_SUBST([dap_cgidir])
 
+AC_ARG_WITH([cgiconfdir],
+   [AS_HELP_STRING([--with-cgiconfdir],[CGI config dir (default ${dap_cgidir})])],
+   [
+        dap_cgiconfdir="$withval"
+   ],
+   [
+        dap_cgiconfdir=${dap_cgidir}
+   ]
+)
+
+AC_SUBST([dap_cgiconfdir])
+
+
 # Checks for library functions.
 AC_CHECK_FUNCS([putenv strtol])
 
@@ -141,13 +154,12 @@ AH_BOTTOM([/* Shorthand for gcc's unused attribute feature */
 
 #endif /* _config_h */])
 
-AC_CONFIG_FILES([dap-server.rc
+AC_CONFIG_FILES([
 		 Makefile
                  asciival/Makefile
 		 asciival/unit-tests/Makefile
                  www-interface/Makefile])
                  
-AC_CONFIG_FILES([nph-dods], [chmod +x nph-dods; touch stamp-nph-dods])
 AC_CONFIG_FILES([www-interface/js2h.pl], [chmod +x www-interface/js2h.pl])
 
 AC_OUTPUT
