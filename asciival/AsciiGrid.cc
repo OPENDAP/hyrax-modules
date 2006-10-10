@@ -46,7 +46,7 @@ using namespace std;
 
 #include "AsciiGrid.h"
 #include "AsciiArray.h"
-#include "name_map.h"
+//#include "name_map.h"
 #include "debug.h"
 #include "get_ascii.h"
 
@@ -165,7 +165,8 @@ AsciiGrid::print_grid(FILE *os, bool print_name)
 	// name of the corresponding map vector and the *value* of this
 	// index. Note that the successive elements of state give the indeces
 	// of each of the N-1 dimensions for the current row.
-	string n = names->lookup( ao_grid_array->get_full_name(), translate ) ;
+        string n = ao_grid_array->get_full_name() ;
+
 	fprintf( os, "%s", n.c_str() ) ;
 
 	vector<int>::iterator state_iter = state.begin();

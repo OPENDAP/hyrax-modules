@@ -37,7 +37,7 @@ ASCII_SOURCES = AsciiArray.cc AsciiInt16.cc AsciiStructure.cc		   \
 		AsciiUrl.h AsciiFloat32.h AsciiSequence.h AsciiFloat64.h   \
 		AsciiStr.h AsciiGrid.h AsciiStructure.h AsciiInt16.h	   \
 		AsciiUInt16.h AsciiOutputFactory.cc AsciiOutputFactory.h   \
-		get_ascii.cc get_ascii.h name_map.cc name_map.h
+		get_ascii.cc get_ascii.h
 
 BES_SOURCES = BESAsciiModule.cc BESAsciiResponseHandler.cc		     \
 	      BESAsciiTransmit.cc BESAsciiModule.h BESAsciiResponseHandler.h \

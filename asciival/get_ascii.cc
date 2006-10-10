@@ -37,7 +37,7 @@ using std::endl ;
 
 #include "get_ascii.h"
 #include "AsciiOutput.h"
-#include "name_map.h"
+//#include "name_map.h"
 
 #include "AsciiByte.h"
 #include "AsciiInt16.h"
@@ -54,11 +54,6 @@ using std::endl ;
 #include "AsciiGrid.h"
 
 namespace dap_asciival {
-        
-// These are likely relics from olders versions of dap_asciival. See ticket
-// 515 about their removal.
-name_map *names = 0;
-bool translate = false;
 
 /** Using the AsciiOutput::print_ascii(), write the data values to an 
     output file/stream as ASCII.
@@ -70,10 +65,6 @@ bool translate = false;
 void
 get_data_values_as_ascii(DataDDS *dds, FILE *dest)
 {
-    //cerr << "create name_map" << endl ;
-    names = new name_map();
-    //cerr << "done create name_map" << endl ;
-    
     //cerr << "dataset name = " << dds->get_dataset_name() << endl ;
     fprintf(dest, "Dataset: %s\n", dds->get_dataset_name().c_str());
 
@@ -84,8 +75,6 @@ get_data_values_as_ascii(DataDDS *dds, FILE *dest)
         dynamic_cast<AsciiOutput &>(**i++).print_ascii(dest);
         fprintf(dest, "\n");
     }
-    
-    delete names;
 }
 
 DataDDS *

@@ -34,7 +34,7 @@
 
 #include "AsciiOutput.h"
 #include "AsciiOutputFactory.h"
-#include "name_map.h"
+//#include "name_map.h"
 
 // These globals are defined in ascii_val.cc and are needed by the Ascii*
 // classes. This code has to be linked with those so that the Ascii*

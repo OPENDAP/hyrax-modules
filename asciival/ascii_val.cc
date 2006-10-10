@@ -97,9 +97,6 @@ usage()
     cerr << "Usage: \n"
 	 << " [mnhwvruVt] -- [<url> | <file> ]\n" 
 	 << "       m: Output a MIME header.\n" 
-#if 0
-	 << "       n: Turn on name canonicalization.\n"
-#endif
 	 << "       f <handler pathname>: Use a local handler instead of reading from a URL\n"
 	 << "          This assumes a local file, not a url.\n"
 	 << "       w: Verbose (wordy) output.\n"
@@ -214,9 +211,6 @@ main(int argc, char * argv[])
     GetOpt getopt (argc, argv, "nf:mv:r:u:e:wVh?");
     int option_char;
     bool verbose = false;
-#if 0
-    bool translate = false;
-#endif
     bool handler = false;
     bool mime_header = false;
     bool version = false;
@@ -239,9 +233,6 @@ main(int argc, char * argv[])
 
     while ((option_char = getopt()) != EOF)
 	switch (option_char) {
-#if 0
-	  case 'n': translate = true; break;
-#endif
 	  case 'f': handler = true; handler_name = getopt.optarg; break;
 	  case 'm': mime_header = true; break;
 	  case 'w': verbose = true; break;
@@ -255,8 +246,9 @@ main(int argc, char * argv[])
 	  default:
 	    usage(); exit(1); break;
 	}
-
+#if 0
     AsciiOutputFactory *aof;
+#endif
     try {
 	// After processing options, test for errors. There must be a single
 	// argument in addition to any given with the options. This will be
@@ -286,9 +278,10 @@ main(int argc, char * argv[])
 	    url = url.substr(0, url.find('?'));
 	}
 
-	aof = new AsciiOutputFactory;
+	AsciiOutputFactory aof;
+
         // The version should be read from the handler! jhrg 10/18/05
-	DataDDS dds(aof, "Ascii Data", "DAP2/3.5");
+	DataDDS dds(&aof, "Ascii Data", "DAP2/3.5");
 
 	if (handler) {
 	    if (verbose)
@@ -308,10 +301,16 @@ main(int argc, char * argv[])
 
         if (mime_header)
 	    set_mime_text(stdout, dods_data);
-
-        get_data_values_as_ascii(&dds, stdout);
+#if 0            
+        // use this test the ascii/basetype translation code. must switch from
+        // an AsciiOutputFactory above to a BaseTypeFactory. doesn't work.
+        // See ticket #597. jhrg 10/10/06
+        DataDDS *adds = datadds_to_ascii_datadds( &dds ) ;
         
-	delete aof; aof = 0;
+        get_data_values_as_ascii( adds, stdout );
+        fflush( stdout );
+#endif
+        get_data_values_as_ascii(&dds, stdout);
     }
     catch (Error &e) {
 	DBG(cerr << "Caught an Error object." << endl);

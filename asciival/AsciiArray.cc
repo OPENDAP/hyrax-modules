@@ -53,7 +53,7 @@ using namespace std;
 
 #include "AsciiArray.h"
 #include "util.h"
-#include "name_map.h"
+//#include "name_map.h"
 #include "get_ascii.h"
 
 using namespace dap_asciival;
@@ -120,8 +120,7 @@ AsciiArray::print_vector(FILE *os, bool print_name)
     }
 
     if (print_name)
-	fprintf(os, "%s, ",
-                names->lookup(dynamic_cast<AsciiOutput*>(this)->get_full_name(), translate).c_str());
+        fprintf( os, "%s, ", dynamic_cast<AsciiOutput*>(this)->get_full_name().c_str() );
 
     // only one dimension
     int end = bt->dimension_size(bt->dim_begin(), true) - 1;
@@ -295,8 +294,8 @@ AsciiArray::print_array(FILE *os, bool /*print_name*/)
     int index = 0;
     do {
 	// Print indices for all dimensions except the last one.
-	fprintf(os, "%s",
-                names->lookup(dynamic_cast<AsciiOutput*>(this)->get_full_name(), translate).c_str());
+        fprintf( os, "%s", dynamic_cast<AsciiOutput*>(this)->get_full_name().c_str() );
+
 	for (int i = 0; i < dims - 1; ++i) {
 	    fprintf(os, "[%d]", state[i]);
 	}
@@ -335,8 +334,8 @@ AsciiArray::print_complex_array(FILE *os, bool /*print_name*/)
     bool more_indices;
     do {
 	// Print indices for all dimensions except the last one.
-	fprintf(os, "%s", 
-                names->lookup(dynamic_cast<AsciiOutput*>(this)->get_full_name(), translate).c_str());
+        fprintf( os, "%s", dynamic_cast<AsciiOutput*>(this)->get_full_name().c_str() );
+
 	for (int i = 0; i < dims; ++i) {
 	    fprintf(os, "[%d]", state[i]);
 	}

@@ -41,7 +41,7 @@
 #include "InternalErr.h"
 #include "AsciiSequence.h"
 #include "AsciiStructure.h"
-#include "name_map.h"
+//#include "name_map.h"
 #include "get_ascii.h"
 #include "debug.h"
 
@@ -169,8 +169,7 @@ AsciiSequence::print_header(FILE *os)
     Vars_iter p = var_begin();
     while (p != var_end()) {
 	if ((*p)->is_simple_type())
-	    fprintf(os, "%s",
-                names->lookup(dynamic_cast<AsciiOutput*>((*p))->get_full_name(), translate).c_str());
+            fprintf( os, "%s", dynamic_cast<AsciiOutput*>(*p)->get_full_name().c_str() ) ;
 	else if ((*p)->type() == dods_sequence_c)
 	    dynamic_cast<AsciiSequence *>((*p))->print_header(os);
 	else if ((*p)->type() == dods_structure_c)

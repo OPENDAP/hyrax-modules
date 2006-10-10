@@ -42,7 +42,7 @@
 #include "debug.h"
 
 #include "AsciiOutput.h"
-#include "name_map.h"
+//#include "name_map.h"
 #include "get_ascii.h"
 
 using namespace dap_asciival;
@@ -78,7 +78,7 @@ AsciiOutput::print_ascii(FILE *os, bool print_name) throw(InternalErr)
 		  "An instance of AsciiOutput failed to cast to BaseType.");
 
     if (print_name)
-        fprintf(os, "%s, ", names->lookup(get_full_name(), translate).c_str());
+        fprintf( os, "%s, ", get_full_name().c_str() ) ;
 
     BTptr->print_val(os, "", false);
 }

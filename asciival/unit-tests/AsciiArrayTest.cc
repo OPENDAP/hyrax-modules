@@ -31,7 +31,7 @@
 
 #include "DDS.h"
 
-#include "name_map.h"
+//#include "name_map.h"
 #include "AsciiArray.h"
 #include "AsciiOutputFactory.h"
 
