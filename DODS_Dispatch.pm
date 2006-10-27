@@ -963,8 +963,8 @@ sub command {
         $filtered_dir_html->initialize( $server_url, $url, dataset_regexes( "./dap-server.rc", @$excludes ) );
 
         # Print HTTP response headers. 06/25/04 jhrg
-        print( STDOUT "HTTP/1.1 200 OK\n" );
-        print( STDOUT "Content-Type: text/html\n\n" );
+        print( STDOUT "HTTP/1.1 200 OK\r\n" );
+        print( STDOUT "Content-Type: text/html\r\n\r\n" );
 
         $filtered_dir_html->parse($directory_html);
         $filtered_dir_html->eof;
@@ -1076,11 +1076,11 @@ sub send_dods_version {
     # substitution does... jhrg 7/22/05
     my $version      = $self->caller_revision();
 
-    print "HTTP/1.0 200 OK\n";
-    print "XDODS-Server: opendap/$self->caller_revision()\n";
-    print "Content-Type: text/plain\n\n";
+    print "HTTP/1.0 200 OK\r\n";
+    print "XDODS-Server: opendap/$self->{caller_revision}\r\n";
+    print "Content-Type: text/plain\r\n\r\n";
 
-    print "OPeNDAP server core software: $version\n";
+    print "OPeNDAP server core software ** : $version\n";
 }
 
 # Send the DODS stats information. Only call this if is_stat_on() is true.
@@ -1091,9 +1091,9 @@ sub send_dods_stats {
 
     print DBG_LOG "In send_dods_stats\n" if $debug > 0;
     if ( $self->server_name() =~ m@($machine_names)@ ) {
-        print "HTTP/1.0 200 OK\n";
-        print "XDODS-Server: opendap/$self->caller_revision()\n";
-        print "Content-Type: text/plain\n\n";
+        print "HTTP/1.0 200 OK\r\n";
+        print "XDODS-Server: opendap/$self->{caller_revision}\r\n";
+        print "Content-Type: text/plain\r\n\r\n";
 
         print "Server: ", $self->server_name(), " (version: $version)\n";
         print DBG_LOG "Access log: ", $self->access_log(), "\n" if $debug > 0;
@@ -1118,13 +1118,13 @@ sub print_error_message {
 
     # Note that 400 is the error code for `Bad Request'.
 
-    print "HTTP/1.0 400 DODS server error.\n";
-    print "XDODS-Server: DAP2/$self->{caller_revision}\n";
+    print "HTTP/1.0 400 DODS server error.\r\n";
+    print "XDODS-Server: DAP2/$self->{caller_revision}\r\n";
     my $time = gmtime;
-    print "Date: $time GMT\n";
-    print "Last-Modified: $time GMT\n";
-    print "Content-type: text/html\n";
-    print "Cache-Control: no-cache\n\n";
+    print "Date: $time GMT\r\n";
+    print "Last-Modified: $time GMT\r\n";
+    print "Content-type: text/html\r\n";
+    print "Cache-Control: no-cache\r\n\r\n";
     print "\n";
     print "<h3>DODS Server or URL Error</h3>\n";
 
@@ -1166,14 +1166,14 @@ sub print_dods_error {
 
     print DBG_LOG "Whole message: $whole_msg\n";
 
-    print "HTTP/1.0 200 OK\n";
-    print "XDODS-Server: DAP2/$self->{caller_revision}\n";
+    print "HTTP/1.0 200 OK\r\n";
+    print "XDODS-Server: DAP2/$self->{caller_revision}\r\n";
     my $time = gmtime;
-    print "Date: $time GMT\n";
-    print "Last-Modified: $time GMT\n";
-    print "Content-type: text/plain\n";
-    print "Content-Description: dods_error\n";
-    print "Cache-Control: no-cache\n\n";
+    print "Date: $time GMT\r\n";
+    print "Last-Modified: $time GMT\r\n";
+    print "Content-type: text/plain\r\n";
+    print "Content-Description: dods_error\r\n";
+    print "Cache-Control: no-cache\r\n\r\n";
 
     print "Error {\n";
     print "    code = 1001;\n";
@@ -1190,10 +1190,10 @@ sub print_dods_error {
 sub print_help_message {
     my $self = shift;
 
-    print "HTTP/1.0 200 OK\n";
-    print "XDODS-Server: DAP2/$self->{caller_revision}\n";
-    print "Content-Type: text/html\n";
-    print "\n";
+    print "HTTP/1.0 200 OK\r\n";
+    print "XDODS-Server: DAP2/$self->{caller_revision}\r\n";
+    print "Content-Type: text/html\r\n";
+    print "\r\n";
 
     print "<h3>DODS Server Help</h3>\n";
 
