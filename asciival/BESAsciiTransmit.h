@@ -35,16 +35,16 @@
 
 #include "BESDataHandlerInterface.h"
 
-class DODSResponseObject ;
+class BESResponseObject ;
 
 #define ASCII_TRANSMITTER "ascii"
 
 class BESAsciiTransmit
 {
 public:
-    static void		send_basic_ascii( DODSResponseObject *obj,
+    static void		send_basic_ascii( BESResponseObject *obj,
     				          BESDataHandlerInterface &dhi ) ;
-    static void		send_http_ascii( DODSResponseObject *obj,
+    static void		send_http_ascii( BESResponseObject *obj,
     				         BESDataHandlerInterface &dhi ) ;
 } ;
 

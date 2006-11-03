@@ -36,6 +36,8 @@
 #include "BESDataNames.h"
 #include "BESUsageNames.h"
 #include "BESUsage.h"
+#include "BESDASResponse.h"
+#include "BESDDSResponse.h"
 #include "BESUsageTransmit.h"
 
 BESUsageResponseHandler::BESUsageResponseHandler( string name )
@@ -76,14 +78,16 @@ BESUsageResponseHandler::execute( BESDataHandlerInterface &dhi )
     // NOTE: It is the responsbility of the specific request handler to set
     // the BaseTypeFactory. It is set to NULL here
     DDS *dds = new DDS( NULL, "virtual" ) ;
-    _response = dds ;
+    BESDDSResponse *bdds = new BESDDSResponse( dds ) ;
+    _response = bdds ;
     _response_name = DDS_RESPONSE ;
     dhi.action = DDS_RESPONSE ;
     BESRequestHandlerList::TheList()->execute_each( dhi ) ;
 
     // Fill the DAS
     DAS *das = new DAS ;
-    _response = das ;
+    BESDASResponse *bdas = new BESDASResponse( das ) ;
+    _response = bdas ;
     _response_name = DAS_RESPONSE ;
     dhi.action = DAS_RESPONSE ;
     BESRequestHandlerList::TheList()->execute_each( dhi ) ;

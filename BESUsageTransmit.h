@@ -35,16 +35,16 @@
 
 #include "BESDataHandlerInterface.h"
 
-class DODSResponseObject ;
+class BESResponseObject ;
 
 #define Usage_TRANSMITTER "Usage"
 
 class BESUsageTransmit
 {
 public:
-    static void		send_basic_usage( DODSResponseObject *obj,
+    static void		send_basic_usage( BESResponseObject *obj,
     				          BESDataHandlerInterface &dhi ) ;
-    static void		send_http_usage( DODSResponseObject *obj,
+    static void		send_http_usage( BESResponseObject *obj,
     				         BESDataHandlerInterface &dhi ) ;
 } ;
 

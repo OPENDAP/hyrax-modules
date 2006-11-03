@@ -37,7 +37,7 @@
 #include "BESContainer.h"
 #include "BESDataNames.h"
 #include "cgi_util.h"
-#include "DataDDS.h"
+#include "BESDataDDSResponse.h"
 #include "BaseType.h"
 #include "Sequence.h"
 #include "ConstraintEvaluator.h"
@@ -50,17 +50,19 @@
 using namespace dap_asciival;
 
 void
-BESAsciiTransmit::send_basic_ascii( DODSResponseObject *obj,
+BESAsciiTransmit::send_basic_ascii( BESResponseObject *obj,
                                     BESDataHandlerInterface &dhi )
 {
-    DataDDS *dds = dynamic_cast<DataDDS *>(obj) ;
+    BESDataDDSResponse *bdds = dynamic_cast<BESDataDDSResponse *>(obj) ;
+    DataDDS *dds = bdds->get_dds() ;
+    ConstraintEvaluator &ce = bdds->get_ce() ;
 
     dhi.first_container() ;
 
-    string ce = dhi.data[POST_CONSTRAINT] ;
+    string constraint = dhi.data[POST_CONSTRAINT] ;
     try
     {
-	dhi.ce.parse_constraint( ce, *dds);
+	ce.parse_constraint( constraint, *dds);
     }
     catch( Error &e )
     {
@@ -83,12 +85,12 @@ BESAsciiTransmit::send_basic_ascii( DODSResponseObject *obj,
     try
     {
 	// Handle *functional* constraint expressions specially 
-	if( dhi.ce.functional_expression() )
+	if( ce.functional_expression() )
 	{
 	    // This returns a new BaseType, not a pointer to one in the DataDDS
 	    // So once the data has been read using this var create a new
 	    // DataDDS and add this new var to the it.
-	    BaseType *var = dhi.ce.eval_function( *dds, dataset_name ) ;
+	    BaseType *var = ce.eval_function( *dds, dataset_name ) ;
 	    if (!var)
 		throw Error(unknown_error, "Error calling the CE function.");
 
@@ -117,7 +119,7 @@ BESAsciiTransmit::send_basic_ascii( DODSResponseObject *obj,
 		{
 		    (*BESLog::TheLog()) << "reading some data" << endl;
                     if( (*i)->type() == dods_sequence_c ) {
-                        dynamic_cast<Sequence&>( **i ).transfer_data( dataset_name, dhi.ce, *dds );
+                        dynamic_cast<Sequence&>( **i ).transfer_data( dataset_name, ce, *dds );
                     }
                     else {
 		        (*i)->read( dataset_name ) ;
@@ -167,7 +169,7 @@ BESAsciiTransmit::send_basic_ascii( DODSResponseObject *obj,
 }
 
 void
-BESAsciiTransmit::send_http_ascii( DODSResponseObject *obj,
+BESAsciiTransmit::send_http_ascii( BESResponseObject *obj,
                                    BESDataHandlerInterface &dhi )
 {
     set_mime_text( stdout, dods_data ) ;

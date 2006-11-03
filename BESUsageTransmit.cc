@@ -47,7 +47,7 @@
 using namespace dap_usage;
 
 void
-BESUsageTransmit::send_basic_usage( DODSResponseObject *obj,
+BESUsageTransmit::send_basic_usage( BESResponseObject *obj,
                                     BESDataHandlerInterface &dhi )
 {
     BESUsage *usage = dynamic_cast<BESUsage *>(obj) ;
@@ -81,7 +81,7 @@ BESUsageTransmit::send_basic_usage( DODSResponseObject *obj,
 }
 
 void
-BESUsageTransmit::send_http_usage( DODSResponseObject *obj,
+BESUsageTransmit::send_http_usage( BESResponseObject *obj,
                                    BESDataHandlerInterface &dhi )
 {
     set_mime_text( stdout, unknown_type ) ;

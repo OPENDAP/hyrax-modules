@@ -49,7 +49,7 @@
 using namespace dap_html_form;
 
 void
-BESWWWTransmit::send_basic_form( DODSResponseObject *obj,
+BESWWWTransmit::send_basic_form( BESResponseObject *obj,
                                     BESDataHandlerInterface &dhi )
 {
     BESWWW *usage = dynamic_cast<BESWWW *>(obj) ;
@@ -88,7 +88,7 @@ BESWWWTransmit::send_basic_form( DODSResponseObject *obj,
 }
 
 void
-BESWWWTransmit::send_http_form( DODSResponseObject *obj,
+BESWWWTransmit::send_http_form( BESResponseObject *obj,
                                    BESDataHandlerInterface &dhi )
 {
     set_mime_text( stdout, unknown_type ) ;

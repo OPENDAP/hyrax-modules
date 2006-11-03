@@ -35,16 +35,16 @@
 
 #include "BESDataHandlerInterface.h"
 
-class DODSResponseObject ;
+class BESResponseObject ;
 
 #define WWW_TRANSMITTER "WWW"
 
 class BESWWWTransmit
 {
 public:
-    static void		send_basic_form( DODSResponseObject *obj,
+    static void		send_basic_form( BESResponseObject *obj,
     				         BESDataHandlerInterface &dhi ) ;
-    static void		send_http_form( DODSResponseObject *obj,
+    static void		send_http_form( BESResponseObject *obj,
     				        BESDataHandlerInterface &dhi ) ;
 } ;
 

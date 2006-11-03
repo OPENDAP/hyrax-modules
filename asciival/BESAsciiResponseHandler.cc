@@ -35,7 +35,7 @@
 #include "BESResponseNames.h"
 #include "BESDataNames.h"
 #include "BESAsciiNames.h"
-#include "DataDDS.h"
+#include "BESDataDDSResponse.h"
 #include "BESAsciiTransmit.h"
 
 BESAsciiResponseHandler::BESAsciiResponseHandler( string name )
@@ -72,13 +72,14 @@ BESAsciiResponseHandler::execute( BESDataHandlerInterface &dhi )
     // NOTE: It is the responsbility of the specific request handler to set
     // the BaseTypeFactory. It is set to NULL here
     DataDDS *dds = new DataDDS( NULL, "virtual" ) ;
-    _response = dds ;
+    BESDataDDSResponse *bdds = new BESDataDDSResponse( dds ) ;
+    _response = bdds ;
     _response_name = DATA_RESPONSE ;
     dhi.action = DATA_RESPONSE ;
     BESRequestHandlerList::TheList()->execute_each( dhi ) ;
 
     dhi.action = ASCII_RESPONSE ;
-    _response = dds ;
+    _response = bdds ;
 }
 
 /** @brief transmit the response object built by the execute command

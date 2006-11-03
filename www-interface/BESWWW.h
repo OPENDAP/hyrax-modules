@@ -33,7 +33,7 @@
 #ifndef I_BESWWW_h
 #define I_BESWWW_h 1
 
-#include "DODSResponseObject.h"
+#include "BESResponseObject.h"
 #include "DAS.h"
 #include "DDS.h"
 
@@ -44,11 +44,11 @@
  * and a DDS. An instances of BESWWW takes ownership of the das and dds
  * passed to it and deletes it in the destructor.
  *
- * @see DODSResponseObject
+ * @see BESResponseObject
  * @see DAS
  * @see DDS
  */
-class BESWWW : public DODSResponseObject
+class BESWWW : public BESResponseObject
 {
 private:
     DAS *			_das ;
