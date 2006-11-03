@@ -114,8 +114,8 @@ then
 	AM_CONDITIONAL([OPENDAPSERVER], [true])
 	BES_CPPFLAGS="`${BES_PATH}/bin/bes-config --cflags`"
 	AC_SUBST([BES_CPPFLAGS])
-	BES_LDFLAGS="`${BES_PATH}/bin/bes-config --libs`"
-	AC_SUBST([BES_LDFLAGS])
+	BES_LIBS="`${BES_PATH}/bin/bes-config --dap-libs`"
+	AC_SUBST([BES_LIBS])
 	BES_MODULE_DIR="`${BES_PATH}/bin/bes-config --modulesdir`"
 	AC_SUBST([BES_MODULE_DIR])
     else
