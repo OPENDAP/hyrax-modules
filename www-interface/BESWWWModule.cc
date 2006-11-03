@@ -87,6 +87,7 @@ BESWWWModule::terminate( const string &modname )
 	(*BESLog::TheLog()) << "Removing OPeNDAP modules" << endl;
 
     BESResponseHandlerList::TheList()->remove_handler( WWW_RESPONSE ) ;
+    BESCommand::del_command( WWW_RESPONSE ) ;
 }
 
 extern "C"
