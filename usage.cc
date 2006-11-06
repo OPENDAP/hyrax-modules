@@ -397,12 +397,12 @@ build_variable_summaries(DAS &das, DDS &dds)
 void
 html_header()
 {
-    fprintf( stdout, "HTTP/1.0 200 OK\n" ) ;
-    fprintf( stdout, "XDODS-Server: %s\n", PACKAGE_VERSION ) ;
-    fprintf( stdout, "XDAP-Version: %s\n", DAP_VERSION ) ;
-    fprintf( stdout, "Content-type: text/html\n" ) ;
-    fprintf( stdout, "Content-Description: dods_description\n" ) ;
-    fprintf( stdout, "\n" ) ;	// MIME header ends with a blank line
+    fprintf( stdout, "HTTP/1.0 200 OK\r\n" ) ;
+    fprintf( stdout, "XDODS-Server: %s\r\n", PACKAGE_VERSION ) ;
+    fprintf( stdout, "XDAP: %s\r\n", DAP_PROTOCOL_VERSION ) ;
+    fprintf( stdout, "Content-type: text/html\r\n" ) ;
+    fprintf( stdout, "Content-Description: dods_description\r\n" ) ;
+    fprintf( stdout, "\r\n" ) ;	// MIME header ends with a blank line
 }
 
 /** Build an HTML page that summarizes the information held int eh DDS/DAS.

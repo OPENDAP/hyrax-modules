@@ -524,12 +524,19 @@ sub new {
 
     $self->initialize();
 
+    $self->{dap_protocol} = "3.1";
+    
     return $self;
 }
 
 sub caller_revision {
     my $self = shift;
     return $self->{caller_revision};
+}
+
+sub dap_protocol {
+    my $self = shift;
+    return $self->{dap_protocol};
 }
 
 sub path_info {
@@ -1075,12 +1082,16 @@ sub send_dods_version {
     # For soe reason the function call doesn't work ina string but variable
     # substitution does... jhrg 7/22/05
     my $version      = $self->caller_revision();
-
+    my $protocol = $self->dap_protocol();
+    
     print "HTTP/1.0 200 OK\r\n";
     print "XDODS-Server: opendap/$self->{caller_revision}\r\n";
+    print "XOPeNDAP-Server: opendap/$self->{caller_revision}\r\n";
+    print "XDAP: $self->{dap_protocol}\r\n";
     print "Content-Type: text/plain\r\n\r\n";
 
-    print "OPeNDAP server core software ** : $version\n";
+    print "OPeNDAP server core software: $version\n";
+    print "DAP version: $protocol\n";
 }
 
 # Send the DODS stats information. Only call this if is_stat_on() is true.
@@ -1088,14 +1099,18 @@ sub send_dods_stats {
     my $self         = shift;
     my $machine_names = $self->machine_names();
     my $version      = $self->caller_revision(); # See above comment.
+    my $protocol = $self->dap_protocol();
 
     print DBG_LOG "In send_dods_stats\n" if $debug > 0;
     if ( $self->server_name() =~ m@($machine_names)@ ) {
         print "HTTP/1.0 200 OK\r\n";
         print "XDODS-Server: opendap/$self->{caller_revision}\r\n";
+        print "XOPeNDAP-Server: opendap/$self->{caller_revision}\r\n";
+        print "XDAP: $self->{dap_protocol}\r\n";
         print "Content-Type: text/plain\r\n\r\n";
 
         print "Server: ", $self->server_name(), " (version: $version)\n";
+        print "DAP version: $protocol\n";
         print DBG_LOG "Access log: ", $self->access_log(), "\n" if $debug > 0;
         &print_log_info( $self->access_log(), $self->error_log() );
     }
@@ -1120,6 +1135,9 @@ sub print_error_message {
 
     print "HTTP/1.0 400 DODS server error.\r\n";
     print "XDODS-Server: DAP2/$self->{caller_revision}\r\n";
+    print "XOPeNDAP-Server: opendap/$self->{caller_revision}\r\n";
+    print "XDAP: $self->{dap_protocol}\r\n";
+        
     my $time = gmtime;
     print "Date: $time GMT\r\n";
     print "Last-Modified: $time GMT\r\n";
@@ -1168,6 +1186,8 @@ sub print_dods_error {
 
     print "HTTP/1.0 200 OK\r\n";
     print "XDODS-Server: DAP2/$self->{caller_revision}\r\n";
+    print "XOPeNDAP-Server: opendap/$self->{caller_revision}\r\n";
+    print "XDAP: $self->{dap_protocol}\r\n";
     my $time = gmtime;
     print "Date: $time GMT\r\n";
     print "Last-Modified: $time GMT\r\n";
@@ -1192,6 +1212,8 @@ sub print_help_message {
 
     print "HTTP/1.0 200 OK\r\n";
     print "XDODS-Server: DAP2/$self->{caller_revision}\r\n";
+    print "XOPeNDAP-Server: opendap/$self->{caller_revision}\r\n";
+    print "XDAP: $self->{dap_protocol}\r\n";
     print "Content-Type: text/html\r\n";
     print "\r\n";
 

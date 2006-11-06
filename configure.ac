@@ -10,7 +10,9 @@ AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([nph-dods.in])
 AM_CONFIG_HEADER([config.h])
 
-AC_DEFINE([DAP_VERSION], ["2.0"], [What version of the data server is this?])
+# AC_DEFINE([DAP_VERSION], ["2.0"], [What version of the data server is this?])
+AC_DEFINE([DAP_PROTOCOL_VERSION], ["3.1"], [What DAP version is supported?])
+AC_SUBST([DAP_PROTOCOL_VERSION])
 
 dnl flags for the compilers and linkers - set these before locating the
 dnl actual tools since some of the AC_PROG macros set these `flag variables'
