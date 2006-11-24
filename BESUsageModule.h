@@ -41,6 +41,8 @@ public:
     virtual		    	~BESUsageModule() {}
     virtual void		initialize( const string &modname ) ;
     virtual void		terminate( const string &modname ) ;
+
+    virtual void		dump( ostream &strm ) const ;
 } ;
 
 #endif // A_BESUsageModule_H

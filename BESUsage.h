@@ -66,6 +66,26 @@ public:
 
     DAS *			get_das() { return _das ; }
     DDS *			get_dds() { return _dds ; }
+
+    /** @brief dumps information about this object
+     *
+     * Displays the pointer value of this instance along with the das object
+     * created
+     *
+     * @param strm C++ i/o stream to dump the information to
+     */
+    virtual void		BESUsage::dump( ostream &strm ) const
+				{
+				    strm << BESIndent::LMarg
+				         << "BESUsage::dump - ("
+					 << (void *)this << ")" << endl ;
+				    BESIndent::Indent() ;
+				    strm << BESIndent::LMarg
+					 << "das: " << (void *)_das << endl ;
+				    strm << BESIndent::LMarg
+					 << "dds: " << (void *)_dds << endl ;
+				    BESIndent::UnIndent() ;
+				}
 } ;
 
 #endif // I_BESUsage_h

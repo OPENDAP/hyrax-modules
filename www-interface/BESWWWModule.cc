@@ -90,6 +90,19 @@ BESWWWModule::terminate( const string &modname )
     BESCommand::del_command( WWW_RESPONSE ) ;
 }
 
+/** @brief dumps information about this object
+ *
+ * Displays the pointer value of this instance
+ *
+ * @param strm C++ i/o stream to dump the information to
+ */
+void
+BESWWWModule::dump( ostream &strm ) const
+{
+    strm << BESIndent::LMarg << "BESWWWModule::dump - ("
+			     << (void *)this << ")" << endl ;
+}
+
 extern "C"
 {
     BESAbstractModule *maker()

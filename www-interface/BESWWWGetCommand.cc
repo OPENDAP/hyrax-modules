@@ -128,15 +128,15 @@ BESWWWGetCommand::parse_request( BESTokenizer &tokenizer,
 	throw BESParserException( s, __FILE__, __LINE__ ) ;
     }
 
-    BESDefine::containers_iterator i = d->first_container() ;
-    BESDefine::containers_iterator ie = d->end_container() ;
+    BESDefine::containers_citer i = d->first_container() ;
+    BESDefine::containers_citer ie = d->end_container() ;
     while( i != ie )
     {
 	dhi.containers.push_back( *i ) ;
 	i++ ;
     }
-    dhi.data[AGG_CMD] = d->aggregation_command ;
-    dhi.data[AGG_HANDLER] = d->aggregation_handler ;
+    dhi.data[AGG_CMD] = d->get_agg_cmd() ;
+    dhi.data[AGG_HANDLER] = d->get_agg_handler() ;
     dhi.data[WWW_URL] = url ;
 
     return retResponse ;
