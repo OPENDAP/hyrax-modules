@@ -252,9 +252,14 @@ const string allowable = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01
 // This function adds some text to the variable name so that conflicts with
 // JavaScript's reserved words and other conflicts are avoided (or
 // minimized...) 7/13/2001 jhrg
+//
+// I've modified this so that it no longer include the PID. Not sure why that
+// was included... However, removing it will make using the HTML form in tests
+// easier. jhrg 11/28/06
 string
 name_for_js_code(const string &dods_name)
 {
+#if 0
     int pid = getpid();
 
     ostringstream oss;
@@ -264,6 +269,9 @@ name_for_js_code(const string &dods_name)
     oss << "org_dods_dcz" << pid 
         << esc2underscore(id2www(dods_name, allowable));// << ends;
     return oss.str();
+#else
+    return string("org_opendap_") + esc2underscore(id2www(dods_name, allowable));
+#endif
 }
 
 string
