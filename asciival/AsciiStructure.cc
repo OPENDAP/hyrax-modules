@@ -63,10 +63,14 @@ AsciiStructure::AsciiStructure( Structure *bt ) : AsciiOutput( bt )
     Vars_iter p = bt->var_begin();
     while( p != bt->var_end() )
     {
-	BaseType *new_bt = basetype_to_asciitype( *p ) ;
-	add_var( new_bt ) ;
-	// add_var makes a copy of the base type passed to it, so delete it here
-	delete new_bt ;
+	if( (*p)->send_p() )
+	{
+	    BaseType *new_bt = basetype_to_asciitype( *p ) ;
+	    add_var( new_bt ) ;
+	    // add_var makes a copy of the base type passed to it, so delete
+	    // it here
+	    delete new_bt ;
+	}
 	p++ ;
     }
     set_name( bt->name() ) ;

@@ -65,9 +65,12 @@ AsciiSequence::AsciiSequence( Sequence *bt ) : AsciiOutput( bt )
     Vars_iter p = bt->var_begin();
     while( p != bt->var_end() )
     {
-	BaseType *new_bt = basetype_to_asciitype( *p ) ;
-	add_var( new_bt ) ;
-	delete new_bt ;
+	if( (*p)->send_p() )
+	{
+	    BaseType *new_bt = basetype_to_asciitype( *p ) ;
+	    add_var( new_bt ) ;
+	    delete new_bt ;
+	}
 	p++ ;
     }
     set_name( bt->name() ) ;
