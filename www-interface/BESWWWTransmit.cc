@@ -40,6 +40,7 @@
 #include "cgi_util.h"
 #include "BESWWW.h"
 #include "Error.h"
+#include "util.h"
 #include "BESTransmitException.h"
 
 #include "BESLog.h"
@@ -75,9 +76,8 @@ BESWWWTransmit::send_basic_form( BESResponseObject *obj,
     }
     catch( Error &e )
     {
-	ErrorCode ec = e.get_error_code() ;
-	string em = e.get_error_message() ;
-	string err = "Failed to write html form: " + em ;
+	string err = "Failed to write html form: " + e.get_error_message() + "(" 
+        + long_to_string(e.get_error_code()) + ")";
 	throw BESTransmitException( err, __FILE__, __LINE__ ) ;
     }
     catch( ... )

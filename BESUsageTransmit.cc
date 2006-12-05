@@ -40,6 +40,7 @@
 #include "BESUsage.h"
 #include "usage.h"
 #include "Error.h"
+#include "util.h"
 #include "BESTransmitException.h"
 
 #include "BESLog.h"
@@ -47,36 +48,33 @@
 using namespace dap_usage;
 
 void
-BESUsageTransmit::send_basic_usage( BESResponseObject *obj,
-                                    BESDataHandlerInterface &dhi )
+ BESUsageTransmit::send_basic_usage(BESResponseObject * obj,
+                                    BESDataHandlerInterface & dhi)
 {
-    BESUsage *usage = dynamic_cast<BESUsage *>(obj) ;
-    DAS *das = usage->get_das() ;
-    DDS *dds = usage->get_dds() ;
+    BESUsage *usage = dynamic_cast < BESUsage * >(obj);
+    DAS *das = usage->get_das();
+    DDS *dds = usage->get_dds();
 
-    dhi.first_container() ;
+    dhi.first_container();
 
-    string dataset_name = dhi.container->access() ;
+    string dataset_name = dhi.container->access();
 
-    try
-    {
-	(*BESLog::TheLog()) << "writing usage/info" << endl;
-        
-	write_usage_response(stdout, *dds, *das, dataset_name, "", false);
+    try {
+        (*BESLog::TheLog()) << "writing usage/info" << endl;
 
-	(*BESLog::TheLog()) << "done transmitting usage/info" << endl;
+        write_usage_response(stdout, *dds, *das, dataset_name, "", false);
+
+        (*BESLog::TheLog()) << "done transmitting usage/info" << endl;
     }
-    catch( Error &e )
-    {
-	ErrorCode ec = e.get_error_code() ;
-	string em = e.get_error_message() ;
-	string err = "Failed to write usage: " + em ;
-	throw BESTransmitException( err, __FILE__, __LINE__ ) ;
+    catch(Error & e) {
+        string err =
+            "Failed to write usage: " + e.get_error_message() + "(" +
+            long_to_string(e.get_error_code()) + ")";
+        throw BESTransmitException(err, __FILE__, __LINE__);
     }
-    catch( ... )
-    {
-	string err = "Failed to write usage: Unknown exception caught" ;
-	throw BESTransmitException( err, __FILE__, __LINE__ ) ;
+    catch(...) {
+        string err = "Failed to write usage: Unknown exception caught";
+        throw BESTransmitException(err, __FILE__, __LINE__);
     }
 }
 
