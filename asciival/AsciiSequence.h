@@ -48,6 +48,7 @@ public:
     virtual BaseType *ptr_duplicate();
 
     virtual int length();
+    virtual int element_count(bool leaves = false);
                          
     virtual void print_ascii(FILE *os, bool print_name) throw(InternalErr);
     virtual void print_header(FILE *os);

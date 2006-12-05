@@ -22,7 +22,7 @@
 // Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // 
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
- 
+
 // (c) COPYRIGHT URI/MIT 1998,2000
 // Please read the full copyright statement in the file COPYRIGHT_URI.
 //
@@ -45,40 +45,42 @@
 //#include "name_map.h"
 #include "get_ascii.h"
 
+//#include "BESLog.h"
+
 using namespace dap_asciival;
 
-string
-AsciiOutput::get_full_name()
+string AsciiOutput::get_full_name()
 {
-    BaseType *this_btp = dynamic_cast<BaseType*>( this ) ;
-    BaseType *btp = _redirect ;
-    if( !_redirect )
-	btp = this_btp ;
+    BaseType *this_btp = dynamic_cast < BaseType * >(this);
+    BaseType *btp = _redirect;
+    if (!_redirect)
+        btp = this_btp;
     if (!btp)
-	throw InternalErr(__FILE__, __LINE__, 
-			  "Instance of AsciiOuput must also be a BaseType.");
+        throw InternalErr(__FILE__, __LINE__,
+                          "Instance of AsciiOuput must also be a BaseType.");
 
     BaseType *btp2 = this_btp->get_parent();
-    if( !btp2 )
-	return btp->name();	// Must be top-level node/variable.
-    else 
-	return dynamic_cast<AsciiOutput*>(btp2)->get_full_name() 
-	    + "." + btp->name();
+    if (!btp2)
+        return btp->name();     // Must be top-level node/variable.
+    else
+        return dynamic_cast < AsciiOutput * >(btp2)->get_full_name()
+            + "." + btp->name();
 }
 
-void 
-AsciiOutput::print_ascii(FILE *os, bool print_name) throw(InternalErr)
+void AsciiOutput::print_ascii(FILE * os,
+                              bool print_name) throw(InternalErr)
 {
-    BaseType *BTptr = _redirect ;
-    if( !_redirect )
-	BTptr = dynamic_cast<BaseType *>(this);
+    BaseType *BTptr = _redirect;
+    if (!_redirect) {
+        BTptr = dynamic_cast < BaseType * >(this);
+    }
 
     if (!BTptr)
-	throw InternalErr(__FILE__, __LINE__, 
-		  "An instance of AsciiOutput failed to cast to BaseType.");
+        throw InternalErr(__FILE__, __LINE__,
+                          "An instance of AsciiOutput failed to cast to BaseType.");
 
     if (print_name)
-        fprintf( os, "%s, ", get_full_name().c_str() ) ;
+        fprintf(os, "%s, ", get_full_name().c_str());
 
     BTptr->print_val(os, "", false);
 }
@@ -89,35 +91,32 @@ AsciiOutput::print_ascii(FILE *os, bool print_name) throw(InternalErr)
 // calling this method will increment state to 1, 0. For this example,
 // calling the method with state equal to 10, 20 will reset state to 0, 0 and
 // the return value will be false. 
-bool
-AsciiOutput::increment_state(vector<int> *state, const vector<int> &shape)
+bool AsciiOutput::increment_state(vector < int >*state,
+                                  const vector < int >&shape)
 {
 
     DBG(cerr << "Entering increment_state" << endl);
 
-    vector<int>::reverse_iterator state_riter;
-    vector<int>::const_reverse_iterator shape_riter;
+    vector < int >::reverse_iterator state_riter;
+    vector < int >::const_reverse_iterator shape_riter;
     for (state_riter = state->rbegin(), shape_riter = shape.rbegin();
-	 state_riter < state->rend(); state_riter++, shape_riter++) {
-	if (*state_riter == *shape_riter - 1) {
-	    *state_riter = 0;
-	}
-	else {
-	    *state_riter = *state_riter + 1;
+         state_riter < state->rend(); state_riter++, shape_riter++) {
+        if (*state_riter == *shape_riter - 1) {
+            *state_riter = 0;
+        } else {
+            *state_riter = *state_riter + 1;
 
-	    DBG(cerr << "Returning state:";
-		for_each(state->begin(), state->end(), print<int>);
-		cerr << endl);
+            DBG(cerr << "Returning state:";
+                for_each(state->begin(), state->end(), print < int >);
+                cerr << endl);
 
-	    return true;
-	}
+            return true;
+        }
     }
 
     DBG(cerr << "Returning state without change:";
-	for_each(state->begin(), state->end(), print<int>);
-	cerr << endl);
+        for_each(state->begin(), state->end(), print < int >);
+        cerr << endl);
 
     return false;
 }
-
-

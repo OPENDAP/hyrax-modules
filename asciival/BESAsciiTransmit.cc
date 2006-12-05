@@ -43,6 +43,7 @@
 #include "ConstraintEvaluator.h"
 #include "get_ascii.h"
 #include "Error.h"
+#include "util.h"
 #include "BESTransmitException.h"
 
 #include "BESLog.h"
@@ -66,9 +67,8 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject *obj,
     }
     catch( Error &e )
     {
-	ErrorCode ec = e.get_error_code() ;
-	string em = e.get_error_message() ;
-	string err = "Failed to parse the constraint expression: " + em ;
+	string err = "Failed to parse the constraint expression: " 
+        + e.get_error_message() + "(" + long_to_string(e.get_error_code()) + ")";
 	throw BESTransmitException( err, __FILE__, __LINE__ ) ;
     }
     catch( ... )
@@ -130,9 +130,8 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject *obj,
     }
     catch( Error &e )
     {
-	ErrorCode ec = e.get_error_code() ;
-	string em = e.get_error_message() ;
-	string err = "Failed to read data: " + em ;
+	string err = "Failed to read data: " + e.get_error_message() + "(" 
+        + long_to_string(e.get_error_code()) + ")";
 	throw BESTransmitException( err, __FILE__, __LINE__ ) ;
     }
     catch( ... )
@@ -149,6 +148,7 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject *obj,
 	DataDDS *ascii_dds = datadds_to_ascii_datadds( dds ) ;
 	(*BESLog::TheLog()) << "getting ascii values" << endl;
 	get_data_values_as_ascii( ascii_dds, stdout ) ;
+    (*BESLog::TheLog()) << "got the ascii values" << endl;    
 	fflush( stdout ) ;
 	delete ascii_dds ;
 
@@ -156,9 +156,8 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject *obj,
     }
     catch( Error &e )
     {
-	ErrorCode ec = e.get_error_code() ;
-	string em = e.get_error_message() ;
-	string err = "Failed to get values as ascii: " + em ;
+	string err = "Failed to get values as ascii: " + e.get_error_message() + "(" 
+        + long_to_string(e.get_error_code()) + ")";
 	throw BESTransmitException( err, __FILE__, __LINE__ ) ;
     }
     catch( ... )

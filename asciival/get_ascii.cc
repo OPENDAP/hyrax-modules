@@ -71,45 +71,44 @@ get_data_values_as_ascii(DataDDS *dds, FILE *dest)
     //cerr << "iterating through the thing" << endl ;
     DDS::Vars_iter i = dds->var_begin();
     while (i != dds->var_end()) {
-	//cerr << "getting " << (*i)->name() << " of type " << (*i)->type_name() << endl ;
+        //cerr << "getting " << (*i)->name() << " of type " << (*i)->type_name() << endl ;
         dynamic_cast<AsciiOutput &>(**i++).print_ascii(dest);
         fprintf(dest, "\n");
     }
 }
 
-DataDDS *
-datadds_to_ascii_datadds( DataDDS *dds )
+DataDDS *datadds_to_ascii_datadds(DataDDS * dds)
 {
     // Should the following use AsciiOutputFactory instead of the source DDS'
     // factory class? It doesn't matter for the following since the function
     // basetype_to_asciitype() doesn't use the factory. So long as no other
     // code uses the DDS' factory, this is fine. jhrg 9/5/06 
-    DataDDS *asciidds = new DataDDS( dds->get_factory(),
-    				     dds->get_dataset_name(),
-                                     dds->get_version(),
-				     dds->get_protocol() ) ;
+    DataDDS *asciidds = new DataDDS(dds->get_factory(),
+                                    dds->get_dataset_name(),
+                                    dds->get_version(),
+                                    dds->get_protocol());
 
     DDS::Vars_iter i = dds->var_begin();
-    while( i != dds->var_end() )
-    {
-	//cerr << "converting " << (*i)->name() << " of type " << (*i)->type_name() << endl ;
-	if( (*i)->send_p() )
-	{
-	    BaseType *abt = basetype_to_asciitype( *i ) ;
-	    asciidds->add_var( abt ) ;
-	    // add_var makes a copy of the base type passed to it, so delete
-	    // it here
-	    delete abt ;
-	}
-	i++ ;
+    while (i != dds->var_end()) {
+        //cerr << "converting " << (*i)->name() << " of type " << (*i)->type_name() << endl ;
+        // Remove the send_p test here and put it where the values are output
+        if ((*i)->send_p()) {
+            BaseType *abt = basetype_to_asciitype(*i);
+            asciidds->add_var(abt);
+            // add_var makes a copy of the base type passed to it, so delete
+            // it here
+            delete abt;
+        }
+        i++;
     }
-    
+
     // Calling tag_nested_sequences() makes it easier to figure out if a 
     // sequence has parent or child sequences or if it is a 'flat' sequence.
     asciidds->tag_nested_sequences();
-    
-    return asciidds ;
+
+    return asciidds;
 }
+
 
 BaseType *
 basetype_to_asciitype( BaseType *bt )
@@ -117,70 +116,46 @@ basetype_to_asciitype( BaseType *bt )
     switch( bt->type() )
     {
 	case dods_byte_c:
-	    {
 		return new AsciiByte( dynamic_cast<Byte *>(bt) ) ;
-	    }
-	    break ;
+
 	case dods_int16_c:
-	    {
 		return new AsciiInt16( dynamic_cast<Int16 *>(bt) ) ;
-	    }
-	    break ;
+
 	case dods_uint16_c:
-	    {
 		return new AsciiUInt16( dynamic_cast<UInt16 *>(bt) ) ;
-	    }
-	    break ;
+
 	case dods_int32_c:
-	    {
 		return new AsciiInt32( dynamic_cast<Int32 *>(bt) ) ;
-	    }
-	    break ;
+
 	case dods_uint32_c:
-	    {
 		return new AsciiUInt32( dynamic_cast<UInt32 *>(bt) ) ;
-	    }
-	    break ;
+
 	case dods_float32_c:
-	    {
 		return new AsciiFloat32( dynamic_cast<Float32 *>(bt) ) ;
-	    }
-	    break ;
+
 	case dods_float64_c:
-	    {
 		return new AsciiFloat64( dynamic_cast<Float64 *>(bt) ) ;
-	    }
-	    break ;
+
 	case dods_str_c:
-	    {
 		return new AsciiStr( dynamic_cast<Str *>(bt) ) ;
-	    }
-	    break ;
+
 	case dods_url_c:
-	    {
 		return new AsciiUrl( dynamic_cast<Url *>(bt) ) ;
-	    }
-	    break ;
+
 	case dods_array_c:
-	    {
 		return new AsciiArray( dynamic_cast<Array *>(bt) ) ;
-	    }
-	    break ;
+
 	case dods_structure_c:
-	    {
 		return new AsciiStructure( dynamic_cast<Structure *>(bt) ) ;
-	    }
-	    break ;
+
 	case dods_sequence_c:
-	    {
 		return new AsciiSequence( dynamic_cast<Sequence *>(bt) ) ;
-	    }
-	    break ;
+
 	case dods_grid_c:
-	    {
-		return new AsciiGrid( dynamic_cast<Grid *>(bt) ) ;
-	    }
-	    break ;
+	    return new AsciiGrid( dynamic_cast<Grid *>(bt) ) ;
+        
+    default:
+        throw InternalErr(__FILE__, __LINE__, "Unknown type");
     }
 }
 
