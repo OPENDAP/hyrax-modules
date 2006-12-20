@@ -22,7 +22,7 @@
 //
 // You can contact University Corporation for Atmospheric Research at
 // 3080 Center Green Drive, Boulder, CO 80301
- 
+
 // (c) COPYRIGHT University Corporation for Atmostpheric Research 2004-2005
 // Please read the full copyright statement in the file COPYRIGHT_UCAR.
 //
@@ -51,127 +51,117 @@
 using namespace dap_asciival;
 
 void
-BESAsciiTransmit::send_basic_ascii( BESResponseObject *obj,
-                                    BESDataHandlerInterface &dhi )
+ BESAsciiTransmit::send_basic_ascii(BESResponseObject * obj,
+                                    BESDataHandlerInterface & dhi)
 {
-    BESDataDDSResponse *bdds = dynamic_cast<BESDataDDSResponse *>(obj) ;
-    DataDDS *dds = bdds->get_dds() ;
-    ConstraintEvaluator &ce = bdds->get_ce() ;
+    BESDataDDSResponse *bdds = dynamic_cast < BESDataDDSResponse * >(obj);
+    DataDDS *dds = bdds->get_dds();
+    ConstraintEvaluator & ce = bdds->get_ce();
 
-    dhi.first_container() ;
+    dhi.first_container();
 
-    string constraint = dhi.data[POST_CONSTRAINT] ;
-    try
-    {
-	ce.parse_constraint( constraint, *dds);
+    string constraint = dhi.data[POST_CONSTRAINT];
+    try {
+        ce.parse_constraint(constraint, *dds);
     }
-    catch( Error &e )
-    {
-	string err = "Failed to parse the constraint expression: " 
-        + e.get_error_message() + "(" + long_to_string(e.get_error_code()) + ")";
-	throw BESTransmitException( err, __FILE__, __LINE__ ) ;
+    catch(Error & e) {
+        string err = "Failed to parse the constraint expression: "
+            + e.get_error_message() + "(" +
+            long_to_string(e.get_error_code()) + ")";
+        throw BESTransmitException(err, __FILE__, __LINE__);
     }
-    catch( ... )
-    {
-	string err = (string)"Failed to parse the constraint expression: "
-	             + "Unknown exception caught" ;
-	throw BESTransmitException( err, __FILE__, __LINE__ ) ;
+    catch(...) {
+        string err = (string) "Failed to parse the constraint expression: "
+            + "Unknown exception caught";
+        throw BESTransmitException(err, __FILE__, __LINE__);
     }
 
-    dds->tag_nested_sequences(); // Tag Sequences as Parent or Leaf node.
+    dds->tag_nested_sequences();        // Tag Sequences as Parent or Leaf node.
 
-    string dataset_name = dhi.container->access() ;
+    string dataset_name = dhi.container->access();
 
-    try
-    {
-	// Handle *functional* constraint expressions specially 
-	if( ce.functional_expression() )
-	{
-	    // This returns a new BaseType, not a pointer to one in the DataDDS
-	    // So once the data has been read using this var create a new
-	    // DataDDS and add this new var to the it.
-	    BaseType *var = ce.eval_function( *dds, dataset_name ) ;
-	    if (!var)
-		throw Error(unknown_error, "Error calling the CE function.");
+    try {
+        // Handle *functional* constraint expressions specially 
+        if (ce.functional_expression()) {
+            // This returns a new BaseType, not a pointer to one in the DataDDS
+            // So once the data has been read using this var create a new
+            // DataDDS and add this new var to the it.
+            BaseType *var = ce.eval_function(*dds, dataset_name);
+            if (!var)
+                throw Error(unknown_error,
+                            "Error calling the CE function.");
 
-	    var->read( dataset_name ) ;
+            var->read(dataset_name);
 
-	    // FIXME: Do I need to delete the other DataDDS? Do I need it
-	    // anymore. I've got what I need doing the eval_function call
-	    // and I'm going to create a new DataDDS with it. So I don't
-	    // think I need the old one.
-	    //
-	    // delete dds ;
-	    dds = new DataDDS( NULL, "virtual" ) ;
-	    dds->add_var( var ) ;
-	}
-	else
-	{
-	    // Iterate through the variables in the DataDDS and read in the data
-	    // if the variable has the send flag set. 
+            // FIXME: Do I need to delete the other DataDDS? Do I need it
+            // anymore. I've got what I need doing the eval_function call
+            // and I'm going to create a new DataDDS with it. So I don't
+            // think I need the old one.
+            //
+            // delete dds ;
+            dds = new DataDDS(NULL, "virtual");
+            dds->add_var(var);
+        } else {
+            // Iterate through the variables in the DataDDS and read in the data
+            // if the variable has the send flag set. 
             // Note the special case for Sequence. The transfer_data() method
             // uses the same logic as serialize() to read values but transfers
             // them to the d_values field instead of writing them to a XDR sink
             // pointer. jhrg 9/13/06
-	    for( DDS::Vars_iter i = dds->var_begin(); i != dds->var_end(); i++ )
-	    {
-		if( (*i)->send_p() )
-		{
-		    (*BESLog::TheLog()) << "reading some data" << endl;
-                    if( (*i)->type() == dods_sequence_c ) {
-                        dynamic_cast<Sequence&>( **i ).transfer_data( dataset_name, ce, *dds );
+            for (DDS::Vars_iter i = dds->var_begin(); i != dds->var_end();
+                 i++) {
+                if ((*i)->send_p()) {
+                    (*BESLog::TheLog()) << "reading some data" << endl;
+                    if ((*i)->type() == dods_sequence_c) {
+                        dynamic_cast <
+                            Sequence & >(**i).transfer_data(dataset_name,
+                                                            ce, *dds);
+                    } else {
+                        (*i)->read(dataset_name);
                     }
-                    else {
-		        (*i)->read( dataset_name ) ;
-                    }
-		}
-	    }
-	}
+                }
+            }
+        }
     }
-    catch( Error &e )
-    {
-	string err = "Failed to read data: " + e.get_error_message() + "(" 
-        + long_to_string(e.get_error_code()) + ")";
-	throw BESTransmitException( err, __FILE__, __LINE__ ) ;
+    catch(Error & e) {
+        string err = "Failed to read data: " + e.get_error_message() + "("
+            + long_to_string(e.get_error_code()) + ")";
+        throw BESTransmitException(err, __FILE__, __LINE__);
     }
-    catch( ... )
-    {
-	string err = "Failed to read data: Unknown exception caught" ;
-	throw BESTransmitException( err, __FILE__, __LINE__ ) ;
+    catch(...) {
+        string err = "Failed to read data: Unknown exception caught";
+        throw BESTransmitException(err, __FILE__, __LINE__);
     }
 
-    try
-    {
-	// Now that we have constrained the DataDDS and read in the data,
-	// send it as ascii
-	(*BESLog::TheLog()) << "converting to ascii datadds" << endl;
-	DataDDS *ascii_dds = datadds_to_ascii_datadds( dds ) ;
-	(*BESLog::TheLog()) << "getting ascii values" << endl;
-	get_data_values_as_ascii( ascii_dds, stdout ) ;
-    (*BESLog::TheLog()) << "got the ascii values" << endl;    
-	fflush( stdout ) ;
-	delete ascii_dds ;
+    try {
+        // Now that we have constrained the DataDDS and read in the data,
+        // send it as ascii
+        (*BESLog::TheLog()) << "converting to ascii datadds" << endl;
+        DataDDS *ascii_dds = datadds_to_ascii_datadds(dds);
+        (*BESLog::TheLog()) << "getting ascii values" << endl;
+        get_data_values_as_ascii(ascii_dds, stdout);
+        (*BESLog::TheLog()) << "got the ascii values" << endl;
+        fflush(stdout);
+        delete ascii_dds;
 
-	(*BESLog::TheLog()) << "done transmitting ascii" << endl;
+        (*BESLog::TheLog()) << "done transmitting ascii" << endl;
     }
-    catch( Error &e )
-    {
-	string err = "Failed to get values as ascii: " + e.get_error_message() + "(" 
-        + long_to_string(e.get_error_code()) + ")";
-	throw BESTransmitException( err, __FILE__, __LINE__ ) ;
+    catch(Error & e) {
+        string err =
+            "Failed to get values as ascii: " + e.get_error_message() +
+            "(" + long_to_string(e.get_error_code()) + ")";
+        throw BESTransmitException(err, __FILE__, __LINE__);
     }
-    catch( ... )
-    {
-	string err = "Failed to get values as ascii: Unknown exception caught" ;
-	throw BESTransmitException( err, __FILE__, __LINE__ ) ;
+    catch(...) {
+        string err =
+            "Failed to get values as ascii: Unknown exception caught";
+        throw BESTransmitException(err, __FILE__, __LINE__);
     }
 }
 
-void
-BESAsciiTransmit::send_http_ascii( BESResponseObject *obj,
-                                   BESDataHandlerInterface &dhi )
+void BESAsciiTransmit::send_http_ascii(BESResponseObject * obj,
+                                       BESDataHandlerInterface & dhi)
 {
-    set_mime_text( stdout, dods_data ) ;
-    BESAsciiTransmit::send_basic_ascii( obj, dhi ) ;
+    set_mime_text(stdout, dods_data);
+    BESAsciiTransmit::send_basic_ascii(obj, dhi);
 }
-
