@@ -108,26 +108,36 @@ void
             // uses the same logic as serialize() to read values but transfers
             // them to the d_values field instead of writing them to a XDR sink
             // pointer. jhrg 9/13/06
-            for (DDS::Vars_iter i = dds->var_begin(); i != dds->var_end();
-                 i++) {
+            for (DDS::Vars_iter i = dds->var_begin(); i != dds->var_end(); i++) {
+                (*BESLog::TheLog()) << "processing var: " << (*i)->name() << endl;
                 if ((*i)->send_p()) {
-                    (*BESLog::TheLog()) << "reading some data" << endl;
-                    if ((*i)->type() == dods_sequence_c) {
+                    (*BESLog::TheLog()) << "reading some data for: " << (*i)->name() << endl;
+                    switch ((*i)->type()) {
+                    case dods_sequence_c:
                         dynamic_cast <
-                            Sequence & >(**i).transfer_data(dataset_name,
-                                                            ce, *dds);
-                    } else {
+                            Sequence & >(**i).transfer_data(dataset_name, ce, *dds);
+                        break;
+
+                    case dods_structure_c:
+                        dynamic_cast <
+                            Structure & >(**i).transfer_data(dataset_name, ce, *dds);
+                        break;
+
+                    default:
                         (*i)->read(dataset_name);
+                        break;
                     }
                 }
             }
         }
     }
+
     catch(Error & e) {
         string err = "Failed to read data: " + e.get_error_message() + "("
             + long_to_string(e.get_error_code()) + ")";
         throw BESTransmitException(err, __FILE__, __LINE__);
     }
+
     catch(...) {
         string err = "Failed to read data: Unknown exception caught";
         throw BESTransmitException(err, __FILE__, __LINE__);
@@ -146,12 +156,14 @@ void
 
         (*BESLog::TheLog()) << "done transmitting ascii" << endl;
     }
+
     catch(Error & e) {
         string err =
             "Failed to get values as ascii: " + e.get_error_message() +
             "(" + long_to_string(e.get_error_code()) + ")";
         throw BESTransmitException(err, __FILE__, __LINE__);
     }
+
     catch(...) {
         string err =
             "Failed to get values as ascii: Unknown exception caught";
