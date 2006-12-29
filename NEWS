@@ -1,4 +1,9 @@
 
+Version 3.7.2
+
+This version includes bug fixes, performance enhancements and memory leak
+fixes. No new features have been added.
+
 Version 3.7.1
 
 We (I) hosed the source distribution; the www interface would not build the
