@@ -121,7 +121,7 @@ then
 	BES_MODULE_DIR="`${BES_PATH}/bin/bes-config --modulesdir`"
 	AC_SUBST([BES_MODULE_DIR])
     else
-	AC_CHECK_BES([3.1.0],
+	AC_CHECK_BES([3.3.1],
 	[
 	    BES_LDFLAGS=$BES_LIBS
 	    # I think the AC_SUBST([BES_MODULE_DIR]) in bes.m4 will put that 
