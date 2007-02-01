@@ -90,7 +90,6 @@ DataDDS *datadds_to_ascii_datadds(DataDDS * dds)
 
     DDS::Vars_iter i = dds->var_begin();
     while (i != dds->var_end()) {
-        //cerr << "converting " << (*i)->name() << " of type " << (*i)->type_name() << endl ;
         // Remove the send_p test here and put it where the values are output
         if ((*i)->send_p()) {
             BaseType *abt = basetype_to_asciitype(*i);

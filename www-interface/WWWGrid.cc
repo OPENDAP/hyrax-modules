@@ -35,7 +35,8 @@
 
 #include "config.h"
 
-static char rcsid[] not_used = {"$Id$"};
+static char rcsid[] not_used =
+    { "$Id$" };
 
 #include <assert.h>
 #include <iostream>
@@ -52,29 +53,31 @@ static char rcsid[] not_used = {"$Id$"};
 
 using namespace dap_html_form;
 
-BaseType *
-WWWGrid::ptr_duplicate()
+BaseType *WWWGrid::ptr_duplicate()
 {
     return new WWWGrid(*this);
 }
 
-WWWGrid::WWWGrid(const string &n) : Grid(n)
+WWWGrid::WWWGrid(const string & n) : Grid(n)
 {
 }
 
-WWWGrid::WWWGrid( Grid *grid ) : Grid( grid->name() )
+WWWGrid::WWWGrid(Grid * grid): Grid(grid->name())
 {
-    BaseType *bt = basetype_to_wwwtype( grid->array_var() ) ;
-    add_var( bt, array ) ;
-    delete bt ; bt = 0 ;
+    BaseType *bt = basetype_to_wwwtype(grid->array_var());
+    add_var(bt, array);
+    delete bt;
 
-    Grid::Map_iter i = grid->map_begin() ;
-    Grid::Map_iter e = grid->map_end() ;
-    for( ; i != e; i++ )
-    {
-        bt = basetype_to_wwwtype( *i ) ;
-        add_var( bt, maps ) ;
-        delete bt ; bt = 0 ;
+    // To make a valid Grid, this method must set the array dimensions as it
+    // adds new maps.
+    
+    Grid::Map_iter i = grid->map_begin();
+    Grid::Map_iter e = grid->map_end();
+    while ( i != e ) {
+        Array *at = dynamic_cast<Array *>(basetype_to_wwwtype(*i));
+        add_var(at, maps);
+        delete at;
+        ++i;
     }
 }
 
@@ -84,47 +87,45 @@ WWWGrid::~WWWGrid()
 }
 
 void
-WWWGrid::print_val(FILE *os, string space, bool /*print_decl_p*/)
+ WWWGrid::print_val(FILE * os, string space, bool /*print_decl_p */ )
 {
     ostringstream ss;
     ss << "<script type=\"text/javascript\">\n"
-       << "<!--\n"
-       << name_for_js_code(name()) << " = new dods_var(\"" 
-       << id2www_ce(name()) 
-       << "\", \"" << name_for_js_code(name()) << "\", 1);\n"
-       << "DODS_URL.add_dods_var(" << name_for_js_code(name()) << ");\n"
-       << "// -->\n"
-       << "</script>\n";
+        << "// Starting in WWWGrid::print_val() <!--\n"
+        << name_for_js_code(name()) << " = new dods_var(\""
+        << id2www_ce(name())
+        << "\", \"" << name_for_js_code(name()) << "\", 1);\n"
+        << "DODS_URL.add_dods_var(" << name_for_js_code(name()) << ");\n"
+        << "// -->\n" << "</script>\n";
 
-    ss << "<b>" 
-       << "<input type=\"checkbox\" name=\"get_" << name_for_js_code(name())
-       << "\"\n"
-       << "onclick=\"" << name_for_js_code(name()) 
-       << ".handle_projection_change(get_"
-       << name_for_js_code(name()) << ")\">\n" 
-       << "<font size=\"+1\">" << name() << "</font>"
-       << ": " << fancy_typename(this) << "</b><br>\n\n";
+    ss << "<b>"
+        << "<input type=\"checkbox\" name=\"get_" <<
+        name_for_js_code(name())
+        << "\"\n" << "onclick=\"" << name_for_js_code(name())
+        << ".handle_projection_change(get_"
+        << name_for_js_code(name()) << ")\">\n"
+        << "<font size=\"+1\">" << name() << "</font>"
+        << ": " << fancy_typename(this) << "</b><br>\n\n";
 
-    Array *a = dynamic_cast<Array *>(array_var());
-
+    Array *a = dynamic_cast < Array * >(array_var());
+    
     Array::Dim_iter p = a->dim_begin();
     for (int i = 0; p != a->dim_end(); ++i, ++p) {
-	int size = a->dimension_size(p, true);
-	string n = a->dimension_name(p);
-	if (n != "")
-	    ss << n << ":";
-	ss << "<input type=\"text\" name=\"" << name_for_js_code(name())
-	   << "_" << i 
-	   << "\" size=8 onfocus=\"describe_index()\""
-	   << "onChange=\"DODS_URL.update_url()\">\n";
-	ss << "<script type=\"text/javascript\">\n"
-	   << "<!--\n"
-	   << name_for_js_code(name()) << ".add_dim(" << size << ");\n"
-	   << "// -->\n"
-	   << "</script>\n";
+        int size = a->dimension_size(p, true);
+        string n = a->dimension_name(p);
+        if (n != "")
+            ss << n << ":";
+        ss << "<input type=\"text\" name=\"" << name_for_js_code(name())
+            << "_" << i
+            << "\" size=8 onfocus=\"describe_index()\""
+            << "onChange=\"DODS_URL.update_url()\">\n";
+        ss << "<script type=\"text/javascript\">\n"
+            << "// <!--\n"
+            << name_for_js_code(name()) << ".add_dim(" << size << ");\n"
+            << "// -->\n" << "</script>\n";
     }
-    
+
     ss << "<br>\n";
-    
+
     fprintf(os, "%s", ss.str().c_str());
 }

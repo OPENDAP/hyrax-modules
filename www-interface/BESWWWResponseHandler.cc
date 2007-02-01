@@ -22,7 +22,7 @@
 //
 // You can contact University Corporation for Atmospheric Research at
 // 3080 Center Green Drive, Boulder, CO 80301
- 
+
 // (c) COPYRIGHT University Corporation for Atmostpheric Research 2004-2005
 // Please read the full copyright statement in the file COPYRIGHT_UCAR.
 //
@@ -40,12 +40,12 @@
 #include "BESDDSResponse.h"
 #include "BESWWWTransmit.h"
 
-BESWWWResponseHandler::BESWWWResponseHandler( string name )
-    : BESResponseHandler( name )
+BESWWWResponseHandler::BESWWWResponseHandler(string name)
+:  BESResponseHandler(name)
 {
 }
 
-BESWWWResponseHandler::~BESWWWResponseHandler( )
+BESWWWResponseHandler::~BESWWWResponseHandler()
 {
 }
 
@@ -70,31 +70,31 @@ BESWWWResponseHandler::~BESWWWResponseHandler( )
  * @see BESRequestHandlerList
  */
 void
-BESWWWResponseHandler::execute( BESDataHandlerInterface &dhi )
+ BESWWWResponseHandler::execute(BESDataHandlerInterface & dhi)
 {
-    dhi.action_name = WWW_RESPONSE_STR ;
+    dhi.action_name = WWW_RESPONSE_STR;
 
     // Create the DDS.
     // NOTE: It is the responsbility of the specific request handler to set
     // the BaseTypeFactory. It is set to NULL here
-    DDS *dds = new DDS( NULL, "virtual" ) ;
-    BESDDSResponse *bdds = new BESDDSResponse( dds ) ;
-    _response = bdds ;
-    _response_name = DDS_RESPONSE ;
-    dhi.action = DDS_RESPONSE ;
-    BESRequestHandlerList::TheList()->execute_each( dhi ) ;
+    DDS *dds = new DDS(NULL, "virtual");
+    BESDDSResponse *bdds = new BESDDSResponse(dds);
+    _response = bdds;
+    _response_name = DDS_RESPONSE;
+    dhi.action = DDS_RESPONSE;
+    BESRequestHandlerList::TheList()->execute_each(dhi);
 
     // Fill the DAS
-    DAS *das = new DAS ;
-    BESDASResponse *bdas = new BESDASResponse( das ) ;
-    _response = bdas ;
-    _response_name = DAS_RESPONSE ;
-    dhi.action = DAS_RESPONSE ;
-    BESRequestHandlerList::TheList()->execute_each( dhi ) ;
+    DAS *das = new DAS;
+    BESDASResponse *bdas = new BESDASResponse(das);
+    _response = bdas;
+    _response_name = DAS_RESPONSE;
+    dhi.action = DAS_RESPONSE;
+    BESRequestHandlerList::TheList()->execute_each(dhi);
 
-    BESWWW *www = new BESWWW( das, dds ) ;
-    _response = www ;
-    dhi.action = WWW_RESPONSE ;
+    BESWWW *www = new BESWWW(das, dds);
+    _response = www;
+    dhi.action = WWW_RESPONSE;
 }
 
 /** @brief transmit the response object built by the execute command
@@ -109,19 +109,16 @@ BESWWWResponseHandler::execute( BESDataHandlerInterface &dhi )
  * @see BESTransmitter
  * @see _BESDataHandlerInterface
  */
-void
-BESWWWResponseHandler::transmit( BESTransmitter *transmitter,
-                                   BESDataHandlerInterface &dhi )
+void BESWWWResponseHandler::transmit(BESTransmitter * transmitter,
+                                     BESDataHandlerInterface & dhi)
 {
-    if( _response )
-    {
-	transmitter->send_response( WWW_TRANSMITTER, _response, dhi ) ;
+    if (_response) {
+        transmitter->send_response(WWW_TRANSMITTER, _response, dhi);
     }
 }
 
-BESResponseHandler *
-BESWWWResponseHandler::WWWResponseBuilder( string handler_name )
+BESResponseHandler *BESWWWResponseHandler::
+WWWResponseBuilder(string handler_name)
 {
-    return new BESWWWResponseHandler( handler_name ) ;
+    return new BESWWWResponseHandler(handler_name);
 }
-

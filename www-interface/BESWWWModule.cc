@@ -22,7 +22,7 @@
 //
 // You can contact University Corporation for Atmospheric Research at
 // 3080 Center Green Drive, Boulder, CO 80301
- 
+
 // (c) COPYRIGHT University Corporation for Atmostpheric Research 2004-2005
 // Please read the full copyright statement in the file COPYRIGHT_UCAR.
 //
@@ -31,7 +31,7 @@
 
 #include <iostream>
 
-using std::endl ;
+using std::endl;
 
 #include "BESWWWModule.h"
 #include "BESLog.h"
@@ -49,45 +49,53 @@ using std::endl ;
 #include "BESWWWGetCommand.h"
 
 void
-BESWWWModule::initialize( const string &modname )
+ BESWWWModule::initialize(const string & modname)
 {
-    if( BESLog::TheLog()->is_verbose() )
-	(*BESLog::TheLog()) << "Initializing OPeNDAP WWW module:" << endl;
+    if (BESLog::TheLog()->is_verbose())
+        (*BESLog::TheLog()) << "Initializing OPeNDAP WWW module:" << endl;
 
-    if( BESLog::TheLog()->is_verbose() )
-	(*BESLog::TheLog()) << "    adding " << WWW_RESPONSE << " response handler" << endl;
-    BESResponseHandlerList::TheList()->add_handler( WWW_RESPONSE, BESWWWResponseHandler::WWWResponseBuilder ) ;
+    if (BESLog::TheLog()->is_verbose())
+        (*BESLog::
+         TheLog()) << "    adding " << WWW_RESPONSE << " response handler"
+   << endl;
+    BESResponseHandlerList::TheList()->add_handler(WWW_RESPONSE,
+                                                   BESWWWResponseHandler::
+                                                   WWWResponseBuilder);
 
-    BESTransmitter *t = BESReturnManager::TheManager()->find_transmitter( BASIC_TRANSMITTER ) ;
-    if( t )
-    {
-	if( BESLog::TheLog()->is_verbose() )
-	    (*BESLog::TheLog()) << "    adding basic " << WWW_TRANSMITTER << " transmit function" << endl ;
-	t->add_method( WWW_TRANSMITTER, BESWWWTransmit::send_basic_form ) ;
+    BESTransmitter *t =
+        BESReturnManager::TheManager()->
+        find_transmitter(BASIC_TRANSMITTER);
+    if (t) {
+        if (BESLog::TheLog()->is_verbose())
+            (*BESLog::
+             TheLog()) << "    adding basic " << WWW_TRANSMITTER <<
+       " transmit function" << endl;
+        t->add_method(WWW_TRANSMITTER, BESWWWTransmit::send_basic_form);
     }
 
-    t = BESReturnManager::TheManager()->find_transmitter( HTTP_TRANSMITTER ) ;
-    if( t )
-    {
-	if( BESLog::TheLog()->is_verbose() )
-	    (*BESLog::TheLog()) << "    adding http " << WWW_TRANSMITTER << " transmit function" << endl ;
-	t->add_method( WWW_TRANSMITTER, BESWWWTransmit::send_http_form ) ;
+    t = BESReturnManager::TheManager()->find_transmitter(HTTP_TRANSMITTER);
+    if (t) {
+        if (BESLog::TheLog()->is_verbose())
+            (*BESLog::
+             TheLog()) << "    adding http " << WWW_TRANSMITTER <<
+       " transmit function" << endl;
+        t->add_method(WWW_TRANSMITTER, BESWWWTransmit::send_http_form);
     }
 
-    if( BESLog::TheLog()->is_verbose() )
-	(*BESLog::TheLog()) << "    adding " << WWW_RESPONSE << " command" << endl;
-    BESCommand *cmd = new BESWWWGetCommand( WWW_RESPONSE ) ;
-    BESCommand::add_command( WWW_RESPONSE, cmd ) ;
+    if (BESLog::TheLog()->is_verbose())
+        (*BESLog::
+         TheLog()) << "    adding " << WWW_RESPONSE << " command" << endl;
+    BESCommand *cmd = new BESWWWGetCommand(WWW_RESPONSE);
+    BESCommand::add_command(WWW_RESPONSE, cmd);
 }
 
-void
-BESWWWModule::terminate( const string &modname )
+void BESWWWModule::terminate(const string & modname)
 {
-    if( BESLog::TheLog()->is_verbose() )
-	(*BESLog::TheLog()) << "Removing OPeNDAP modules" << endl;
+    if (BESLog::TheLog()->is_verbose())
+        (*BESLog::TheLog()) << "Removing OPeNDAP modules" << endl;
 
-    BESResponseHandlerList::TheList()->remove_handler( WWW_RESPONSE ) ;
-    BESCommand::del_command( WWW_RESPONSE ) ;
+    BESResponseHandlerList::TheList()->remove_handler(WWW_RESPONSE);
+    BESCommand::del_command(WWW_RESPONSE);
 }
 
 /** @brief dumps information about this object
@@ -96,18 +104,13 @@ BESWWWModule::terminate( const string &modname )
  *
  * @param strm C++ i/o stream to dump the information to
  */
-void
-BESWWWModule::dump( ostream &strm ) const
+void BESWWWModule::dump(ostream & strm) const
 {
     strm << BESIndent::LMarg << "BESWWWModule::dump - ("
-			     << (void *)this << ")" << endl ;
+        << (void *) this << ")" << endl;
 }
 
-extern "C"
-{
-    BESAbstractModule *maker()
-    {
-	return new BESWWWModule ;
-    }
-}
-
+extern "C" {
+    BESAbstractModule *maker() {
+        return new BESWWWModule;
+}}

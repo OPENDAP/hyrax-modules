@@ -46,7 +46,6 @@ using namespace std;
 
 #include "AsciiGrid.h"
 #include "AsciiArray.h"
-//#include "name_map.h"
 #include "debug.h"
 #include "get_ascii.h"
 
@@ -72,12 +71,12 @@ AsciiGrid::AsciiGrid(Grid * grid):AsciiOutput(grid)
 
     Grid::Map_iter i = grid->map_begin();
     Grid::Map_iter e = grid->map_end();
-    for (; i != e; i++) {
+    while ( i != e ) {
         bt = basetype_to_asciitype(*i);
         add_var(bt, maps);
         // add_var makes a copy of the base type passed to it, so delete it here
         delete bt;
-        bt = 0;
+        ++i;
     }
     set_name(grid->name());
 }

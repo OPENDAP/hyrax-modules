@@ -55,7 +55,7 @@
 #include "WWWGrid.h"
 
 namespace dap_html_form {
-        
+
 #include "javascript.h"         // Try to hide this stuff...
 
 // A better way to do this would have been to make WWWStructure, ..., inherit
@@ -67,76 +67,35 @@ WWWOutput *wo = 0;
     
     @param bt A BaseType such as NCArray, HDFArray, ...
     @return A BaseType that uses the WWW specialization (e.g., WWWArray). */
-BaseType *
-basetype_to_wwwtype( BaseType *bt )
+BaseType *basetype_to_wwwtype(BaseType * bt)
 {
-    switch( bt->type() )
-    {
-        case dods_byte_c:
-            {
-                return new WWWByte( dynamic_cast<Byte *>(bt) ) ;
-            }
-            break ;
-        case dods_int16_c:
-            {
-                return new WWWInt16( dynamic_cast<Int16 *>(bt) ) ;
-            }
-            break ;
-        case dods_uint16_c:
-            {
-                return new WWWUInt16( dynamic_cast<UInt16 *>(bt) ) ;
-            }
-            break ;
-        case dods_int32_c:
-            {
-                return new WWWInt32( dynamic_cast<Int32 *>(bt) ) ;
-            }
-            break ;
-        case dods_uint32_c:
-            {
-                return new WWWUInt32( dynamic_cast<UInt32 *>(bt) ) ;
-            }
-            break ;
-        case dods_float32_c:
-            {
-                return new WWWFloat32( dynamic_cast<Float32 *>(bt) ) ;
-            }
-            break ;
-        case dods_float64_c:
-            {
-                return new WWWFloat64( dynamic_cast<Float64 *>(bt) ) ;
-            }
-            break ;
-        case dods_str_c:
-            {
-                return new WWWStr( dynamic_cast<Str *>(bt) ) ;
-            }
-            break ;
-        case dods_url_c:
-            {
-                return new WWWUrl( dynamic_cast<Url *>(bt) ) ;
-            }
-            break ;
-        case dods_array_c:
-            {
-                return new WWWArray( dynamic_cast<Array *>(bt) ) ;
-            }
-            break ;
-        case dods_structure_c:
-            {
-                return new WWWStructure( dynamic_cast<Structure *>(bt) ) ;
-            }
-            break ;
-        case dods_sequence_c:
-            {
-                return new WWWSequence( dynamic_cast<Sequence *>(bt) ) ;
-            }
-            break ;
-        case dods_grid_c:
-            {
-                return new WWWGrid( dynamic_cast<Grid *>(bt) ) ;
-            }
-            break ;
+    switch (bt->type()) {
+    case dods_byte_c:
+        return new WWWByte(dynamic_cast < Byte * >(bt));
+    case dods_int16_c:
+        return new WWWInt16(dynamic_cast < Int16 * >(bt));
+    case dods_uint16_c:
+        return new WWWUInt16(dynamic_cast < UInt16 * >(bt));
+    case dods_int32_c:
+        return new WWWInt32(dynamic_cast < Int32 * >(bt));
+    case dods_uint32_c:
+        return new WWWUInt32(dynamic_cast < UInt32 * >(bt));
+    case dods_float32_c:
+        return new WWWFloat32(dynamic_cast < Float32 * >(bt));
+    case dods_float64_c:
+        return new WWWFloat64(dynamic_cast < Float64 * >(bt));
+    case dods_str_c:
+        return new WWWStr(dynamic_cast < Str * >(bt));
+    case dods_url_c:
+        return new WWWUrl(dynamic_cast < Url * >(bt));
+    case dods_array_c:
+        return new WWWArray(dynamic_cast < Array * >(bt));
+    case dods_structure_c:
+        return new WWWStructure(dynamic_cast < Structure * >(bt));
+    case dods_sequence_c:
+        return new WWWSequence(dynamic_cast < Sequence * >(bt));
+    case dods_grid_c:
+        return new WWWGrid(dynamic_cast < Grid * >(bt));
     }
 }
 
@@ -146,27 +105,23 @@ basetype_to_wwwtype( BaseType *bt )
     
     @param dds A DDS
     @return A DDS where each variable in \e dds is now a WWW* variable. */
-DDS *
-dds_to_www_dds( DDS *dds )
+DDS *dds_to_www_dds(DDS * dds)
 {
     // Should the following use WWWOutputFactory instead of the source DDS'
-    // factory class? It doesn't matter for the following since the function
-    // basetype_to_asciitype() doesn't use the factory. So long as no other
-    // code uses the DDS' factory, this is fine. jhrg 9/5/06 
-    DDS *wwwdds = new DDS( dds->get_factory(), dds->get_dataset_name() ) ;
+    // factory class?
+    DDS *wwwdds = new DDS(dds->get_factory(), dds->get_dataset_name());
 
     DDS::Vars_iter i = dds->var_begin();
-    while( i != dds->var_end() )
-    {
-	BaseType *abt = basetype_to_wwwtype( *i ) ;
-        wwwdds->add_var( abt ) ;
-	// add_var makes a copy of the base type passed to it, so delete it
-	// here
-	delete abt ;
-        i++ ;
+    while (i != dds->var_end()) {
+        BaseType *abt = basetype_to_wwwtype(*i);
+        wwwdds->add_var(abt);
+        // add_var makes a copy of the base type passed to it, so delete it
+        // here
+        delete abt;
+        i++;
     }
 
-    return wwwdds ;
+    return wwwdds;
 }
 
 
@@ -191,63 +146,61 @@ dds_to_www_dds( DDS *dds )
     by default; otherwise, this is locataion where an HTML document that 
     explains the page can be found. 
     */
-void
-write_html_form_interface(FILE *dest, DDS *dds, DAS *das, const string &url,
-                          bool html_header,
-                          const string &admin_name, const string &help_location)
+void write_html_form_interface(FILE * dest, DDS * dds, DAS * das,
+                               const string & url, bool html_header,
+                               const string & admin_name,
+                               const string & help_location)
 {
-        wo = new WWWOutput(dest);
-        wo->set_das(das);
+    wo = new WWWOutput(dest);
+    wo->set_das(das);
 
-        if (html_header)
-            wo->write_html_header();
-            
-        ostringstream oss;
-        oss << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n"
-             << "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n"
-             << "<html><head><title>OPeNDAP Server Dataset Query Form</title>\n"
-             << "<base href=\"" << help_location << "\">\n"
-             << "<script type=\"text/javascript\">\n"
-             << "<!--\n"
-            // Javascript code here
-             << java_code << "\n"
-             << "DODS_URL = new dods_url(\"" << url << "\");\n"
-             << "// -->\n"
-             << "</script>\n"
-             << "</head>\n" 
-             << "<body>\n"
-             << "<p><h2 align='center'>OPeNDAP Server Dataset Access Form</h2>\n"
-             << "<hr>\n"
-             << "<form action=\"\">\n"
-             << "<table>\n";
-        fprintf(stdout, "%s", oss.str().c_str());
-        
-        wo->write_disposition(url);
-        
-        fprintf(stdout, "<tr><td><td><hr>\n\n");
-        
-        wo->write_global_attributes(*wo->get_das());
-        
-        fprintf(stdout, "<tr><td><td><hr>\n\n");
+    if (html_header)
+        wo->write_html_header();
 
-        wo->write_variable_entries(*wo->get_das(), *dds);
+    ostringstream oss;
+    oss <<
+        "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n"
+        << "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n" <<
+        "<html><head><title>OPeNDAP Server Dataset Query Form</title>\n"
+        << "<base href=\"" << help_location << "\">\n" <<
+        "<script type=\"text/javascript\">\n" << "<!--\n"
+        // Javascript code here
+        << java_code << "\n"
+        << "DODS_URL = new dods_url(\"" << url << "\");\n"
+        << "// -->\n"
+        << "</script>\n"
+        << "</head>\n"
+        << "<body>\n"
+        <<
+        "<p><h2 align='center'>OPeNDAP Server Dataset Access Form</h2>\n"
+        << "<hr>\n" << "<form action=\"\">\n" << "<table>\n";
+    fprintf(stdout, "%s", oss.str().c_str());
 
-        oss.str("");
-        oss << "</table></form>\n\n" << "<hr>\n\n";
-        oss << "<address>Send questions or comments to: <a href=\"mailto:"
-                << admin_name << "\">" << admin_name << "</a></address>"
-                << "<p>\n\
+    wo->write_disposition(url);
+
+    fprintf(stdout, "<tr><td><td><hr>\n\n");
+
+    wo->write_global_attributes(*wo->get_das());
+
+    fprintf(stdout, "<tr><td><td><hr>\n\n");
+
+    wo->write_variable_entries(*wo->get_das(), *dds);
+
+    oss.str("");
+    oss << "</table></form>\n\n" << "<hr>\n\n";
+    oss << "<address>Send questions or comments to: <a href=\"mailto:"
+        << admin_name << "\">" << admin_name << "</a></address>" << "<p>\n\
                     <a href=\"http://validator.w3.org/check?uri=referer\"><img\n\
                         src=\"http://www.w3.org/Icons/valid-html40\"\n\
                         alt=\"Valid HTML 4.0 Transitional\" height=\"31\" width=\"88\">\n\
-                    </a></p>\n"
-                 << "</body></html>\n";
-        
-        fprintf(stdout, "%s", oss.str().c_str());
-        
+                    </a></p>\n" << "</body></html>\n";
+
+    fprintf(stdout, "%s", oss.str().c_str());
+
 }
 
-const string allowable = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
+const string allowable =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
 
 // This function adds some text to the variable name so that conflicts with
 // JavaScript's reserved words and other conflicts are avoided (or
@@ -256,8 +209,7 @@ const string allowable = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01
 // I've modified this so that it no longer include the PID. Not sure why that
 // was included... However, removing it will make using the HTML form in tests
 // easier. jhrg 11/28/06
-string
-name_for_js_code(const string &dods_name)
+string name_for_js_code(const string & dods_name)
 {
 #if 0
     int pid = getpid();
@@ -266,97 +218,91 @@ name_for_js_code(const string &dods_name)
     // Calling id2www with a different set of allowable chars gets an
     // identifier with chars allowable for JavaScript. Then turn the `%' sign
     // into an underscore.
-    oss << "org_dods_dcz" << pid 
-        << esc2underscore(id2www(dods_name, allowable));// << ends;
+    oss << "org_dods_dcz" << pid << esc2underscore(id2www(dods_name, allowable));       // << ends;
     return oss.str();
 #else
-    return string("org_opendap_") + esc2underscore(id2www(dods_name, allowable));
+    return string("org_opendap_") +
+        esc2underscore(id2www(dods_name, allowable));
 #endif
 }
 
-string
-fancy_typename(BaseType *v)
+string fancy_typename(BaseType * v)
 {
     switch (v->type()) {
-      case dods_byte_c:
+    case dods_byte_c:
         return "Byte";
-      case dods_int16_c:
+    case dods_int16_c:
         return "16 bit Integer";
-      case dods_uint16_c:
+    case dods_uint16_c:
         return "16 bit Unsigned integer";
-      case dods_int32_c:
+    case dods_int32_c:
         return "32 bit Integer";
-      case dods_uint32_c:
+    case dods_uint32_c:
         return "32 bit Unsigned integer";
-      case dods_float32_c:
+    case dods_float32_c:
         return "32 bit Real";
-      case dods_float64_c:
+    case dods_float64_c:
         return "64 bit Real";
-      case dods_str_c:
+    case dods_str_c:
         return "string";
-      case dods_url_c:
+    case dods_url_c:
         return "URL";
-      case dods_array_c: {
-          ostringstream type;
-          Array *a = (Array *)v;
-          type << "Array of " << fancy_typename(a->var()) <<"s ";
-          for (Array::Dim_iter p = a->dim_begin(); p != a->dim_end(); ++p)
-              type << "[" << a->dimension_name(p) << " = 0.." 
-                   << a->dimension_size(p, false)-1 << "]";
-          return type.str();
-      }
-      case dods_structure_c:
+    case dods_array_c:{
+            ostringstream type;
+            Array *a = (Array *) v;
+            type << "Array of " << fancy_typename(a->var()) << "s ";
+            for (Array::Dim_iter p = a->dim_begin(); p != a->dim_end();
+                 ++p)
+                type << "[" << a->dimension_name(p) << " = 0.." << a->
+                    dimension_size(p, false) - 1 << "]";
+            return type.str();
+        }
+    case dods_structure_c:
         return "Structure";
-      case dods_sequence_c:
+    case dods_sequence_c:
         return "Sequence";
-      case dods_grid_c:
+    case dods_grid_c:
         return "Grid";
-      default:
+    default:
         return "Unknown";
     }
 }
 
 void
-write_simple_variable(FILE *os, const string &name, const string &type)
+write_simple_variable(FILE * os, const string & name, const string & type)
 {
     ostringstream ss;
     ss << "<script type=\"text/javascript\">\n"
-       << "<!--\n"
-       << name_for_js_code(name) <<" = new dods_var(\"" << id2www_ce(name) 
-       << "\", \"" 
-       << name_for_js_code(name) << "\", 0);\n"
-       << "DODS_URL.add_dods_var(" << name_for_js_code(name) << ");\n"
-       << "// -->\n"
-       << "</script>\n";
+        << "// Inside write_simple_variable() <!--\n"
+        << name_for_js_code(name) << " = new dods_var(\"" <<
+        id2www_ce(name)
+        << "\", \"" << name_for_js_code(name) << "\", 0);\n" <<
+        "DODS_URL.add_dods_var(" << name_for_js_code(name) << ");\n" <<
+        "// -->\n" << "</script>\n";
 
-    ss << "<b>" 
-       << "<input type=\"checkbox\" name=\"get_" << name_for_js_code(name) 
-       << "\"\n"
-       << "onclick=\"" 
-       << name_for_js_code(name) << ".handle_projection_change(get_"
-       << name_for_js_code(name) << ")\">\n" 
-       << "<font size=\"+1\">" << name << "</font>" 
-       << ": " << type << "</b><br>\n\n";
+    ss << "<b>"
+        << "<input type=\"checkbox\" name=\"get_" << name_for_js_code(name)
+        << "\"\n" << "onclick=\"" << name_for_js_code(name) <<
+        ".handle_projection_change(get_" << name_for_js_code(name) <<
+        ")\">\n" << "<font size=\"+1\">" << name << "</font>" << ": "
+        << type << "</b><br>\n\n";
 
-    ss << name << " <select name=\"" << name_for_js_code(name)<< "_operator\""
-       << " onfocus=\"describe_operator()\""
-       << " onchange=\"DODS_URL.update_url()\">\n"
-       << "<option value=\"=\" selected>=\n"
-       << "<option value=\"!=\">!=\n"
-       << "<option value=\"<\"><\n"
-       << "<option value=\"<=\"><=\n"
-       << "<option value=\">\">>\n"
-       << "<option value=\">=\">>=\n"
-       << "<option value=\"-\">--\n"
-       << "</select>\n";
+    ss << name << " <select name=\"" << name_for_js_code(name) <<
+        "_operator\"" << " onfocus=\"describe_operator()\"" <<
+        " onchange=\"DODS_URL.update_url()\">\n" <<
+        "<option value=\"=\" selected>=\n" <<
+        "<option value=\"!=\">!=\n" << "<option value=\"<\"><\n" <<
+        "<option value=\"<=\"><=\n" << "<option value=\">\">>\n" <<
+        "<option value=\">=\">>=\n" << "<option value=\"-\">--\n" <<
+        "</select>\n";
 
     ss << "<input type=\"text\" name=\"" << name_for_js_code(name)
-       << "_selection"
-       << "\" size=12 onFocus=\"describe_selection()\" "
-       << "onChange=\"DODS_URL.update_url()\">\n";
-    
+        << "_selection"
+        << "\" size=12 onFocus=\"describe_selection()\" "
+        << "onChange=\"DODS_URL.update_url()\">\n";
+
     ss << "<br>\n\n";
-    
+
     // Now write that string to os
     fprintf(os, "%s", ss.str().c_str());
 }

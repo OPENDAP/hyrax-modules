@@ -47,7 +47,7 @@ public:
     virtual BaseType *ptr_duplicate();
 
     virtual void print_val(FILE *os, string space = "", 
-			   bool print_decl_p = true);
+			               bool print_decl_p = true);
 };
 
 #endif

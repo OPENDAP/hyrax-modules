@@ -35,7 +35,8 @@
 
 #include "config.h"
 
-static char rcsid[] not_used = {"$Id$"};
+static char rcsid[] not_used =
+    { "$Id$" };
 
 #include <iostream>
 #include <sstream>
@@ -50,75 +51,81 @@ static char rcsid[] not_used = {"$Id$"};
 
 using namespace dap_html_form;
 
-BaseType *
-WWWArray::ptr_duplicate()
+BaseType *WWWArray::ptr_duplicate()
 {
     return new WWWArray(*this);
 }
 
-WWWArray::WWWArray(const string &n, BaseType *v) : Array(n, v), _redirect( 0 )
+WWWArray::WWWArray(const string & n, BaseType * v):Array(n, v), _redirect(0)
 {
 }
 
-WWWArray::WWWArray( Array *bt ) : Array( bt->name() ), _redirect( bt )
+WWWArray::WWWArray(Array * bt):Array(bt->name()), _redirect(bt)
 {
-    BaseType *abt = basetype_to_wwwtype( bt->var() ) ;
-    add_var( abt ) ;
+    BaseType *abt = basetype_to_wwwtype(bt->var());
+    add_var(abt);
     // add_var makes a copy of the base type passed to it, so delete it here
-    delete abt ;
-}
+    delete abt;
 
+    // Copy the dimensions
+    Dim_iter p = bt->dim_begin();
+    while ( p != bt->dim_end() ) {
+        append_dim(bt->dimension_size(p, true), bt->dimension_name(p));
+        ++p;
+    }
+}
 
 WWWArray::~WWWArray()
 {
 }
 
-void 
-WWWArray::print_val(FILE *os, string, bool /*print_decl_p*/)
+void
+WWWArray::print_val(FILE * os, string, bool /*print_decl_p */ )
 {
+#if 0
     // We have the name, so no need to change any of that code for BES, but
-    // for dimensions we need the redirected array.
-    Array *arr = _redirect ;
-    if( !arr ) arr = this ;
+    // for dimensions we need the redirected array. Not any more... See 
+    // WWWArray::WWWArray(Array *). jhrg 2/1/07
+    Array *arr = _redirect;
+    if (!arr)
+        arr = this;
+#endif
 
     ostringstream ss;
     ss << "<script type=\"text/javascript\">\n"
-       << "<!--\n"
-       << name_for_js_code(name()) << " = new dods_var(\"" 
-       << id2www_ce(name())
-       << "\", \"" << name_for_js_code(name()) << "\", 1);\n"
-       << "DODS_URL.add_dods_var(" << name_for_js_code(name()) << ");\n"
-       << "// -->\n"
-       << "</script>\n";
+        << "<!--\n"
+        << name_for_js_code(name()) << " = new dods_var(\""
+        << id2www_ce(name())
+        << "\", \"" << name_for_js_code(name()) << "\", 1);\n"
+        << "DODS_URL.add_dods_var(" << name_for_js_code(name()) << ");\n"
+        << "// -->\n" << "</script>\n";
 
-    ss << "<b>" 
-       << "<input type=\"checkbox\" name=\"get_" << name_for_js_code(name())
-       << "\"\n"
-       << "onclick=\"" << name_for_js_code(name())
-       << ".handle_projection_change(get_"
-       << name_for_js_code(name()) << ")\">\n" 
-       << "<font size=\"+1\">" << name() << "</font>"
-       << ": " << fancy_typename(arr) << "</b><br>\n\n";
+    ss << "<b>"
+        << "<input type=\"checkbox\" name=\"get_" <<
+        name_for_js_code(name())
+        << "\"\n" << "onclick=\"" << name_for_js_code(name())
+        << ".handle_projection_change(get_"
+        << name_for_js_code(name()) << ")\">\n"
+        << "<font size=\"+1\">" << name() << "</font>"
+        << ": " << fancy_typename(this) << "</b><br>\n\n";
 
-    Array::Dim_iter p = arr->dim_begin();
-    for (int i = 0; p != arr->dim_end(); ++i, ++p) {
-	int size = arr->dimension_size(p, true);
-	string n = arr->dimension_name(p);
-	if (n != "")
-	    ss << n << ":";
-	ss << "<input type=\"text\" name=\"" << name_for_js_code(name())
-	   << "_" << i 
-	   << "\" size=8 onfocus=\"describe_index()\""
-	   << " onChange=\"DODS_URL.update_url()\">\n";
-	ss << "<script type=\"text/javascript\">\n"
-	   << "<!--\n"
-	   << name_for_js_code(name()) << ".add_dim(" << size << ");\n"
-	   << "// -->\n"
-	   << "</script>\n";
+    Dim_iter p = dim_begin();
+    for (int i = 0; p != dim_end(); ++i, ++p) {
+        int size = dimension_size(p, true);
+        string n = dimension_name(p);
+        if (n != "")
+            ss << n << ":";
+        ss << "<input type=\"text\" name=\"" << name_for_js_code(name())
+            << "_" << i
+            << "\" size=8 onfocus=\"describe_index()\""
+            << " onChange=\"DODS_URL.update_url()\">\n";
+        ss << "<script type=\"text/javascript\">\n"
+            << "// <!--\n"
+            << name_for_js_code(name()) << ".add_dim(" << size << ");\n"
+            << "// -->\n" << "</script>\n";
     }
-    
+
     ss << "<br>\n\n";
-    
+
     fprintf(os, "%s", ss.str().c_str());
 }
-
