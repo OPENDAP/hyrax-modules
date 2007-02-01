@@ -226,10 +226,15 @@ vector < int > AsciiArray::get_shape_vector(size_t n) throw(InternalErr)
     }
 
     vector < int >shape(n);
+#if 0
     vector < int >::iterator shape_iter = shape.begin();
+#endif
     Array::Dim_iter p = bt->dim_begin();
-    for (unsigned i = 0; i < n; i++) {
+    for (unsigned i = 0; i < n && p != bt->dim_end(); i++) {
+#if 0
         *shape_iter++ = bt->dimension_size(p++, true);
+#endif
+        shape.push_back(bt->dimension_size(p++, true));
     }
 
     return shape;
