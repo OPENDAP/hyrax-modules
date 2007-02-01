@@ -91,7 +91,7 @@ void
 {
     ostringstream ss;
     ss << "<script type=\"text/javascript\">\n"
-        << "// Starting in WWWGrid::print_val() <!--\n"
+        << "<!--\n"
         << name_for_js_code(name()) << " = new dods_var(\""
         << id2www_ce(name())
         << "\", \"" << name_for_js_code(name()) << "\", 1);\n"
@@ -120,7 +120,7 @@ void
             << "\" size=8 onfocus=\"describe_index()\""
             << "onChange=\"DODS_URL.update_url()\">\n";
         ss << "<script type=\"text/javascript\">\n"
-            << "// <!--\n"
+            << "<!--\n"
             << name_for_js_code(name()) << ".add_dim(" << size << ");\n"
             << "// -->\n" << "</script>\n";
     }

@@ -120,7 +120,7 @@ WWWArray::print_val(FILE * os, string, bool /*print_decl_p */ )
             << "\" size=8 onfocus=\"describe_index()\""
             << " onChange=\"DODS_URL.update_url()\">\n";
         ss << "<script type=\"text/javascript\">\n"
-            << "// <!--\n"
+            << "<!--\n"
             << name_for_js_code(name()) << ".add_dim(" << size << ");\n"
             << "// -->\n" << "</script>\n";
     }
