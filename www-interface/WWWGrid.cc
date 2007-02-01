@@ -103,7 +103,7 @@ void
         name_for_js_code(name())
         << "\"\n" << "onclick=\"" << name_for_js_code(name())
         << ".handle_projection_change(get_"
-        << name_for_js_code(name()) << ")\">\n"
+        << name_for_js_code(name()) << ") \"  onfocus=\"describe_projection()\">\n"
         << "<font size=\"+1\">" << name() << "</font>"
         << ": " << fancy_typename(this) << "</b><br>\n\n";
 

@@ -273,7 +273,7 @@ write_simple_variable(FILE * os, const string & name, const string & type)
 {
     ostringstream ss;
     ss << "<script type=\"text/javascript\">\n"
-        << "// Inside write_simple_variable() <!--\n"
+        << "<!--\n"
         << name_for_js_code(name) << " = new dods_var(\"" <<
         id2www_ce(name)
         << "\", \"" << name_for_js_code(name) << "\", 0);\n" <<
@@ -284,7 +284,8 @@ write_simple_variable(FILE * os, const string & name, const string & type)
         << "<input type=\"checkbox\" name=\"get_" << name_for_js_code(name)
         << "\"\n" << "onclick=\"" << name_for_js_code(name) <<
         ".handle_projection_change(get_" << name_for_js_code(name) <<
-        ")\">\n" << "<font size=\"+1\">" << name << "</font>" << ": "
+        ") \"  onfocus=\"describe_projection()\">\n" << "<font size=\"+1\">" 
+        << name << "</font>" << ": "
         << type << "</b><br>\n\n";
 
     ss << name << " <select name=\"" << name_for_js_code(name) <<
