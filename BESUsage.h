@@ -51,21 +51,20 @@
 class BESUsage : public BESResponseObject
 {
 private:
-    DAS *			_das ;
-    DDS *			_dds ;
+    DAS *_das ;
+    DDS *_dds ;
 
-				BESUsage() {}
+	BESUsage() {}
+
 public:
-    				BESUsage( DAS *das, DDS *dds )
-				    : _das( das ), _dds( dds ) {}
-    virtual			~BESUsage()
-				{
-				    if( _das ) delete _das ;
-				    if( _dds ) delete _dds ;
-				}
+    BESUsage( DAS *das, DDS *dds ) : _das( das ), _dds( dds ) {}
+    virtual	~BESUsage() {
+	   if( _das ) delete _das ;
+	   if( _dds ) delete _dds ;
+	}
 
-    DAS *			get_das() { return _das ; }
-    DDS *			get_dds() { return _dds ; }
+    DAS *get_das() { return _das ; }
+    DDS *get_dds() { return _dds ; }
 
     /** @brief dumps information about this object
      *
@@ -74,18 +73,15 @@ public:
      *
      * @param strm C++ i/o stream to dump the information to
      */
-    virtual void		BESUsage::dump( ostream &strm ) const
-				{
-				    strm << BESIndent::LMarg
-				         << "BESUsage::dump - ("
-					 << (void *)this << ")" << endl ;
-				    BESIndent::Indent() ;
-				    strm << BESIndent::LMarg
-					 << "das: " << (void *)_das << endl ;
-				    strm << BESIndent::LMarg
-					 << "dds: " << (void *)_dds << endl ;
-				    BESIndent::UnIndent() ;
-				}
+    virtual void dump( ostream &strm ) const {
+        strm << BESIndent::LMarg << "BESUsage::dump - ("
+			 << (void *)this << ")" << endl ;
+
+	    BESIndent::Indent() ;
+	    strm << BESIndent::LMarg << "das: " << (void *)_das << endl ;
+		strm << BESIndent::LMarg << "dds: " << (void *)_dds << endl ;
+		BESIndent::UnIndent() ;
+	}
 } ;
 
 #endif // I_BESUsage_h
