@@ -23,7 +23,7 @@
 // This file holds the interface for the 'get data as ascii' function of the
 // OPeNDAP/HAO data server. This function is called by the BES when it loads
 // this as a module. The functions in the file ascii_val.cc also use this, so
-// the same basic processing software can be used both by Server4 and tie older
+// the same basic processing software can be used both by Hyrax and tie older
 // Server3.
 
 #include <BaseType.h>

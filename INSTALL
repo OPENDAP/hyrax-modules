@@ -62,7 +62,7 @@ REQUIREMENTS
 
   o If you're building this software for use with Server3, you'll need the
     HTML::Parser package. You do not need this if you're building the code
-    for use with Server4. Red Hat, Fedora Core and many other distributions
+    for use with Hyrax. Red Hat, Fedora Core and many other distributions
     include this as standard equipment. If the distribution you're using
     lacks HTML:Parser, here's how to get it:
   
