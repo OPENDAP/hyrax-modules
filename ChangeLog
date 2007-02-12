@@ -1,6 +1,64 @@
-; Local Variables:
-;; coding: utf-8
-;; End:
+2007-02-08  Nathan Potter <ndp@opendap.org>
+
+	dap-server: Changed Server4 name to Hyrax as needed.
+
+2007-02-08  James Gallagher <jgallagher@opendap.org>
+
+	BESUsage.h, BESWWW.h: Fixed two instances of over-qualified
+	names (both dump() methods).
+
+2007-02-01  James Gallagher <jgallagher@opendap.org>
+
+	AsciiArray.cc: Fix to get_shape_vector(). Instead of adding
+	to vector<int> shape using *shape++ = ... I switched to
+	shape.push_back(...)> I don't know that the former is wrong,
+	but valgrind shows an error and I do know the latter is
+	correct.
+
+2007-02-01  James Gallagher <jgallagher@opendap.org>
+
+	get_html_form.cc, WWWArray.cc, WWWGrid.cc: Updated onfocus
+	so that it shows the right text in the window status area.
+	www.js: Modified so that the functions called by onfocus
+	return true and set the 'window.status' variable instead of the
+	defaultStatus variable (which might not have been working in
+	firefox).
+
+2007-02-01  James Gallagher <jgallagher@opendap.org>
+
+	WWWArray.cc, WWWGrid.cc: I removed the leading '//' from
+	the '<!--' used to protect old browsers from JavaScript as
+	per Castro, "HTML for the world wide web," P.320.
+
+2007-02-01  James Gallagher <jgallagher@opendap.org>
+
+	Lots of reformatting of code to make it easier to read.
+	Fixed 766: WWWArray.cc and WWWGrid.cc both needed fixes. When
+	the DDS was copied/mutated so that the variables inherit from
+	the WWW* classes, the Array variables dimensions were not
+	being copied (the same error was in AsciiArray.cc - also fixed
+	with this commit).
+
+2007-01-02  Patrick West <pwest@ucar.edu>
+
+	Requires libdap 3.7.4
+	M    configure.ac
+	M    dap-server.spec
+
+2006-12-29  Patrick West <pwest@ucar.edu>
+
+	requires bes version 3.3.1 and libdap version 3.7.3.
+	M    configure.ac
+
+2006-12-29  Patrick West <pwest@ucar.edu>
+
+	3.7.2 release information.
+	M    configure.ac
+	M    INSTALL
+	M    NEWS
+	M    ChangeLog
+	M    dap-server.spec
+
 2006-12-20  James Gallagher <jgallagher@opendap.org>
 
 	BESAsciiTransmit.cc: Now uses the new Structure::transfer_data()

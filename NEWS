@@ -1,3 +1,11 @@
+Version 3.7.3
+
+This version cotains a fix for bug 766 where Grid dimensions did not show
+up in the HTML form interface. This problem was caused by an error in the way
+variables contained in a DDS built by a handler (e.g., the netcdf handler)
+were transformed into variables which could generate the form. The same 
+sort of problem (with variable transformation) was fixed in the ascii response
+code, too.
 
 Version 3.7.2
 
