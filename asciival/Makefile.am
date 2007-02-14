@@ -19,13 +19,15 @@ DIST_SUBDIRS = unit-tests
 bin_PROGRAMS = dap_asciival
 
 if OPENDAPSERVER
-    lib_besdir=$(BES_MODULE_DIR)
+    # lib_besdir=$(BES_MODULE_DIR)
+    lib_besdir=$(libdir)/bes
     lib_bes_LTLIBRARIES = libascii_module.la
-    libascii_module_la_SOURCES = $(ASCII_SOURCES) $(BES_SOURCES)
-    libascii_module_la_CPPFLAGS = $(BES_CPPFLAGS)
-    libascii_module_la_LDFLAGS = -avoid-version -module 
-    libascii_module_la_LIBADD = $(BES_LIBS)
 endif
+
+libascii_module_la_SOURCES = $(ASCII_SOURCES) $(BES_SOURCES)
+libascii_module_la_CPPFLAGS = $(BES_CPPFLAGS)
+libascii_module_la_LDFLAGS = -avoid-version -module 
+libascii_module_la_LIBADD = $(BES_LIBS)
 
 dap_asciival_SOURCES = $(ASCII_SOURCES) ascii_val.cc
 

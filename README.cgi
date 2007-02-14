@@ -1,14 +1,16 @@
 
-	$Id$
+	$Id:README.cgi 15847 2007-02-14 18:16:29Z jimg $
 
 PREFACE
 
   NOTE
 
-      This software now builds plugins for use with the BES. See the BES
-      documentation for information about configuration. To build the
-      plugins, just run 'make' and 'make install'.
-
+      This README is specifically for the CGI version of the OPeNDAP Data
+      Server, which is being replaced by a server which uses the ESG/OPeNDAP
+      data server back end (aka BES) along with a front-end component that
+      uses Java Servlets. This new server is name 'Hyrax'. See opendap.org
+      for more information.
+      
   This is a general guide for the OPeNDAP data servers. There is a more 
   detailed guide available online at http://opendap.org/support at the link 
   'Server Installation Guide.'

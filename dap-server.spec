@@ -85,15 +85,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%doc COPYING COPYRIGHT_URI EXAMPLE_OPENDAP_STATISTICS NEWS README
-# add those as documentation
-%doc opendap_apache.conf-sample nph-dods-sample dap-server.rc-sample
+%doc COPYING COPYRIGHT_URI EXAMPLE_OPENDAP_STATISTICS NEWS README.hyrax
 %{_bindir}/dap_usage
 %{_bindir}/dap_asciival
 %{_bindir}/dap_www_int
-%{_datadir}/dap-server/
-# the webserver must have write access to the cache dir
-%attr(-,apache,apache) %{dap_cachedir}
+# %{_libdir}/
+%{_libdir}/bes/
 
 %files cgi
 %defattr(-,apache,apache,-)
@@ -101,9 +98,17 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{dap_cgidir}
 %config(noreplace) %{dap_cgidir}/dap-server.rc
 %{dap_cgidir}/nph-dods
+# the webserver must have write access to the cache dir
+%attr(-,apache,apache) %{dap_cachedir}
+%{_datadir}/dap-server/
+# add those as documentation
+%doc README.cgi
+%doc opendap_apache.conf-sample nph-dods-sample dap-server.rc-sample
 
 
 %changelog
+* Wed Feb 14 2007 James Gallagher <jgallagher@opendap.org> 3.7.3-1
+- Update for 3.7.3; includes adding BES modules
 * Wed Sep 20 2006 Patrice Dumas <dumas@centre-cired.fr> 3.7.1-1
 - update to 3.7.1
 

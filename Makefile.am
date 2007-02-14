@@ -15,12 +15,15 @@ bin_PROGRAMS = dap_usage
 dap_usage_SOURCES = usage_main.cc $(USAGE_SOURCES)
 
 if OPENDAPSERVER
-    lib_besdir=$(BES_MODULE_DIR)
+    lib_besdir=$(libdir)/bes
     lib_bes_LTLIBRARIES = libusage_module.la
-    libusage_module_la_SOURCES = $(USAGE_SOURCES) $(BES_SOURCES)
-    libusage_module_la_CPPFLAGS = $(BES_CPPFLAGS)
-    libusage_module_la_LDFLAGS = -avoid-version -module 
-    libusage_module_la_LIBADD = $(BES_LIBS)
+
+    # lib_besdir=$(BES_MODULE_DIR)
+    # lib_bes_LTLIBRARIES = libusage_module.la
+    # libusage_module_la_SOURCES = $(USAGE_SOURCES) $(BES_SOURCES)
+    # libusage_module_la_CPPFLAGS = $(BES_CPPFLAGS)
+    # libusage_module_la_LDFLAGS = -avoid-version -module 
+    # libusage_module_la_LIBADD = $(BES_LIBS)
 endif
 
 USAGE_SOURCES = usage.cc usage.h 
@@ -28,6 +31,11 @@ USAGE_SOURCES = usage.cc usage.h
 BES_SOURCES = BESUsageModule.h BESUsageNames.h BESUsageResponseHandler.h \
 	  BESUsageTransmit.h BESUsageModule.cc BESUsageResponseHandler.cc \
 	  BESUsageTransmit.cc BESUsage.h
+
+libusage_module_la_SOURCES = $(USAGE_SOURCES) $(BES_SOURCES)
+libusage_module_la_CPPFLAGS = $(BES_CPPFLAGS)
+libusage_module_la_LDFLAGS = -avoid-version -module 
+libusage_module_la_LIBADD = $(BES_LIBS)
 
 modulesdir = $(dap_modulesdir)
 
