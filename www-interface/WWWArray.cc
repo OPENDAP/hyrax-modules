@@ -82,15 +82,6 @@ WWWArray::~WWWArray()
 void
 WWWArray::print_val(FILE * os, string, bool /*print_decl_p */ )
 {
-#if 0
-    // We have the name, so no need to change any of that code for BES, but
-    // for dimensions we need the redirected array. Not any more... See 
-    // WWWArray::WWWArray(Array *). jhrg 2/1/07
-    Array *arr = _redirect;
-    if (!arr)
-        arr = this;
-#endif
-
     ostringstream ss;
     ss << "<script type=\"text/javascript\">\n"
         << "<!--\n"

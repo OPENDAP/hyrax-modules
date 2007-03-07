@@ -40,20 +40,14 @@ static char rcsid[] not_used =
 
 #ifndef WIN32
 #include <unistd.h>
-#endif
-
-#ifdef WIN32
+#else
 #include <process.h>
 #include <io.h>
 #endif
 
-//#include <GNURegex.h>
-
 #include <BaseType.h>
-//#include <Array.h>
-//#include <DAS.h>
 #include <DDS.h>
-//#include <InternalErr.h>
+
 #include <debug.h>
 #include <cgi_util.h>
 #include <util.h>
@@ -62,57 +56,12 @@ static char rcsid[] not_used =
 
 using namespace std;
 
-#if 0
-static bool name_is_global(string & name);
-static bool name_in_kill_file(const string & name);
-#endif
-
 #ifdef WIN32
 #define getpid _getpid
 #define access _access
 #define X_OK 00                 //  Simple existance
 #endif
 
-#if 0
-// This was part of a system to provide a way to 'drop in' new DAP --> format
-// handlers. But only www_int was ever complete enough to be released. Since
-// it's always present, it seems silly to dump a huge effort into this code.
-// See below in write_dispssition(). Also see Trac ticket #134. jhrg 7/22/05. 
-#if 0
-char *www_int = "./www_int.exe";
-char *dods2ncdf = "./dods2ncdf.exe";
-char *dods2hdf4 = "./dods2hdf4.exe";
-char *dods2hdf5 = "./dods2hdf5.exe";
-char *dods2mat = "./dods2mat.exe";
-char *dods2idl = "./dods2idl.exe";
-#else
-char *www_int = "/usr/local/bin/dap_www_int";
-char *dods2ncdf = "dods2ncdf";
-char *dods2hdf4 = "dods2hdf4";
-char *dods2hdf5 = "dods2hdf5";
-char *dods2mat = "dods2mat";
-char *dods2idl = "dods2idl";
-#endif
-#endif
-
-// This code could use a real `kill-file' some day - about the same time that
-// the rest of the server gets a `rc' file... For the present just see if a
-// small collection of regexs match the name.
-#if 0
-static bool name_in_kill_file(const string & name)
-{
-    static Regex dim(".*_dim_[0-9]*", 1);       // HDF `dimension' attributes.
-
-    return dim.match(name.c_str(), name.length()) != -1;
-}
-
-static bool name_is_global(string & name)
-{
-    static Regex global ("(.*global.*)|(.*dods.*)", 1);
-    downcase(name);
-    return global.match(name.c_str(), name.length()) != -1;
-}
-#endif
 WWWOutput::WWWOutput(FILE * os, int rows, int cols) : d_das(0), d_os(os),
     d_attr_rows(rows), d_attr_cols(cols)
 {
@@ -136,31 +85,6 @@ void WWWOutput::write_disposition(string url)
 <a href=\"opendap_form_help.html#disposition\" target=\"help\">Action:</a></h3>\n\
 <td>\n\
 <input type=\"button\" value=\"Get ASCII\" onclick=\"ascii_button()\">\n");
-
-#if 0
-    // See the comment above about the 'drop in' format handler support that
-    // was never needed. jhrg 7/22/05
-
-    if (acceos(dods2ncdf, X_OK) == 0)
-        _os <<
-            "<input type=\"button\" value=\"Get netCDF\" onclick=\"binary_button('netcdf')\">\n";
-
-    if (acceos(dods2hdf4, X_OK) == 0)
-        _os <<
-            "<input type=\"button\" value=\"Get HDF 4\" onclick=\"binary_button('hdf4')\">\n";
-
-    if (acceos(dods2hdf5, X_OK) == 0)
-        _os <<
-            "<input type=\"button\" value=\"Get HDF 5\" onclick=\"binary_button('hdf5')\">\n";
-
-    if (acceos(dods2mat, X_OK) == 0)
-        _os <<
-            "<input type=\"button\" value=\"Get MatLAB\" onclick=\"binary_button('mat')\">\n";
-
-    if (acceos(dods2idl, X_OK) == 0)
-        _os <<
-            "<input type=\"button\" value=\"Get IDL\" onclick=\"binary_button('idl')\">\n";
-#endif
 
     fprintf(d_os,
             "<input type=\"button\" value=\"Binary Data Object \" onclick=\"binary_button('dods')\">\n\
@@ -198,7 +122,7 @@ void WWWOutput::write_attributes(AttrTable * attr, const string prefix)
     }
 }
 
-/** Given teh global attribute table, write the HTML which contains all the 
+/** Given the global attribute table, write the HTML which contains all the 
     global attributes for this dataset. A global attribute is defined in the
     source file DDS.cc by the DDS::transfer_attributes() method.
 
@@ -214,78 +138,7 @@ void WWWOutput::write_global_attributes(AttrTable &attr)
 
     fprintf(d_os, "</textarea><p>\n\n");
 }
-#if 0
-/** Given the DAS, write the HTML which contains all the global
-    attributes for this dataset. A global attribute is defined as
-    any attribute for which name_in_kill_file() is false and
-    name_is_global() is true.
 
-    NB: This mfunc used to scan the DDS and look for attributes which
-    matched no variable's name. Such an attribute was considered global.
-    However, this proved to be unreliable because some servers create
-    attributes which match no variable names exactly and because
-    attribute aliases can introduce new attrbute containers which also
-    match no variables' names.
-
-    @param das The DAS for the dataset. 
-    @deprecated */
-void WWWOutput::write_global_attributes(DAS & das)
-{
-    fprintf(d_os, "<tr>\n\
-<td align=\"right\" valign=\"top\"><h3>\n\
-<a href=\"opendap_form_help.html#global_attr\" target=\"help\">Global Attributes:</a></h3>\n\
-<td><textarea name=\"global_attr\" rows=\"%d\" cols=\"%d\">\n", d_attr_rows, d_attr_cols);
-
-    for (AttrTable::Attr_iter p = das.var_begin(); p != das.var_end(); ++p) {
-        string name = das.get_name(p);
-
-        if (!name_in_kill_file(name) && name_is_global(name)) {
-            AttrTable *attr = das.get_table(p);
-            write_attributes(attr);
-        }
-    }
-
-    fprintf(d_os, "</textarea><p>\n\n");
-}
-#endif
-// deprecated
-
-void WWWOutput::write_variable_list(DDS & dds)
-{
-    fprintf(d_os,
-            "<a href=\"opendap_form_help.html#dataset_variables\" target=\"help\"><h4>Dataset Variables</a>:</h4>\n\
-<select name=\"variables\" multiple size=5 onChange=\"variables_obj.var_selection()\">\n");
-
-    for (DDS::Vars_iter p = dds.var_begin(); p != dds.var_end(); ++p) {
-        fprintf(d_os, "<option value=\"%s\"> %s", (*p)->name().c_str(),
-                (*p)->name().c_str());
-    }
-
-    fprintf(d_os, "</select>\n");
-}
-
-#if 0
-void WWWOutput::write_variable_entries(DAS & das, DDS & dds)
-{
-    // This writes the text `Variables:' and then sets up the table so that
-    // the first variable's section is written into column two.
-    fprintf(d_os, "<tr>\n\
-<td align=\"right\" valign=\"top\">\n\
-<h3><a href=\"opendap_form_help.html#dataset_variables\" target=\"help\">Variables:</a></h3>\n\
-<td>");
-
-    for (DDS::Vars_iter p = dds.var_begin(); p != dds.var_end(); ++p) {
-        (*p)->print_val(d_os);
-#if 0
-        write_variable_attributes((*p), das);
-#endif
-        write_variable_attributes(*p);
-        
-        fprintf(d_os, "\n<p><p>\n\n");  // End the current var's section
-        fprintf(d_os, "<tr><td><td>\n\n");      // Start the next var in column two
-    }
-}
-#endif
 void WWWOutput::write_variable_entries(DDS &dds)
 {
     // This writes the text `Variables:' and then sets up the table so that
@@ -297,9 +150,7 @@ void WWWOutput::write_variable_entries(DDS &dds)
 
     for (DDS::Vars_iter p = dds.var_begin(); p != dds.var_end(); ++p) {
         (*p)->print_val(d_os);
-#if 0
-        write_variable_attributes((*p), das);
-#endif
+
         write_variable_attributes(*p);
         
         fprintf(d_os, "\n<p><p>\n\n");  // End the current var's section
@@ -307,17 +158,9 @@ void WWWOutput::write_variable_entries(DDS &dds)
     }
 }
 
-    
-/** Given the an attribute table, write out its contents assuming that the 
-    output sink is positioned correctly.
-    @brief Write the variable entries.
-    @param attr The attributes.
-    @deprecated */
-    
 /** Write a variable's attribtute information. 
 
-    @param btp A pointer to the variable. 
-    @deprecated */
+    @param btp A pointer to the variable.*/
 void WWWOutput::write_variable_attributes(BaseType * btp)
 {
     AttrTable &attr = btp->get_attr_table();
@@ -333,22 +176,3 @@ void WWWOutput::write_variable_attributes(BaseType * btp)
     write_attributes(&attr);
     fprintf(d_os, "</textarea>\n\n");
 }
-#if 0
-/** 
-    @memo Write the variable entries.
-    @param das The dataset's DAS.
-    @param dds The dataset's DDS. 
-    @deprecated */
-void WWWOutput::write_variable_attributes(BaseType * btp, DAS & das)
-{
-    AttrTable *attr = das.get_table(btp->name());
-    // Don't write anything if there are no attributes.
-    if (!attr)
-        return;
-
-    fprintf(d_os, "<textarea name=\"%s_attr\" rows=\"%d\" cols=\"%d\">\n",
-            btp->name().c_str(), d_attr_rows, d_attr_cols);
-    write_attributes(attr);
-    fprintf(d_os, "</textarea>\n\n");
-}
-#endif

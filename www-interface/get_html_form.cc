@@ -123,17 +123,7 @@ DDS *dds_to_www_dds(DDS * dds)
 
     return wwwdds;
 }
-#if 0
-// Ugly hack for now...
-void write_html_form_interface(FILE * dest, DDS * dds,
-                               const string & url, bool html_header,
-                               const string & admin_name,
-                               const string & help_location)
-{
-    write_html_form_interface(dest, dds, 0, url, html_header, admin_name
-                              help_location);
-}
-#endif
+
 /** Using the stuff in WWWOutput and the hacked (specialized) print_val() 
     methods in the WWW* classes, write out the HTML form interface.
     
@@ -146,8 +136,6 @@ void write_html_form_interface(FILE * dest, DDS * dds,
     @param url The URL that should be initially displayed in the form. The
     form's javescript code will update this incrementally as the user builds
     a constraint.
-    @param das The DAS for these variables. Once this is modified as per the
-    todo entry, ignored.
     @param html_header Print a HTML header/footer for the page. True by default.
     @param admin_name "support@unidata.ucar.edu" by default; use this as the 
     address for support printed on the form.
@@ -155,16 +143,12 @@ void write_html_form_interface(FILE * dest, DDS * dds,
     by default; otherwise, this is locataion where an HTML document that 
     explains the page can be found. 
     */
-void write_html_form_interface(FILE * dest, DDS * dds, // DAS * das,
+void write_html_form_interface(FILE * dest, DDS * dds,
                                const string & url, bool html_header,
                                const string & admin_name,
                                const string & help_location)
 {
     wo = new WWWOutput(dest);
-    // Remove
-#if 0
-    wo->set_das(das);
-#endif
 
     if (html_header)
         wo->write_html_header();
@@ -192,18 +176,10 @@ void write_html_form_interface(FILE * dest, DDS * dds, // DAS * das,
 
     fprintf(stdout, "<tr><td><td><hr>\n\n");
 
-    // Replace *wo->get_das() with dds.get_attr_table()
-#if 0
-    wo->write_global_attributes(*wo->get_das());
-#endif
     wo->write_global_attributes(dds->get_attr_table());
 
     fprintf(stdout, "<tr><td><td><hr>\n\n");
 
-    // Remove first param
-#if 0
-    wo->write_variable_entries(*wo->get_das(), *dds);
-#endif
     wo->write_variable_entries(*dds);
 
     oss.str("");
@@ -231,19 +207,8 @@ const string allowable =
 // easier. jhrg 11/28/06
 string name_for_js_code(const string & dods_name)
 {
-#if 0
-    int pid = getpid();
-
-    ostringstream oss;
-    // Calling id2www with a different set of allowable chars gets an
-    // identifier with chars allowable for JavaScript. Then turn the `%' sign
-    // into an underscore.
-    oss << "org_dods_dcz" << pid << esc2underscore(id2www(dods_name, allowable));       // << ends;
-    return oss.str();
-#else
     return string("org_opendap_") +
         esc2underscore(id2www(dods_name, allowable));
-#endif
 }
 
 string fancy_typename(BaseType * v)

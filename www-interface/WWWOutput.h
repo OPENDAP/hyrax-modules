@@ -70,20 +70,6 @@ private:
 	(default 70). */
     WWWOutput(FILE *os, int rows = 5, int cols = 70);
 
-#if 0
-    /** Set DAS object for this data source. This is used inside the
-	print_val() methods. Since those do not have a DAS parameter, the
-	specialized methods get it using the matching get_das() accessor. 
-
-	@param das The data soruce's DAS. */
-    void set_das(DAS *das) { d_das = das; }
-
-    /** Get the data source's das. 
-	@see set_das()
-	@return The DAS object. */
-    DAS *get_das() const { return d_das; }
-#endif
-
     /** Write out the header for the HTML document. */
     void write_html_header();
 
@@ -94,9 +80,6 @@ private:
 	@param url The initial URL to display. */
     void write_disposition(string url);
 
-#if 0
-    void write_global_attributes(DAS &das);
-#endif
     void write_global_attributes(AttrTable &attr);
     
     /** Write the dataset variable list. This is a scrolling select box.
@@ -105,14 +88,8 @@ private:
 	@param dds The dataset's DDS. */
     void write_variable_list(DDS &dds);
 
-#if 0
-    void write_variable_entries(DAS &das, DDS &dds);
-#endif
     void write_variable_entries(DDS &dds);
 
-#if 0
-    void write_variable_attributes(BaseType *btp, DAS &das);
-#endif
     void write_variable_attributes(BaseType * btp);
 };
 

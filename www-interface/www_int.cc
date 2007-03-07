@@ -279,8 +279,7 @@ int main(int argc, char *argv[])
 
         dds.transfer_attributes(&das);
         
-        write_html_form_interface(stdout, &dds, //&das, 
-                                  url,
+        write_html_form_interface(stdout, &dds, url,
                                   regular_header || nph_header,
                                   admin_name, help_location);
     }
