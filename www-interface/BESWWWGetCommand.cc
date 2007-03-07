@@ -22,7 +22,7 @@
 //
 // You can contact University Corporation for Atmospheric Research at
 // 3080 Center Green Drive, Boulder, CO 80301
- 
+
 // (c) COPYRIGHT University Corporation for Atmostpheric Research 2004-2005
 // Please read the full copyright statement in the file COPYRIGHT_UCAR.
 //
@@ -64,81 +64,71 @@
  * @param dhi structure that holds request and response information
  * @throws BESParserException if there is a problem parsing the request
  */
-BESResponseHandler *
-BESWWWGetCommand::parse_request( BESTokenizer &tokenizer,
-                                 BESDataHandlerInterface &dhi )
+BESResponseHandler *BESWWWGetCommand::
+parse_request(BESTokenizer & tokenizer, BESDataHandlerInterface & dhi)
 {
-    string def_name ;
-    string url ;
+    string def_name;
+    string url;
 
     BESResponseHandler *retResponse =
-	BESResponseHandlerList::TheList()->find_handler( _cmd ) ;
-    if( !retResponse )
-    {
-	string err( "Command " ) ;
-	err += _cmd ;
-	err += " does not have a registered response handler" ;
-	throw BESParserException( err, __FILE__, __LINE__ ) ;
+        BESResponseHandlerList::TheList()->find_handler(_cmd);
+    if (!retResponse) {
+        string err("Command ");
+        err += _cmd;
+        err += " does not have a registered response handler";
+        throw BESParserException(err, __FILE__, __LINE__);
     }
-    dhi.action = _cmd ;
+    dhi.action = _cmd;
 
-    string my_token = parse_options( tokenizer, dhi ) ;
-    if( my_token != "for" )
-    {
-	tokenizer.parse_error( my_token + " not expected\n" ) ;
-    }
-    else
-    {
-	def_name = tokenizer.get_next_token() ;
+    string my_token = parse_options(tokenizer, dhi);
+    if (my_token != "for") {
+        tokenizer.parse_error(my_token + " not expected\n");
+    } else {
+        def_name = tokenizer.get_next_token();
 
-	my_token = tokenizer.get_next_token() ;
-	if( my_token == "using" )
-	{
-	    url = tokenizer.get_next_token() ;
+        my_token = tokenizer.get_next_token();
+        if (my_token == "using") {
+            url = tokenizer.get_next_token();
 
-	    my_token = tokenizer.get_next_token() ;
-	    if( my_token != ";" )
-	    {
-		tokenizer.parse_error( my_token + " not expected, expecting ';'" ) ;
-	    }
-	}
-	else
-	{
-	    tokenizer.parse_error( my_token + " not expected, expecting \"return\" or ';'" ) ;
-	}
+            my_token = tokenizer.get_next_token();
+            if (my_token != ";") {
+                tokenizer.parse_error(my_token +
+                                      " not expected, expecting ';'");
+            }
+        } else {
+            tokenizer.parse_error(my_token +
+                                  " not expected, expecting \"return\" or ';'");
+        }
     }
 
     // FIX: should this be using dot notation? Like get das for volatile.d ;
     // Or do it like the containers, just find the first one available? Same
     // question for containers then?
     /*
-    string store_name = PERSISTENCE_VOLATILE ;
-    BESDefinitionStorage *store =
-	BESDefinitionStorageList::TheList()->find_def( store_name ) ;
-    if( !store )
-    {
-	throw BESParserException( (string)"Unable to find definition store " + store_name ) ;
-    }
-    */
+       string store_name = PERSISTENCE_VOLATILE ;
+       BESDefinitionStorage *store =
+       BESDefinitionStorageList::TheList()->find_def( store_name ) ;
+       if( !store )
+       {
+       throw BESParserException( (string)"Unable to find definition store " + store_name ) ;
+       }
+     */
 
-    BESDefine *d = BESDefinitionStorageList::TheList()->look_for( def_name ) ;
-    if( !d )
-    {
-	string s = (string)"Unable to find definition " + def_name ;
-	throw BESParserException( s, __FILE__, __LINE__ ) ;
+    BESDefine *d = BESDefinitionStorageList::TheList()->look_for(def_name);
+    if (!d) {
+        string s = (string) "Unable to find definition " + def_name;
+        throw BESParserException(s, __FILE__, __LINE__);
     }
 
-    BESDefine::containers_citer i = d->first_container() ;
-    BESDefine::containers_citer ie = d->end_container() ;
-    while( i != ie )
-    {
-	dhi.containers.push_back( *i ) ;
-	i++ ;
+    BESDefine::containers_citer i = d->first_container();
+    BESDefine::containers_citer ie = d->end_container();
+    while (i != ie) {
+        dhi.containers.push_back(*i);
+        i++;
     }
-    dhi.data[AGG_CMD] = d->get_agg_cmd() ;
-    dhi.data[AGG_HANDLER] = d->get_agg_handler() ;
-    dhi.data[WWW_URL] = url ;
+    dhi.data[AGG_CMD] = d->get_agg_cmd();
+    dhi.data[AGG_HANDLER] = d->get_agg_handler();
+    dhi.data[WWW_URL] = url;
 
-    return retResponse ;
+    return retResponse;
 }
-

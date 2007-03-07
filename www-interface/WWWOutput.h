@@ -55,8 +55,8 @@ private:
 
  protected:
     FILE *d_os;
-    int _attr_rows;
-    int _attr_cols;
+    int d_attr_rows;
+    int d_attr_cols;
 
     void write_attributes(AttrTable *attr, const string prefix = "");
 
@@ -70,6 +70,7 @@ private:
 	(default 70). */
     WWWOutput(FILE *os, int rows = 5, int cols = 70);
 
+#if 0
     /** Set DAS object for this data source. This is used inside the
 	print_val() methods. Since those do not have a DAS parameter, the
 	specialized methods get it using the matching get_das() accessor. 
@@ -81,6 +82,7 @@ private:
 	@see set_das()
 	@return The DAS object. */
     DAS *get_das() const { return d_das; }
+#endif
 
     /** Write out the header for the HTML document. */
     void write_html_header();
@@ -92,41 +94,26 @@ private:
 	@param url The initial URL to display. */
     void write_disposition(string url);
 
-    /** Given the DAS, write the HTML which contains all the global
-	attributes for this dataset. A global attribute is defined as
-	any attribute for which name_in_kill_file() is false and
-	name_is_global() is true.
-
-	NB: This mfunc used to scan the DDS and look for attributes which
-	matched no variable's name. Such an attribute was considered global.
-	However, this proved to be unreliable because some servers create
-	attributes which match no variable names exactly and because
-	attribute aliases can introduce new attrbute containers which also
-	match no variables' names.
-
-	@param das The DAS for the dataset. */
+#if 0
     void write_global_attributes(DAS &das);
-
+#endif
+    void write_global_attributes(AttrTable &attr);
+    
     /** Write the dataset variable list. This is a scrolling select box.
 
 	@deprecated
 	@param dds The dataset's DDS. */
     void write_variable_list(DDS &dds);
 
-    /** Given the DAS and the DDS, write an HTML table which describes each
-	one of the variables by listing its name, datatype and all of its
-	attributes.
-
-	@memo Write the variable entries.
-	@param das The dataset's DAS.
-	@param dds The dataset's DDS. */
+#if 0
     void write_variable_entries(DAS &das, DDS &dds);
+#endif
+    void write_variable_entries(DDS &dds);
 
-    /** Write a variable's attribtute information. 
-
-	@param das The dataset's DAS.
-	@param btp A pointer to the variable. */
+#if 0
     void write_variable_attributes(BaseType *btp, DAS &das);
+#endif
+    void write_variable_attributes(BaseType * btp);
 };
 
 #endif // __www_output_h

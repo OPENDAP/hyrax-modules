@@ -123,8 +123,17 @@ DDS *dds_to_www_dds(DDS * dds)
 
     return wwwdds;
 }
-
-
+#if 0
+// Ugly hack for now...
+void write_html_form_interface(FILE * dest, DDS * dds,
+                               const string & url, bool html_header,
+                               const string & admin_name,
+                               const string & help_location)
+{
+    write_html_form_interface(dest, dds, 0, url, html_header, admin_name
+                              help_location);
+}
+#endif
 /** Using the stuff in WWWOutput and the hacked (specialized) print_val() 
     methods in the WWW* classes, write out the HTML form interface.
     
@@ -146,13 +155,16 @@ DDS *dds_to_www_dds(DDS * dds)
     by default; otherwise, this is locataion where an HTML document that 
     explains the page can be found. 
     */
-void write_html_form_interface(FILE * dest, DDS * dds, DAS * das,
+void write_html_form_interface(FILE * dest, DDS * dds, // DAS * das,
                                const string & url, bool html_header,
                                const string & admin_name,
                                const string & help_location)
 {
     wo = new WWWOutput(dest);
+    // Remove
+#if 0
     wo->set_das(das);
+#endif
 
     if (html_header)
         wo->write_html_header();
@@ -180,11 +192,19 @@ void write_html_form_interface(FILE * dest, DDS * dds, DAS * das,
 
     fprintf(stdout, "<tr><td><td><hr>\n\n");
 
+    // Replace *wo->get_das() with dds.get_attr_table()
+#if 0
     wo->write_global_attributes(*wo->get_das());
+#endif
+    wo->write_global_attributes(dds->get_attr_table());
 
     fprintf(stdout, "<tr><td><td><hr>\n\n");
 
+    // Remove first param
+#if 0
     wo->write_variable_entries(*wo->get_das(), *dds);
+#endif
+    wo->write_variable_entries(*dds);
 
     oss.str("");
     oss << "</table></form>\n\n" << "<hr>\n\n";
@@ -268,6 +288,12 @@ string fancy_typename(BaseType * v)
     }
 }
 
+/** This function is used by the Byte, ..., URL types to write their entries
+    in the HTML Form. More complex classes do something else.
+    @brief Output HTML entry for Scalars
+    @param os Write to this output sink.
+    @param name The name of the variable.
+    @param type The name of the variable's data type. */
 void
 write_simple_variable(FILE * os, const string & name, const string & type)
 {

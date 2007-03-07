@@ -53,23 +53,29 @@ void
  BESWWWTransmit::send_basic_form(BESResponseObject * obj,
                                  BESDataHandlerInterface & dhi)
 {
+#if 0
     BESWWW *usage = dynamic_cast < BESWWW * >(obj);
     DAS *das = usage->get_das();
     DDS *dds = usage->get_dds();
+#endif
 
     dhi.first_container();
-
+#if 0
     string dataset_name = dhi.container->access();
-
+#endif
     try {
         (*BESLog::TheLog()) << "converting dds to www dds" << endl;
 
-        DDS *wwwdds = dds_to_www_dds(dds);
-
+        DDS *wwwdds = dds_to_www_dds(dynamic_cast<BESWWW*>(obj)->get_dds());
+        wwwdds->transfer_attributes(dynamic_cast<BESWWW*>(obj)->get_das());
+        
         (*BESLog::TheLog()) << "writing form" << endl;
 
         string url = dhi.data[WWW_URL];
+#if 0
         write_html_form_interface(stdout, wwwdds, das, url, false);
+#endif
+        write_html_form_interface(stdout, wwwdds, url, false);
 
         (*BESLog::TheLog()) << "done transmitting form" << endl;
     }

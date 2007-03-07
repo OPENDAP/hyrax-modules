@@ -55,36 +55,34 @@ void
         (*BESLog::TheLog()) << "Initializing OPeNDAP WWW module:" << endl;
 
     if (BESLog::TheLog()->is_verbose())
-        (*BESLog::
-         TheLog()) << "    adding " << WWW_RESPONSE << " response handler"
-   << endl;
+        (*BESLog::TheLog()) << "    adding " << WWW_RESPONSE 
+                            << " response handler" << endl;
+                            
     BESResponseHandlerList::TheList()->add_handler(WWW_RESPONSE,
                                                    BESWWWResponseHandler::
                                                    WWWResponseBuilder);
 
     BESTransmitter *t =
-        BESReturnManager::TheManager()->
-        find_transmitter(BASIC_TRANSMITTER);
+        BESReturnManager::TheManager()->find_transmitter(BASIC_TRANSMITTER);
+        
     if (t) {
         if (BESLog::TheLog()->is_verbose())
-            (*BESLog::
-             TheLog()) << "    adding basic " << WWW_TRANSMITTER <<
-       " transmit function" << endl;
+            (*BESLog::TheLog()) << "    adding basic " << WWW_TRANSMITTER 
+                                << " transmit function" << endl;
         t->add_method(WWW_TRANSMITTER, BESWWWTransmit::send_basic_form);
     }
 
     t = BESReturnManager::TheManager()->find_transmitter(HTTP_TRANSMITTER);
     if (t) {
         if (BESLog::TheLog()->is_verbose())
-            (*BESLog::
-             TheLog()) << "    adding http " << WWW_TRANSMITTER <<
-       " transmit function" << endl;
+            (*BESLog::TheLog()) << "    adding http " << WWW_TRANSMITTER 
+                                << " transmit function" << endl;
         t->add_method(WWW_TRANSMITTER, BESWWWTransmit::send_http_form);
     }
 
     if (BESLog::TheLog()->is_verbose())
-        (*BESLog::
-         TheLog()) << "    adding " << WWW_RESPONSE << " command" << endl;
+        (*BESLog::TheLog()) << "    adding " << WWW_RESPONSE << " command" << endl;
+        
     BESCommand *cmd = new BESWWWGetCommand(WWW_RESPONSE);
     BESCommand::add_command(WWW_RESPONSE, cmd);
 }
@@ -110,7 +108,6 @@ void BESWWWModule::dump(ostream & strm) const
         << (void *) this << ")" << endl;
 }
 
-extern "C" {
-    BESAbstractModule *maker() {
-        return new BESWWWModule;
-}}
+extern "C" BESAbstractModule *maker() {
+    return new BESWWWModule;
+}

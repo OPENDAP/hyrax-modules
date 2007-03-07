@@ -36,7 +36,8 @@ extern WWWOutput *wo;
 
 BaseType *basetype_to_wwwtype( BaseType *bt );
 DDS *dds_to_www_dds( DDS *dds );
-void write_html_form_interface(FILE *dest, DDS *dds, DAS *das, const string &url,
+void write_html_form_interface(FILE *dest, DDS *dds,
+                          const string &url,
                           bool html_header = true,
                           const string &admin_name = "support@unidata.ecar.edu", 
                           const string &help_location = "http://www.opendap.org/online_help_files/opendap_form_help.html");

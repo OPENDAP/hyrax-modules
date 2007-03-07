@@ -109,7 +109,10 @@ WWWSequence::print_val(FILE *os, string /*space*/, bool print_decls)
 
     for (Vars_iter i = var_begin(); i != var_end(); ++i) {
 	(*i)->print_val(os, "", print_decls);
+#if 0
 	wo->write_variable_attributes((*i), *(wo->get_das()));
+#endif
+    wo->write_variable_attributes(*i);
 	fprintf(os,  "<p><p>\n");
     }
 
