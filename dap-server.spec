@@ -89,7 +89,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/dap_usage
 %{_bindir}/dap_asciival
 %{_bindir}/dap_www_int
-# %{_libdir}/
+%{_bindir}/configure-dap-data.sh
 %{_libdir}/bes/
 
 %files cgi
