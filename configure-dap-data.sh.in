@@ -34,9 +34,9 @@ mv tmp.conf $bes_conf
 done
 
 # Add the handler module line (e.g., BES.module.ff) to the conf file
-for module in "BES.module.usage=$bes_modules_dir/libusage_module.so;" \
-			  "BES.module.ascii=$bes_modules_dir/libascii_module.so;" \
-			  "BES.module.www=$bes_modules_dir/libwww_module.so;"
+for module in "BES.module.usage=$bes_modules_dir/libusage_module.so" \
+			  "BES.module.ascii=$bes_modules_dir/libascii_module.so" \
+			  "BES.module.www=$bes_modules_dir/libwww_module.so"
 do
 
 awk "BEGIN {bes_module_found=0}

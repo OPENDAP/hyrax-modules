@@ -102,7 +102,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(-,apache,apache) %{dap_cachedir}
 %{_datadir}/dap-server/
 # add those as documentation
-%doc README.cgi
+%doc README.cgi-server
 %doc opendap_apache.conf-sample nph-dods-sample dap-server.rc-sample
 
 

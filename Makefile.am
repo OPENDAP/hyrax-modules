@@ -47,7 +47,7 @@ nodist_cgiconf_DATA = dap-server.rc
 
 EXTRA_DIST = EXAMPLE_OPENDAP_STATISTICS COPYING COPYRIGHT_URI \
   nph-dods.in dap-server.rc.in dap-server.spec opendap_apache.conf \
-  README.hyrax README.cgi
+  README.hyrax README.cgi-server
 
 nph-dods: nph-dods.in config.status
 	sed -e 's%[@]PERL[@]%${PERL}%' \
