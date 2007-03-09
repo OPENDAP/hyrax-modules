@@ -66,7 +66,7 @@ DISTCLEANFILES = nph-dods dap-server.rc stamp-nph-dods
 if OPENDAPSERVER
 
 EXTRA_DIST += configure-dap-data.sh.in
-CLEANFILES += configure-dap-data.sh
+CLEANFILES = configure-dap-data.sh
 
 do_subst = sed -e 's,[@]sysconfdir[@],$(sysconfdir),g' \
 		   	   -e 's,[@]libdir[@],$(libdir),g'
