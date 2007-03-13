@@ -1,3 +1,16 @@
+2007-03-13  James Gallagher <jgallagher@opendap.org>
+
+	Fixed a bug in AsciiArray that showed up int he unit tests. The
+	problem was that the vector values for dimensions were off by one.
+	Also, we only need the _redirect object for _values_, not for the
+	dinensions (since the constructor that builds an instance from a
+	BaseType * copies the dimensions).
+
+	M    asciival/unit-tests/AsciiArrayTest.cc
+	M    asciival/unit-tests/AsciiOutputTest.cc
+	M    asciival/AsciiArray.cc
+	M    ChangeLog
+
 2007-03-09  James Gallagher <jgallagher@opendap.org>
 
 	Final changes for the default configuration and data install for

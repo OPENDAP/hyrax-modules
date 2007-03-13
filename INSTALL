@@ -1,7 +1,7 @@
 
 	$Id$
 
-Updated for version 3.7.3 of the OPeNDAP server base software
+Updated for version 3.7.4 of the OPeNDAP server base software
 
 Building and Installing the OPeNDAP Server Base. See README for information
 about server configuration.
@@ -48,10 +48,10 @@ BUILDING THE SOFTWARE
 
 REQUIREMENTS
 
-  o The Server Base Software uses libdap 3.7.4 or greater. You must install
+  o The Server Base Software uses libdap 3.7.5 or greater. You must install
     that software. See http://www.opendap.org/download/.
     
-  o To build this as part of Hyrax, you need the bes, version 3.3.1
+  o To build this as part of Hyrax, you need the bes, version 3.4.1
 
   o You should have gcc/g++ 2.95.x or greater. You'll also need to get the
     stdc++ library that matches the compiler (whatever version). In most

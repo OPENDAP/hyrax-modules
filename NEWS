@@ -1,3 +1,30 @@
+Version 3.7.4 (13 March 2007)
+
+Fixed a bug in AsciiArray that showed up in the unit tests. The problem was
+that the vector values for dimensions were off by one. Also, we only need the
+_redirect object for _values_, not for the dinensions (since the constructor
+that builds an instance from a BaseType * copies the dimensions).
+
+Added files for the test data and auto configuration ticket. The handlers now
+'auto configure' meaning that when you type make install the bes.conf file is
+edited so that the bes will ind the newly installed handlers. This _should_
+work with the RPM version, too. The script is set to run once only, so
+subsequent installs will not modify the bes.conf file.
+
+Fixed bug #347: HDF-EOS attributes did not show up in the HTML form
+interface. The problem was that HDF-EOS attributes use conventions that the
+WWW Response Handler did not recognize. I modified the Response Handler so
+that it works with a DDX (i.e., a DDS loaded with attributes) and that fixes
+the problem, given that the form generator code already knew how to deal with
+nested attributes. One consequnce of this is that the attributes names in the
+Global Attributes section of the HTML now are prefaced with the names of
+various global attribute containers.
+
+I split up the README into README.cgi and README.hyrax so that the
+information about settig up the CGI server would be put in the dap-server-cgi
+package and so that the regular package would have a decent README. I also
+fixed some libgering issues in the spec file and Makefile.am
+
 Version 3.7.3
 
 This version cotains a fix for bug 766 where Grid dimensions did not show
