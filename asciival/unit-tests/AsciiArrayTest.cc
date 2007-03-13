@@ -25,6 +25,11 @@
  
 // Tests for the DataDDS class.
 
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <iterator>
+
 #include <cppunit/TextTestRunner.h>
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/extensions/HelperMacros.h>
@@ -35,9 +40,9 @@
 #include "AsciiArray.h"
 #include "AsciiOutputFactory.h"
 
-name_map names;
 bool translate = false;
 using namespace CppUnit;
+using namespace std;
 
 class AsciiArrayTest : public TestFixture {
 private:
@@ -104,6 +109,19 @@ public:
     void test_get_shape_vector() {
 	try {
 	    vector<int> a_shape(1, 10);
+
+#if defined(DODS_DEBUG)
+	    cerr << "a_shape: ";
+	    copy(a_shape.begin(), a_shape.end(),
+		 ostream_iterator<int>(cerr, ", "));
+	    cerr << endl;
+	    vector<int> response_shape = a->get_shape_vector(1);
+	    
+	    cerr << "response_shape: ";
+	    copy(response_shape.begin(), response_shape.end(),
+		 ostream_iterator<int>(cerr, ", "));
+	    cerr << endl;
+#endif
 	    CPPUNIT_ASSERT(a->get_shape_vector(1) == a_shape);
 
 	    vector<int> b_shape(2, 10);
@@ -113,6 +131,19 @@ public:
 	    CPPUNIT_ASSERT(c->get_shape_vector(3) == c_shape);
 
 	    vector<int> d_shape(3); d_shape[0]=3; d_shape[1]=4; d_shape[2]=5;
+
+#if defined(DODS_DEBUG)
+	    cerr << "d_shape: ";
+	    copy(d_shape.begin(), d_shape.end(),
+		 ostream_iterator<int>(cerr, ", "));
+	    cerr << endl;
+	    response_shape = d->get_shape_vector(3);
+	    
+	    cerr << "response_shape: ";
+	    copy(response_shape.begin(), response_shape.end(),
+		 ostream_iterator<int>(cerr, ", "));
+	    cerr << endl;
+#endif
 	    CPPUNIT_ASSERT(d->get_shape_vector(3) == d_shape);
 
 	    try {a->get_shape_vector(0); CPPUNIT_ASSERT(false);}
@@ -168,9 +199,9 @@ main( int argc, char* argv[] )
     CppUnit::TextTestRunner runner;
     runner.addTest( CppUnit::TestFactoryRegistry::getRegistry().makeTest() );
 
-    runner.run();
+    bool wasSuccessful = runner.run( "", false ) ;
 
-    return 0;
+    return wasSuccessful ? 0 : 1;
 }
 
 

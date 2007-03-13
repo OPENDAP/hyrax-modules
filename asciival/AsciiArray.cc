@@ -33,11 +33,6 @@
 //
 // 3/12/98 jhrg
 
-#include <iostream>
-
-using std::cerr ;
-using std::endl ;
-
 #include "config.h"
 
 #include <iostream>
@@ -53,7 +48,6 @@ using namespace std;
 
 #include "AsciiArray.h"
 #include "util.h"
-//#include "name_map.h"
 #include "get_ascii.h"
 
 using namespace dap_asciival;
@@ -98,8 +92,9 @@ void AsciiArray::print_ascii(FILE * os, bool print_name) throw(InternalErr)
     if (!bt) {
         bt = this;
     }
+
     if (bt->var()->is_simple_type()) {
-        if (bt->dimensions(true) > 1) {
+        if (/*bt->*/dimensions(true) > 1) {
             print_array(os, print_name);
         } else {
             print_vector(os, print_name);
@@ -119,11 +114,10 @@ void AsciiArray::print_vector(FILE * os, bool print_name)
 
     if (print_name)
         fprintf(os, "%s, ",
-                dynamic_cast <
-                AsciiOutput * >(this)->get_full_name().c_str());
+                dynamic_cast<AsciiOutput*>(this)->get_full_name().c_str());
 
     // only one dimension
-    int end = bt->dimension_size(bt->dim_begin(), true) - 1;
+    int end = /*bt->*/dimension_size(/*bt->*/dim_begin(), true) - 1;
 
     for (int i = 0; i < end; ++i) {
         BaseType *curr_var = basetype_to_asciitype(bt->var(i));
@@ -175,11 +169,12 @@ int AsciiArray::print_row(FILE * os, int index, int number)
 
 int AsciiArray::get_index(vector < int >indices) throw(InternalErr)
 {
+#if 0
     Array *bt = dynamic_cast < Array * >(_redirect);
     if (!bt)
         bt = this;
-
-    if (indices.size() != bt->dimensions(true)) {
+#endif
+    if (indices.size() != /*bt->*/dimensions(true)) {
         throw InternalErr(__FILE__, __LINE__,
                           "Index vector is the wrong size!");
     }
@@ -212,29 +207,25 @@ int AsciiArray::get_index(vector < int >indices) throw(InternalErr)
 
 vector < int > AsciiArray::get_shape_vector(size_t n) throw(InternalErr)
 {
+#if 0
     Array *bt = dynamic_cast < Array * >(_redirect);
     if (!bt)
         bt = this;
+#endif
 
-    if (n < 1 || n > bt->dimensions(true)) {
+    if (n < 1 || n > dimensions(true)) {
         string msg = "Attempt to get ";
         msg += long_to_string(n) + " dimensions from " + name()
-            + " which has only " + long_to_string(bt->dimensions(true))
+            + " which has only " + long_to_string(dimensions(true))
             + "dimensions.";
 
         throw InternalErr(__FILE__, __LINE__, msg);
     }
 
-    vector < int >shape(n);
-#if 0
-    vector < int >::iterator shape_iter = shape.begin();
-#endif
-    Array::Dim_iter p = bt->dim_begin();
-    for (unsigned i = 0; i < n && p != bt->dim_end(); i++) {
-#if 0
-        *shape_iter++ = bt->dimension_size(p++, true);
-#endif
-        shape.push_back(bt->dimension_size(p++, true));
+    vector < int >shape;
+    Array::Dim_iter p = dim_begin();
+    for (unsigned i = 0; i < n && p != dim_end(); ++i, ++p) {
+        shape.push_back(dimension_size(p, true));
     }
 
     return shape;
@@ -245,34 +236,35 @@ vector < int > AsciiArray::get_shape_vector(size_t n) throw(InternalErr)
     @return the size of the dimension. */
 int AsciiArray::get_nth_dim_size(size_t n) throw(InternalErr)
 {
+#if 0
     Array *bt = dynamic_cast < Array * >(_redirect);
     if (!bt)
         bt = this;
-    // I think this should test 0 ... dimensions(true)-1. jhrg 7/20/
-    if ( /*n < 0 || */ n > bt->dimensions(true) - 1) {
+#endif
+    if (n > /*bt->*/dimensions(true) - 1) {
         string msg = "Attempt to get dimension ";
         msg +=
-            long_to_string(n + 1) + " from `" + bt->name() +
-            "' which has " + long_to_string(bt->dimensions(true)) +
+            long_to_string(n + 1) + " from `" + /*bt->*/name() +
+            "' which has " + long_to_string(/*bt->*/dimensions(true)) +
             " dimension(s).";
         throw InternalErr(__FILE__, __LINE__, msg);
     }
 
-    return bt->dimension_size(bt->dim_begin() + n, true);
+    return /*bt->*/dimension_size(/*bt->*/dim_begin() + n, true);
 }
  
 void AsciiArray::print_array(FILE * os, bool /*print_name */ )
 {
     DBG(cerr << "Entering AsciiArray::print_array" << endl);
-
+#if 0
     Array *bt = dynamic_cast < Array * >(_redirect);
     if (!bt)
         bt = this;
-
-    int dims = bt->dimensions(true);
+#endif
+    int dims = /*bt->*/dimensions(true);
     if (dims <= 1)
         throw InternalErr(__FILE__, __LINE__,
-                          "Dimension count is <= 1 while printing multidimensional array.");
+            "Dimension count is <= 1 while printing multidimensional array.");
 
     // shape holds the maximum index value of all but the last dimension of
     // the array (not the size; each value is one less that the size).
@@ -316,10 +308,10 @@ void AsciiArray::print_complex_array(FILE * os, bool /*print_name */ )
     if (!bt)
         bt = this;
 
-    int dims = bt->dimensions(true);
+    int dims = /*bt->*/dimensions(true);
     if (dims < 1)
         throw InternalErr(__FILE__, __LINE__,
-                          "Dimension count is <= 1 while printing multidimensional array.");
+            "Dimension count is <= 1 while printing multidimensional array.");
 
     // shape holds the maximum index value of all but the last dimension of
     // the array (not the size; each value is one less that the size).

@@ -1,3 +1,71 @@
+2007-03-09  James Gallagher <jgallagher@opendap.org>
+
+	Final changes for the default configuration and data install for
+	ticket #764.
+
+	M    configure-dap-data.sh.in
+	M    dap-server.spec
+	M    Makefile.am
+
+2007-03-09  James Gallagher <jgallagher@opendap.org>
+
+	Fixes for the new data install and configuration.
+
+	M    configure-dap-data.sh.in
+	M    Makefile.am
+
+2007-03-09  James Gallagher <jgallagher@opendap.org>
+
+	Auto reset of Subversion properties
+
+2007-03-08  James Gallagher <jgallagher@opendap.org>
+
+	Added files for the test data and auto configuration ticket
+
+2007-03-06  James Gallagher <jgallagher@opendap.org>
+
+	Removed most of the unneeded code after fixing the problem
+	of the missing HDF-EOS attributes (#347). This is just to
+	clean up the mess of '#if 0 ... #endif' that littered the
+	code.
+
+2007-03-06  James Gallagher <jgallagher@opendap.org>
+
+	Fixed bug #347: HDF-EOS attributes did not show up in the
+	HTML form interface. The problem was that HDF-EOS attributes
+	use conventions that the WWW Response Handler did not recognize.
+	I modified the Response Handler so that it works with a DDX
+	(i.e., a DDS loaded with attributes) and that fixes the problem,
+	given that the form generator code already knew how to deal
+	with nested attributes.
+
+2007-02-14  James Gallagher <jgallagher@opendap.org>
+
+	Makefile.am: Added the two new README files to EXTRA_DIST.
+
+2007-02-14  James Gallagher <jgallagher@opendap.org>
+
+	I split up the README into README.cgi and README.hyrax
+	so that the information about settig up the CGI server
+	would be put in the dap-server-cgi package and so that
+	the regular package would have a decent README. I also
+	fixed some libgering issues in the spec file and Makefile.am
+
+2007-02-14  James Gallagher <jgallagher@opendap.org>
+
+	README.cgi: Renamed from README
+
+2007-02-12  James Gallagher <jgallagher@opendap.org>
+
+	Updated for version 3.7.3
+
+	M    configure.ac
+	M    INSTALL
+	M    NEWS
+	M    ChangeLog
+	M    README
+	M    dap-server.spec
+
 2007-02-08  Nathan Potter <ndp@opendap.org>
 
 	dap-server: Changed Server4 name to Hyrax as needed.

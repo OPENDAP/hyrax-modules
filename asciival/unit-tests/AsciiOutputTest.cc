@@ -42,7 +42,6 @@
 // parses a .dds file. Each of those subclasses is a child of AsciiOutput in
 // addition to its regular lineage. This test code depends on being able to
 // cast each variable to an AsciiOutput object. 01/24/03 jhrg
-name_map names;
 bool translate = false;
 
 using namespace CppUnit;
@@ -94,14 +93,8 @@ main( int argc, char* argv[] )
     CppUnit::TextTestRunner runner;
     runner.addTest( CppUnit::TestFactoryRegistry::getRegistry().makeTest() );
 
-    runner.run();
+    bool wasSuccessful = runner.run( "", false ) ;
 
-    return 0;
+    return wasSuccessful ? 0 : 1;
 }
-
-// $Log: AsciiOutputTest.cc,v $
-// Revision 1.3  2003/01/27 19:38:23  jimg
-// Updated the copyright information.
-// Merged with release-3-2-6.
-//
 
