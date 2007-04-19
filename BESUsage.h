@@ -34,8 +34,8 @@
 #define I_BESUsage_h 1
 
 #include "BESResponseObject.h"
-#include "DAS.h"
-#include "DDS.h"
+#include "BESDASResponse.h"
+#include "BESDDSResponse.h"
 
 /** @brief container for a DAS and DDS needed to write out the usage
  * information for a dataset.
@@ -51,20 +51,21 @@
 class BESUsage : public BESResponseObject
 {
 private:
-    DAS *_das ;
-    DDS *_dds ;
+    BESDASResponse *_das ;
+    BESDDSResponse *_dds ;
 
 	BESUsage() {}
 
 public:
-    BESUsage( DAS *das, DDS *dds ) : _das( das ), _dds( dds ) {}
-    virtual	~BESUsage() {
+    BESUsage( BESDASResponse *das, BESDDSResponse *dds )
+	: _das( das ), _dds( dds ) {}
+    virtual ~BESUsage() {
 	   if( _das ) delete _das ;
 	   if( _dds ) delete _dds ;
-	}
+    }
 
-    DAS *get_das() { return _das ; }
-    DDS *get_dds() { return _dds ; }
+    BESDASResponse *get_das() { return _das ; }
+    BESDDSResponse *get_dds() { return _dds ; }
 
     /** @brief dumps information about this object
      *
@@ -77,11 +78,11 @@ public:
         strm << BESIndent::LMarg << "BESUsage::dump - ("
 			 << (void *)this << ")" << endl ;
 
-	    BESIndent::Indent() ;
-	    strm << BESIndent::LMarg << "das: " << (void *)_das << endl ;
-		strm << BESIndent::LMarg << "dds: " << (void *)_dds << endl ;
-		BESIndent::UnIndent() ;
-	}
+	BESIndent::Indent() ;
+	strm << BESIndent::LMarg << "das: " << *_das << endl ;
+	strm << BESIndent::LMarg << "dds: " << *_dds << endl ;
+	BESIndent::UnIndent() ;
+    }
 } ;
 
 #endif // I_BESUsage_h

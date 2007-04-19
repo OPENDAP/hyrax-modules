@@ -92,7 +92,7 @@ void
     dhi.action = DAS_RESPONSE;
     BESRequestHandlerList::TheList()->execute_each(dhi);
 
-    BESWWW *www = new BESWWW(das, dds);
+    BESWWW *www = new BESWWW(bdas, bdds);
     _response = www;
     dhi.action = WWW_RESPONSE;
 }

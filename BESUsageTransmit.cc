@@ -52,8 +52,8 @@ void
                                     BESDataHandlerInterface & dhi)
 {
     BESUsage *usage = dynamic_cast < BESUsage * >(obj);
-    DAS *das = usage->get_das();
-    DDS *dds = usage->get_dds();
+    DAS *das = usage->get_das()->get_das();
+    DDS *dds = usage->get_dds()->get_dds();
 
     dhi.first_container();
 

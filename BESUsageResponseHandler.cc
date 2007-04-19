@@ -92,7 +92,7 @@ BESUsageResponseHandler::execute( BESDataHandlerInterface &dhi )
     dhi.action = DAS_RESPONSE ;
     BESRequestHandlerList::TheList()->execute_each( dhi ) ;
 
-    BESUsage *usage = new BESUsage( das, dds ) ;
+    BESUsage *usage = new BESUsage( bdas, bdds ) ;
     _response = usage ;
     dhi.action = Usage_RESPONSE ;
 }

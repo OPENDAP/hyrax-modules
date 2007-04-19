@@ -34,8 +34,8 @@
 #define I_BESWWW_h 1
 
 #include "BESResponseObject.h"
-#include "DAS.h"
-#include "DDS.h"
+#include "BESDASResponse.h"
+#include "BESDDSResponse.h"
 
 /** @brief container for a DAS and DDS needed to write out the usage
  * information for a dataset.
@@ -51,13 +51,14 @@
 class BESWWW : public BESResponseObject
 {
 private:
-    DAS *_das ;
-    DDS *_dds ;
+    BESDASResponse *_das ;
+    BESDDSResponse *_dds ;
 
 	BESWWW() {}
 
 public:
-    BESWWW( DAS *das, DDS *dds ) : _das( das ), _dds( dds ) {}
+    BESWWW( BESDASResponse *das, BESDDSResponse *dds )
+	: _das( das ), _dds( dds ) {}
     virtual ~ BESWWW() {
         if (_das)
             delete _das;
@@ -65,8 +66,8 @@ public:
             delete _dds;
     }
 
-    DAS *get_das() { return _das ; }
-    DDS *get_dds() { return _dds ; }
+    BESDASResponse *get_das() { return _das ; }
+    BESDDSResponse *get_dds() { return _dds ; }
 
     /** @brief dumps information about this object
      *
@@ -78,8 +79,8 @@ public:
     virtual void dump(ostream & strm) const {
         strm << BESIndent::LMarg << "dump - (" << (void *) this << ")" << endl;
         BESIndent::Indent();
-        strm << BESIndent::LMarg << "das: " << (void *) _das << endl;
-        strm << BESIndent::LMarg << "dds: " << (void *) _dds << endl;
+        strm << BESIndent::LMarg << "das: " << *_das << endl;
+        strm << BESIndent::LMarg << "dds: " << *_dds << endl;
         BESIndent::UnIndent();
     }
 } ;

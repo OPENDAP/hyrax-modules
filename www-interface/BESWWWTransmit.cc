@@ -66,8 +66,10 @@ void
     try {
         (*BESLog::TheLog()) << "converting dds to www dds" << endl;
 
-        DDS *wwwdds = dds_to_www_dds(dynamic_cast<BESWWW*>(obj)->get_dds());
-        wwwdds->transfer_attributes(dynamic_cast<BESWWW*>(obj)->get_das());
+	DDS *dds = dynamic_cast<BESWWW*>(obj)->get_dds()->get_dds() ;
+        DDS *wwwdds = dds_to_www_dds( dds ) ;
+	DAS *das = dynamic_cast<BESWWW*>(obj)->get_das()->get_das() ;
+        wwwdds->transfer_attributes( das ) ;
         
         (*BESLog::TheLog()) << "writing form" << endl;
 
@@ -78,6 +80,8 @@ void
         write_html_form_interface(stdout, wwwdds, url, false);
 
         (*BESLog::TheLog()) << "done transmitting form" << endl;
+
+	delete wwwdds ;
     }
     catch(Error & e) {
         string err =
