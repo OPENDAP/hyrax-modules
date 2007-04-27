@@ -41,9 +41,10 @@ ASCII_SOURCES = AsciiArray.cc AsciiInt16.cc AsciiStructure.cc		   \
 		AsciiUInt16.h AsciiOutputFactory.cc AsciiOutputFactory.h   \
 		get_ascii.cc get_ascii.h
 
-BES_SOURCES = BESAsciiModule.cc BESAsciiResponseHandler.cc		     \
-	      BESAsciiTransmit.cc BESAsciiModule.h BESAsciiResponseHandler.h \
-	      BESAsciiTransmit.h BESAsciiNames.h
+BES_SOURCES = BESAsciiModule.cc BESAsciiResponseHandler.cc		   \
+	      BESAsciiTransmit.cc BESAsciiRequestHandler.cc		   \
+	      BESAsciiModule.h BESAsciiResponseHandler.h		   \
+	      BESAsciiTransmit.h BESAsciiRequestHandler.h BESAsciiNames.h
 
 DEJATOOL = dap_asciival
 RUNTESTDEFAULTFLAGS = --tool $$tool --srcdir testsuite

@@ -20,13 +20,17 @@ lib_besdir=$(libdir)/bes
 lib_bes_LTLIBRARIES = libusage_module.la
 dist_bin_SCRIPTS = configure-dap-data.sh
 
+besdir=$(datadir)/bes
+dist_bes_DATA = dap-server_help.html dap-server_help.txt
+
 endif
 
 USAGE_SOURCES = usage.cc usage.h 
 
 BES_SOURCES = BESUsageModule.h BESUsageNames.h BESUsageResponseHandler.h \
 	  BESUsageTransmit.h BESUsageModule.cc BESUsageResponseHandler.cc \
-	  BESUsageTransmit.cc BESUsage.h
+	  BESUsageTransmit.cc BESUsage.h BESUsageRequestHandler.cc \
+	  BESUsageRequestHandler.h
 
 libusage_module_la_SOURCES = $(USAGE_SOURCES) $(BES_SOURCES)
 libusage_module_la_CPPFLAGS = $(BES_CPPFLAGS)

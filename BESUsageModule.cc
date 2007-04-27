@@ -34,10 +34,12 @@
 using std::endl ;
 
 #include "BESUsageModule.h"
-#include "BESLog.h"
 
 #include "BESUsageNames.h"
 #include "BESResponseHandlerList.h"
+
+#include "BESUsageRequestHandler.h"
+#include "BESRequestHandlerList.h"
 
 #include "BESUsageResponseHandler.h"
 
@@ -46,30 +48,31 @@ using std::endl ;
 #include "BESReturnManager.h"
 #include "BESTransmitterNames.h"
 
+#include "BESDebug.h"
+
 
 void
 BESUsageModule::initialize( const string &modname )
 {
-    if( BESLog::TheLog()->is_verbose() )
-	(*BESLog::TheLog()) << "Initializing OPeNDAP Usage module:" << endl;
+    BESDEBUG( "Initializing OPeNDAP Usage module:" << endl )
 
-    if( BESLog::TheLog()->is_verbose() )
-	(*BESLog::TheLog()) << "    adding " << Usage_RESPONSE << " response handler" << endl;
+    BESDEBUG( "    adding " << modname << " request handler" << endl )
+    BESRequestHandlerList::TheList()->add_handler( modname, new BESUsageRequestHandler( modname ) ) ;
+
+    BESDEBUG( "    adding " << Usage_RESPONSE << " response handler" << endl )
     BESResponseHandlerList::TheList()->add_handler( Usage_RESPONSE, BESUsageResponseHandler::UsageResponseBuilder ) ;
 
     BESTransmitter *t = BESReturnManager::TheManager()->find_transmitter( BASIC_TRANSMITTER ) ;
     if( t )
     {
-	if( BESLog::TheLog()->is_verbose() )
-	    (*BESLog::TheLog()) << "    adding basic " << Usage_TRANSMITTER << " transmit function" << endl ;
+	BESDEBUG( "    adding basic " << Usage_TRANSMITTER << " transmitter" << endl )
 	t->add_method( Usage_TRANSMITTER, BESUsageTransmit::send_basic_usage ) ;
     }
 
     t = BESReturnManager::TheManager()->find_transmitter( HTTP_TRANSMITTER ) ;
     if( t )
     {
-	if( BESLog::TheLog()->is_verbose() )
-	    (*BESLog::TheLog()) << "    adding http " << Usage_TRANSMITTER << " transmit function" << endl ;
+	BESDEBUG( "    adding http " << Usage_TRANSMITTER << " transmitter" << endl )
 	t->add_method( Usage_TRANSMITTER, BESUsageTransmit::send_http_usage ) ;
     }
 }
@@ -77,8 +80,7 @@ BESUsageModule::initialize( const string &modname )
 void
 BESUsageModule::terminate( const string &modname )
 {
-    if( BESLog::TheLog()->is_verbose() )
-	(*BESLog::TheLog()) << "Removing OPeNDAP modules" << endl;
+    BESDEBUG( "Removing OPeNDAP usage module:" << endl )
 
     BESResponseHandlerList::TheList()->remove_handler( Usage_RESPONSE ) ;
 }

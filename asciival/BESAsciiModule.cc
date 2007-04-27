@@ -34,12 +34,14 @@
 using std::endl ;
 
 #include "BESAsciiModule.h"
-#include "BESLog.h"
+#include "BESDebug.h"
 
 #include "BESAsciiNames.h"
 #include "BESResponseHandlerList.h"
-
 #include "BESAsciiResponseHandler.h"
+
+#include "BESAsciiRequestHandler.h"
+#include "BESRequestHandlerList.h"
 
 #include "BESAsciiTransmit.h"
 #include "BESTransmitter.h"
@@ -50,26 +52,25 @@ using std::endl ;
 void
 BESAsciiModule::initialize( const string &modname )
 {
-    if( BESLog::TheLog()->is_verbose() )
-	(*BESLog::TheLog()) << "Initializing OPeNDAP Ascii module:" << endl;
+    BESDEBUG( "Initializing OPeNDAP Ascii module:" << endl )
 
-    if( BESLog::TheLog()->is_verbose() )
-	(*BESLog::TheLog()) << "    adding " << ASCII_RESPONSE << " response handler" << endl;
+    BESDEBUG( "    adding " << modname << " request handler" << endl )
+    BESRequestHandlerList::TheList()->add_handler( modname, new BESAsciiRequestHandler( modname ) ) ;
+
+    BESDEBUG( "    adding " << ASCII_RESPONSE << " response handler" << endl )
     BESResponseHandlerList::TheList()->add_handler( ASCII_RESPONSE, BESAsciiResponseHandler::AsciiResponseBuilder ) ;
 
     BESTransmitter *t = BESReturnManager::TheManager()->find_transmitter( BASIC_TRANSMITTER ) ;
     if( t )
     {
-	if( BESLog::TheLog()->is_verbose() )
-	    (*BESLog::TheLog()) << "    adding basic " << ASCII_TRANSMITTER << " transmit function" << endl ;
+	BESDEBUG( "    adding basic " << ASCII_TRANSMITTER << " transmit function" << endl )
 	t->add_method( ASCII_TRANSMITTER, BESAsciiTransmit::send_basic_ascii ) ;
     }
 
     t = BESReturnManager::TheManager()->find_transmitter( HTTP_TRANSMITTER ) ;
     if( t )
     {
-	if( BESLog::TheLog()->is_verbose() )
-	    (*BESLog::TheLog()) << "    adding http " << ASCII_TRANSMITTER << " transmit function" << endl ;
+	BESDEBUG( "    adding http " << ASCII_TRANSMITTER << " transmit function" << endl )
 	t->add_method( ASCII_TRANSMITTER, BESAsciiTransmit::send_http_ascii ) ;
     }
 }
@@ -77,8 +78,7 @@ BESAsciiModule::initialize( const string &modname )
 void
 BESAsciiModule::terminate( const string &modname )
 {
-    if( BESLog::TheLog()->is_verbose() )
-	(*BESLog::TheLog()) << "Removing OPeNDAP modules" << endl;
+    BESDEBUG( "Removing OPeNDAP Ascii modules" << endl )
 
     BESResponseHandlerList::TheList()->remove_handler( ASCII_RESPONSE ) ;
 }

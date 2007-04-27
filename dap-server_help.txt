@@ -1,0 +1,20 @@
+Current core commands available with BES:
+
+    get ascii for <definition>;
+        * Retrieve the ascii representation of the data
+          represented by the specified definition.
+    get html_form for <definition> using <url>;
+        * An html form is returned allowing the user create
+          constraint expressions and select variables to
+          return using the specified url as the base opendap
+          url.
+    get info_page for <definition>;
+	* Return html formatted information about the specified
+          definition including, but not limited to, what
+          variables are defined within the dataset, dimension
+          information for arrays and size information.
+
+    ** remember to terminate each command with a semicolon (;)
+    For more information please contact Patrick West,
+    pwest@ucar.edu
+

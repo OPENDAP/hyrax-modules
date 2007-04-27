@@ -34,12 +34,14 @@
 using std::endl;
 
 #include "BESWWWModule.h"
-#include "BESLog.h"
+#include "BESDebug.h"
 
 #include "BESWWWNames.h"
 #include "BESResponseHandlerList.h"
-
 #include "BESWWWResponseHandler.h"
+
+#include "BESWWWRequestHandler.h"
+#include "BESRequestHandlerList.h"
 
 #include "BESWWWTransmit.h"
 #include "BESTransmitter.h"
@@ -51,13 +53,12 @@ using std::endl;
 void
  BESWWWModule::initialize(const string & modname)
 {
-    if (BESLog::TheLog()->is_verbose())
-        (*BESLog::TheLog()) << "Initializing OPeNDAP WWW module:" << endl;
+    BESDEBUG( "Initializing OPeNDAP WWW module:" << endl )
 
-    if (BESLog::TheLog()->is_verbose())
-        (*BESLog::TheLog()) << "    adding " << WWW_RESPONSE 
-                            << " response handler" << endl;
-                            
+    BESDEBUG( "    adding " << modname << " request handler" << endl )
+    BESRequestHandlerList::TheList()->add_handler( modname, new BESWWWRequestHandler( modname ) ) ;
+
+    BESDEBUG( "    adding " << WWW_RESPONSE << " response handler" << endl )
     BESResponseHandlerList::TheList()->add_handler(WWW_RESPONSE,
                                                    BESWWWResponseHandler::
                                                    WWWResponseBuilder);
@@ -65,32 +66,27 @@ void
     BESTransmitter *t =
         BESReturnManager::TheManager()->find_transmitter(BASIC_TRANSMITTER);
         
-    if (t) {
-        if (BESLog::TheLog()->is_verbose())
-            (*BESLog::TheLog()) << "    adding basic " << WWW_TRANSMITTER 
-                                << " transmit function" << endl;
+    if( t )
+    {
+	BESDEBUG( "    adding basic " << WWW_TRANSMITTER << " transmit function" << endl )
         t->add_method(WWW_TRANSMITTER, BESWWWTransmit::send_basic_form);
     }
 
     t = BESReturnManager::TheManager()->find_transmitter(HTTP_TRANSMITTER);
-    if (t) {
-        if (BESLog::TheLog()->is_verbose())
-            (*BESLog::TheLog()) << "    adding http " << WWW_TRANSMITTER 
-                                << " transmit function" << endl;
+    if( t )
+    {
+	BESDEBUG( "    adding http " << WWW_TRANSMITTER << " transmit function" << endl )
         t->add_method(WWW_TRANSMITTER, BESWWWTransmit::send_http_form);
     }
 
-    if (BESLog::TheLog()->is_verbose())
-        (*BESLog::TheLog()) << "    adding " << WWW_RESPONSE << " command" << endl;
-        
+    BESDEBUG( "    adding " << WWW_RESPONSE << " command" << endl )
     BESCommand *cmd = new BESWWWGetCommand(WWW_RESPONSE);
     BESCommand::add_command(WWW_RESPONSE, cmd);
 }
 
 void BESWWWModule::terminate(const string & modname)
 {
-    if (BESLog::TheLog()->is_verbose())
-        (*BESLog::TheLog()) << "Removing OPeNDAP modules" << endl;
+    BESDEBUG( "Removing OPeNDAP WWW modules" << endl )
 
     BESResponseHandlerList::TheList()->remove_handler(WWW_RESPONSE);
     BESCommand::del_command(WWW_RESPONSE);
