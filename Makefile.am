@@ -74,7 +74,7 @@ CLEANFILES = configure-dap-data.sh
 
 do_subst = sed -e 's,[@]sysconfdir[@],$(sysconfdir),g' \
 		   	   -e 's,[@]libdir[@],$(libdir),g'
-				  
+
 configure-dap-data.sh: configure-dap-data.sh.in Makefile
 	$(do_subst) < $(srcdir)/configure-dap-data.sh.in > configure-dap-data.sh
 	chmod +x configure-dap-data.sh
@@ -82,11 +82,16 @@ configure-dap-data.sh: configure-dap-data.sh.in Makefile
 # This makes sure that the handler modifies the bes  which confiure found
 # even with distcheck is run.
 install-data-hook: configure-dap-data.sh
-	(bes_prefix=`bes-config --prefix` && \
-	 ./configure-dap-data.sh $$bes_prefix/etc/bes/bes.conf $$bes_prefix/lib/bes)
+	(bes_prefix=`bes-config --prefix` ; \
+	if test "$$bes_prefix" = "/usr" ; \
+	 then \
+	    ./configure-dap-data.sh /etc/bes/bes.conf /usr/lib/bes ;\
+	else \
+	    ./configure-dap-data.sh $$bes_prefix/etc/bes/bes.conf $$bes_prefix/lib/bes ; \
+	fi)
 
 endif
-	
+
 ###########################################################################
 
 # Build linux RPMs
