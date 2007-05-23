@@ -101,3 +101,23 @@ srpm: dist
 
 rpm: dist
 	rpmbuild -tb @PACKAGE@-@PACKAGE_VERSION@.tar.gz
+
+###########################################################################
+
+# Build OS/X Packages.
+
+PACKAGEMAKER=/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker*
+
+pkg:
+	rm -rf mac_osx @PACKAGE@-@PACKAGE_VERSION@.pkg
+	./configure --prefix=/usr
+	make configure-dap-data.sh nph-dods dap-server.rc
+	cp configure-dap-data.sh configure-dap-data.sh.macosx
+	cp nph-dods nph-dods.macosx
+	cp dap-server.rc dap-server.rc.macosx
+	./configure --prefix=`pwd`/mac_osx
+	make clean install
+	mv configure-dap-data.sh.macosx mac_osx/bin/configure-dap-data.sh
+	mv nph-dods.macosx mac_osx/share/dap-server-cgi/nph-dods
+	mv dap-server.rc.macosx mac_osx/share/dap-server-cgi/dap-server.rc
+	${PACKAGEMAKER} -build -p @PACKAGE@-@PACKAGE_VERSION@.pkg -f mac_osx -ds -r OSX_Resources -i OSX_Resources/Info.plist -d OSX_Resources/Description.plist
