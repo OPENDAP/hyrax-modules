@@ -73,7 +73,8 @@ EXTRA_DIST += configure-dap-data.sh.in
 CLEANFILES = configure-dap-data.sh
 
 do_subst = sed -e 's,[@]sysconfdir[@],$(sysconfdir),g' \
-		   	   -e 's,[@]libdir[@],$(libdir),g'
+		   	   -e 's,[@]libdir[@],$(libdir),g' \
+		   	   -e 's,[@]datadir[@],$(datadir),g'
 
 configure-dap-data.sh: configure-dap-data.sh.in Makefile
 	$(do_subst) < $(srcdir)/configure-dap-data.sh.in > configure-dap-data.sh
