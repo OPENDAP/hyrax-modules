@@ -38,7 +38,7 @@
 #include "BESDataDDSResponse.h"
 #include "BESAsciiTransmit.h"
 
-BESAsciiResponseHandler::BESAsciiResponseHandler( string name )
+BESAsciiResponseHandler::BESAsciiResponseHandler( const string &name )
     : BESResponseHandler( name )
 {
 }
@@ -105,7 +105,7 @@ BESAsciiResponseHandler::transmit( BESTransmitter *transmitter,
 }
 
 BESResponseHandler *
-BESAsciiResponseHandler::AsciiResponseBuilder( string handler_name )
+BESAsciiResponseHandler::AsciiResponseBuilder( const string &handler_name )
 {
     return new BESAsciiResponseHandler( handler_name ) ;
 }

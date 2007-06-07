@@ -40,7 +40,7 @@
 #include "BESDDSResponse.h"
 #include "BESUsageTransmit.h"
 
-BESUsageResponseHandler::BESUsageResponseHandler( string name )
+BESUsageResponseHandler::BESUsageResponseHandler( const string &name )
     : BESResponseHandler( name )
 {
 }
@@ -120,7 +120,7 @@ BESUsageResponseHandler::transmit( BESTransmitter *transmitter,
 }
 
 BESResponseHandler *
-BESUsageResponseHandler::UsageResponseBuilder( string handler_name )
+BESUsageResponseHandler::UsageResponseBuilder( const string &handler_name )
 {
     return new BESUsageResponseHandler( handler_name ) ;
 }

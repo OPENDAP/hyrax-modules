@@ -39,7 +39,7 @@
 class BESAsciiRequestHandler : public BESRequestHandler
 {
 public:
-			BESAsciiRequestHandler( string name ) ;
+			BESAsciiRequestHandler( const string &name ) ;
     virtual		~BESAsciiRequestHandler( void ) ;
 
     virtual void	dump( ostream &strm ) const ;

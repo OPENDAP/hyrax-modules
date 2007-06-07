@@ -39,7 +39,7 @@
 #include "BESDataNames.h"
 #include "config.h"
 
-BESWWWRequestHandler::BESWWWRequestHandler( string name )
+BESWWWRequestHandler::BESWWWRequestHandler( const string &name )
     : BESRequestHandler( name )
 {
     add_handler( HELP_RESPONSE, BESWWWRequestHandler::dap_build_help ) ;

@@ -40,7 +40,7 @@
 #include "BESDDSResponse.h"
 #include "BESWWWTransmit.h"
 
-BESWWWResponseHandler::BESWWWResponseHandler(string name)
+BESWWWResponseHandler::BESWWWResponseHandler( const string &name )
 :  BESResponseHandler(name)
 {
 }
@@ -118,7 +118,7 @@ void BESWWWResponseHandler::transmit(BESTransmitter * transmitter,
 }
 
 BESResponseHandler *BESWWWResponseHandler::
-WWWResponseBuilder(string handler_name)
+WWWResponseBuilder( const string &handler_name )
 {
-    return new BESWWWResponseHandler(handler_name);
+    return new BESWWWResponseHandler( handler_name ) ;
 }

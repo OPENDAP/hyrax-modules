@@ -39,7 +39,7 @@
 class BESWWWRequestHandler : public BESRequestHandler
 {
 public:
-			BESWWWRequestHandler( string name ) ;
+			BESWWWRequestHandler( const string &name ) ;
     virtual		~BESWWWRequestHandler( void ) ;
 
     virtual void	dump( ostream &strm ) const ;

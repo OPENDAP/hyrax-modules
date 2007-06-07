@@ -48,14 +48,14 @@
  */
 class BESAsciiResponseHandler : public BESResponseHandler {
 public:
-				BESAsciiResponseHandler( string name ) ;
+				BESAsciiResponseHandler( const string &name ) ;
     virtual			~BESAsciiResponseHandler( void ) ;
 
     virtual void		execute( BESDataHandlerInterface &dhi ) ;
     virtual void		transmit( BESTransmitter *transmitter,
                                           BESDataHandlerInterface &dhi ) ;
 
-    static BESResponseHandler *AsciiResponseBuilder( string handler_name ) ;
+    static BESResponseHandler *AsciiResponseBuilder( const string &name ) ;
 };
 
 #endif // I_BESAsciiResponseHandler_h

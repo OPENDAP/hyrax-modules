@@ -39,7 +39,7 @@
 class BESUsageRequestHandler : public BESRequestHandler
 {
 public:
-			BESUsageRequestHandler( string name ) ;
+			BESUsageRequestHandler( const string &name ) ;
     virtual		~BESUsageRequestHandler( void ) ;
 
     virtual void	dump( ostream &strm ) const ;

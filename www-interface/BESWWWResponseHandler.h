@@ -48,14 +48,14 @@
  */
 class BESWWWResponseHandler : public BESResponseHandler {
 public:
-				BESWWWResponseHandler( string name ) ;
+				BESWWWResponseHandler( const string &name ) ;
     virtual			~BESWWWResponseHandler( void ) ;
 
     virtual void		execute( BESDataHandlerInterface &dhi ) ;
     virtual void		transmit( BESTransmitter *transmitter,
                                           BESDataHandlerInterface &dhi ) ;
 
-    static BESResponseHandler *WWWResponseBuilder( string handler_name ) ;
+    static BESResponseHandler *WWWResponseBuilder( const string &name ) ;
 };
 
 #endif // I_BESWWWResponseHandler_h
