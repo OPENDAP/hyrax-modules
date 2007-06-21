@@ -6,7 +6,7 @@
 # Usage: configure-dap-data.sh [<bes.conf file to modify> [<bes modules dir>]]
 
 bes_conf=${1:-"@sysconfdir@/bes/bes.conf"}
-bes_modules_dir=${2:-"@libdir@/bes"}
+bes_modules_dir=${2:-"@pkglibdir@"}
 bes_help_dir=${3:-"@datadir@/bes"}
 
 # This script should take care to not add multiple entries for a handler.
@@ -36,8 +36,8 @@ done
 
 # Add the handler module line (e.g., BES.module.ff) to the conf file
 for module in "BES.module.usage=$bes_modules_dir/libusage_module.so" \
-			  "BES.module.ascii=$bes_modules_dir/libascii_module.so" \
-			  "BES.module.www=$bes_modules_dir/libwww_module.so"
+		  "BES.module.ascii=$bes_modules_dir/libascii_module.so" \
+		  "BES.module.www=$bes_modules_dir/libwww_module.so"
 do
 
 awk "BEGIN {bes_module_found=0}

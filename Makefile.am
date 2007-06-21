@@ -18,7 +18,7 @@ if OPENDAPSERVER
 
 lib_besdir=$(libdir)/bes
 lib_bes_LTLIBRARIES = libusage_module.la
-dist_bin_SCRIPTS = configure-dap-data.sh
+dist_bin_SCRIPTS = bes-dap-data.sh
 
 besdir=$(datadir)/bes
 dist_bes_DATA = dap-server_help.html dap-server_help.txt
@@ -69,26 +69,26 @@ DISTCLEANFILES = nph-dods dap-server.rc stamp-nph-dods
 
 if OPENDAPSERVER
 
-EXTRA_DIST += configure-dap-data.sh.in
-CLEANFILES = configure-dap-data.sh
+EXTRA_DIST += bes-dap-data.sh.in
+CLEANFILES = bes-dap-data.sh
 
 do_subst = sed -e 's,[@]sysconfdir[@],$(sysconfdir),g' \
-		   	   -e 's,[@]libdir[@],$(libdir),g' \
-		   	   -e 's,[@]datadir[@],$(datadir),g'
+               -e 's,[@]libdir[@],$(libdir),g' \
+               -e 's,[@]datadir[@],$(datadir),g'
 
-configure-dap-data.sh: configure-dap-data.sh.in Makefile
-	$(do_subst) < $(srcdir)/configure-dap-data.sh.in > configure-dap-data.sh
-	chmod +x configure-dap-data.sh
+bes-dap-data.sh: bes-dap-data.sh.in Makefile
+	$(do_subst) < $(srcdir)/bes-dap-data.sh.in > bes-dap-data.sh
+	chmod +x bes-dap-data.sh
 
 # This makes sure that the handler modifies the bes  which confiure found
 # even with distcheck is run.
-install-data-hook: configure-dap-data.sh
+install-data-hook: bes-dap-data.sh
 	(bes_prefix=`bes-config --prefix` ; \
 	if test "$$bes_prefix" = "/usr" ; \
 	 then \
-	    ./configure-dap-data.sh /etc/bes/bes.conf /usr/lib/bes ;\
+	    ./bes-dap-data.sh /etc/bes/bes.conf $$pkglibdir ;\
 	else \
-	    ./configure-dap-data.sh $$bes_prefix/etc/bes/bes.conf $$bes_prefix/lib/bes ; \
+	    ./bes-dap-data.sh $$bes_prefix/etc/bes/bes.conf $$pkglibdir ;\
 	fi)
 
 endif
@@ -112,13 +112,13 @@ PACKAGEMAKER=/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/P
 pkg:
 	rm -rf mac_osx @PACKAGE@-@PACKAGE_VERSION@.pkg
 	./configure --prefix=/usr $(PKG_CONFIGURE_FLAGS)
-	make configure-dap-data.sh nph-dods dap-server.rc
-	cp configure-dap-data.sh configure-dap-data.sh.macosx
+	make bes-dap-data.sh nph-dods dap-server.rc
+	cp bes-dap-data.sh bes-dap-data.sh.macosx
 	cp nph-dods nph-dods.macosx
 	cp dap-server.rc dap-server.rc.macosx
 	./configure --prefix=`pwd`/mac_osx $(PKG_CONFIGURE_FLAGS)
 	make clean install
-	mv configure-dap-data.sh.macosx mac_osx/bin/configure-dap-data.sh
+	mv bes-dap-data.sh.macosx mac_osx/bin/bes-dap-data.sh
 	mv nph-dods.macosx mac_osx/share/dap-server-cgi/nph-dods
 	mv dap-server.rc.macosx mac_osx/share/dap-server-cgi/dap-server.rc
 	${PACKAGEMAKER} -build -p @PACKAGE@-@PACKAGE_VERSION@.pkg -f mac_osx -ds -r OSX_Resources -i OSX_Resources/Info.plist -d OSX_Resources/Description.plist

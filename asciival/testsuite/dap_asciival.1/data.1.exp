@@ -35,7 +35,7 @@ set test_name "data: "
 # compare_stdout "testsuite/data/asciival/data.1.stdin" "$test_name: stdin"
 
 dap_asciival_start " " "${hdf_winds}?${hdf_winds_ce}"
-compare_stdout "testsuite/data/asciival/data.1.data6" "$test_name: hdf winds (structure data)"
+compare_stdout "testsuite/data/asciival/data.1.data6" "$test_name: hdf winds (structure data)" 1
 
 dap_asciival_start " " "${jg_test}?"
 compare_stdout "testsuite/data/asciival/data.1.data5" "$test_name: jg test (sequence data)" 1
