@@ -137,7 +137,7 @@ DDS *dds_to_www_dds(DDS * dds)
     form's javescript code will update this incrementally as the user builds
     a constraint.
     @param html_header Print a HTML header/footer for the page. True by default.
-    @param admin_name "support@unidata.ucar.edu" by default; use this as the 
+    @param admin_name "support@opendap.org" by default; use this as the 
     address for support printed on the form.
     @param help_location "http://www.opendap.org/online_help_files/opendap_form_help.html" 
     by default; otherwise, this is locataion where an HTML document that 
