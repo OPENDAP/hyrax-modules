@@ -445,7 +445,7 @@ is not in your client, please contact the ", 0
     # $PATH_INFO, we should be all set. We process a DODSter URL in much the
     # same way a compressed local file is processed (see nph-dods.in).
     # 10/22/02 jhrg
-    if ( $self->{handler} =~ m@^.*/jg_handler$@ || is_dodster( $ENV{PATH_INFO} ) ) {
+    if ( $self->{handler} =~ m@^.*/jg_handler$@ ) {
         $filename = $ENV{PATH_INFO};
 
         # For both DODSter and JGOFS URLs, remove PATH_INFO's leading slash.
@@ -837,32 +837,19 @@ sub if_modified_since {
     return $self->{if_modified_since};
 }
 
-# Private. Get the remote thing. The param $url should be scanned for shell
-# meta-characters.
 sub get_url {
     my $self = shift;
     my $url  = shift;
 
-    my $transfer = $self->curl() . " --silent " . $url . " |";
-    my $buf;
-    print( DBG_LOG "About to run curl: $transfer\n" ) if $debug > 1;
+    use LWP::Simple;
+    use FilterDirHTML;      # FilterDirHTML is a subclass of HTML::Filter
 
-    # Use the HTML error message format since this is only used via a web
-    # browser, never a client built with our library. 11/21/03 jhrg
-    open CURL, $transfer
-      or print_error_message(
-        $self, "Could not transfer $url: \n\
-Unable to open the transfer utility (curl).\n", 0 );
-    print( DBG_LOG "Back from curl\n" ) if $debug > 1;
-    my $offset = 0;
-    my $bytes;
-    while ( $bytes = read CURL, $buf, 20, $offset ) {
-        $offset += $bytes;
-    }
+    print(DBG_LOG "get_url: Getting the directory listing using: $url\n")
+       if $debug > 1;
 
-    close CURL;
+    my $directory_html = &get($url);
 
-    return $buf;
+    return $directory_html 
 }
 
 sub url_text {

@@ -39,8 +39,7 @@
 package DODS_Cache;
 require Exporter;
 @ISA    = qw(Exporter);
-@EXPORT = qw(purge_cache is_compressed decompress_and_cache is_dodster
-  dodster_and_cache);
+@EXPORT = qw(purge_cache is_compressed decompress_and_cache);
 
 my $test  = 0;
 my $debug = 0;
@@ -125,13 +124,6 @@ sub is_compressed {
 }
 
 my $dods_ext = "(das|dds|dods|asc|ascii|html|info|ver)";
-
-# Return 1 if the filename looks like a DODSter filename, 0 otherwise.
-sub is_dodster {
-    my $file_name = shift;
-
-    return ( $file_name =~ m@(http|ftp)://.*@ ) ? 1 : 0;
-}
 
 # Given the full path name to a compressed file, decompress that file and
 # store the result in the cache. If the file already exists in the cache, do
@@ -219,37 +211,6 @@ sub cache_name {
     return $cache_dir . "/" . "dods_cache#" . $pathname;
 }
 
-# Given a DODSter URL...
-sub dodster_and_cache {
-    my $url       = shift;
-    my $cache_dir = shift;
-
-    # Strip shell meta-characters from the $pathname. 7/10/2001 jhrg
-    print STDERR "URL: $url\n" if $debug;
-    $url !~ m@.*[\s%&()*?<>]+.*@
-      or return ( "", "Found shell meta characters in DODSter URL" );
-
-    my $cache_entity = dodster_name( $url, $cache_dir );
-
-    my @trans_response;
-
-    # Only transfer and cache if the data file has not already been cached.
-    if ( !-e $cache_entity ) {
-        print( STDERR "Starting transfer of remote file... " ) if $debug > 0;
-        @trans_response = &transfer_remote_file( $url, $cache_entity );
-        if ( $trans_response[1] ne "" ) {
-            print( STDERR "error\n" ) if $debug > 0;
-            return ( "", $trans_response[1] );
-        }
-        print( STDERR "successful ($trans_response[0] bytes).\n" )
-          if $debug > 0;
-    } else {
-        print( STDERR "Remote file ($url) found in cache.\n" ) if $debug > 0;
-    }
-
-    return ( $cache_entity, "" );
-}
-
 # Private. Get the remote thing. The param $url should be scanned for shell
 # meta-characters.
 sub transfer_remote_file {
@@ -292,17 +253,6 @@ sub transfer_remote_file {
     return ( $total, "" );
 }
 
-# Private. Build up the cache filename for a DODSter thing.
-sub dodster_name {
-    my $pathname  = shift;
-    my $cache_dir = shift;
-
-    $pathname =~ s@^/@@;      # delete leading /
-    $pathname =~ s@/@\#@g;    # turn remaining / into #
-
-    return $cache_dir . "/" . "dods_cache#" . $pathname;
-}
-
 ##########################################################################
 
 if ($test) {
@@ -318,22 +268,6 @@ if ($test) {
     ( 1 == is_compressed("myfile.bz2") ) || die;
     ( 1 == is_compressed("myfile.hdf.bz2") ) || die;
     print "\t is_compressed passed all tests\n";
-
-    ( 1 == is_dodster("/http://dcz.dods.org/nph-dods/data/nc/fnoc1.nc.das") )
-      || die;
-    ( 1 == is_dodster("/http://dcz.dods.org/nph-dods/data/nc/fnoc1.nc.dods") )
-      || die;
-    ( 1 == is_dodster("/http://dcz.dods.org/nph-dods/data/nc/fnoc1.nc.asc") )
-      || die;
-    ( 1 == is_dodster("/ftp://dcz.dods.org/nph-dods/data/nc/fnoc1.nc.asc") )
-      || die;
-    ( 1 == is_dodster("/ftp://dcz.dods.org/nph-dods/data/nc/fnoc1.nc.das") )
-      || die;
-    ( 0 == is_dodster("/http/dcz.dods.org/nph-dods/data/nc/fnoc1.nc.asc") )
-      || die;
-    ( 0 == is_dodster("/ftp/dcz.dods.org/nph-dods/data/nc/fnoc1.nc.asc") )
-      || die;
-    print "\t is_dodster passed all tests\n";
 
     # NB: Never call cache_name with "" for the cache directory. I'm doing it
     # here just to test stuff. 10/18/2000 jhrg
@@ -366,16 +300,8 @@ if ($test) {
       || die;
     print "\t cache_name passed all tests\n";
 
-    ( "/dods_cache#http:##stuff" eq dodster_name( "/http://stuff", "" ) )
-      || die;
-    ( "/dods_cache#ftp:##dcz.dods.org#nph-dods#data#nc#fnoc1.nc" eq
-       dodster_name( "/ftp://dcz.dods.org/nph-dods/data/nc/fnoc1.nc", "" ) )
-      || die;
-    ( "/dods_cache#http:##dcz.dods.org#nph-dods#data#nc#fnoc1.nc" eq
-       dodster_name( "/http://dcz.dods.org/nph-dods/data/nc/fnoc1.nc", "" ) )
-      || die;
-    print "\t dodster_name passed all tests\n";
 	}
+
     ( $a, $b ) = decompress_and_cache( "test_file.gz", "/tmp" );
     print "decompressed test_file: " . $a . "\n" if $debug;
     print "error message: " . $b . "\n" if $debug;
@@ -424,17 +350,6 @@ if ($test) {
     #    unlink "/tmp/dods_ftp_fnoc1.nc";
 
     print "\t transfer_remote_file passed all tests\n";
-
-    ( $a, $b ) =
-      dodster_and_cache( "http://test.opendap.org/data/nc/fnoc1.nc", "/tmp" );
-    ("/tmp/dods_cache#http:##test.opendap.org#data#nc#fnoc1.nc" eq $a
-       && "" eq $b )
-      || die;
-    ( -e "/tmp/dods_cache#http:##test.opendap.org#data#nc#fnoc1.nc" ) || die;
-    ( 23944 == -s "/tmp/dods_cache#http:##test.opendap.org#data#nc#fnoc1.nc" )
-      || die;
-
-    print "\t dodster_and_cache passed all tests\n";
 
     ( purge_cache( "/tmp", 1 ) > 0 ) || die;
     ( 0 == purge_cache( "/tmp", 0 ) ) || die;

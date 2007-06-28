@@ -113,28 +113,18 @@ if ( -f "OPENDAP_STATISTICS" ) {
     $dispatch->machine_names();    # PERL Regex of names for this machine
 }
 
-# DODSter is part of an experimental system which is loosely based on
-# Napster call MODSter. MODSter is 'Napster for MODIS data.' If you'd like
-# more information, go to the NASA ESIP Federation web site and search for
-# MODSter. 07/22/03 jhrg
-
-my $dodster    = is_dodster( $dispatch->filename() );
 my $compressed = is_compressed( $dispatch->filename() );
 
-if ( $dodster || $compressed ) {
+if ( $compressed ) {
     purge_cache( $dispatch->cache_dir(), $dispatch->cache_size() );
 
     my ( $cache_entity, $error );
-    if ($dodster) {
-        ( $cache_entity, $error ) =
-          dodster_and_cache( $dispatch->filename(), $dispatch->cache_dir() );
-    } else {
-        ( $cache_entity, $error ) =
-          decompress_and_cache( $dispatch->filename(), $dispatch->cache_dir() );
-    }
+
+    ( $cache_entity, $error ) =
+        decompress_and_cache( $dispatch->filename(), $dispatch->cache_dir() );
 
     $dispatch->print_error_msg( $error, 0 )
-      if ( $cache_entity eq "" && $error ne "" );
+        if ( $cache_entity eq "" && $error ne "" );
 
     $dispatch->filename($cache_entity);
 }
