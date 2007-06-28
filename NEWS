@@ -1,3 +1,14 @@
+Version 3.8.1 (28 June 2007)
+
+Applied the security patch from 27 April and removed the dodster Perl
+software (the patch simply disabled it). The dodster code also used curl in
+the same way that the directory listing software and also had a security
+vulnerability. 
+
+I set the version for this release to 3.8.1, not 3.8.0 since users of the
+server were instructed to set teh version number of the server to 3.8.0 after
+they applied the patch.
+
 Version 3.7.4 (13 March 2007)
 
 Fixed a bug in AsciiArray that showed up in the unit tests. The problem was

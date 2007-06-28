@@ -1,5 +1,5 @@
 
-	$Id:README.cgi 15847 2007-02-14 18:16:29Z jimg $
+  Updated for version 3.8.1 of the OPeNDAP Server Software.
 
 PREFACE
 
@@ -11,6 +11,9 @@ PREFACE
       uses Java Servlets. This new server is name 'Hyrax'. See opendap.org
       for more information.
       
+      This release is an update of the 3.7.4 release with the security patch
+      from 27 April 2007 applied. 
+
   This is a general guide for the OPeNDAP data servers. There is a more 
   detailed guide available online at http://opendap.org/support at the link 
   'Server Installation Guide.'
@@ -38,8 +41,6 @@ PREFACE
   the file INSTALL.
 
   See NEWS for recent changes to the server software.
-
-  Updated for version 3.7.3 of the OPeNDAP Server Software.
 
 -----------------------------------------------------------------------------
 

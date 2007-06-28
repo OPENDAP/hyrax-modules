@@ -1,9 +1,143 @@
+2007-06-28  James Gallagher <jgallagher@opendap.org>
+
+	Applied security patch and removed the dodster code (which was
+	part of the security patch, but we can go a little further...).
+
+	M    DODS_Dispatch.pm
+	M    DODS_Cache.pm
+	M    configure.ac
+	M    nph-dods.in
+	M    dap-server.spec
+
+2007-06-28  James Gallagher <jgallagher@opendap.org>
+
+	changed from unidata to opendap for email help address.
+
+	M    configure.ac
+
+2007-06-26  James Gallagher <jgallagher@opendap.org>
+
+	Replaced unidata with opendap support email.
+
+2007-06-21  James Gallagher <jgallagher@opendap.org>
+
+	HDF winds test is now expected to fail (until we fix the BES to
+	handle Z compression and then update the server at the test site).
+	Changes the name of configure-dap-data.sh.in to
+	bes-dap-data.sh.in.
+
+2007-06-07  Patrick West <pwest@ucar.edu>
+
+	Modified the Build functions and constructors to the RequestHandler and
+	ResponseHandler classes to take const string & instead of string.
+	
+	M    www-interface/BESWWWRequestHandler.cc
+	M    www-interface/BESWWWRequestHandler.h
+	M    www-interface/BESWWWResponseHandler.cc
+	M    www-interface/BESWWWResponseHandler.h
+	M    asciival/BESAsciiRequestHandler.cc
+	M    asciival/BESAsciiRequestHandler.h
+	M    asciival/BESAsciiResponseHandler.cc
+	M    asciival/BESAsciiResponseHandler.h
+	M    BESUsageRequestHandler.cc
+	M    BESUsageRequestHandler.h
+	M    BESUsageResponseHandler.cc
+	M    BESUsageResponseHandler.h
+
+2007-05-24  Patrick West <pwest@ucar.edu>
+
+	Help files added to bes.conf file using configure-dap-data.sh script.
+	
+	M    configure-dap-data.sh.in
+	M    Makefile.am
+
+2007-05-24  Patrick West <pwest@ucar.edu>
+
+	In case configure flags need to be passed to ./configure while
+	building .pkg added environment variable PKG_CONFIGURE_FLAGS
+	similar to DISTCHECK_CONFIGURE_FLAGS used when building distcheck.
+	
+	M    Makefile.am
+
+2007-05-24  Patrick West <pwest@ucar.edu>
+
+	Standard location of PackageMaker
+	
+	M    Makefile.am
+
+2007-05-24  James Gallagher <jgallagher@opendap.org>
+
+	Auto reset of Subversion properties
+
+2007-05-23  Patrick West <pwest@ucar.edu>
+
+	Ability to build MacOSX package file from Makefile using pkg target.
+	
+	M    README.hyrax
+	A    OSX_Resources
+	AM   OSX_Resources/InstallationCheck
+	A    OSX_Resources/License.txt
+	A    OSX_Resources/Info.plist
+	A    OSX_Resources/InstallationCheck.strings
+	A    OSX_Resources/ReadMe.txt
+	A    OSX_Resources/Description.plist
+	AM   OSX_Resources/background.jpg
+	A    OSX_Resources/Welcome.html
+	M    Makefile.am
+
+2007-05-14  James Gallagher <jgallagher@opendap.org>
+
+	Updated the spec file and Makefile.am for the new(est) bes (3.5.0)
+
+	M    dap-server.spec
+	M    Makefile.am
+
+2007-04-28  James Gallagher <jgallagher@opendap.org>
+
+	Auto reset of Subversion properties
+
+2007-04-27  Patrick West <pwest@ucar.edu>
+
+	Added help and version information for the three modules ascii,
+	www, and usage. This includes help files that are distributed with
+	the software and version information for each of the modules.
+	
+	M    dap-server/www-interface/BESWWWModule.cc
+	A    dap-server/www-interface/BESWWWRequestHandler.cc
+	A    dap-server/www-interface/BESWWWRequestHandler.h
+	M    dap-server/www-interface/Makefile.am
+	A    dap-server/dap-server_help.html
+	M    dap-server/asciival/BESAsciiModule.cc
+	A    dap-server/asciival/BESAsciiRequestHandler.cc
+	A    dap-server/asciival/BESAsciiRequestHandler.h
+	M    dap-server/asciival/Makefile.am
+	M    dap-server/BESUsageModule.cc
+	A    dap-server/BESUsageRequestHandler.cc
+	A    dap-server/BESUsageRequestHandler.h
+	A    dap-server/dap-server_help.txt
+	M    dap-server/Makefile.am
+
+2007-04-18  Patrick West <pwest@ucar.edu>
+
+	Memory clean up changes
+	
+	M    www-interface/BESWWWTransmit.cc
+	M    www-interface/BESWWWResponseHandler.cc
+	M    www-interface/BESWWW.h
+	M    BESUsage.h
+	M    BESUsageTransmit.cc
+	M    BESUsageResponseHandler.cc
+
+2007-03-13  James Gallagher <jgallagher@opendap.org>
+
+	Changes for version 3.7.4.
+
 2007-03-13  James Gallagher <jgallagher@opendap.org>
 
 	Fixed a bug in AsciiArray that showed up int he unit tests. The
-	problem was that the vector values for dimensions were off by one.
+	problem was that the vector values for dimensions was off by one.
 	Also, we only need the _redirect object for _values_, not for the
-	dinensions (since the constructor that builds an instance from a
+	dimensions (since the constructor that builds an instance from a
 	BaseType * copies the dimensions).
 
 	M    asciival/unit-tests/AsciiArrayTest.cc
@@ -59,10 +193,10 @@
 2007-02-14  James Gallagher <jgallagher@opendap.org>
 
 	I split up the README into README.cgi and README.hyrax
-	so that the information about settig up the CGI server
+	so that the information about setting up the CGI server
 	would be put in the dap-server-cgi package and so that
 	the regular package would have a decent README. I also
-	fixed some libgering issues in the spec file and Makefile.am
+	fixed some lingering issues in the spec file and Makefile.am
 
 2007-02-14  James Gallagher <jgallagher@opendap.org>
 
@@ -143,7 +277,7 @@
 2006-12-20  James Gallagher <jgallagher@opendap.org>
 
 	BESAsciiTransmit.cc: Now uses the new Structure::transfer_data()
-	which makes/enables the same sort of recurrsion that
+	which makes/enables the same sort of recursion that
 	Structure::serialize() uses.
 
 2006-12-20  James Gallagher <jgallagher@opendap.org>
@@ -196,7 +330,7 @@
 
 	configure.ac, DODS_Dispatch.pm, usage.cc: Updated the version
 	response and headers returned by the Perl code to match those
-	from te libdap C++ Code. Also fixed the problem in the Perl code
+	from the libdap C++ Code. Also fixed the problem in the Perl code
 	where a hash was returned in place of the implementation
 	version information.
 
@@ -230,7 +364,7 @@
 
 	The newly created ascii_dds was not being deleted after being used.
 	The dds itself is stored in the response handler and is cleaned up
-	after the requrest is completed.
+	after the request is completed.
 	M    BESAsciiTransmit.cc
 
 2006-10-27  James Gallagher <jgallagher@opendap.org>
@@ -243,7 +377,7 @@
 
 2006-10-10  James Gallagher <jgallagher@opendap.org>
 
-	Makefile.am, rther files: Removed name_map and the translate global.
+	Makefile.am, other files: Removed name_map and the translate global.
 
 2006-10-05  James Gallagher <jgallagher@opendap.org>
 
@@ -649,7 +783,7 @@
 	get_ascii: added to provide an entry point for the BES module.
 	AsciiOutput, AsciiArray, Grid, Sequence, Structure: modified so
 	that names() no longer is a global static object.
-	Makefile.am: now builds the BES module in additon to the Server3
+	Makefile.am: now builds the BES module in addition to the Server3
 	executable.
 
 2006-08-28  James Gallagher <jgallagher@opendap.org>
@@ -710,9 +844,9 @@
 
 2006-03-16  James Gallagher <jgallagher@opendap.org>
 
-	DODS_Dipatch.pm: Removed debug = 2 for the release. Fixed call
+	DODS_Dispatch.pm: Removed debug = 2 for the release. Fixed call
 	to dap_usage; it now gets the cache dir value. Tests have been
-	fixed and run corectly with a default dap-server.rc file.
+	fixed and run correctly with a default dap-server.rc file.
 
 2006-03-16  James Gallagher <jgallagher@opendap.org>
 
@@ -731,7 +865,7 @@
 
 2006-03-10  James Gallagher <jgallagher@opendap.org>
 
-	WWWWOutput.cc: Found two places where fprintf() calles used bad
+	WWWWOutput.cc: Found two places where fprintf() calls used bad
 	format control strings.
 
 2006-03-09  James Gallagher <jgallagher@opendap.org>
@@ -837,7 +971,7 @@
 
 2006-01-24  James Gallagher <jgallagher@opendap.org>
 
-	Massive changes to accommodate removeal of iostreams code from
+	Massive changes to accommodate removal of iostreams code from
 	libdap. Also, the help file for the HTML form was changed to the
 	web site link and the form run through a 4.0 Transitional
 	verifier. It's valid HTML and now has the fancy little logo
@@ -878,7 +1012,7 @@
 
 2005-12-20  James Gallagher <jgallagher@opendap.org>
 
-	MOved the location of the debug log to the CWD for the perl modules.
+	Moved the location of the debug log to the CWD for the perl modules.
 
 2005-12-20  James Gallagher <jgallagher@opendap.org>
 
@@ -907,7 +1041,7 @@
 
 	Fixed a bug where the HTML form and info responses lacked global
 	attributes. This bug was the result of changes to the Regex class.
-	The metachars () and | no longer need to be escaped. I also
+	The meta chars () and | no longer need to be escaped. I also
 	removed all use of Pix from this code. Finally, I added support
 	for bzip2 to DODS_Cache.pm.
 
@@ -953,7 +1087,7 @@
 
 2005-10-24  James Gallagher <jgallagher@opendap.org>
 
-	Turned off debuging for the release.
+	Turned off debugging for the release.
 
 2005-10-18  James Gallagher <jgallagher@opendap.org>
 
@@ -962,7 +1096,7 @@
 2005-10-18  James Gallagher <jgallagher@opendap.org>
 
 	DDX now works. Patched a bug in asciival where the DAP version was
-	hardcoded to 2.0. It's now hardcoded to 3.5, whcih works but is
+	hard coded to 2.0. It's now hard coded to 3.5, which works but is
 	not a real fix. See trac#248.
 
 2005-10-12  James Gallagher <jgallagher@opendap.org>
@@ -1016,7 +1150,7 @@
 
 2005-10-07  James Gallagher <jgallagher@opendap.org>
 
-	Hardcode the debug log to /usr/local/share/dap-server.
+	Hard code the debug log to /usr/local/share/dap-server.
 
 2005-10-07  James Gallagher <jgallagher@opendap.org>
 
@@ -1102,7 +1236,7 @@
 
 2005-09-06  James Gallagher <jgallagher@opendap.org>
 
-	Fixed an error where dap_ww_int seg faulted when no arguments were
+	Fixed an error where dap_www_int seg faulted when no arguments were
 	given.
 
 2005-09-06  James Gallagher <jgallagher@opendap.org>
@@ -1179,7 +1313,7 @@
 
 2005-07-20  James Gallagher <jgallagher@opendap.org>
 
-	Repaired damange to AsciiArray::get_nth_dim_size; it does not use
+	Repaired damage to AsciiArray::get_nth_dim_size; it does not use
 	ones-indexing!
 
 2005-07-20  James Gallagher <jgallagher@opendap.org>
@@ -1239,7 +1373,7 @@
 2005-06-15  James Gallagher <jgallagher@opendap.org>
 
 	Added config.h.in and regenerated Makefile.in. Fixed a bug in
-	usage.cc: No space separated the end of the handler andits first
+	usage.cc: No space separated the end of the handler and its first
 	option.
 
 2005-06-13  James Gallagher <jgallagher@opendap.org>
@@ -1285,7 +1419,7 @@
 2005-06-10  James Gallagher <jgallagher@opendap.org>
 
 	Set properties on all the files here: most are text eol-style:
-	natvie, keyword: Id, and exectuable only for a few files. There
+	native, keyword: Id, and executable only for a few files. There
 	are two files that have binary content named stdin_test.
 
 2005-06-10  James Gallagher <jgallagher@opendap.org>
@@ -1397,7 +1531,7 @@
 
 	Updated the old URI Copyright; removed clause about requiring credit
 	in publications. This was never really intended and is probably
-	unenforcable.
+	unenforceable.
 
 2005-03-16  James Gallagher <jgallagher@opendap.org>
 
@@ -1413,7 +1547,7 @@
 
 2004-07-08  James Gallagher <jgallagher@opendap.org>
 
-	Merged with relese-3-4-3FCS
+	Merged with release-3-4-3FCS
 
 2004-07-08  James Gallagher <jgallagher@opendap.org>
 
@@ -1469,12 +1603,13 @@
 2004-01-28  James Gallagher <jgallagher@opendap.org>
 
 	Removed case for dods_list_c since List has been removed from the DAP.
-	Fixed a missed conflict fromthe last merge.
+	Fixed a missed conflict from the last merge.
 
 2004-01-28  James Gallagher <jgallagher@opendap.org>
 
-	Corrected use of Connect. This code was using a constructor that is no longer
-	present. The old ctor was present when the software used libwww.
+	Corrected use of Connect. This code was using a constructor that
+	is no longer present. The old ctor was present when the software
+	used libwww.
 
 2004-01-28  James Gallagher <jgallagher@opendap.org>
 
@@ -1518,7 +1653,7 @@
 
 2003-12-10  James Gallagher <jgallagher@opendap.org>
 
-	Merge with 3.4. Some of the files contains erros (some tests fail). See
+	Merge with 3.4. Some of the files contains errors (some tests fail). See
 	the ChangeLog for information about fixes.
 
 2003-12-08  edavis
@@ -1640,7 +1775,7 @@
 
 2003-02-10  James Gallagher <jgallagher@opendap.org>
 
-	Fixed the DODS_MATLAB macro so that it links the Matkab server
+	Fixed the DODS_MATLAB macro so that it links the Matlab server
 	correctly under ML 6 (which lacks the libmi.so library).
 
 2003-01-28  James Gallagher <jgallagher@opendap.org>
@@ -2054,7 +2189,7 @@
 1999-07-22  James Gallagher <jgallagher@opendap.org>
 
 	Changed the DODS_PROG_PERL yet again because the sed regexp was
-	setting $perl_ver to 5.004 and test, on Linuk, whined about
+	setting $perl_ver to 5.004 and test, on Linux, whined about
 	expecting integers.
 
 1999-07-22  James Gallagher <jgallagher@opendap.org>
@@ -2233,7 +2368,7 @@
 
 	Fixes for security holes. The CWD module is no longer used; this
 	makes it simpler to run perl using the -T (taint) mode. Variables
-	passed to executables are scanned for nasty things (shell meta
+	passed to executable are scanned for nasty things (shell meta
 	characters). The commands are run straight from perl, not using an
 	intermediate shell.
 
@@ -2328,7 +2463,7 @@
 
 1999-04-09  James Gallagher <jgallagher@opendap.org>
 
-	Added support for the new datatypes. Removed old code. Changed
+	Added support for the new data types. Removed old code. Changed
 	header generated to include XDODS-Server.
 
 1999-03-29  edavis
@@ -2337,7 +2472,7 @@
 
 1999-03-29  James Gallagher <jgallagher@opendap.org>
 
-	Added support for the new datatypes
+	Added support for the new data types
 
 1999-03-29  James Gallagher <jgallagher@opendap.org>
 
@@ -2794,7 +2929,7 @@
 
 1997-06-05  James Gallagher <jgallagher@opendap.org>
 
-	Added to the accesser functions so that they can be used to set
+	Added to the accessor functions so that they can be used to set
 	the field values in addition to reading values from the `object'.
 
 1997-06-02  James Gallagher <jgallagher@opendap.org>
@@ -2931,7 +3066,7 @@
 
 1997-01-09  James Gallagher <jgallagher@opendap.org>
 
-	Added to lookup mfunc the ability to map non-alphanmerics to
+	Added to lookup mfunc the ability to map non-alphanumerics to
 	underscore.
 
 1996-12-23  James Gallagher <jgallagher@opendap.org>
@@ -3206,7 +3341,7 @@
 
 1995-04-25  James Gallagher <jgallagher@opendap.org>
 
-	Makefile.in and configure.in are the master MAkefile and configure
+	Makefile.in and configure.in are the master Makefile and configure
 	init files. Use these as templates when creating new instances of
 	Makefile.in or configure.in. throwout is used with dbnew to
 	process the raw log file.
