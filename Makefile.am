@@ -18,9 +18,9 @@ if OPENDAPSERVER
 
 lib_besdir=$(libdir)/bes
 lib_bes_LTLIBRARIES = libusage_module.la
-dist_bin_SCRIPTS = bes-dap-data.sh
-
 besdir=$(datadir)/bes
+
+dist_bin_SCRIPTS = bes-dap-data.sh
 dist_bes_DATA = dap-server_help.html dap-server_help.txt
 
 endif
@@ -51,7 +51,7 @@ nodist_cgiconf_DATA = dap-server.rc
 
 EXTRA_DIST = EXAMPLE_OPENDAP_STATISTICS COPYING COPYRIGHT_URI \
   nph-dods.in dap-server.rc.in dap-server.spec opendap_apache.conf \
-  README.hyrax README.cgi-server
+  README.hyrax README.cgi-server bes-dap-data.sh.in 
 
 nph-dods: nph-dods.in config.status
 	sed -e 's%[@]PERL[@]%${PERL}%' \
@@ -65,8 +65,12 @@ dap-server.rc: dap-server.rc.in config.status
 	sed -e 's%[@]CURL[@]%${CURL}%' \
 		-e 's%[@]bindir[@]%${bindir}%' $(srcdir)/dap-server.rc.in > dap-server.rc
 
-DISTCLEANFILES = nph-dods dap-server.rc stamp-nph-dods bes-dap-data.sh.in
+DISTCLEANFILES = nph-dods dap-server.rc stamp-nph-dods bes-dap-data.sh
 CLEANFILES = *~
+
+bes-dap-data.sh: bes-dap-data.sh.in config.status
+	$(do_subst) < $(srcdir)/bes-dap-data.sh.in > bes-dap-data.sh
+	chmod +x bes-dap-data.sh
 
 if OPENDAPSERVER
 
@@ -75,10 +79,6 @@ CLEANFILES += bes-dap-data.sh
 do_subst = sed -e 's,[@]sysconfdir[@],$(sysconfdir),g' \
                -e 's,[@]libdir[@],$(libdir),g' \
                -e 's,[@]datadir[@],$(datadir),g'
-
-bes-dap-data.sh: bes-dap-data.sh.in config.status
-	$(do_subst) < $(srcdir)/bes-dap-data.sh.in > bes-dap-data.sh
-	chmod +x bes-dap-data.sh
 
 # This makes sure that the handler modifies the bes  which confiure found
 # even with distcheck is run.
@@ -122,3 +122,4 @@ pkg:
 	mv nph-dods.macosx mac_osx/share/dap-server-cgi/nph-dods
 	mv dap-server.rc.macosx mac_osx/share/dap-server-cgi/dap-server.rc
 	${PACKAGEMAKER} -build -p @PACKAGE@-@PACKAGE_VERSION@.pkg -f mac_osx -ds -r OSX_Resources -i OSX_Resources/Info.plist -d OSX_Resources/Description.plist
+
