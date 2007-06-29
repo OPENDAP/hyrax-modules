@@ -65,24 +65,24 @@ dap-server.rc: dap-server.rc.in config.status
 	sed -e 's%[@]CURL[@]%${CURL}%' \
 		-e 's%[@]bindir[@]%${bindir}%' $(srcdir)/dap-server.rc.in > dap-server.rc
 
-DISTCLEANFILES = nph-dods dap-server.rc stamp-nph-dods
+DISTCLEANFILES = nph-dods dap-server.rc stamp-nph-dods bes-dap-data.sh.in
+CLEANFILES = *~
 
 if OPENDAPSERVER
 
-EXTRA_DIST += bes-dap-data.sh.in
-CLEANFILES = bes-dap-data.sh
+CLEANFILES += bes-dap-data.sh
 
 do_subst = sed -e 's,[@]sysconfdir[@],$(sysconfdir),g' \
                -e 's,[@]libdir[@],$(libdir),g' \
                -e 's,[@]datadir[@],$(datadir),g'
 
-bes-dap-data.sh: bes-dap-data.sh.in Makefile
+bes-dap-data.sh: bes-dap-data.sh.in config.status
 	$(do_subst) < $(srcdir)/bes-dap-data.sh.in > bes-dap-data.sh
 	chmod +x bes-dap-data.sh
 
 # This makes sure that the handler modifies the bes  which confiure found
 # even with distcheck is run.
-install-data-hook: bes-dap-data.sh
+bes-conf: bes-dap-data.sh
 	(bes_prefix=`bes-config --prefix` ; \
 	if test "$$bes_prefix" = "/usr" ; \
 	 then \
@@ -105,7 +105,7 @@ rpm: dist
 
 ###########################################################################
 
-# Build OS/X Packages.
+# Build OS/X Packages. Note that this target only works 
 
 PACKAGEMAKER=/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker*
 
