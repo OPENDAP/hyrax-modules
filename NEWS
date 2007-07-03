@@ -1,3 +1,10 @@
+
+Version 3.8.2 (3 July 2007)
+
+Changes to sanitize input to the ASCII, WWW and Usage handlers when they are
+run as part of the CGI-based server. Also repaired some resource-release
+issues. 
+
 Version 3.8.1 (28 June 2007)
 
 Applied the security patch from 27 April and removed the dodster Perl

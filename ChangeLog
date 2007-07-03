@@ -1,3 +1,59 @@
+2007-07-03  James Gallagher <jgallagher@opendap.org>
+
+	Updated version and added Fortify SCA file.
+
+2007-07-03  James Gallagher <jgallagher@opendap.org>
+
+	Changes to sanitize input and ensure resources are released in
+	error cases based on a security audit.
+
+	M    www-interface/www_int.cc
+	M    asciival/AsciiOutput.cc
+	M    asciival/ascii_val.cc
+	M    usage_main.cc
+	M    Makefile.am
+
+2007-06-29  James Gallagher <jgallagher@opendap.org>
+
+	More fixes for distcheck
+
+	M    Makefile.am
+
+2007-06-29  James Gallagher <jgallagher@opendap.org>
+
+	bes-dap-data.sh changes
+
+	M    Makefile.am
+
+2007-06-28  James Gallagher <jgallagher@opendap.org>
+
+	Updated for version 3.8.1
+
+	M    README.cgi-server
+	M    INSTALL
+	M    NEWS
+	M    ChangeLog
+
+2007-06-28  James Gallagher <jgallagher@opendap.org>
+
+	Applied security patch and removed the dodster code (which was
+	part of the security patch, but we can go a little further...).
+
+	M    DODS_Dispatch.pm
+	M    DODS_Cache.pm
+	M    configure.ac
+	M    nph-dods.in
+	M    dap-server.spec
+
+2007-06-28  James Gallagher <jgallagher@opendap.org>
+
+	Changed from unidata to opendap for email help address.
+
+	M    configure.ac
+
+;; Local Variables:
+;; coding: utf-8
+;; End:
 2007-06-28  James Gallagher <jgallagher@opendap.org>
 
 	Applied security patch and removed the dodster code (which was

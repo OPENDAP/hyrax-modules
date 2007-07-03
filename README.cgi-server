@@ -1,5 +1,5 @@
 
-  Updated for version 3.8.1 of the OPeNDAP Server Software.
+  Updated for version 3.8.2 of the OPeNDAP Server Software.
 
 PREFACE
 
@@ -12,7 +12,10 @@ PREFACE
       for more information.
       
       This release is an update of the 3.7.4 release with the security patch
-      from 27 April 2007 applied. 
+      from 27 April 2007 applied with other fixes applied in addition to
+      those in the patch. If you are trying to serve files with odd
+      characters in their names and have trouble using this server, please
+      contact support at 'support at opendap.org'.
 
   This is a general guide for the OPeNDAP data servers. There is a more 
   detailed guide available online at http://opendap.org/support at the link 
