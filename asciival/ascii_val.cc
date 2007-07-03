@@ -72,6 +72,8 @@ using namespace std;
 #include <BaseType.h>
 #include <Connect.h>
 #include <PipeResponse.h>
+#include <escaping.h>
+#include <GNURegex.h>
 #include <cgi_util.h>
 #include <debug.h>
 
@@ -120,6 +122,7 @@ read_from_url(DataDDS & dds, const string & url, const string & expr)
     c->set_cache_enabled(false);        // Server components should not cache...
 
     if (c->is_local()) {
+    	delete c; c = 0;
         string msg = "Error: URL `";
         msg += string(url) + "' is local.\n";
         throw Error(msg);
@@ -136,44 +139,54 @@ read_from_file(DataDDS & dds, const string & handler,
                const string & options, const string & file,
                const string & expr)
 {
+    Regex handler_allowed("[-a-zA-Z_]+");
+    if (!handler_allowed.match(handler.c_str(), handler.length()))
+	throw Error("Invalid input (1)");
+    Regex options_allowed("[-a-zA-Z_]+");
+    if (!options_allowed.match(options.c_str(), options.length()))
+        throw Error("Invalid input (2)");
+        
+    // The file paramter (data source name, really) may have escape characters
+    // (DODSFilter::initialize calls www2id()) so it's called here and the 
+    // resulting string is sanitized. I believe that the only escaped 
+    // character allowed is a space...
+    Regex file_allowed("[-a-zA-Z0-9_%]+");
+    string unesc_file = www2id(file, "%", "%20");
+    if (!file_allowed.match(unesc_file.c_str(), unesc_file.length()))
+        throw Error("Invalid input (3)");
+        
+    // The allowed set of characters for a constraint is fairly large. One way
+    // to validate this input would be to build the DDS first (w/o the ce) and
+    // then parse the CE to test it (a DDS is required to parse the DDS). 
+    // Finanally, the validated CE would be used to get a DataDDS (the DDS
+    // would not be used for anything other than validation). Instead this code
+    // removes all the escaped characters except the spaces (%20) and then 
+    // filters the expression. 
+    Regex expr_allowed("[-+a-zA-Z0-9_/%.\\#:,(){}[\\]&<>=~]*");
+    string unesc_expr = www2id(expr, "%", "%20");
+    if (!expr_allowed.match(unesc_expr.c_str(), unesc_expr.length()))
+        throw Error("Invalid input (4)");
+	    
     string command = handler + " -o dods " + options
-        + " -e " + "\"" + expr + "\"" + " \"" + file + "\"";
+        + " -e " + "\"" + unesc_expr + "\"" + " \"" + unesc_file + "\"";
 
     DBG(cerr << "DDS Command: " << command << endl);
 
     FILE *in = popen(command.c_str(), "r");
-    PipeResponse pr(in);
-#if 1
-    // Cheat: Instead of using our own code, use code from Connect. Really we should
-    // make a FILEConnect (just like there's an HTTPConnnect) to process inputs
-    // from files. For now, use the read_data() method. jhrg 2/9/06
-    Connect c("local_pipe");
-    c.read_data(dds, &pr);
-#else
-    if (in && remove_mime_header(in)) {
-        XDR *xdr_stream = 0;
 
-        try {
-            dds.parse(in);
-            xdr_stream = new_xdrstdio(in, XDR_DECODE);
+    try {
+        PipeResponse pr(in);
 
-            // Load the DDS with data.
-            DDS::Vars_iter i;
-            for (i = dds.var_begin(); i != dds.var_end(); i++) {
-                (*i)->deserialize(xdr_stream, &dds);
-            }
-        }
-        catch(Error & e) {
-            if (xdr_stream)
-                delete_xdrstdio(xdr_stream);
-            throw e;
-        }
-
-        delete_xdrstdio(xdr_stream);
+        Connect c("local_pipe");
+        c.read_data(dds, &pr);
 
         pclose(in);
     }
-#endif
+    catch (...) {
+        pclose(in);
+        throw;
+    }
+    
 }
 
 /** Write out the given error object. If the Error object #e# is empty, don't

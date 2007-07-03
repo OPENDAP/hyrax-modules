@@ -53,7 +53,7 @@ string AsciiOutput::get_full_name()
 {
     BaseType *this_btp = dynamic_cast < BaseType * >(this);
     BaseType *btp = _redirect;
-    if (!_redirect)
+    if (!btp)
         btp = this_btp;
     if (!btp)
         throw InternalErr(__FILE__, __LINE__,
@@ -71,7 +71,7 @@ void AsciiOutput::print_ascii(FILE * os,
                               bool print_name) throw(InternalErr)
 {
     BaseType *BTptr = _redirect;
-    if (!_redirect) {
+    if (!BTptr) {
         BTptr = dynamic_cast < BaseType * >(this);
     }
 

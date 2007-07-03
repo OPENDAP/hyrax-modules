@@ -29,20 +29,14 @@ static char rcsid[] not_used = {"$Id$"};
 
 #include <stdio.h>
 
-#if 0
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <sstream>
-
-#include <GNURegex.h>
-#endif
-
-#include <cgi_util.h>
-#include <util.h>
 #include <DAS.h>
 
+#include <escaping.h>
+#include <GNURegex.h>
+#include <cgi_util.h>
+#include <util.h>
 #include <debug.h>
+
 #include "usage.h"
 
 using namespace std;
@@ -96,14 +90,31 @@ main(int argc, char *argv[])
 
     string handler = argv[3];
 
+    Regex handler_allowed("[-a-zA-Z_]+");
+    if (!handler_allowed.match(handler.c_str(), handler.length()))
+        throw Error("Invalid input (1)");
+    Regex options_allowed("[-a-zA-Z_]+");
+    if (!options_allowed.match(options.c_str(), options.length()))
+        throw Error("Invalid input (2)");
+        
+    // The file paramter (data source name, really) may have escape characters
+    // (DODSFilter::initialize calls www2id()) so it's called here and the 
+    // resulting string is sanitized. I believe that the only escaped 
+    // character allowed is a space...
+    Regex name_allowed("[-a-zA-Z0-9_%]+");
+    string unesc_name = www2id(name, "%", "%20");
+    if (!name_allowed.match(unesc_name.c_str(), unesc_name.length()))
+        throw Error("Invalid input (3)");
+
     DAS das;
-    string command = handler + " -o DAS " + options + " \"" + name + "\"";
+    string command = handler + " -o DAS " + options + " \""
+        + unesc_name + "\"";
 
     DBG(cerr << "DAS Command: " << command << endl);
 
+    FILE *in = 0;
     try {
-        FILE *in = popen(command.c_str(), "r");
-
+        in = popen(command.c_str(), "r");
         if (in && remove_mime_header(in)) {
             das.parse(in);
             pclose(in);
@@ -125,7 +136,24 @@ main(int argc, char *argv[])
         write_usage_response(stdout, dds, das, name, handler);
     }
     catch (Error &e) {
+        pclose(in);
+        
         string error_msg = e.get_error_message();
+        fprintf( stdout, "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n" ) ;
+        fprintf( stdout, "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n") ;
+        fprintf( stdout, "<html><head><title>DODS Error</title>\n" ) ;
+        fprintf( stdout, "</head>\n" ) ;
+        fprintf( stdout, "<body>\n" ) ;
+        fprintf( stdout, "<h3>Error building the DODS dataset usage repsonse</h3>:\n" ) ;
+        fprintf( stdout, "%s", error_msg.c_str() ) ;
+        fprintf( stdout, "<hr>\n" ) ;
+        
+        return EXIT_FAILURE;
+    }
+    catch (exception &e) {
+        pclose(in);
+
+        string error_msg = e.what();
         fprintf( stdout, "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n" ) ;
         fprintf( stdout, "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n") ;
         fprintf( stdout, "<html><head><title>DODS Error</title>\n" ) ;

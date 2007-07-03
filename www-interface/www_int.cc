@@ -49,11 +49,14 @@ static char rcsid[] not_used =
 #include <fcntl.h>
 #endif
 
-#include "BaseType.h"
-#include "Connect.h"
-#include "BaseTypeFactory.h"
-#include "cgi_util.h"
-#include "debug.h"
+#include <BaseType.h>
+#include <Connect.h>
+#include <BaseTypeFactory.h>
+#include <escaping.h>
+#include <GNURegex.h>
+#include <cgi_util.h>
+#include <util.h>
+#include <debug.h>
 
 #include "WWWOutput.h"
 #include "WWWOutputFactory.h"
@@ -87,6 +90,7 @@ static void read_from_url(DAS & das, DDS & dds, const string & url)
     c->set_cache_enabled(false);        // Server components should not cache...
 
     if (c->is_local()) {
+    	delete c; c = 0;
         string msg = "Error: URL `";
         msg += string(url) + "' is local.\n";
         throw Error(msg);
@@ -103,25 +107,47 @@ static void
 read_from_file(DAS & das, DDS & dds, const string & handler,
                const string & options, const string & file)
 {
-    string command = handler + " -o DAS " + options + " \"" + file + "\"";
+    Regex handler_allowed("[-a-zA-Z_]+");
+    if (!handler_allowed.match(handler.c_str(), handler.length()))
+        throw Error("Invalid input (1)");
+    Regex options_allowed("[-a-zA-Z_]+");
+    if (!options_allowed.match(options.c_str(), options.length()))
+        throw Error("Invalid input (2)");
+        
+    // The file paramter (data source name, really) may have escape characters
+    // (DODSFilter::initialize calls www2id()) so it's called here and the 
+    // resulting string is sanitized. I believe that the only escaped 
+    // character allowed is a space...
+    Regex file_allowed("[-a-zA-Z0-9_%]+");
+    string unesc_file = www2id(file, "%", "%20");
+    if (!file_allowed.match(unesc_file.c_str(), unesc_file.length()))
+        throw Error("Invalid input (3)");
+    
+    FILE *in = 0;
+    try {
+        string command = handler + " -o DAS " + options + " \"" + file + "\"";
+        DBG(cerr << "DAS Command: " << command << endl);
 
-    DBG(cerr << "DAS Command: " << command << endl);
+        in = popen(command.c_str(), "r");
 
-    FILE *in = popen(command.c_str(), "r");
+        if (in && remove_mime_header(in)) {
+            das.parse(in);
+            pclose(in);
+        }
 
-    if (in && remove_mime_header(in)) {
-        das.parse(in);
-        pclose(in);
+        command = handler + " -o DDS " + options + " \"" + file + "\"";
+        DBG(cerr << "DDS Command: " << command << endl);
+
+        in = popen(command.c_str(), "r");
+
+        if (in && remove_mime_header(in)) {
+            dds.parse(in);
+            pclose(in);
+        }
     }
-
-    command = handler + " -o DDS " + options + " \"" + file + "\"";
-    DBG(cerr << "DDS Command: " << command << endl);
-
-    in = popen(command.c_str(), "r");
-
-    if (in && remove_mime_header(in)) {
-        dds.parse(in);
+    catch (...) {
         pclose(in);
+        throw;
     }
 }
 

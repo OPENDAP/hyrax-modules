@@ -123,3 +123,12 @@ pkg:
 	mv dap-server.rc.macosx mac_osx/share/dap-server-cgi/dap-server.rc
 	${PACKAGEMAKER} -build -p @PACKAGE@-@PACKAGE_VERSION@.pkg -f mac_osx -ds -r OSX_Resources -i OSX_Resources/Info.plist -d OSX_Resources/Description.plist
 
+###########################################################################
+
+# Run Fortify SCA
+
+sca:
+	make clean
+	sourceanalyzer -b @PACKAGE@-sca make
+	sourceanalyzer -b @PACKAGE@-sca -scan -f @PACKAGE@-sca.fpr
+
