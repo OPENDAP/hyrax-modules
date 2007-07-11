@@ -45,8 +45,6 @@
 //#include "name_map.h"
 #include "get_ascii.h"
 
-//#include "BESLog.h"
-
 using namespace dap_asciival;
 
 string AsciiOutput::get_full_name()

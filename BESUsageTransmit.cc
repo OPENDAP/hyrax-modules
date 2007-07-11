@@ -43,7 +43,7 @@
 #include "util.h"
 #include "BESTransmitException.h"
 
-#include "BESLog.h"
+#include "BESDebug.h"
 
 using namespace dap_usage;
 
@@ -60,11 +60,11 @@ void
     string dataset_name = dhi.container->access();
 
     try {
-        (*BESLog::TheLog()) << "writing usage/info" << endl;
+	BESDEBUG( "writing usage/info" << endl )
 
         write_usage_response(stdout, *dds, *das, dataset_name, "", false);
 
-        (*BESLog::TheLog()) << "done transmitting usage/info" << endl;
+        BESDEBUG( "done transmitting usage/info" << endl )
     }
     catch(Error & e) {
         string err =

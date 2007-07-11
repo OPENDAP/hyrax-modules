@@ -53,10 +53,11 @@ using std::endl;
 void
  BESWWWModule::initialize(const string & modname)
 {
-    BESDEBUG( "Initializing OPeNDAP WWW module:" << endl )
+    BESDEBUG( "Initializing OPeNDAP WWW module " << modname << endl )
 
     BESDEBUG( "    adding " << modname << " request handler" << endl )
-    BESRequestHandlerList::TheList()->add_handler( modname, new BESWWWRequestHandler( modname ) ) ;
+    BESRequestHandler *handler = new BESWWWRequestHandler( modname ) ;
+    BESRequestHandlerList::TheList()->add_handler( modname, handler ) ;
 
     BESDEBUG( "    adding " << WWW_RESPONSE << " response handler" << endl )
     BESResponseHandlerList::TheList()->add_handler(WWW_RESPONSE,
@@ -65,7 +66,6 @@ void
 
     BESTransmitter *t =
         BESReturnManager::TheManager()->find_transmitter(BASIC_TRANSMITTER);
-        
     if( t )
     {
 	BESDEBUG( "    adding basic " << WWW_TRANSMITTER << " transmit function" << endl )
@@ -82,14 +82,40 @@ void
     BESDEBUG( "    adding " << WWW_RESPONSE << " command" << endl )
     BESCommand *cmd = new BESWWWGetCommand(WWW_RESPONSE);
     BESCommand::add_command(WWW_RESPONSE, cmd);
+
+    BESDEBUG( "Done Initializing OPeNDAP WWW module " << modname << endl )
 }
 
 void BESWWWModule::terminate(const string & modname)
 {
-    BESDEBUG( "Removing OPeNDAP WWW modules" << endl )
+    BESDEBUG( "Cleaning OPeNDAP WWW module " << modname << endl )
 
+    BESDEBUG( "    removing " << modname << " request handler " << endl )
+    BESRequestHandler *rh = BESRequestHandlerList::TheList()->remove_handler( modname ) ;
+    if( rh ) delete rh ;
+
+    BESDEBUG( "    removing " << WWW_RESPONSE << " response handler" << endl )
     BESResponseHandlerList::TheList()->remove_handler(WWW_RESPONSE);
-    BESCommand::del_command(WWW_RESPONSE);
+
+    BESDEBUG( "    removing " << WWW_RESPONSE << " command" << endl )
+    BESCommand::del_command( WWW_RESPONSE ) ;
+
+    BESTransmitter *t =
+        BESReturnManager::TheManager()->find_transmitter(BASIC_TRANSMITTER);
+    if( t )
+    {
+	BESDEBUG( "    removing basic " << WWW_TRANSMITTER << " transmit function" << endl )
+        t->remove_method(WWW_TRANSMITTER);
+    }
+
+    t = BESReturnManager::TheManager()->find_transmitter(HTTP_TRANSMITTER);
+    if( t )
+    {
+	BESDEBUG( "    removing http " << WWW_TRANSMITTER << " transmit function" << endl )
+        t->remove_method(WWW_TRANSMITTER);
+    }
+
+    BESDEBUG( "Done Cleaning OPeNDAP WWW module " << modname << endl )
 }
 
 /** @brief dumps information about this object

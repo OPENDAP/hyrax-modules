@@ -46,7 +46,7 @@
 #include "util.h"
 #include "BESTransmitException.h"
 
-#include "BESLog.h"
+#include "BESDebug.h"
 
 using namespace dap_asciival;
 
@@ -109,9 +109,9 @@ void
             // them to the d_values field instead of writing them to a XDR sink
             // pointer. jhrg 9/13/06
             for (DDS::Vars_iter i = dds->var_begin(); i != dds->var_end(); i++) {
-                (*BESLog::TheLog()) << "processing var: " << (*i)->name() << endl;
+                BESDEBUG( "processing var: " << (*i)->name() << endl )
                 if ((*i)->send_p()) {
-                    (*BESLog::TheLog()) << "reading some data for: " << (*i)->name() << endl;
+                    BESDEBUG( "reading some data for: " << (*i)->name() << endl )
                     switch ((*i)->type()) {
                     case dods_sequence_c:
                         dynamic_cast <
@@ -146,15 +146,15 @@ void
     try {
         // Now that we have constrained the DataDDS and read in the data,
         // send it as ascii
-        (*BESLog::TheLog()) << "converting to ascii datadds" << endl;
+        BESDEBUG( "converting to ascii datadds" << endl )
         DataDDS *ascii_dds = datadds_to_ascii_datadds(dds);
-        (*BESLog::TheLog()) << "getting ascii values" << endl;
+        BESDEBUG( "getting ascii values" << endl )
         get_data_values_as_ascii(ascii_dds, stdout);
-        (*BESLog::TheLog()) << "got the ascii values" << endl;
+        BESDEBUG( "got the ascii values" << endl )
         fflush(stdout);
         delete ascii_dds;
 
-        (*BESLog::TheLog()) << "done transmitting ascii" << endl;
+        BESDEBUG( "done transmitting ascii" << endl )
     }
 
     catch(Error & e) {
