@@ -109,9 +109,9 @@ void
             // them to the d_values field instead of writing them to a XDR sink
             // pointer. jhrg 9/13/06
             for (DDS::Vars_iter i = dds->var_begin(); i != dds->var_end(); i++) {
-                BESDEBUG( "processing var: " << (*i)->name() << endl )
+                BESDEBUG( "ascii", "processing var: " << (*i)->name() << endl )
                 if ((*i)->send_p()) {
-                    BESDEBUG( "reading some data for: " << (*i)->name() << endl )
+                    BESDEBUG( "ascii", "reading some data for: " << (*i)->name() << endl )
                     switch ((*i)->type()) {
                     case dods_sequence_c:
                         dynamic_cast <
@@ -146,15 +146,15 @@ void
     try {
         // Now that we have constrained the DataDDS and read in the data,
         // send it as ascii
-        BESDEBUG( "converting to ascii datadds" << endl )
+        BESDEBUG( "ascii", "converting to ascii datadds" << endl )
         DataDDS *ascii_dds = datadds_to_ascii_datadds(dds);
-        BESDEBUG( "getting ascii values" << endl )
+        BESDEBUG( "ascii", "getting ascii values" << endl )
         get_data_values_as_ascii(ascii_dds, stdout);
-        BESDEBUG( "got the ascii values" << endl )
+        BESDEBUG( "ascii", "got the ascii values" << endl )
         fflush(stdout);
         delete ascii_dds;
 
-        BESDEBUG( "done transmitting ascii" << endl )
+        BESDEBUG( "ascii", "done transmitting ascii" << endl )
     }
 
     catch(Error & e) {

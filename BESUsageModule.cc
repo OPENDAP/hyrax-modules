@@ -54,59 +54,62 @@ using std::endl ;
 void
 BESUsageModule::initialize( const string &modname )
 {
-    BESDEBUG( "Initializing OPeNDAP Usage module" << modname << endl )
+    BESDEBUG( "usage", "Initializing OPeNDAP Usage module" << modname << endl )
 
-    BESDEBUG( "    adding " << modname << " request handler" << endl )
+    BESDEBUG( "usage", "    adding " << modname << " request handler" << endl )
     BESRequestHandler *handler = new BESUsageRequestHandler( modname ) ;
     BESRequestHandlerList::TheList()->add_handler( modname, handler ) ;
 
-    BESDEBUG( "    adding " << Usage_RESPONSE << " response handler" << endl )
+    BESDEBUG( "usage", "    adding " << Usage_RESPONSE << " response handler" << endl )
     BESResponseHandlerList::TheList()->add_handler( Usage_RESPONSE, BESUsageResponseHandler::UsageResponseBuilder ) ;
 
     BESTransmitter *t = BESReturnManager::TheManager()->find_transmitter( BASIC_TRANSMITTER ) ;
     if( t )
     {
-	BESDEBUG( "    adding basic " << Usage_TRANSMITTER << " transmitter" << endl )
+	BESDEBUG( "usage", "    adding basic " << Usage_TRANSMITTER << " transmitter" << endl )
 	t->add_method( Usage_TRANSMITTER, BESUsageTransmit::send_basic_usage ) ;
     }
 
     t = BESReturnManager::TheManager()->find_transmitter( HTTP_TRANSMITTER ) ;
     if( t )
     {
-	BESDEBUG( "    adding http " << Usage_TRANSMITTER << " transmitter" << endl )
+	BESDEBUG( "usage", "    adding http " << Usage_TRANSMITTER << " transmitter" << endl )
 	t->add_method( Usage_TRANSMITTER, BESUsageTransmit::send_http_usage ) ;
     }
 
-    BESDEBUG( "Done Initializing OPeNDAP Usage module" << modname << endl )
+    BESDEBUG( "usage", "    adding usage debug context" << endl )
+    BESDebug::Register( "usage" ) ;
+
+    BESDEBUG( "usage", "Done Initializing OPeNDAP Usage module" << modname << endl )
 }
 
 void
 BESUsageModule::terminate( const string &modname )
 {
-    BESDEBUG( "Cleaning OPeNDAP usage module " << modname << endl )
+    BESDEBUG( "usage", "Cleaning OPeNDAP usage module " << modname << endl )
 
-    BESDEBUG( "    removing " << modname << " request handler " << endl )
+    BESDEBUG( "usage", "    removing " << modname << " request handler " << endl )
     BESRequestHandler *rh = BESRequestHandlerList::TheList()->remove_handler( modname ) ;
     if( rh ) delete rh ;
 
-    BESDEBUG( "    removing " << Usage_RESPONSE << " response handler " << endl )
+    BESDEBUG( "usage", "    removing " << Usage_RESPONSE << " response handler " << endl )
     BESResponseHandlerList::TheList()->remove_handler( Usage_RESPONSE ) ;
 
     BESTransmitter *t = BESReturnManager::TheManager()->find_transmitter( BASIC_TRANSMITTER ) ;
     if( t )
     {
-	BESDEBUG( "    removing basic " << Usage_TRANSMITTER << " transmitter" << endl )
+	BESDEBUG( "usage", "    removing basic " << Usage_TRANSMITTER << " transmitter" << endl )
 	t->remove_method( Usage_TRANSMITTER ) ;
     }
 
     t = BESReturnManager::TheManager()->find_transmitter( HTTP_TRANSMITTER ) ;
     if( t )
     {
-	BESDEBUG( "    removing http " << Usage_TRANSMITTER << " transmitter" << endl )
+	BESDEBUG( "usage", "    removing http " << Usage_TRANSMITTER << " transmitter" << endl )
 	t->remove_method( Usage_TRANSMITTER ) ;
     }
 
-    BESDEBUG( "Done Cleaning OPeNDAP usage module " << modname << endl )
+    BESDEBUG( "usage", "Done Cleaning OPeNDAP usage module " << modname << endl )
 }
 
 /** @brief dumps information about this object

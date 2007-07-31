@@ -64,14 +64,14 @@ void
     string dataset_name = dhi.container->access();
 #endif
     try {
-        BESDEBUG( "converting dds to www dds" << endl )
+        BESDEBUG( "www", "converting dds to www dds" << endl )
 
 	DDS *dds = dynamic_cast<BESWWW*>(obj)->get_dds()->get_dds() ;
         DDS *wwwdds = dds_to_www_dds( dds ) ;
 	DAS *das = dynamic_cast<BESWWW*>(obj)->get_das()->get_das() ;
         wwwdds->transfer_attributes( das ) ;
         
-        BESDEBUG( "writing form" << endl )
+        BESDEBUG( "www", "writing form" << endl )
 
         string url = dhi.data[WWW_URL];
 #if 0
@@ -79,7 +79,7 @@ void
 #endif
         write_html_form_interface(stdout, wwwdds, url, false);
 
-        BESDEBUG( "done transmitting form" << endl )
+        BESDEBUG( "www", "done transmitting form" << endl )
 
 	delete wwwdds ;
     }

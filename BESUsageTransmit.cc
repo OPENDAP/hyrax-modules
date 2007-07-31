@@ -60,11 +60,11 @@ void
     string dataset_name = dhi.container->access();
 
     try {
-	BESDEBUG( "writing usage/info" << endl )
+	BESDEBUG( "usage", "writing usage/info" << endl )
 
         write_usage_response(stdout, *dds, *das, dataset_name, "", false);
 
-        BESDEBUG( "done transmitting usage/info" << endl )
+        BESDEBUG( "usage", "done transmitting usage/info" << endl )
     }
     catch(Error & e) {
         string err =
