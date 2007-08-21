@@ -84,6 +84,9 @@ AsciiSequence::length()
     return -1;
 }
 
+// This specialization is different from the Sequence version only in that 
+// it tests '*iter)->send_p()' before incrementing 'i' by 
+// '(*iter)->element_count(true)'.
 int
 AsciiSequence::element_count(bool leaves)
 {
@@ -102,7 +105,7 @@ AsciiSequence::element_count(bool leaves)
 // case 1: Simple, Seq - handled
 // Case 2: Seq, Simple
 void
- AsciiSequence::print_ascii_row(FILE * os, int row, BaseTypeRow outer_vars)
+AsciiSequence::print_ascii_row(FILE * os, int row, BaseTypeRow outer_vars)
 {
     Sequence *seq = dynamic_cast < Sequence * >(_redirect);
     if (!seq)
