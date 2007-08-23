@@ -95,6 +95,15 @@ endif
 
 ###########################################################################
 
+# Fortify targets. These 
+
+.PHONY: fortify
+fortify:
+	sourceanalyzer -b dap_server $(MAKE)
+	sourceanalyzer -b dap_server -scan -f dap_server.fpr
+
+###########################################################################
+
 # Build linux RPMs
 
 srpm: dist
