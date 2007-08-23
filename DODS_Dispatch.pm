@@ -80,12 +80,12 @@ please contact the ";
 
 # Test if variables are tainted.
 # From Programming Perl, p.258. 12/11/2000 jhrg
-sub is_tainted {
-    not eval {
-        join( "", @_ ), kill 0;    # Perl warns about join; don't listen to it.
-        1;
-    };
-}
+#sub is_tainted {
+#    not eval {
+#        join( "", @_ ), kill 0;    # Perl warns about join; don't listen to it.
+#        1;
+#    };
+#}
 
 sub is_directory {
     return -d $_[0];

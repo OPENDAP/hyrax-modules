@@ -95,12 +95,21 @@ endif
 
 ###########################################################################
 
-# Fortify targets. These 
+# Fortify targets.
 
 .PHONY: fortify
 fortify:
-	sourceanalyzer -b dap_server $(MAKE)
-	sourceanalyzer -b dap_server -scan -f dap_server.fpr
+	sourceanalyzer -b @PACKAGE@ $(MAKE) libusage_module.la
+	sourceanalyzer -b @PACKAGE@ -scan -f @PACKAGE@-@PACKAGE_VERSION@.fpr
+	(cd asciival && $(MAKE) fortify)
+	(cd www-interface && $(MAKE) fortify)
+
+# Use this to clean the fortify project.
+.PHONY: fortifyclean
+fortifyclean:
+	sourceanalyzer -b @PACKAGE@ -clean
+	(cd asciival && $(MAKE) fortifyclean)
+	(cd www-interface && $(MAKE) fortifyclean)
 
 ###########################################################################
 
@@ -131,13 +140,3 @@ pkg:
 	mv nph-dods.macosx mac_osx/share/dap-server-cgi/nph-dods
 	mv dap-server.rc.macosx mac_osx/share/dap-server-cgi/dap-server.rc
 	${PACKAGEMAKER} -build -p @PACKAGE@-@PACKAGE_VERSION@.pkg -f mac_osx -ds -r OSX_Resources -i OSX_Resources/Info.plist -d OSX_Resources/Description.plist
-
-###########################################################################
-
-# Run Fortify SCA
-
-sca:
-	make clean
-	sourceanalyzer -b @PACKAGE@-sca make
-	sourceanalyzer -b @PACKAGE@-sca -scan -f @PACKAGE@-sca.fpr
-

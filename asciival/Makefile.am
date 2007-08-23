@@ -52,3 +52,18 @@ RUNTESTDEFAULTFLAGS = --tool $$tool --srcdir testsuite
 EXTRA_DIST = testsuite common_tests.exp
 
 CLEANFILES = *~ *.log *.sum
+
+###########################################################################
+
+# Fortify targets.
+
+.PHONY: fortify
+fortify:
+	sourceanalyzer -b @PACKAGE@ $(MAKE) libascii_module.la
+	sourceanalyzer -b @PACKAGE@ -scan -f ../@PACKAGE@-@PACKAGE_VERSION@.fpr
+
+# Use this to clean the fortify project.
+.PHONY: fortifyclean
+fortifyclean:
+	sourceanalyzer -b @PACKAGE@ -clean
+
