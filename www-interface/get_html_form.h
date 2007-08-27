@@ -36,11 +36,18 @@ extern WWWOutput *wo;
 
 BaseType *basetype_to_wwwtype( BaseType *bt );
 DDS *dds_to_www_dds( DDS *dds );
+
 void write_html_form_interface(FILE *dest, DDS *dds,
-                          const string &url,
-                          bool html_header = true,
-                          const string &admin_name = "support@opendap.org", 
-                          const string &help_location = "http://www.opendap.org/online_help_files/opendap_form_help.html");
+			       const string &url,
+			       bool html_header = true,
+			       const string &admin_name = "support@opendap.org", 
+			       const string &help_location = "http://www.opendap.org/online_help_files/opendap_form_help.html");
+        
+void write_html_form_interface(ostream &strm, DDS *dds,
+			       const string &url,
+			       bool html_header = true,
+			       const string &admin_name = "support@opendap.org", 
+			       const string &help_location = "http://www.opendap.org/online_help_files/opendap_form_help.html");
         
 /** Write out the HTML for simple type variables. This is used not only for
     single instances of simple types, but also for those types when they
@@ -48,6 +55,8 @@ void write_html_form_interface(FILE *dest, DDS *dds,
 
     @param name The name of the varaible. */
 void write_simple_variable(FILE *os, const string &name, 
+                           const string &type);
+void write_simple_variable(ostream &strm, const string &name, 
                            const string &type);
 
 /** Return a string which describes the datatype of a DODS variable.

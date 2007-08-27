@@ -42,8 +42,11 @@
 class AsciiArray: public Array, public AsciiOutput {
 private:
     void print_vector(FILE *os, bool print_name);
+    void print_vector(ostream &strm, bool print_name);
     void print_array(FILE *os, bool print_name);
+    void print_array(ostream &strm, bool print_name);
     void print_complex_array(FILE *os, bool print_name);
+    void print_complex_array(ostream &strm, bool print_name);
 
 public:
     AsciiArray(const string &n = (char *)0, BaseType *v = 0);
@@ -53,6 +56,7 @@ public:
     virtual BaseType *ptr_duplicate();
 
     int print_row(FILE *os, int index, int number);
+    int print_row(ostream &strm, int index, int number);
 
     int get_index(vector<int> indices) throw(InternalErr);
 
@@ -69,6 +73,8 @@ public:
     vector<int> get_shape_vector(size_t n) throw(InternalErr);
 
     virtual void print_ascii(FILE *os, bool print_name = true) 
+	throw(InternalErr);
+    virtual void print_ascii(ostream &strm, bool print_name = true) 
 	throw(InternalErr);
 };
 

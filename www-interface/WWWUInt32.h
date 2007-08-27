@@ -37,7 +37,6 @@
 #define _wwwuint32_h 1
 
 #include "UInt32.h"
-#include "WWWOutput.h"
 
 class WWWUInt32: public UInt32 {
 public:
@@ -47,7 +46,10 @@ public:
 
     virtual BaseType *ptr_duplicate();
     
-    void print_val(FILE *os, string space = "", bool print_decl_p = true);
+    virtual void print_val(FILE *os, string space = "",
+                           bool print_decl_p = true);
+    virtual void print_val(ostream &strm, string space = "", 
+			   bool print_decl_p = true);
 };
 
 #endif

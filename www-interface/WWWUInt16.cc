@@ -63,3 +63,10 @@ WWWUInt16::print_val(FILE *os, string, bool /*print_decl_p*/)
 {
     write_simple_variable(os, (string)name().c_str(), fancy_typename(this));
 }
+
+void 
+WWWUInt16::print_val(ostream &strm, string, bool /*print_decl_p*/)
+{
+    write_simple_variable(strm, (string)name().c_str(), fancy_typename(this));
+}
+

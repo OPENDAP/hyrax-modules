@@ -51,11 +51,17 @@ public:
     virtual int element_count(bool leaves = false);
                          
     virtual void print_ascii(FILE *os, bool print_name) throw(InternalErr);
+    virtual void print_ascii(ostream &strm, bool print_name) throw(InternalErr);
     virtual void print_header(FILE *os);
+    virtual void print_header(ostream &strm);
 
     virtual void print_leading_vars(FILE *os, BaseTypeRow &outer_vars);
+    virtual void print_leading_vars(ostream &strm, BaseTypeRow &outer_vars);
     virtual void print_ascii_row(FILE *os, int row, BaseTypeRow out_vars);
+    virtual void print_ascii_row(ostream &strm, int row, BaseTypeRow out_vars);
     virtual void print_ascii_rows(FILE *os, BaseTypeRow out_vars);
+    virtual void print_ascii_rows(ostream &strm, BaseTypeRow out_vars);
 };
 
 #endif
+

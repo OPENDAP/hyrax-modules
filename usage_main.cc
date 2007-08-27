@@ -80,7 +80,7 @@ main(int argc, char *argv[])
     string doc;
 
     if (found_override(name, doc)) {
-        html_header();
+        html_header( stdout );
         fprintf( stdout, "%s", doc.c_str() ) ;
         exit(0);
     }

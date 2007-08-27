@@ -45,16 +45,20 @@
 
 class WWWOutput {
 private:
+    // This pointer doesn't appear to be used anywhere, including in main()
+    // so commenting it out for now... pcw 08/15/07
+
     // This pointer is allocated in main() and passed in here so that other
     // functions/methods which use the global instance of WWWOutput name 'wo'
     // can access the DAS object. There are better ways to do this, but this
     // little tool is so simple that I don't think it needs to be
     // rewritten... jhrg
 
-    DAS *d_das;
+    //DAS *d_das;
 
  protected:
     FILE *d_os;
+    ostream *d_strm;
     int d_attr_rows;
     int d_attr_cols;
 
@@ -69,6 +73,7 @@ private:
 	@param cols The number of columns to show in the attribute textbox
 	(default 70). */
     WWWOutput(FILE *os, int rows = 5, int cols = 70);
+    WWWOutput(ostream &strm, int rows = 5, int cols = 70);
 
     /** Write out the header for the HTML document. */
     void write_html_header();

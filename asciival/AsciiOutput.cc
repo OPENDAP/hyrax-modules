@@ -83,6 +83,25 @@ void AsciiOutput::print_ascii(FILE * os,
     BTptr->print_val(os, "", false);
 }
 
+void AsciiOutput::print_ascii(ostream &strm,
+                              bool print_name) throw(InternalErr)
+{
+    BaseType *BTptr = _redirect;
+    if (!BTptr) {
+        BTptr = dynamic_cast < BaseType * >(this);
+    }
+
+    if (!BTptr)
+        throw InternalErr(__FILE__, __LINE__,
+                          "An instance of AsciiOutput failed to cast to BaseType.");
+
+    if (print_name)
+        strm << get_full_name() << ", " ;
+
+    BTptr->print_val(strm, "", false);
+}
+
+// This code implements simple modulo arithmetic. The vector shape contains
 // This code implements simple modulo arithmetic. The vector shape contains
 // the maximum count value for each dimension, state contains the current
 // state. For example, if shape holds 10, 20 then when state holds 0, 20

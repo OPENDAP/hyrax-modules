@@ -395,14 +395,25 @@ build_variable_summaries(DAS &das, DDS &dds)
 }
 
 void
-html_header()
+html_header( FILE *os )
 {
-    fprintf( stdout, "HTTP/1.0 200 OK\r\n" ) ;
-    fprintf( stdout, "XDODS-Server: %s\r\n", PACKAGE_VERSION ) ;
-    fprintf( stdout, "XDAP: %s\r\n", DAP_PROTOCOL_VERSION ) ;
-    fprintf( stdout, "Content-type: text/html\r\n" ) ;
-    fprintf( stdout, "Content-Description: dods_description\r\n" ) ;
-    fprintf( stdout, "\r\n" ) ;	// MIME header ends with a blank line
+    fprintf( os, "HTTP/1.0 200 OK\r\n" ) ;
+    fprintf( os, "XDODS-Server: %s\r\n", PACKAGE_VERSION ) ;
+    fprintf( os, "XDAP: %s\r\n", DAP_PROTOCOL_VERSION ) ;
+    fprintf( os, "Content-type: text/html\r\n" ) ;
+    fprintf( os, "Content-Description: dods_description\r\n" ) ;
+    fprintf( os, "\r\n" ) ;	// MIME header ends with a blank line
+}
+
+void
+html_header( ostream &strm )
+{
+    strm << "HTTP/1.0 200 OK\r\n" ;
+    strm << "XDODS-Server: " << PACKAGE_VERSION << "\r\n" ;
+    strm << "XDAP: " << DAP_PROTOCOL_VERSION << "\r\n" ;
+    strm << "Content-type: text/html\r\n" ;
+    strm << "Content-Description: dods_description\r\n" ;
+    strm << "\r\n" ;	// MIME header ends with a blank line
 }
 
 /** Build an HTML page that summarizes the information held int eh DDS/DAS.
@@ -417,7 +428,7 @@ html_header()
     
     @todo Update this to use the DDX.
     
-    @param os Write the HTML to this stream
+    @param os Write the HTML to this FILE pointer
     @param dds The DDS
     @param das THe DAS
     @param dataset_name Use this name to find dataset-specific info added by
@@ -438,7 +449,7 @@ write_usage_response(FILE *os, DDS &dds, DAS &das, const string &dataset_name,
         // Write out the HTML document.
 
 	if( httpheader )
-	    html_header();
+	    html_header( os );
 
         if (global_attrs.length()) {
             fprintf(os, "%s\n%s\n%s\n%s\n",
@@ -455,6 +466,56 @@ write_usage_response(FILE *os, DDS &dds, DAS &das, const string &dataset_name,
         fprintf( os, "%s\n", user_html.c_str() ) ;
 
         fprintf( os, "</body>\n</html>\n" ) ;
+}
+
+/** Build an HTML page that summarizes the information held int eh DDS/DAS.
+    This also uses the dataset and server name to lookup extra information
+    that the data provider has made available (using libdap's 
+    cgi_util.cc:get_user_supplied_docs().
+    
+    @note This function is faithful to the original server3 'info' response
+    in all ways \e except that it does not handle the 'override' document
+    feature of that server. This feature was never used outside of testing,
+    to the best of our knowledge.
+    
+    @todo Update this to use the DDX.
+    
+    @param strm Write the HTML to this stream
+    @param dds The DDS
+    @param das THe DAS
+    @param dataset_name Use this name to find dataset-specific info added by
+    the provider.
+    @param server_name Use this name to find server-specific info. */
+void
+write_usage_response(ostream &strm, DDS &dds, DAS &das, const string &dataset_name,
+                     const string &server_name, bool httpheader) throw(Error)
+{
+        // This will require some hacking in libdap; maybe that code should
+        // move here? jhrg
+        string user_html = get_user_supplied_docs(dataset_name, server_name);
+
+        string global_attrs = build_global_attributes(das, dds);
+
+        string variable_sum = build_variable_summaries(das, dds);
+
+        // Write out the HTML document.
+
+	if( httpheader )
+	    html_header( strm );
+
+        if (global_attrs.length()) {
+	    strm << "<html><head><title>Dataset Information</title></head>"
+	         << "\n" << "<body>" << "\n" << global_attrs.c_str()
+		 << "\n" << "<hr>" << "\n" ;
+        }
+
+        strm << variable_sum.c_str() << "\n" ;
+
+        strm << "<hr>\n" ;
+
+        strm << user_html.c_str() << "\n" ;
+
+        strm << "</body>\n</html>\n" ;
 }
 
 } // namespace dap_usage

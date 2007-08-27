@@ -29,7 +29,10 @@ class BaseType ;
 namespace dap_asciival {
 
 void get_data_values_as_ascii(DataDDS *dds, FILE *dest);
+void get_data_values_as_ascii(DataDDS *dds, ostream &strm);
+
 DataDDS *datadds_to_ascii_datadds( DataDDS *dds ) ;
+
 BaseType *basetype_to_asciitype( BaseType *bt ) ;
 
 }

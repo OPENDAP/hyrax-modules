@@ -37,7 +37,6 @@
 #define _wwwfloat64_h 1
 
 #include "Float64.h"
-#include "WWWOutput.h"
 
 class WWWFloat64: public Float64 {
 public:
@@ -48,6 +47,8 @@ public:
     virtual BaseType *ptr_duplicate();
 
     virtual void print_val(FILE *os, string space = "", 
+			   bool print_decl_p = true);
+    virtual void print_val(ostream &strm, string space = "", 
 			   bool print_decl_p = true);
 };
 

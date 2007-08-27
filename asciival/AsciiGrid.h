@@ -42,7 +42,9 @@
 class AsciiGrid: public Grid, public AsciiOutput {
 private:
     void print_vector(FILE *os, bool print_name);
+    void print_vector(ostream &strm, bool print_name);
     void print_grid(FILE *os, bool print_name);
+    void print_grid(ostream &strm, bool print_name);
 
 public:
     AsciiGrid(const string &n = (char *)0);
@@ -53,8 +55,9 @@ public:
 
     virtual void print_ascii(FILE *os, bool print_name = true)
 	throw(InternalErr);
+    virtual void print_ascii(ostream &strm, bool print_name = true)
+	throw(InternalErr);
 };
 
 #endif
-
 

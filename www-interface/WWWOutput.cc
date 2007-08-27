@@ -62,15 +62,24 @@ using namespace std;
 #define X_OK 00                 //  Simple existance
 #endif
 
-WWWOutput::WWWOutput(FILE * os, int rows, int cols) : d_das(0), d_os(os),
-    d_attr_rows(rows), d_attr_cols(cols)
+// From what I can tell d_das is not used, commenting out for now pcw 08/15/07
+WWWOutput::WWWOutput(FILE * os, int rows, int cols) : /*d_das(0),*/ d_os(os),
+    d_strm(0), d_attr_rows(rows), d_attr_cols(cols)
+{
+}
+
+WWWOutput::WWWOutput(ostream &strm, int rows, int cols) : /*d_das(0),*/ d_os(0),
+    d_strm(&strm), d_attr_rows(rows), d_attr_cols(cols)
 {
 }
 
 void
 WWWOutput::write_html_header()
 {
-    set_mime_html(d_os, unknown_type, dap_version(), x_plain);
+    if( d_os )
+	set_mime_html(d_os, unknown_type, dap_version(), x_plain);
+    else
+	set_mime_html(*d_strm, unknown_type, dap_version(), x_plain);
 }
 
 void WWWOutput::write_disposition(string url)
@@ -79,22 +88,42 @@ void WWWOutput::write_disposition(string url)
     // use some JavaScript code to generate the HTML. C++ --> JS --> HTML.
     // 4/8/99 jhrg
 
-    fprintf(d_os, "<tr>\n\
+    if( d_os )
+    {
+	fprintf(d_os, "<tr>\n\
 <td align=\"right\">\n\
 <h3>\n\
 <a href=\"opendap_form_help.html#disposition\" target=\"help\">Action:</a></h3>\n\
 <td>\n\
 <input type=\"button\" value=\"Get ASCII\" onclick=\"ascii_button()\">\n");
 
-    fprintf(d_os,
-            "<input type=\"button\" value=\"Binary Data Object \" onclick=\"binary_button('dods')\">\n\
+	fprintf(d_os,
+		"<input type=\"button\" value=\"Binary Data Object \" onclick=\"binary_button('dods')\">\n\
 <input type=\"button\" value=\"Show Help\" onclick=\"help_button()\">\n\
 \n\
 <tr>\n\
 <td align=\"right\"><h3><a href=\"opendap_form_help.html#data_url\" target=\"help\">Data URL:</a>\n\
 </h3>\n\
 <td><input name=\"url\" type=\"text\" size=\"%d\" value=\"%s\">\n",
-            d_attr_cols, url.c_str());
+		d_attr_cols, url.c_str());
+    }
+    else
+    {
+	*d_strm << "<tr>\n\
+<td align=\"right\">\n\
+<h3>\n\
+<a href=\"opendap_form_help.html#disposition\" target=\"help\">Action:</a></h3>\n\
+<td>\n\
+<input type=\"button\" value=\"Get ASCII\" onclick=\"ascii_button()\">\n";
+
+	*d_strm << "<input type=\"button\" value=\"Binary Data Object \" onclick=\"binary_button('dods')\">\n\
+<input type=\"button\" value=\"Show Help\" onclick=\"help_button()\">\n\
+\n\
+<tr>\n\
+<td align=\"right\"><h3><a href=\"opendap_form_help.html#data_url\" target=\"help\">Data URL:</a>\n\
+</h3>\n\
+<td><input name=\"url\" type=\"text\" size=\"" << d_attr_cols << "\" value=\"" << url << "\">\n" ;
+    }
 }
 
 void WWWOutput::write_attributes(AttrTable * attr, const string prefix)
@@ -108,15 +137,27 @@ void WWWOutput::write_attributes(AttrTable * attr, const string prefix)
                                  : prefix + string(".") + attr->get_name(a));
             else {
                 if (prefix != "")
-                    fprintf(d_os, "%s.%s: ", prefix.c_str(),
-                            attr->get_name(a).c_str());
+		    if( d_os )
+			fprintf(d_os, "%s.%s: ", prefix.c_str(),
+				attr->get_name(a).c_str());
+		    else
+			*d_strm << prefix << "." << attr->get_name(a) << ": " ;
                 else
-                    fprintf(d_os, "%s: ", attr->get_name(a).c_str());
+		    if( d_os )
+			fprintf(d_os, "%s: ", attr->get_name(a).c_str());
+		    else
+			*d_strm << attr->get_name(a) << ": " ;
 
                 int num_attr = attr->get_attr_num(a) - 1;
                 for (int i = 0; i < num_attr; ++i)
-                    fprintf(d_os, "%s, ", attr->get_attr(a, i).c_str());
-                fprintf(d_os, "%s\n", attr->get_attr(a, num_attr).c_str());
+		    if( d_os )
+			fprintf(d_os, "%s, ", attr->get_attr(a, i).c_str());
+		    else
+			*d_strm << attr->get_attr(a, i) << ", ";
+		if( d_os )
+		    fprintf(d_os, "%s\n", attr->get_attr(a, num_attr).c_str());
+		else
+		    *d_strm << attr->get_attr(a, num_attr) << "\n" ;
             }
         }
     }
@@ -129,32 +170,67 @@ void WWWOutput::write_attributes(AttrTable * attr, const string prefix)
     @param das The AttrTable with the global attributes. */
 void WWWOutput::write_global_attributes(AttrTable &attr)
 {
-    fprintf(d_os, "<tr>\n\
+    if( d_os )
+    {
+	fprintf(d_os, "<tr>\n\
 <td align=\"right\" valign=\"top\"><h3>\n\
 <a href=\"opendap_form_help.html#global_attr\" target=\"help\">Global Attributes:</a></h3>\n\
 <td><textarea name=\"global_attr\" rows=\"%d\" cols=\"%d\">\n", d_attr_rows, d_attr_cols);
 
-    write_attributes(&attr);
+	write_attributes(&attr);
 
-    fprintf(d_os, "</textarea><p>\n\n");
+	fprintf(d_os, "</textarea><p>\n\n");
+    }
+    else
+    {
+	*d_strm << "<tr>\n\
+<td align=\"right\" valign=\"top\"><h3>\n\
+<a href=\"opendap_form_help.html#global_attr\" target=\"help\">Global Attributes:</a></h3>\n\
+<td><textarea name=\"global_attr\" rows=\"" << d_attr_rows << "\" cols=\"" << d_attr_cols << "\">\n" ;
+
+	write_attributes(&attr);
+
+	*d_strm << "</textarea><p>\n\n";
+    }
 }
 
 void WWWOutput::write_variable_entries(DDS &dds)
 {
     // This writes the text `Variables:' and then sets up the table so that
     // the first variable's section is written into column two.
-    fprintf(d_os, "<tr>\n\
+    if( d_os )
+    {
+	fprintf(d_os, "<tr>\n\
 <td align=\"right\" valign=\"top\">\n\
 <h3><a href=\"opendap_form_help.html#dataset_variables\" target=\"help\">Variables:</a></h3>\n\
 <td>");
+    }
+    else
+    {
+	*d_strm << "<tr>\n\
+<td align=\"right\" valign=\"top\">\n\
+<h3><a href=\"opendap_form_help.html#dataset_variables\" target=\"help\">Variables:</a></h3>\n\
+<td>";
+    }
 
     for (DDS::Vars_iter p = dds.var_begin(); p != dds.var_end(); ++p) {
-        (*p)->print_val(d_os);
+	if( d_os )
+	    (*p)->print_val(d_os);
+	else
+	    (*p)->print_val(*d_strm);
 
         write_variable_attributes(*p);
         
-        fprintf(d_os, "\n<p><p>\n\n");  // End the current var's section
-        fprintf(d_os, "<tr><td><td>\n\n");      // Start the next var in column two
+	if( d_os )
+	{
+	    fprintf(d_os, "\n<p><p>\n\n");  // End the current var's section
+	    fprintf(d_os, "<tr><td><td>\n\n");      // Start the next var in column two
+	}
+	else
+	{
+	    *d_strm << "\n<p><p>\n\n";  // End the current var's section
+	    *d_strm << "<tr><td><td>\n\n";      // Start the next var in column two
+	}
     }
 }
 
@@ -171,8 +247,21 @@ void WWWOutput::write_variable_attributes(BaseType * btp)
         return;
     }
 
-    fprintf(d_os, "<textarea name=\"%s_attr\" rows=\"%d\" cols=\"%d\">\n",
-            btp->name().c_str(), d_attr_rows, d_attr_cols);
+    if( d_os )
+    {
+	fprintf(d_os, "<textarea name=\"%s_attr\" rows=\"%d\" cols=\"%d\">\n",
+		btp->name().c_str(), d_attr_rows, d_attr_cols);
+    }
+    else
+    {
+	*d_strm << "<textarea name=\"" << btp->name()
+	       << "_attr\" rows=\"" << d_attr_rows
+	       << "\" cols=\"" << d_attr_cols << "\">\n" ;
+    }
     write_attributes(&attr);
-    fprintf(d_os, "</textarea>\n\n");
+    if( d_os )
+	fprintf(d_os, "</textarea>\n\n");
+    else
+	*d_strm << "</textarea>\n\n" ;
 }
+

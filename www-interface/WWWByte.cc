@@ -80,3 +80,10 @@ WWWByte::print_val(FILE *os, string, bool /*print_decl_p*/)
 {
     write_simple_variable(os, name(), fancy_typename(this));
 }
+
+void 
+WWWByte::print_val(ostream &strm, string, bool /*print_decl_p*/)
+{
+    write_simple_variable(strm, name(), fancy_typename(this));
+}
+

@@ -39,6 +39,8 @@
 #include "Grid.h"
 
 class WWWGrid: public Grid {
+private:
+    void do_print_val( ostream &strm ) ;
 public:
     WWWGrid(const string &n = (char *)0);
     WWWGrid( Grid *bt );
@@ -47,7 +49,9 @@ public:
     virtual BaseType *ptr_duplicate();
 
     virtual void print_val(FILE *os, string space = "", 
-			               bool print_decl_p = true);
+			   bool print_decl_p = true);
+    virtual void print_val(ostream &strm, string space = "", 
+			   bool print_decl_p = true);
 };
 
 #endif

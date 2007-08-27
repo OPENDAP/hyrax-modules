@@ -62,7 +62,7 @@ void
     try {
 	BESDEBUG( "usage", "writing usage/info" << endl )
 
-        write_usage_response(stdout, *dds, *das, dataset_name, "", false);
+        write_usage_response(dhi.get_output_stream(), *dds, *das, dataset_name, "", false);
 
         BESDEBUG( "usage", "done transmitting usage/info" << endl )
     }
@@ -82,7 +82,7 @@ void
 BESUsageTransmit::send_http_usage( BESResponseObject *obj,
                                    BESDataHandlerInterface &dhi )
 {
-    set_mime_text( stdout, unknown_type ) ;
+    set_mime_text( dhi.get_output_stream(), unknown_type ) ;
     BESUsageTransmit::send_basic_usage( obj, dhi ) ;
 }
 

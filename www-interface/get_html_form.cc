@@ -170,15 +170,15 @@ void write_html_form_interface(FILE * dest, DDS * dds,
         <<
         "<p><h2 align='center'>OPeNDAP Server Dataset Access Form</h2>\n"
         << "<hr>\n" << "<form action=\"\">\n" << "<table>\n";
-    fprintf(stdout, "%s", oss.str().c_str());
+    fprintf(dest, "%s", oss.str().c_str());
 
     wo->write_disposition(url);
 
-    fprintf(stdout, "<tr><td><td><hr>\n\n");
+    fprintf(dest, "<tr><td><td><hr>\n\n");
 
     wo->write_global_attributes(dds->get_attr_table());
 
-    fprintf(stdout, "<tr><td><td><hr>\n\n");
+    fprintf(dest, "<tr><td><td><hr>\n\n");
 
     wo->write_variable_entries(*dds);
 
@@ -191,8 +191,73 @@ void write_html_form_interface(FILE * dest, DDS * dds,
                         alt=\"Valid HTML 4.0 Transitional\" height=\"31\" width=\"88\">\n\
                     </a></p>\n" << "</body></html>\n";
 
-    fprintf(stdout, "%s", oss.str().c_str());
+    fprintf(dest, "%s", oss.str().c_str());
 
+}
+
+/** Using the stuff in WWWOutput and the hacked (specialized) print_val() 
+    methods in the WWW* classes, write out the HTML form interface.
+    
+    @todo Modify this code to expect a DDS whose BaseTypes are loaded with
+    Attribute tables.
+    
+    @param dest Write HTML here.
+    @param dds A DataDDS loaded with data; the BaseTypes in this must be
+    WWW* instances,
+    @param url The URL that should be initially displayed in the form. The
+    form's javescript code will update this incrementally as the user builds
+    a constraint.
+    @param html_header Print a HTML header/footer for the page. True by default.
+    @param admin_name "support@opendap.org" by default; use this as the 
+    address for support printed on the form.
+    @param help_location "http://www.opendap.org/online_help_files/opendap_form_help.html" 
+    by default; otherwise, this is locataion where an HTML document that 
+    explains the page can be found. 
+    */
+void write_html_form_interface(ostream &strm, DDS * dds,
+                               const string & url, bool html_header,
+                               const string & admin_name,
+                               const string & help_location)
+{
+    wo = new WWWOutput(strm);
+
+    if (html_header)
+        wo->write_html_header();
+
+    strm <<
+        "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n"
+        << "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n" <<
+        "<html><head><title>OPeNDAP Server Dataset Query Form</title>\n"
+        << "<base href=\"" << help_location << "\">\n" <<
+        "<script type=\"text/javascript\">\n" << "<!--\n"
+        // Javascript code here
+        << java_code << "\n"
+        << "DODS_URL = new dods_url(\"" << url << "\");\n"
+        << "// -->\n"
+        << "</script>\n"
+        << "</head>\n"
+        << "<body>\n"
+        <<
+        "<p><h2 align='center'>OPeNDAP Server Dataset Access Form</h2>\n"
+        << "<hr>\n" << "<form action=\"\">\n" << "<table>\n";
+
+    wo->write_disposition(url);
+
+    strm << "<tr><td><td><hr>\n\n" ;
+
+    wo->write_global_attributes(dds->get_attr_table());
+
+    strm << "<tr><td><td><hr>\n\n" ;
+
+    wo->write_variable_entries(*dds);
+
+    strm << "</table></form>\n\n" << "<hr>\n\n";
+    strm << "<address>Send questions or comments to: <a href=\"mailto:"
+         << admin_name << "\">" << admin_name << "</a></address>" << "<p>\n\
+                    <a href=\"http://validator.w3.org/check?uri=referer\"><img\n\
+                        src=\"http://www.w3.org/Icons/valid-html40\"\n\
+                        alt=\"Valid HTML 4.0 Transitional\" height=\"31\" width=\"88\">\n\
+                    </a></p>\n" << "</body></html>\n";
 }
 
 const string allowable =
@@ -263,40 +328,52 @@ void
 write_simple_variable(FILE * os, const string & name, const string & type)
 {
     ostringstream ss;
-    ss << "<script type=\"text/javascript\">\n"
-        << "<!--\n"
-        << name_for_js_code(name) << " = new dods_var(\"" <<
-        id2www_ce(name)
-        << "\", \"" << name_for_js_code(name) << "\", 0);\n" <<
-        "DODS_URL.add_dods_var(" << name_for_js_code(name) << ");\n" <<
-        "// -->\n" << "</script>\n";
-
-    ss << "<b>"
-        << "<input type=\"checkbox\" name=\"get_" << name_for_js_code(name)
-        << "\"\n" << "onclick=\"" << name_for_js_code(name) <<
-        ".handle_projection_change(get_" << name_for_js_code(name) <<
-        ") \"  onfocus=\"describe_projection()\">\n" << "<font size=\"+1\">" 
-        << name << "</font>" << ": "
-        << type << "</b><br>\n\n";
-
-    ss << name << " <select name=\"" << name_for_js_code(name) <<
-        "_operator\"" << " onfocus=\"describe_operator()\"" <<
-        " onchange=\"DODS_URL.update_url()\">\n" <<
-        "<option value=\"=\" selected>=\n" <<
-        "<option value=\"!=\">!=\n" << "<option value=\"<\"><\n" <<
-        "<option value=\"<=\"><=\n" << "<option value=\">\">>\n" <<
-        "<option value=\">=\">>=\n" << "<option value=\"-\">--\n" <<
-        "</select>\n";
-
-    ss << "<input type=\"text\" name=\"" << name_for_js_code(name)
-        << "_selection"
-        << "\" size=12 onFocus=\"describe_selection()\" "
-        << "onChange=\"DODS_URL.update_url()\">\n";
-
-    ss << "<br>\n\n";
+    write_simple_variable( ss, name, type ) ;
 
     // Now write that string to os
     fprintf(os, "%s", ss.str().c_str());
+}
+
+/** This function is used by the Byte, ..., URL types to write their entries
+    in the HTML Form. More complex classes do something else.
+    @brief Output HTML entry for Scalars
+    @param strm Write to this output stream.
+    @param name The name of the variable.
+    @param type The name of the variable's data type. */
+void
+write_simple_variable(ostream &strm, const string & name, const string & type)
+{
+    strm << "<script type=\"text/javascript\">\n"
+         << "<!--\n"
+         << name_for_js_code(name) << " = new dods_var(\""
+	 << id2www_ce(name)
+         << "\", \"" << name_for_js_code(name) << "\", 0);\n" <<
+         "DODS_URL.add_dods_var(" << name_for_js_code(name) << ");\n" <<
+         "// -->\n" << "</script>\n";
+
+    strm << "<b>"
+         << "<input type=\"checkbox\" name=\"get_" << name_for_js_code(name)
+         << "\"\n" << "onclick=\"" << name_for_js_code(name)
+         << ".handle_projection_change(get_" << name_for_js_code(name)
+         << ") \"  onfocus=\"describe_projection()\">\n" << "<font size=\"+1\">" 
+         << name << "</font>" << ": "
+         << type << "</b><br>\n\n";
+
+    strm << name << " <select name=\"" << name_for_js_code(name)
+         << "_operator\"" << " onfocus=\"describe_operator()\""
+         << " onchange=\"DODS_URL.update_url()\">\n"
+         << "<option value=\"=\" selected>=\n"
+         << "<option value=\"!=\">!=\n" << "<option value=\"<\"><\n"
+         << "<option value=\"<=\"><=\n" << "<option value=\">\">>\n"
+         << "<option value=\">=\">>=\n" << "<option value=\"-\">--\n"
+         << "</select>\n";
+
+    strm << "<input type=\"text\" name=\"" << name_for_js_code(name)
+         << "_selection"
+         << "\" size=12 onFocus=\"describe_selection()\" "
+         << "onChange=\"DODS_URL.update_url()\">\n";
+
+    strm << "<br>\n\n";
 }
 
 } // namespace dap_html_form

@@ -75,9 +75,9 @@ void
 
         string url = dhi.data[WWW_URL];
 #if 0
-        write_html_form_interface(stdout, wwwdds, das, url, false);
+        write_html_form_interface(dhi.get_output_stream(), wwwdds, das, url, false);
 #endif
-        write_html_form_interface(stdout, wwwdds, url, false);
+        write_html_form_interface(dhi.get_output_stream(), wwwdds, url, false);
 
         BESDEBUG( "www", "done transmitting form" << endl )
 
@@ -98,6 +98,7 @@ void
 void BESWWWTransmit::send_http_form(BESResponseObject * obj,
                                     BESDataHandlerInterface & dhi)
 {
-    set_mime_text(stdout, unknown_type);
+    set_mime_text(dhi.get_output_stream(), unknown_type);
     BESWWWTransmit::send_basic_form(obj, dhi);
 }
+

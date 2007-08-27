@@ -104,6 +104,24 @@ void AsciiArray::print_ascii(FILE * os, bool print_name) throw(InternalErr)
     }
 }
 
+void AsciiArray::print_ascii(ostream &strm, bool print_name) throw(InternalErr)
+{
+    Array *bt = dynamic_cast < Array * >(_redirect);
+    if (!bt) {
+        bt = this;
+    }
+
+    if (bt->var()->is_simple_type()) {
+        if (/*bt->*/dimensions(true) > 1) {
+            print_array(strm, print_name);
+        } else {
+            print_vector(strm, print_name);
+        }
+    } else {
+        print_complex_array(strm, print_name);
+    }
+}
+
 // Print out a values for a vector (one dimensional array) of simple types.
 void AsciiArray::print_vector(FILE * os, bool print_name)
 {
@@ -128,6 +146,33 @@ void AsciiArray::print_vector(FILE * os, bool print_name)
     }
     BaseType *curr_var = basetype_to_asciitype(bt->var(end));
     dynamic_cast < AsciiOutput * >(curr_var)->print_ascii(os, false);
+    // we're not saving curr_var for future use, so delete it here
+    delete curr_var;
+}
+
+// Print out a values for a vector (one dimensional array) of simple types.
+void AsciiArray::print_vector(ostream &strm, bool print_name)
+{
+    Array *bt = dynamic_cast < Array * >(_redirect);
+    if (!bt) {
+        bt = this;
+    }
+
+    if (print_name)
+        strm << dynamic_cast<AsciiOutput*>(this)->get_full_name() << ", " ;
+
+    // only one dimension
+    int end = /*bt->*/dimension_size(/*bt->*/dim_begin(), true) - 1;
+
+    for (int i = 0; i < end; ++i) {
+        BaseType *curr_var = basetype_to_asciitype(bt->var(i));
+        dynamic_cast < AsciiOutput * >(curr_var)->print_ascii(strm, false);
+        strm << ", ";
+        // we're not saving curr_var for future use, so delete it here
+        delete curr_var;
+    }
+    BaseType *curr_var = basetype_to_asciitype(bt->var(end));
+    dynamic_cast < AsciiOutput * >(curr_var)->print_ascii(strm, false);
     // we're not saving curr_var for future use, so delete it here
     delete curr_var;
 }
@@ -159,6 +204,39 @@ int AsciiArray::print_row(FILE * os, int index, int number)
     }
     BaseType *curr_var = basetype_to_asciitype(bt->var(index++));
     dynamic_cast < AsciiOutput * >(curr_var)->print_ascii(os, false);
+    // we're not saving curr_var for future use, so delete it here
+    delete curr_var;
+
+    return index;
+}
+
+/** Print a single row of values for a N-dimensional array. Since we store
+    N-dim arrays in vectors, #index# gives the starting point in that vector
+    for this row and #number# is the number of values to print. The counter
+    #index# is returned. 
+
+    @param os Write to stream os.
+    @param index Print values starting from this point.
+    @param number Print this many values.
+    @return One past the last value printed (i.e., the index of the next
+    row's first value).
+    @see print\_array */
+int AsciiArray::print_row(ostream &strm, int index, int number)
+{
+    Array *bt = dynamic_cast < Array * >(_redirect);
+    if (!bt) {
+        bt = this;
+    }
+
+    for (int i = 0; i < number; ++i) {
+        BaseType *curr_var = basetype_to_asciitype(bt->var(index++));
+        dynamic_cast < AsciiOutput * >(curr_var)->print_ascii(strm, false);
+        strm << ", " ;
+        // we're not saving curr_var for future use, so delete it here
+        delete curr_var;
+    }
+    BaseType *curr_var = basetype_to_asciitype(bt->var(index++));
+    dynamic_cast < AsciiOutput * >(curr_var)->print_ascii(strm, false);
     // we're not saving curr_var for future use, so delete it here
     delete curr_var;
 
@@ -300,6 +378,51 @@ void AsciiArray::print_array(FILE * os, bool /*print_name */ )
     DBG(cerr << "ExitingAsciiArray::print_array" << endl);
 }
 
+void AsciiArray::print_array(ostream &strm, bool /*print_name */ )
+{
+    DBG(cerr << "Entering AsciiArray::print_array" << endl);
+#if 0
+    Array *bt = dynamic_cast < Array * >(_redirect);
+    if (!bt)
+        bt = this;
+#endif
+    int dims = /*bt->*/dimensions(true);
+    if (dims <= 1)
+        throw InternalErr(__FILE__, __LINE__,
+            "Dimension count is <= 1 while printing multidimensional array.");
+
+    // shape holds the maximum index value of all but the last dimension of
+    // the array (not the size; each value is one less that the size).
+    vector < int >shape = get_shape_vector(dims - 1);
+    int rightmost_dim_size = get_nth_dim_size(dims - 1);
+
+    // state holds the indexes of the current row being printed. For an N-dim
+    // array, there are N-1 dims that are iterated over when printing (the
+    // Nth dim is not printed explicitly. Instead it's the number of values
+    // on the row.
+    vector < int >state(dims - 1, 0);
+
+    bool more_indices;
+    int index = 0;
+    do {
+        // Print indices for all dimensions except the last one.
+	strm << dynamic_cast <AsciiOutput *>(this)->get_full_name() ;
+
+        for (int i = 0; i < dims - 1; ++i) {
+            strm << "[" << state[i] << "]" ;
+        }
+        strm << ", " ;
+
+        index = print_row(strm, index, rightmost_dim_size - 1);
+        more_indices = increment_state(&state, shape);
+        if (more_indices)
+            strm << "\n" ;
+
+    } while (more_indices);
+
+    DBG(cerr << "ExitingAsciiArray::print_array" << endl);
+}
+
 void AsciiArray::print_complex_array(FILE * os, bool /*print_name */ )
 {
     DBG(cerr << "Entering AsciiArray::print_complex_array" << endl);
@@ -345,3 +468,48 @@ void AsciiArray::print_complex_array(FILE * os, bool /*print_name */ )
 
     DBG(cerr << "ExitingAsciiArray::print_complex_array" << endl);
 }
+
+void AsciiArray::print_complex_array(ostream &strm, bool /*print_name */ )
+{
+    DBG(cerr << "Entering AsciiArray::print_complex_array" << endl);
+
+    Array *bt = dynamic_cast < Array * >(_redirect);
+    if (!bt)
+        bt = this;
+
+    int dims = /*bt->*/dimensions(true);
+    if (dims < 1)
+        throw InternalErr(__FILE__, __LINE__,
+            "Dimension count is <= 1 while printing multidimensional array.");
+
+    // shape holds the maximum index value of all but the last dimension of
+    // the array (not the size; each value is one less that the size).
+    vector < int >shape = get_shape_vector(dims);
+
+    vector < int >state(dims, 0);
+
+    bool more_indices;
+    do {
+        // Print indices for all dimensions except the last one.
+        strm << dynamic_cast <AsciiOutput *>(this)->get_full_name() ;
+
+        for (int i = 0; i < dims; ++i) {
+            strm << "[" << state[i] << "]" ;
+        }
+        strm << "\n" ;
+
+        BaseType *curr_var =
+            basetype_to_asciitype(bt->var(get_index(state)));
+        dynamic_cast < AsciiOutput * >(curr_var)->print_ascii(strm, true);
+        // we are not saving curr_var for future reference, so delete it
+        delete curr_var;
+
+        more_indices = increment_state(&state, shape);
+        if (more_indices)
+            strm << "\n" ;
+
+    } while (more_indices);
+
+    DBG(cerr << "ExitingAsciiArray::print_complex_array" << endl);
+}
+

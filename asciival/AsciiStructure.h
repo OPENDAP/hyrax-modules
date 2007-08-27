@@ -48,8 +48,12 @@ public:
     virtual BaseType *ptr_duplicate();
 
     virtual void print_header(FILE *os);
+    virtual void print_header(ostream &strm);
     virtual void print_ascii(FILE *os, bool print_name = true) 
+	throw(InternalErr);
+    virtual void print_ascii(ostream &strm, bool print_name = true) 
 	throw(InternalErr);
 };
 
 #endif
+

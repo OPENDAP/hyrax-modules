@@ -51,8 +51,8 @@
 using namespace dap_asciival;
 
 void
- BESAsciiTransmit::send_basic_ascii(BESResponseObject * obj,
-                                    BESDataHandlerInterface & dhi)
+BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
+                                    BESDataHandlerInterface & dhi )
 {
     BESDataDDSResponse *bdds = dynamic_cast < BESDataDDSResponse * >(obj);
     DataDDS *dds = bdds->get_dds();
@@ -149,9 +149,9 @@ void
         BESDEBUG( "ascii", "converting to ascii datadds" << endl )
         DataDDS *ascii_dds = datadds_to_ascii_datadds(dds);
         BESDEBUG( "ascii", "getting ascii values" << endl )
-        get_data_values_as_ascii(ascii_dds, stdout);
+        get_data_values_as_ascii(ascii_dds, dhi.get_output_stream());
         BESDEBUG( "ascii", "got the ascii values" << endl )
-        fflush(stdout);
+	dhi.get_output_stream() << flush ;
         delete ascii_dds;
 
         BESDEBUG( "ascii", "done transmitting ascii" << endl )
@@ -171,9 +171,11 @@ void
     }
 }
 
-void BESAsciiTransmit::send_http_ascii(BESResponseObject * obj,
-                                       BESDataHandlerInterface & dhi)
+void
+BESAsciiTransmit::send_http_ascii(BESResponseObject * obj,
+				  BESDataHandlerInterface & dhi)
 {
-    set_mime_text(stdout, dods_data);
+    set_mime_text(dhi.get_output_stream(), dods_data);
     BESAsciiTransmit::send_basic_ascii(obj, dhi);
 }
+

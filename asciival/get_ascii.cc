@@ -77,6 +77,28 @@ get_data_values_as_ascii(DataDDS *dds, FILE *dest)
     }
 }
 
+/** Using the AsciiOutput::print_ascii(), write the data values to an 
+    output file/stream as ASCII.
+    
+    @param dds A DataDDS loaded with data. The variables must use the AsciiByte,
+    et c., type classes. Use the function datadds_to_ascii_datadds() to
+    build such a DataDDS from one whose types are, say NCByte, et cetera.
+    @param strm Write ASCII to stream. */  
+void
+get_data_values_as_ascii(DataDDS *dds, ostream &strm)
+{
+    //cerr << "dataset name = " << dds->get_dataset_name() << endl ;
+    strm << "Dataset: " << dds->get_dataset_name() << "\n" ;
+
+    //cerr << "iterating through the thing" << endl ;
+    DDS::Vars_iter i = dds->var_begin();
+    while (i != dds->var_end()) {
+        //cerr << "getting " << (*i)->name() << " of type " << (*i)->type_name() << endl ;
+        dynamic_cast<AsciiOutput &>(**i++).print_ascii(strm);
+        strm << "\n";
+    }
+}
+
 DataDDS *datadds_to_ascii_datadds(DataDDS * dds)
 {
     // Should the following use AsciiOutputFactory instead of the source DDS'

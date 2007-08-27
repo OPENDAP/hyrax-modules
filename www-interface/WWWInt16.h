@@ -37,7 +37,6 @@
 #define _wwwint16_h 1
 
 #include "Int16.h"
-#include "WWWOutput.h"
 
 class WWWInt16: public Int16 {
 public:
@@ -48,6 +47,8 @@ public:
     virtual BaseType *ptr_duplicate();
         
     virtual void print_val(FILE *os, string space = "", 
+			   bool print_decl_p = true);
+    virtual void print_val(ostream &strm, string space = "", 
 			   bool print_decl_p = true);
 };
 

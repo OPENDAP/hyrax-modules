@@ -115,3 +115,19 @@ WWWSequence::print_val(FILE *os, string /*space*/, bool print_decls)
 
     fprintf(os, "</dd></dl>\n");
 }
+
+void 
+WWWSequence::print_val(ostream &strm, string /*space*/, bool print_decls)
+{
+    strm << "<b>Sequence " << name() << "</b><br>\n" ;
+    strm << "<dl><dd>\n";
+
+    for (Vars_iter i = var_begin(); i != var_end(); ++i) {
+	(*i)->print_val(strm, "", print_decls);
+    wo->write_variable_attributes(*i);
+	strm << "<p><p>\n";
+    }
+
+    strm << "</dd></dl>\n";
+}
+

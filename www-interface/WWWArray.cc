@@ -80,9 +80,8 @@ WWWArray::~WWWArray()
 }
 
 void
-WWWArray::print_val(FILE * os, string, bool /*print_decl_p */ )
+WWWArray::do_print_val( ostream &ss )
 {
-    ostringstream ss;
     ss << "<script type=\"text/javascript\">\n"
         << "<!--\n"
         << name_for_js_code(name()) << " = new dods_var(\""
@@ -117,6 +116,20 @@ WWWArray::print_val(FILE * os, string, bool /*print_decl_p */ )
     }
 
     ss << "<br>\n\n";
+}
 
+void
+WWWArray::print_val(FILE * os, string, bool /*print_decl_p */ )
+{
+    ostringstream ss ;
+    do_print_val( ss ) ;
     fprintf(os, "%s", ss.str().c_str());
 }
+
+void
+WWWArray::print_val(ostream &strm, string, bool /*print_decl_p */ )
+{
+    ostringstream ss ;
+    do_print_val( strm ) ;
+}
+

@@ -87,9 +87,8 @@ WWWGrid::~WWWGrid()
 }
 
 void
- WWWGrid::print_val(FILE * os, string space, bool /*print_decl_p */ )
+WWWGrid::do_print_val(ostream &ss)
 {
-    ostringstream ss;
     ss << "<script type=\"text/javascript\">\n"
         << "<!--\n"
         << name_for_js_code(name()) << " = new dods_var(\""
@@ -126,6 +125,19 @@ void
     }
 
     ss << "<br>\n";
+}
 
+void
+WWWGrid::print_val(FILE * os, string /*space*/, bool /*print_decl_p*/)
+{
+    ostringstream ss ;
+    do_print_val( ss ) ;
     fprintf(os, "%s", ss.str().c_str());
 }
+
+void
+WWWGrid::print_val(ostream &strm, string /*space*/, bool /*print_decl_p*/)
+{
+    do_print_val(strm);
+}
+

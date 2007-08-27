@@ -38,7 +38,6 @@
 
 #include "dods-limits.h"
 #include "Str.h"
-#include "WWWOutput.h"
 
 class WWWStr: public Str {
 public:
@@ -49,6 +48,8 @@ public:
     virtual BaseType *ptr_duplicate();
 
     virtual void print_val(FILE *os, string space = "", 
+			   bool print_decl_p = true);
+    virtual void print_val(ostream &strm, string space = "", 
 			   bool print_decl_p = true);
 };
 

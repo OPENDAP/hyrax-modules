@@ -36,7 +36,6 @@
 #ifndef _wwwurl_h
 #define _wwwurl_h 1
 
-#include "WWWOutput.h"
 #include "Url.h"
 
 class WWWUrl: public Url {

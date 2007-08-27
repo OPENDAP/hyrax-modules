@@ -42,6 +42,7 @@ class WWWArray: public Array
 {
 private:
     Array * _redirect ;
+    void do_print_val( ostream &strm ) ;
 public:
     WWWArray(const string &n = (char *)0, BaseType *v = 0);
     WWWArray( Array *bt ) ;
@@ -51,6 +52,9 @@ public:
 
     /// Overload of BaseType mfunc. This prints arrays using commas and CRs.
     virtual void print_val(FILE *os, string space = "", 
+			   bool print_decl_p = true);
+    /// Overload of BaseType mfunc. This prints arrays using commas and CRs.
+    virtual void print_val(ostream &strm, string space = "", 
 			   bool print_decl_p = true);
 };
 

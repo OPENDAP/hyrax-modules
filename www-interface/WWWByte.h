@@ -49,6 +49,8 @@ public:
 
     virtual void print_val(FILE *os, string space = "", 
 			   bool print_decl_p = true);
+    virtual void print_val(ostream &strm, string space = "", 
+			   bool print_decl_p = true);
 };
 
 #endif
