@@ -3,10 +3,10 @@
 # Run this after 'install' completes to edit the bes.conf scrip so that it
 # will be correctly configured for the handler and the sample data.
 #
-# Usage: configure-dap-data.sh [<bes.conf file to modify> [<bes modules dir>]]
+# Usage: bes-dap-data.sh [<bes.conf file to modify> [<bes modules dir>]]
 
 bes_conf=${1:-"@sysconfdir@/bes/bes.conf"}
-bes_modules_dir=${2:-"@pkglibdir@"}
+bes_modules_dir=${2:-"@libdir@"}
 bes_help_dir=${3:-"@datadir@/bes"}
 
 # This script should take care to not add multiple entries for a handler.
@@ -14,15 +14,15 @@ bes_help_dir=${3:-"@datadir@/bes"}
 # of the file. This could be replaced by a better scheme, but probably not
 # without rewrinting this in Perl or ...
 
-if grep '^# Modified by configure-dap-data\..*' $bes_conf >/dev/null 2>&1
+if grep '^# Modified by bes-dap-data\..*' $bes_conf >/dev/null 2>&1
 then
 	echo
-	echo "The configure-dap-data script has already been run, not modifying"
+	echo "The bes-dap-data script has already been run, not modifying"
 	echo "$bes_conf"
 	echo
 	exit
 else
-	echo "# Modified by configure-dap-data.sh on `date`" >> $bes_conf
+	echo "# Modified by bes-dap-data.sh on `date`" >> $bes_conf
 fi
 
 # Add the handler name(s) to BES.modules

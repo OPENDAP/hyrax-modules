@@ -86,9 +86,9 @@ bes-conf: bes-dap-data.sh
 	(bes_prefix=`bes-config --prefix` ; \
 	if test "$$bes_prefix" = "/usr" ; \
 	 then \
-	    ./bes-dap-data.sh /etc/bes/bes.conf $$pkglibdir ;\
+	    ./bes-dap-data.sh /etc/bes/bes.conf /usr/lib/bes ;\
 	else \
-	    ./bes-dap-data.sh $$bes_prefix/etc/bes/bes.conf $$pkglibdir ;\
+	    ./bes-dap-data.sh $$bes_prefix/etc/bes/bes.conf $$bes_prefix/lib/bes ;\
 	fi)
 
 endif
