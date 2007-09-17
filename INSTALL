@@ -47,8 +47,12 @@ BUILDING THE SOFTWARE
      ensure that the directory with the handler shared libraries
      (/usr/local/lib by default) is on the LD_LIBRARY_PATH environment
      variable. 
+  
+  4. Type 'make bes-conf' to run the bes-nc-data.sh script which inserts the
+     handler in the bes.conf file and adds test data to 
+     $prefix/share/hyrax/data.
 
-  4. See the file README for important information about configuration of the
+  5. See the file README for important information about configuration of the
      server. Without those extra steps, the server will not work!
 
 REQUIREMENTS
