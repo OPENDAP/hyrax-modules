@@ -96,6 +96,8 @@ BaseType *basetype_to_wwwtype(BaseType * bt)
         return new WWWSequence(dynamic_cast < Sequence * >(bt));
     case dods_grid_c:
         return new WWWGrid(dynamic_cast < Grid * >(bt));
+    default:
+        throw InternalErr(__FILE__, __LINE__, "Unknown type.");
     }
 }
 
