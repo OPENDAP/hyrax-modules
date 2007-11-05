@@ -42,7 +42,6 @@
 #include "debug.h"
 
 #include "AsciiOutput.h"
-//#include "name_map.h"
 #include "get_ascii.h"
 
 using namespace dap_asciival;
@@ -83,6 +82,12 @@ void AsciiOutput::print_ascii(FILE * os,
     BTptr->print_val(os, "", false);
 }
 
+/** @brief Print values as ASCII
+    Prints the values of \e this in ASCII suitable for import into a
+    spreadsheet. This version prints only the values of simple types; other
+    types such as Array specialize this method (see AsciiArray::print_ascii()).
+    @param strm Output stream for values
+    @print_name Name of this variable to include in the ASCII output. */
 void AsciiOutput::print_ascii(ostream &strm,
                               bool print_name) throw(InternalErr)
 {
