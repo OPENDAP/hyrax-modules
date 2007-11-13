@@ -112,6 +112,8 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
                 BESDEBUG( "ascii", "processing var: " << (*i)->name() << endl )
                 if ((*i)->send_p()) {
                     BESDEBUG( "ascii", "reading some data for: " << (*i)->name() << endl )
+                    (**i).intern_data(dataset_name, ce, *dds);
+#if 0
                     switch ((*i)->type()) {
                     case dods_sequence_c:
                         dynamic_cast <
@@ -127,6 +129,7 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
                         (*i)->read(dataset_name);
                         break;
                     }
+#endif
                 }
             }
         }
