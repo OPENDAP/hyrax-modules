@@ -1,3 +1,150 @@
+2007-11-13  James Gallagher <jgallagher@opendap.org>
+
+	Switched from the old transfer_data() to intern_data(). This
+	fixes a number of issues including the HDF5 handler problem
+	where an Array of Structures was not handled correctly. See
+	tickets #938, #994 and #995
+
+	M BESAsciiTransmit.cc
+
+2007-11-05  James Gallagher <jgallagher@opendap.org>
+
+	Added test to handle unmatched types in basetype_to_wwwtype()
+
+	M get_html_form.cc
+
+2007-11-05  James Gallagher <jgallagher@opendap.org>
+
+	Removed name_map.h include (no longer used) and added some
+	documentation.
+
+	M AsciiOutpit.cc
+
+2007-09-17  James Gallagher <jgallagher@opendap.org>
+
+	README: Added text describing how to run the bes-*-data.sh
+	script because it is no longer run automatically.
+	INSTALL: Added a note about the bes-conf target and about
+	LD_LIBRARY_PATH.
+
+2007-09-06  James Gallagher <jgallagher@opendap.org>
+
+	Fixed an issue with bes-dap-data.sh where the pkglibdir configure
+	variable was not being substituted. I replaced it with libdir as
+	in the other similar scripts in the other handlers.
+
+	M    bes-dap-data.sh.in
+	M    Makefile.am
+
+2007-08-27  Patrick West <pwest@ucar.edu>
+
+	Ability to send output to ostream as well as FILE pointers
+	
+	M    www-interface/WWWGrid.h
+	M    www-interface/BESWWWTransmit.cc
+	M    www-interface/WWWOutput.cc
+	M    www-interface/WWWStructure.cc
+	M    www-interface/WWWInt32.h
+	M    www-interface/WWWOutput.h
+	M    www-interface/WWWStructure.h
+	M    www-interface/WWWInt16.h
+	M    www-interface/WWWUrl.h
+	M    www-interface/WWWByte.h
+	M    www-interface/WWWStr.cc
+	M    www-interface/WWWStr.h
+	M    www-interface/WWWFloat64.h
+	M    www-interface/get_html_form.cc
+	M    www-interface/WWWUInt32.cc
+	M    www-interface/WWWGrid.cc
+	M    www-interface/WWWUInt16.cc
+	M    www-interface/WWWUInt32.h
+	M    www-interface/WWWUInt16.h
+	M    www-interface/WWWInt32.cc
+	M    www-interface/WWWInt16.cc
+	M    www-interface/WWWByte.cc
+	M    www-interface/WWWSequence.cc
+	M    www-interface/WWWFloat32.cc
+	M    www-interface/WWWSequence.h
+	M    www-interface/WWWFloat32.h
+	M    www-interface/WWWArray.cc
+	M    www-interface/WWWFloat64.cc
+	M    www-interface/WWWArray.h
+	M    www-interface/get_html_form.h
+	M    usage.cc
+	M    asciival/AsciiGrid.h
+	M    asciival/BESAsciiTransmit.cc
+	M    asciival/AsciiStructure.cc
+	M    asciival/AsciiOutput.cc
+	M    asciival/AsciiStructure.h
+	M    asciival/AsciiOutput.h
+	M    asciival/AsciiGrid.cc
+	M    asciival/AsciiSequence.cc
+	M    asciival/AsciiSequence.h
+	M    asciival/AsciiArray.cc
+	M    asciival/get_ascii.cc
+	M    asciival/AsciiArray.h
+	M    asciival/get_ascii.h
+	M    BESUsageTransmit.cc
+	M    usage.h
+	M    usage_main.cc
+
+2007-08-23  James Gallagher <jgallagher@opendap.org>
+
+	dap-server-sca.fpr: removed from svn.
+
+2007-08-23  James Gallagher <jgallagher@opendap.org>
+
+	Makefile.am (all): Modified the fortify targets.
+	DODS_Dispatch.pm: Removed is_tainted() since it not used
+	and it has been generating warnings.
+
+2007-08-23  James Gallagher <jgallagher@opendap.org>
+
+	Makefile.am: Added fortify target.
+
+2007-08-21  James Gallagher <jgallagher@opendap.org>
+
+	AsciiSequence.cc: Added a comment about a specialization of
+	element_count().
+
+2007-07-31  Patrick West <pwest@ucar.edu>
+
+	BESDebug modifications, passing context to BESDEBUG and
+	registering debug context in Module classes.
+	
+	M    www-interface/BESWWWTransmit.cc
+	M    www-interface/BESWWWModule.cc
+	M    asciival/BESAsciiTransmit.cc
+	M    asciival/BESAsciiModule.cc
+	M    BESUsageTransmit.cc
+	M    BESUsageModule.cc
+
+2007-07-11  Patrick West <pwest@ucar.edu>
+
+	Using BESDebug instead of BESLog. Correctly removing added
+	features in the different modules.
+	
+	M    www-interface/BESWWWTransmit.cc
+	M    www-interface/BESWWWModule.cc
+	M    asciival/BESAsciiTransmit.cc
+	M    asciival/AsciiOutput.cc
+	M    asciival/BESAsciiModule.cc
+	M    BESUsageTransmit.cc
+	M    BESUsageModule.cc
+
+2007-07-04  James Gallagher <jgallagher@opendap.org>
+
+	Auto reset of Subversion properties
+
+2007-07-03  James Gallagher <jgallagher@opendap.org>
+
+	Version 3.8.2
+
+	M    README.cgi-server
+	M    INSTALL
+	M    NEWS
+	M    ChangeLog
+
 2007-07-03  James Gallagher <jgallagher@opendap.org>
 
 	Updated version and added Fortify SCA file.

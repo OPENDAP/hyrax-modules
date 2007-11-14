@@ -29,6 +29,9 @@ data files.
 
 To edit the bes.conf script by hand:
 
+Set the BES user, group and admin email (see the comments in the bes.conf
+file for instructions).
+
 Change the parameter BES.modules to include the three dap-server modules
 ascii, usage and www as follows (example assumes you have installed the
 netcdf_handler module):

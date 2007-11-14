@@ -3,14 +3,13 @@ dnl -*- autoconf -*-
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([dap-server], [3.8.2], [opendap-tech@opendap.org])
+AC_INIT([dap-server], [3.8.3], [opendap-tech@opendap.org])
 AC_CONFIG_AUX_DIR([conf])
 
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([nph-dods.in])
 AM_CONFIG_HEADER([config.h])
 
-# AC_DEFINE([DAP_VERSION], ["2.0"], [What version of the data server is this?])
 AC_DEFINE([DAP_PROTOCOL_VERSION], ["3.1"], [What DAP version is supported?])
 AC_SUBST([DAP_PROTOCOL_VERSION])
 
@@ -27,10 +26,6 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
-
-dnl AC_PROG_AWK
-dnl AM_PROG_LEX
-dnl AC_PROG_YACC
 
 DODS_PROG_PERL
 
@@ -96,7 +91,7 @@ AC_CHECK_FUNCS([putenv strtol])
 
 dnl Checks for specific libraries
 
-AC_CHECK_LIBDAP([3.7.4],
+AC_CHECK_LIBDAP([3.7.9],
  [
   LIBS="$LIBS $DAP_CLIENT_LIBS $DAP_SERVER_LIBS"
   CPPFLAGS="$CPPFLAGS $DAP_CFLAGS"
@@ -104,7 +99,7 @@ AC_CHECK_LIBDAP([3.7.4],
  [ AC_MSG_ERROR([Cannot find libdap])
 ])
 
-AC_CHECK_BES([3.4.0],
+AC_CHECK_BES([3.5.2],
 [
     BES_LDFLAGS=$BES_LIBS
     # I think the AC_SUBST([BES_MODULE_DIR]) in bes.m4 will put that 

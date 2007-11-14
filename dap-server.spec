@@ -6,15 +6,15 @@
 
 Summary:         Basic request handling for OPeNDAP servers 
 Name:            dap-server
-Version:         3.8.2
+Version:         3.8.3
 Release:         1
 License:         LGPL
 Group:           System Environment/Daemons 
-Source0:         ftp://ftp.unidata.ucar.edu/pub/opendap/source/%{name}-%{version}.tar.gz
+Source0:         http://www.opendap.org/pub/source/%{name}-%{version}.tar.gz
 URL:             http://www.opendap.org/
 
 BuildRoot:       %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires:   libdap-devel >= 3.7.4
+BuildRequires:   libdap-devel >= 3.7.9
 Requires:        curl webserver
 Requires:        perl perl(HTML::Filter) perl(Time::Local) perl(POSIX)
 
@@ -118,8 +118,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Nov 14 2007 James Gallagher <jgallagher@opendap.org> 3.7.3-1
+- Update for 3.8.3; General fixes
+
 * Wed Feb 14 2007 James Gallagher <jgallagher@opendap.org> 3.7.3-1
 - Update for 3.7.3; includes adding BES modules
+
 * Wed Sep 20 2006 Patrice Dumas <dumas@centre-cired.fr> 3.7.1-1
 - update to 3.7.1
 
