@@ -6,7 +6,7 @@
 # Usage: bes-dap-data.sh [<bes.conf file to modify> [<bes modules dir>]]
 
 bes_conf=${1:-"@sysconfdir@/bes/bes.conf"}
-bes_modules_dir=${2:-"@libdir@"}
+bes_modules_dir=${2:-"@libdir@/bes"}
 bes_help_dir=${3:-"@datadir@/bes"}
 
 # This script should take care to not add multiple entries for a handler.

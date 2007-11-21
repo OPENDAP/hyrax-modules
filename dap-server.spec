@@ -80,15 +80,9 @@ install -d -m755 $RPM_BUILD_ROOT/%{dap_cachedir}
 install -d -m755 $RPM_BUILD_ROOT/%{dap_webconfdir}
 install -m644 opendap_apache.conf $RPM_BUILD_ROOT/%{dap_webconfdir}/opendap_apache.conf
 
-%post
-/sbin/ldconfig
-echo
-echo "Running post with pkg lib dir: %{pkglibdir}"
-echo
-configure-dap-data.sh /etc/bes/bes.conf %{pkglibdir}
+%post -p /sbin/ldconfig
 
-%postun
-/sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -100,7 +94,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/dap_usage
 %{_bindir}/dap_asciival
 %{_bindir}/dap_www_int
-%{_bindir}/configure-dap-data.sh
+%{_bindir}/bes-dap-data.sh
 %{_libdir}/bes/
 
 %files cgi
