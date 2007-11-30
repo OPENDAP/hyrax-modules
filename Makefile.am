@@ -51,7 +51,7 @@ nodist_cgiconf_DATA = dap-server.rc
 
 EXTRA_DIST = EXAMPLE_OPENDAP_STATISTICS COPYING COPYRIGHT_URI \
   nph-dods.in dap-server.rc.in dap-server.spec opendap_apache.conf \
-  README.hyrax README.cgi-server bes-dap-data.sh.in 
+  README.hyrax README.cgi-server bes-dap-data.sh.in OSX_Resources
 
 nph-dods: nph-dods.in config.status
 	sed -e 's%[@]PERL[@]%${PERL}%' \
@@ -130,13 +130,6 @@ PACKAGEMAKER=/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/P
 pkg:
 	rm -rf mac_osx @PACKAGE@-@PACKAGE_VERSION@.pkg
 	./configure --prefix=/usr $(PKG_CONFIGURE_FLAGS)
-	make bes-dap-data.sh nph-dods dap-server.rc
-	cp bes-dap-data.sh bes-dap-data.sh.macosx
-	cp nph-dods nph-dods.macosx
-	cp dap-server.rc dap-server.rc.macosx
-	./configure --prefix=`pwd`/mac_osx $(PKG_CONFIGURE_FLAGS)
-	make clean install
-	mv bes-dap-data.sh.macosx mac_osx/bin/bes-dap-data.sh
-	mv nph-dods.macosx mac_osx/share/dap-server-cgi/nph-dods
-	mv dap-server.rc.macosx mac_osx/share/dap-server-cgi/dap-server.rc
-	${PACKAGEMAKER} -build -p @PACKAGE@-@PACKAGE_VERSION@.pkg -f mac_osx -ds -r OSX_Resources -i OSX_Resources/Info.plist -d OSX_Resources/Description.plist
+	make clean all
+	DESTDIR=${PWD}/mac_osx make install
+	${PACKAGEMAKER} -build -p @PACKAGE@-@PACKAGE_VERSION@.pkg -f mac_osx/usr -ds -r OSX_Resources -i OSX_Resources/Info.plist -d OSX_Resources/Description.plist
