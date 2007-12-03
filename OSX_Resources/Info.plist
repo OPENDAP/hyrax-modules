@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleGetInfoString</key>
-	<string>3.8.3, OPeNDAP</string>
+	<string>3.8.4, OPeNDAP</string>
 	<key>CFBundleIdentifier</key>
 	<string>opendap.dap-server</string>
 	<key>CFBundleShortVersionString</key>
-	<string>3.8.3</string>
+	<string>3.8.4</string>
 	<key>IFMajorVersion</key>
 	<integer>3</integer>
 	<key>IFMinorVersion</key>

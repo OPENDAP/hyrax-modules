@@ -1,3 +1,39 @@
+2007-11-30  Patrick West <pwest@ucar.edu>
+
+	Updated MacOSX pkg build.
+	M    OSX_Resources/Info.plist
+	M    OSX_Resources/Welcome.html
+	M    Makefile.am
+
+2007-11-21  Patrick West <pwest@ucar.edu>
+
+	bes-dap-data script was listing the shared object modules in /lib instead of
+	/lib/bes. Fixed this. dap-server.spec was trying to run the script after
+	installing the rpm, which we don't want to do. The .spec file also listed
+	the script using the old name instead of the new name.
+	M    bes-dap-data.sh.in
+	M    dap-server.spec
+
+2007-11-14  James Gallagher <jgallagher@opendap.org>
+
+	Updated the LIBDAP check macro
+
+	M    conf/libdap.m4
+
+2007-11-14  James Gallagher <jgallagher@opendap.org>
+
+	Updated for version 3.8.3
+
+	M    README.hyrax
+	M    configure.ac
+	M    INSTALL
+	M    NEWS
+	M    ChangeLog
+	M    dap-server.spec
+
+;; Local Variables:
+;; coding: utf-8
+;; End:
 2007-11-13  James Gallagher <jgallagher@opendap.org>
 
 	Switched from the old transfer_data() to intern_data(). This
