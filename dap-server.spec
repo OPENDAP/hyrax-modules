@@ -1,6 +1,7 @@
 %define dap_cachedir     /var/cache/dap-server
 %define dap_webconfdir   %{_sysconfdir}/httpd/conf.d
-%define dap_cgidir       /var/www/opendap
+%define dap_cgidir       %{_datadir}/opendap-cgi
+%define dap_cgiconfdir   %{_sysconfdir}/opendap/
 %define __perl_provides %{nil}
 %define __perl_requires %{nil}
 
@@ -16,16 +17,18 @@ URL:             http://www.opendap.org/
 BuildRoot:       %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:   libdap-devel >= 3.7.10
 BuildRequires:   bes-devel >= 3.5.3
-Requires:        curl webserver
+# we use httpd and not webserver because we make use of the apache user. 
+Requires:        curl httpd
 Requires:        perl perl(HTML::Filter) perl(Time::Local) perl(POSIX)
+Requires:        perl(LWP::Simple)
 
 %description
-This is base software for the OPeNDAP (Open-source Project for a Network 
-Data Access Protocol) server. Written using the DAP++ C++ library and Perl, 
-this handles processing compressed files and arranging for the correct 
-server module to process the file. The base software also provides support 
-for the ASCII response and HTML data-request form. Use this in combination 
-with one or more of the format-specific handlers.
+This is base software for the CGI-based OPeNDAP (Open-source Project for 
+a Network Data Access Protocol) server. Written using the DAP++ C++ 
+library and Perl, this handles processing compressed files and arranging 
+for the correct server module to process the file. The base software also 
+provides support for the ASCII response and HTML data-request form. Use 
+this in combination with one or more of the format-specific handlers.
 
 This package contains all the executable and perl modules. The scripts 
 and config files that should be installed in a cgi directory are in the 
@@ -43,6 +46,9 @@ A CGI interface for the OPeNDAP server that works without manual
 configuration. The web server is setup such that the CGI directory is
 at %{dap_cgidir}. 
 
+The config file for the cgi script, dap-server.rc, is in 
+%{dap_cgiconfdir}.
+
 The default configuration allows for the use of the following handlers:
 freeform, netcdf and hdf4.
 
@@ -53,37 +59,48 @@ web server DocumentRoot.
 %setup -q
 
 %build
-%configure --with-cgidir=%{dap_cgidir}
+%configure --with-cgidir=%{dap_cgidir} --disable-dependency-tracking \
+ --with-cgiconfdir=%{dap_cgiconfdir} --disable-static
 make %{?_smp_mflags}
 
+# keep the nph-dods timestamp
+touch -r nph-dods __nph-dods_stamp
+
 # prepend -sample to cgi and config file to install them as doc
-cp opendap_apache.conf opendap_apache.conf-sample
-cp dap-server.rc dap-server.rc-sample
-cp nph-dods nph-dods-sample
-# adjust jgofs paths
+rm -rf __dist_doc
+mkdir __dist_doc
+cp -p opendap_apache.conf __dist_doc/opendap_apache.conf-sample
+cp -p dap-server.rc __dist_doc/dap-server.rc-sample
+cp -p nph-dods __dist_doc/nph-dods-sample
+chmod a-x __dist_doc/nph-dods-sample
+
+# adjust jgofs paths (even though jgofs isn't used, it is more consistent)
 sed -i -e 's:^\$ENV{"JGOFS_METHOD"} = "`pwd`";:\$ENV{"JGOFS_METHOD"} = "%{_bindir}";:' nph-dods
 sed -i -e 's:^\$ENV{"JGOFS_OBJECT"} = "`pwd`";:\$ENV{"JGOFS_OBJEXT"} = "%{dap_cgidir}";:' nph-dods
 
 # /usr/tmp isn't a safe place, substitute to a dir in 
 # /var/cache
 sed -e 's:cache_dir /usr/tmp:cache_dir %{dap_cachedir}:' \
-   dap-server.rc-sample > dap-server.rc
+   __dist_doc/dap-server.rc-sample > dap-server.rc
+touch -r __dist_doc/dap-server.rc-sample dap-server.rc
+touch -r __nph-dods_stamp nph-dods
+rm __nph-dods_stamp
 
 # cgi-bin dir for the dap-server is in %%{dap_cgidir}, substitute that in
 # opendap_apache.conf
 sed -e 's:<<prefix>>/share/dap-server-cgi:%{dap_cgidir}:' \
-    opendap_apache.conf-sample > opendap_apache.conf
+    __dist_doc/opendap_apache.conf-sample > opendap_apache.conf._distributed
+touch -r __dist_doc/opendap_apache.conf-sample opendap_apache.conf._distributed
 
 %install
 rm -rf $RPM_BUILD_ROOT
-make DESTDIR=$RPM_BUILD_ROOT install
-install -d -m755 $RPM_BUILD_ROOT/%{dap_cachedir}
-install -d -m755 $RPM_BUILD_ROOT/%{dap_webconfdir}
-install -m644 opendap_apache.conf $RPM_BUILD_ROOT/%{dap_webconfdir}/opendap_apache.conf
+make DESTDIR=$RPM_BUILD_ROOT install INSTALL='install -p'
+install -d -m755 $RPM_BUILD_ROOT%{dap_cachedir}
+install -d -m755 $RPM_BUILD_ROOT%{dap_webconfdir}
+install -d -m755 $RPM_BUILD_ROOT%{dap_cgiconfdir}
+install -p -m644 opendap_apache.conf._distributed $RPM_BUILD_ROOT%{dap_webconfdir}/opendap_apache.conf
 
-%post -p /sbin/ldconfig
-
-%postun -p /sbin/ldconfig
+rm $RPM_BUILD_ROOT%{_libdir}/bes/*.la
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -91,25 +108,26 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,-)
 %doc COPYING COPYRIGHT_URI EXAMPLE_OPENDAP_STATISTICS NEWS README.hyrax
-%{_datadir}/bes/
+%doc README.cgi-server
+%doc __dist_doc/*
+%{_bindir}/bes-dap-data.sh
 %{_bindir}/dap_usage
 %{_bindir}/dap_asciival
 %{_bindir}/dap_www_int
-%{_bindir}/bes-dap-data.sh
-%{_libdir}/bes/
-
-%files cgi
-%defattr(-,apache,apache,-)
-%config(noreplace) %{dap_webconfdir}/opendap_apache.conf
-%dir %{dap_cgidir}
-%config(noreplace) %{dap_cgidir}/dap-server.rc
-%{dap_cgidir}/nph-dods
+%{_datadir}/bes/
+%{_datadir}/dap-server/
+%{_libdir}/bes/libascii_module.so
+%{_libdir}/bes/libusage_module.so
+%{_libdir}/bes/libwww_module.so
 # the webserver must have write access to the cache dir
 %attr(-,apache,apache) %{dap_cachedir}
-%{_datadir}/dap-server/
-# add those as documentation
-%doc README.cgi-server
-%doc opendap_apache.conf-sample nph-dods-sample dap-server.rc-sample
+
+%files cgi
+%defattr(-,root,root,-)
+%config(noreplace) %{dap_webconfdir}/opendap_apache.conf
+%dir %{dap_cgiconfdir}
+%config(noreplace) %{dap_cgiconfdir}/dap-server.rc
+%{dap_cgidir}/
 
 
 %changelog
