@@ -39,9 +39,10 @@
 #include "BESWWWNames.h"
 #include "cgi_util.h"
 #include "BESWWW.h"
-#include "Error.h"
 #include "util.h"
-#include "BESTransmitException.h"
+#include "InternalErr.h"
+#include "BESDapError.h"
+#include "BESInternalFatalError.h"
 
 #include "BESDebug.h"
 
@@ -83,15 +84,20 @@ void
 
 	delete wwwdds ;
     }
-    catch(Error & e) {
-        string err =
-            "Failed to write html form: " + e.get_error_message() + "(" +
-            long_to_string(e.get_error_code()) + ")";
-        throw BESTransmitException(err, __FILE__, __LINE__);
+    catch( InternalErr &e )
+    {
+        string err = "Failed to write html form: " + e.get_error_message() ;
+        throw BESDapError( err, true, e.get_error_code(), __FILE__, __LINE__ ) ;
     }
-    catch(...) {
+    catch( Error &e )
+    {
+        string err = "Failed to write html form: " + e.get_error_message() ;
+        throw BESDapError( err, false, e.get_error_code(), __FILE__, __LINE__ );
+    }
+    catch(...)
+    {
         string err = "Failed to write html form: Unknown exception caught";
-        throw BESTransmitException(err, __FILE__, __LINE__);
+        throw BESInternalFatalError( err, __FILE__, __LINE__ ) ;
     }
 }
 

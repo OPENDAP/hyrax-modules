@@ -42,9 +42,10 @@
 #include "Sequence.h"
 #include "ConstraintEvaluator.h"
 #include "get_ascii.h"
-#include "Error.h"
+#include "InternalErr.h"
 #include "util.h"
-#include "BESTransmitException.h"
+#include "BESDapError.h"
+#include "BESInternalFatalError.h"
 
 #include "BESDebug.h"
 
@@ -61,19 +62,27 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
     dhi.first_container();
 
     string constraint = dhi.data[POST_CONSTRAINT];
-    try {
-        ce.parse_constraint(constraint, *dds);
+    try
+    {
+        ce.parse_constraint( constraint, *dds ) ;
     }
-    catch(Error & e) {
+    catch( InternalErr &e )
+    {
         string err = "Failed to parse the constraint expression: "
-            + e.get_error_message() + "(" +
-            long_to_string(e.get_error_code()) + ")";
-        throw BESTransmitException(err, __FILE__, __LINE__);
+            + e.get_error_message() ;
+        throw BESDapError( err, true, e.get_error_code(), __FILE__, __LINE__ ) ;
     }
-    catch(...) {
+    catch( Error &e )
+    {
+        string err = "Failed to parse the constraint expression: "
+            + e.get_error_message() ;
+        throw BESDapError( err, false, e.get_error_code(), __FILE__, __LINE__ );
+    }
+    catch(...)
+    {
         string err = (string) "Failed to parse the constraint expression: "
             + "Unknown exception caught";
-        throw BESTransmitException(err, __FILE__, __LINE__);
+        throw BESInternalFatalError( err, __FILE__, __LINE__ ) ;
     }
 
     dds->tag_nested_sequences();        // Tag Sequences as Parent or Leaf node.
@@ -135,15 +144,20 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
         }
     }
 
-    catch(Error & e) {
-        string err = "Failed to read data: " + e.get_error_message() + "("
-            + long_to_string(e.get_error_code()) + ")";
-        throw BESTransmitException(err, __FILE__, __LINE__);
+    catch( InternalErr &e )
+    {
+        string err = "Failed to read data: " + e.get_error_message() ;
+	throw BESDapError( err, true, e.get_error_code(), __FILE__, __LINE__ ) ;
     }
-
-    catch(...) {
+    catch(Error & e)
+    {
+        string err = "Failed to read data: " + e.get_error_message() ;
+        throw BESDapError( err, false, e.get_error_code(), __FILE__, __LINE__ );
+    }
+    catch(...)
+    {
         string err = "Failed to read data: Unknown exception caught";
-        throw BESTransmitException(err, __FILE__, __LINE__);
+        throw BESInternalFatalError( err, __FILE__, __LINE__ ) ;
     }
 
     try {
@@ -159,18 +173,22 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
 
         BESDEBUG( "ascii", "done transmitting ascii" << endl )
     }
-
-    catch(Error & e) {
+    catch( InternalErr &e )
+    {
         string err =
-            "Failed to get values as ascii: " + e.get_error_message() +
-            "(" + long_to_string(e.get_error_code()) + ")";
-        throw BESTransmitException(err, __FILE__, __LINE__);
+            "Failed to get values as ascii: " + e.get_error_message() ;
+        throw BESDapError( err, true, e.get_error_code(), __FILE__, __LINE__ ) ;
     }
-
+    catch( Error &e )
+    {
+        string err =
+            "Failed to get values as ascii: " + e.get_error_message() ;
+        throw BESDapError( err, false, e.get_error_code(), __FILE__, __LINE__ );
+    }
     catch(...) {
         string err =
             "Failed to get values as ascii: Unknown exception caught";
-        throw BESTransmitException(err, __FILE__, __LINE__);
+        throw BESInternalFatalError( err, __FILE__, __LINE__ ) ;
     }
 }
 
