@@ -23,8 +23,11 @@
 #ifndef E_get_ascii_h
 #define E_get_ascii_h 1
 
-class DataDDS ;
-class BaseType ;
+#include "DataDDS.h"
+
+using namespace libdap ;
+
+class libdap::BaseType ;
 
 namespace dap_asciival {
 

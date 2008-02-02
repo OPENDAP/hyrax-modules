@@ -39,6 +39,8 @@
 #include <Array.h>
 #include "AsciiOutput.h"
 
+using namespace libdap ;
+
 class AsciiArray: public Array, public AsciiOutput {
 private:
     void print_vector(FILE *os, bool print_name);

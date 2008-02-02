@@ -38,6 +38,8 @@
 
 #include "Int16.h"
 
+using namespace libdap ;
+
 class WWWInt16: public Int16 {
 public:
     WWWInt16(const string &n = (char *)0);

@@ -38,6 +38,8 @@
 
 #include "Structure.h"
 
+using namespace libdap ;
+
 class WWWStructure: public Structure {
 private:
     bool is_simple_structure();

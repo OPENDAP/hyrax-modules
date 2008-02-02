@@ -37,6 +37,8 @@ static char rcsid[] not_used = {"$Id$"};
 #include <util.h>
 #include <debug.h>
 
+using namespace libdap ;
+
 #include "usage.h"
 
 using namespace std;

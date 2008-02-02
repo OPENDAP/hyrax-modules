@@ -38,6 +38,8 @@
 
 #include "Float64.h"
 
+using namespace libdap ;
+
 class WWWFloat64: public Float64 {
 public:
     WWWFloat64(const string &n = (char *)0);

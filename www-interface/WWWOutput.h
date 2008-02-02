@@ -39,6 +39,8 @@
 #include "DDS.h"
 #include "DAS.h"
 
+using namespace libdap ;
+
 /** Write various parts of the HTML form for a dataset.
     
     @author jhrg. */

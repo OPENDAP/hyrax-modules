@@ -38,6 +38,8 @@
 
 #include "Array.h"
 
+using namespace libdap ;
+
 class WWWArray: public Array
 {
 private:

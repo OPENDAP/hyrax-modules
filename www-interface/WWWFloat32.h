@@ -38,6 +38,8 @@
 
 #include "Float32.h"
 
+using namespace libdap ;
+
 class WWWFloat32: public Float32 {
 public:
     WWWFloat32(const string &n = (char *)0);

@@ -39,6 +39,8 @@
 #include "dods-limits.h"
 #include "Str.h"
 
+using namespace libdap ;
+
 class WWWStr: public Str {
 public:
     WWWStr(const string &n = (char *)0);

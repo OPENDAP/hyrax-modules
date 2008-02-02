@@ -41,6 +41,7 @@
 #include "InternalErr.h"
 
 using namespace std;
+using namespace libdap;
 
 class AsciiOutput {
 

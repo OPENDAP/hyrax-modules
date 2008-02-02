@@ -38,6 +38,8 @@
 
 #include "Grid.h"
 
+using namespace libdap ;
+
 class WWWGrid: public Grid {
 private:
     void do_print_val( ostream &strm ) ;

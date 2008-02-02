@@ -38,6 +38,8 @@
 
 #include "UInt16.h"
 
+using namespace libdap ;
+
 class WWWUInt16: public UInt16 {
 public:
     WWWUInt16(const string &n = (char *)0);

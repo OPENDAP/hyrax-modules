@@ -38,6 +38,8 @@
 
 #include "Sequence.h"
 
+using namespace libdap ;
+
 class WWWSequence: public Sequence {
 private:
     bool is_simple_sequence();

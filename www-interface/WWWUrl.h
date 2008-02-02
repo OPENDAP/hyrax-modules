@@ -38,6 +38,8 @@
 
 #include "Url.h"
 
+using namespace libdap ;
+
 class WWWUrl: public Url {
 public:
     WWWUrl(const string &n = (char *)0);

@@ -38,6 +38,8 @@
 
 #include "UInt32.h"
 
+using namespace libdap ;
+
 class WWWUInt32: public UInt32 {
 public:
     WWWUInt32(const string &n = (char *)0);
