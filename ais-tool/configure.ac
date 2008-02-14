@@ -79,8 +79,7 @@ AC_SUBST([dap_cgidir])
 AC_CHECK_FUNCS([putenv strtol])
 
 dnl Checks for specific libraries
-
-AC_CHECK_LIBDAP([3.7.0],
+AC_CHECK_LIBDAP([3.7.10],
  [
   LIBS="$LIBS $DAP_CLIENT_LIBS $DAP_SERVER_LIBS"
   CPPFLAGS="$CPPFLAGS $DAP_CFLAGS"

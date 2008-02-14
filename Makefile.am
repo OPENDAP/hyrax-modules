@@ -35,7 +35,7 @@ BES_SOURCES = BESUsageModule.h BESUsageNames.h BESUsageResponseHandler.h \
 libusage_module_la_SOURCES = $(USAGE_SOURCES) $(BES_SOURCES)
 libusage_module_la_CPPFLAGS = $(BES_CPPFLAGS)
 libusage_module_la_LDFLAGS = -avoid-version -module 
-libusage_module_la_LIBADD = $(BES_LIBS)
+libusage_module_la_LIBADD = $(BES_DAP_LIBS)
 
 modulesdir = $(dap_modulesdir)
 

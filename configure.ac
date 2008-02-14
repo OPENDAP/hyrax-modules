@@ -90,7 +90,6 @@ AC_SUBST([dap_cgiconfdir])
 AC_CHECK_FUNCS([putenv strtol])
 
 dnl Checks for specific libraries
-
 AC_CHECK_LIBDAP([3.7.10],
  [
   LIBS="$LIBS $DAP_CLIENT_LIBS $DAP_SERVER_LIBS"
@@ -101,7 +100,6 @@ AC_CHECK_LIBDAP([3.7.10],
 
 AC_CHECK_BES([3.5.3],
 [
-    BES_LDFLAGS=$BES_LIBS
     # I think the AC_SUBST([BES_MODULE_DIR]) in bes.m4 will put that 
     # symbol in the output. Same for BES_CPPFLAGS. jhrg 5/1/06
     AM_CONDITIONAL([OPENDAPSERVER], [true])
