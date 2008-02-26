@@ -51,7 +51,7 @@ nodist_cgiconf_DATA = dap-server.rc
 
 EXTRA_DIST = EXAMPLE_OPENDAP_STATISTICS COPYING COPYRIGHT_URI \
   nph-dods.in dap-server.rc.in dap-server.spec opendap_apache.conf \
-  README.hyrax README.cgi-server bes-dap-data.sh.in OSX_Resources
+  README bes-dap-data.sh.in OSX_Resources
 
 nph-dods: nph-dods.in config.status
 	sed -e 's%[@]PERL[@]%${PERL}%' \
@@ -141,7 +141,7 @@ pkg-build:
 	DESTDIR=${PWD}/mac_osx make install
 
 pkg-main:
-	./OSX_Resources/update_mac_package_contents.pl README.hyrax "configure.ac" "mac_osx/usr"
+	./OSX_Resources/update_mac_package_contents.pl README "configure.ac" "mac_osx/usr"
 	${PACKAGEMAKER} -build -p @PACKAGE@-@PACKAGE_VERSION@.pkg \
 		-f mac_osx/usr \
 		-ds -r OSX_Resources \
@@ -154,9 +154,7 @@ pkg-dmg:
 	-rm -rf @PACKAGE@-@PACKAGE_VERSION@.dmg
 	mkdir @PACKAGE@-@PACKAGE_VERSION@
 	mv @PACKAGE@-@PACKAGE_VERSION@.pkg @PACKAGE@-@PACKAGE_VERSION@
-	cp NEWS @PACKAGE@-@PACKAGE_VERSION@
-	cp README.hyrax @PACKAGE@-@PACKAGE_VERSION@/README.hyrax.txt
-	cp README.cgi-server @PACKAGE@-@PACKAGE_VERSION@/README.cgi-server.txt
+	cp README NEWS @PACKAGE@-@PACKAGE_VERSION@
 	dropdmg -i --sanitize-for-servers --format zlib @PACKAGE@-@PACKAGE_VERSION@
 	-rm -rf @PACKAGE@-@PACKAGE_VERSION@
 
