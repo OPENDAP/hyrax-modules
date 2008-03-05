@@ -1,4 +1,13 @@
 
+Version 3.8.5 (03 Mar 2008)
+
+pkg build update to automate the creation of the .pkg and .dmg files using
+PackageManager and DropDMG respectively.
+
+Updated libdap usage to include libdap namespace.
+
+General bug fixes.
+
 Version 3.8.4 (03 Dec 2007)
 
 pkg and rpm build fixes

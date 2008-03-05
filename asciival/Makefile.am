@@ -27,7 +27,7 @@ endif
 libascii_module_la_SOURCES = $(ASCII_SOURCES) $(BES_SOURCES)
 libascii_module_la_CPPFLAGS = $(BES_CPPFLAGS)
 libascii_module_la_LDFLAGS = -avoid-version -module 
-libascii_module_la_LIBADD = $(BES_LIBS)
+libascii_module_la_LIBADD = $(BES_DAP_LIBS)
 
 dap_asciival_SOURCES = $(ASCII_SOURCES) ascii_val.cc
 

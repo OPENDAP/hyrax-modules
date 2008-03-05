@@ -1,3 +1,178 @@
+2008-02-27  James Gallagher <jgallagher@opendap.org>
+
+	Auto reset of Subversion properties
+
+2008-02-26  Patrick West <pwest@ucar.edu>
+
+	Grabbing the version correctly for the pkg build.
+	M    configure.ac
+	M    OSX_Resources/Info.plist
+
+2008-02-26  Patrick West <pwest@ucar.edu>
+
+	Combined README.hurax and README.cgi-server into README and
+	formatted for Mac OSX install.
+	D    README.hyrax
+	D    README.cgi-server
+	A    README
+	M    OSX_Resources/ReadMe.txt
+	M    Makefile.am
+
+2008-02-26  James Gallagher <jgallagher@opendap.org>
+
+	Auto reset of Subversion properties
+
+2008-02-25  Patrick West <pwest@ucar.edu>
+
+	Updated pkg build for Mac OSX
+	M    README.hyrax
+	AM   OSX_Resources/update_mac_package_contents.pl
+	M    OSX_Resources/Info.plist
+	M    OSX_Resources/ReadMe.txt
+	M    Makefile.am
+
+2008-02-16  James Gallagher <jgallagher@opendap.org>
+
+	Auto reset of Subversion properties
+
+2008-02-15  James Gallagher <jgallagher@opendap.org>
+
+	Added. fixes bug 1040.
+	A    conf/pkg.m4
+
+2008-02-14  Patrick West <pwest@ucar.edu>
+
+	Updated the configure scripts to use the latest and greatest libdap
+	and bes m4 files.
+	M    conf/bes.m4
+	M    conf/libdap.m4
+	M    ais-tool/configure.ac
+	M    ais-tool/conf/libdap.m4
+	M    configure.ac
+	M    Makefile.am
+
+2008-02-02  Patrick West <pwest@ucar.edu>
+
+	Added using namespace libdap where needed
+	M    www-interface/WWWGrid.h
+	M    www-interface/WWWInt32.h
+	M    www-interface/WWWOutput.h
+	M    www-interface/WWWStructure.h
+	M    www-interface/WWWInt16.h
+	M    www-interface/WWWUrl.h
+	M    www-interface/WWWByte.h
+	M    www-interface/WWWStr.h
+	M    www-interface/WWWFloat64.h
+	M    www-interface/WWWUInt32.h
+	M    www-interface/WWWUInt16.h
+	M    www-interface/WWWSequence.h
+	M    www-interface/WWWFloat32.h
+	M    www-interface/WWWArray.h
+	M    usage.cc
+	M    asciival/AsciiOutput.h
+	M    asciival/AsciiArray.h
+	M    asciival/get_ascii.h
+	M    usage_main.cc
+
+2008-01-25  Patrick West <pwest@ucar.edu>
+
+	New Exception/Error handling in the BES.
+	M    www-interface/BESWWWTransmit.cc
+	M    www-interface/BESWWWRequestHandler.cc
+	M    www-interface/BESWWWResponseHandler.cc
+	M    www-interface/BESWWWGetCommand.cc
+	M    asciival/BESAsciiTransmit.cc
+	M    asciival/BESAsciiRequestHandler.cc
+	M    asciival/BESAsciiResponseHandler.cc
+	M    BESUsageTransmit.cc
+	M    BESUsageRequestHandler.cc
+	M    BESUsageResponseHandler.cc
+
+2008-01-07  James Gallagher <jgallagher@opendap.org>
+
+	Fixed the copyright - it was mistakenly set to the GPL and not the
+	LGPL. Also added COPYING to the www-interface subdirectory.
+	M    www-interface/WWWGrid.h
+	M    www-interface/www_int.cc
+	M    www-interface/WWWOutput.cc
+	M    www-interface/WWWStructure.cc
+	M    www-interface/WWWInt32.h
+	M    www-interface/WWWOutput.h
+	M    www-interface/WWWStructure.h
+	M    www-interface/WWWUrl.cc
+	M    www-interface/WWWInt16.h
+	M    www-interface/WWWUrl.h
+	M    www-interface/WWWByte.h
+	M    www-interface/WWWStr.cc
+	M    www-interface/WWWStr.h
+	A    www-interface/COPYING
+	M    www-interface/WWWFloat64.h
+	M    www-interface/WWWUInt32.cc
+	M    www-interface/WWWGrid.cc
+	M    www-interface/WWWUInt16.cc
+	M    www-interface/WWWUInt32.h
+	M    www-interface/WWWUInt16.h
+	M    www-interface/WWWInt32.cc
+	M    www-interface/WWWInt16.cc
+	M    www-interface/WWWByte.cc
+	M    www-interface/WWWSequence.cc
+	M    www-interface/WWWFloat32.cc
+	M    www-interface/WWWSequence.h
+	M    www-interface/WWWFloat32.h
+	M    www-interface/WWWArray.cc
+	M    www-interface/WWWFloat64.cc
+	M    www-interface/WWWArray.h
+	M    asciival/AsciiGrid.h
+	M    asciival/AsciiStructure.cc
+	M    asciival/AsciiOutput.cc
+	M    asciival/AsciiInt32.h
+	M    asciival/AsciiUrl.cc
+	M    asciival/AsciiStructure.h
+	M    asciival/AsciiOutput.h
+	M    asciival/AsciiInt16.h
+	M    asciival/AsciiUrl.h
+	M    asciival/AsciiByte.h
+	M    asciival/AsciiStr.cc
+	M    asciival/AsciiStr.h
+	M    asciival/AsciiFloat64.h
+	M    asciival/unit-tests/AsciiArrayTest.cc
+	M    asciival/unit-tests/AsciiOutputTest.cc
+	M    asciival/AsciiUInt32.cc
+	M    asciival/AsciiGrid.cc
+	M    asciival/AsciiUInt16.cc
+	M    asciival/AsciiUInt32.h
+	M    asciival/AsciiUInt16.h
+	M    asciival/AsciiInt32.cc
+	M    asciival/AsciiInt16.cc
+	M    asciival/AsciiByte.cc
+	M    asciival/name_map.cc
+	M    asciival/name_map.h
+	M    asciival/AsciiSequence.cc
+	M    asciival/AsciiSequence.h
+	M    asciival/AsciiFloat32.cc
+	M    asciival/AsciiFloat32.h
+	M    asciival/AsciiArray.cc
+	M    asciival/AsciiFloat64.cc
+	M    asciival/AsciiArray.h
+
+2008-01-07  James Gallagher <jgallagher@opendap.org>
+
+	Applied Patrice's patch for the spec file update.
+	M    dap-server.spec
+
+2007-12-03  Patrick West <pwest@ucar.edu>
+
+	3.8.4 release
+	M    configure.ac
+	M    INSTALL
+	M    NEWS
+	M    ChangeLog
+	M    dap-server.spec
+	M    OSX_Resources/Info.plist
+
+;; Local Variables:
+;; coding: utf-8
+;; End:
 2007-11-30  Patrick West <pwest@ucar.edu>
 
 	Updated MacOSX pkg build.
@@ -7,10 +182,11 @@
 
 2007-11-21  Patrick West <pwest@ucar.edu>
 
-	bes-dap-data script was listing the shared object modules in /lib instead of
-	/lib/bes. Fixed this. dap-server.spec was trying to run the script after
-	installing the rpm, which we don't want to do. The .spec file also listed
-	the script using the old name instead of the new name.
+	bes-dap-data script was listing the shared object modules in /lib
+	instead of /lib/bes. Fixed this. dap-server.spec was trying to run
+	the script after installing the rpm, which we don't want to do. The
+	.spec file also listed the script using the old name instead of the
+	new name.
 	M    bes-dap-data.sh.in
 	M    dap-server.spec
 

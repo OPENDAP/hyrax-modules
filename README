@@ -1,4 +1,4 @@
-  Updated for version 3.8.2 of the OPeNDAP Server Software.
+  Updated for version 3.8.5 of the OPeNDAP Server Software.
 
 This software is used by two projects: The original OPeNDAP Data
 Server, which uses CGI 1.1 in conjunction with a web server such as
@@ -142,7 +142,7 @@ PREFACE
     Tip 8: Customizing the DODS Directory response (from Joe McLean)
     Tip 9: Secure servers
     Tip 10: Shorten URLs
-<code>
+</code>
 
   -----------------------------------------------------------------------
 

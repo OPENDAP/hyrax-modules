@@ -93,38 +93,24 @@ PREFACE
     Tip 9: Secure servers
     Tip 10: Shorten URLs
 
+
   -----------------------------------------------------------------------
 
   Introduction
 
-    This is the base software for the OPeNDAP data server. It uses the
-    CGI 1.1 protocol and requires Apache or a similar web daemon.
+    This is the base software for the OPeNDAP data server. It uses the    CGI 1.1 protocol and requires Apache or a similar web daemon.
 
-    The software here includes three C++ programs which are installed
-    in <prefix>/bin and a collection of Perl software install in
-    <prefix>/share/dap-server. Finally, the Perl script nph-dods and
-    it's configuration file dap-server.rc are installed in
-    <prefix>/share/dap-server-cgi. These last two files are to be
-    installed in one of the HTTP daemon's CGI binaries directory (you
-    can use the default cgi-bin or set up a new one).
-  
-    We've added a sample configuration file which can be used with the
-    Apache 2.x web server. Look at 'opendap_apache.conf.'
+    The software here includes three C++ programs which are installed    in <prefix>/bin and a collection of Perl software install in    <prefix>/share/dap-server. Finally, the Perl script nph-dods and    it's configuration file dap-server.rc are installed in    <prefix>/share/dap-server-cgi. These last two files are to be    installed in one of the HTTP daemon's CGI binaries directory (you    can use the default cgi-bin or set up a new one).
+
+    We've added a sample configuration file which can be used with the    Apache 2.x web server. Look at 'opendap_apache.conf.'
 
   -----------------------------------------------------------------------
 
   About WWW Servers
 
-    We have tested the servers extensively with the Apache HTTP daemon
-    (httpd).  Other servers will work as along as they support CGI 1.1
-    standard. However, the installation instructions will be slightly
-    different. Don't let this dissuade you from installing the servers
-    with another httpd - the process is very simple. Other groups have
-    used the NCSA, CERN and Netscape web servers successfully.
+    We have tested the servers extensively with the Apache HTTP daemon    (httpd).  Other servers will work as along as they support CGI 1.1    standard. However, the installation instructions will be slightly    different. Don't let this dissuade you from installing the servers    with another httpd - the process is very simple. Other groups have    used the NCSA, CERN and Netscape web servers successfully.
 
-    If you do not have a World Wide Web server running on the machine
-    you want to use as your data server machine, the Apache daemon can
-    be found at http://www.apache.org/.
+    If you do not have a World Wide Web server running on the machine    you want to use as your data server machine, the Apache daemon can    be found at http://www.apache.org/.
 
   -----------------------------------------------------------------------
 
@@ -132,45 +118,16 @@ PREFACE
 
   Quick Instructions
 
-    First build and install the Server Base Software. See the file
-    INSTALL. You may be able to install a binary package and skip the
-    build step.  Once the Base has been installed, you're ready to
-    configure the software and add one or more data handlers. The base
-    software does not include any handlers (each is available as a
-    separate package) so we'll use the NetCDF File handler as an
-    example.
+    First build and install the Server Base Software. See the file    INSTALL. You may be able to install a binary package and skip the    build step.  Once the Base has been installed, you're ready to    configure the software and add one or more data handlers. The base    software does not include any handlers (each is available as a    separate package) so we'll use the NetCDF File handler as an    example.
 
-    To configure the server you can copy the files nph-dods and
-    dap-server.rc from the directory $prefix/share/dap-server-cgi to a
-    CGI Binary directory for your web daemon. Or, you can edit your
-    web server's configuration file and make that directory a CGI bin
-    directory. See SERVER INSTALLATION TIPS section below for help on
-    how to locate your web server's CGI Binary diretcory. Make sure
-    that the nph-dods script is exectuable. Also see the
-    opendap_apache.conf. This can be used in lieu of editing your
-    httpd.conf file in many cases, should you want to run your OPeNDAP
-    server in its own CGI bin directory.
+    To configure the server you can copy the files nph-dods and    dap-server.rc from the directory $prefix/share/dap-server-cgi to a    CGI Binary directory for your web daemon. Or, you can edit your    web server's configuration file and make that directory a CGI bin    directory. See SERVER INSTALLATION TIPS section below for help on    how to locate your web server's CGI Binary diretcory. Make sure    that the nph-dods script is exectuable. Also see the    opendap_apache.conf. This can be used in lieu of editing your    httpd.conf file in many cases, should you want to run your OPeNDAP    server in its own CGI bin directory.
 
-    Previous versions of the OPeNDAP server required that data either
-    be stored in your web daemon's DocumentRoot, one of its
-    subdirectories or be symbolically linked so that it appeared so
-    (and in the later case a special option had to be set for the
-    Apache web daemon). However, the version 3.5 server provides an
-    option where the data location can be set using the data_root
-    parameter of the dap_server.rc file. See below under "The
-    dap_server.rc Configuration File" for details. Note that the old
-    behavior where data are located in or under DocumentRoot is still
-    supported. Also note that the OPeNDAP server's directory browsing
-    functions don't currently work when using data_root.
+    Previous versions of the OPeNDAP server required that data either    be stored in your web daemon's DocumentRoot, one of its    subdirectories or be symbolically linked so that it appeared so    (and in the later case a special option had to be set for the    Apache web daemon). However, the version 3.5 server provides an    option where the data location can be set using the data_root    parameter of the dap_server.rc file. See below under "The    dap_server.rc Configuration File" for details. Note that the old    behavior where data are located in or under DocumentRoot is still    supported. Also note that the OPeNDAP server's directory browsing    functions don't currently work when using data_root.
 
   The dap-server.rc Configuration File
 
-    The dap-server.rc configuration file is used to tailor the server
-    to your site. The file contains a handful of parameters plus the
-    mappings between different data sources (typically files, although
-    that doesn't have to be the case) and hander-programs. The format
-    of the configuration files is:
-  
+    The dap-server.rc configuration file is used to tailor the server    to your site. The file contains a handful of parameters plus the    mappings between different data sources (typically files, although    that doesn't have to be the case) and hander-programs. The format    of the configuration files is:
+
        <parameter> <value> [ <value> ... ]
 
 

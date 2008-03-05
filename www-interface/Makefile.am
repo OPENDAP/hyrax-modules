@@ -25,7 +25,7 @@ endif
 libwww_module_la_SOURCES = $(WWW_SOURCES) $(BES_SOURCES)
 libwww_module_la_CPPFLAGS = $(BES_CPPFLAGS)
 libwww_module_la_LDFLAGS = -avoid-version -module 
-libwww_module_la_LIBADD = $(BES_LIBS)
+libwww_module_la_LIBADD = $(BES_DAP_LIBS)
 
 dap_www_int_SOURCES =  www_int.cc $(WWW_SOURCES)
 
