@@ -1,4 +1,4 @@
-  Updated for version 3.8.2 of the OPeNDAP Server Software.
+  Updated for version 3.8.5 of the OPeNDAP Server Software.
 
 This software is used by two projects: The original OPeNDAP DataServer, which uses CGI 1.1 in conjunction with a web server such asApache, and the new data server (Hyrax) which uses Java Servlets incombination with the OPeNDAP Back-End Server (BES). This packagecontains general purpose handlers for use with either of the twoservers. These are the Usage, ASCII and HTML form handlers. Each takesinput from a 'data handler' and returns a HTML or plain text response--- something other than a DAP response object.
 
