@@ -55,6 +55,7 @@ void
 BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
                                     BESDataHandlerInterface & dhi )
 {
+    BESDEBUG( "ascii", "BESAsciiTransmit::send_base_ascii" << endl )
     BESDataDDSResponse *bdds = dynamic_cast < BESDataDDSResponse * >(obj);
     DataDDS *dds = bdds->get_dds();
     ConstraintEvaluator & ce = bdds->get_ce();
@@ -64,6 +65,7 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
     string constraint = dhi.data[POST_CONSTRAINT];
     try
     {
+	BESDEBUG( "ascii", "BESAsciiTransmit::send_base_ascii - parsing constraint" << endl )
         ce.parse_constraint( constraint, *dds ) ;
     }
     catch( InternalErr &e )
@@ -85,9 +87,13 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
         throw BESInternalFatalError( err, __FILE__, __LINE__ ) ;
     }
 
+    BESDEBUG( "ascii", "BESAsciiTransmit::send_base_ascii - tagging sequences" << endl )
     dds->tag_nested_sequences();        // Tag Sequences as Parent or Leaf node.
 
+    BESDEBUG( "ascii", "BESAsciiTransmit::send_base_ascii - accessing container" << endl )
     string dataset_name = dhi.container->access();
+    BESDEBUG( "ascii", "BESAsciiTransmit::send_base_ascii - dataset_name = " 
+                       << dataset_name << endl )
 
     try {
         // Handle *functional* constraint expressions specially 
