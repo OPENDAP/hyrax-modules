@@ -46,7 +46,7 @@ private:
     void print_header(ostream &os);
 
 public:
-    WWWStructure(const string &n = (char *)0);
+    WWWStructure(const string &n);
     WWWStructure( Structure *bt );
     virtual ~WWWStructure();
 

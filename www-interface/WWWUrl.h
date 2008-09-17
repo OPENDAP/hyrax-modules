@@ -42,7 +42,7 @@ using namespace libdap ;
 
 class WWWUrl: public Url {
 public:
-    WWWUrl(const string &n = (char *)0);
+    WWWUrl(const string &n);
     WWWUrl( Url *bt ) : Url( bt->name() ) {}
     virtual ~WWWUrl() {}
 

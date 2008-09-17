@@ -43,7 +43,7 @@ using namespace libdap ;
 
 class WWWByte: public Byte {
 public:
-    WWWByte(const string &n = (char *)0);
+    WWWByte(const string &n);
     WWWByte( Byte *bt ) : Byte( bt->name() ) {}
     virtual ~WWWByte() {}
 

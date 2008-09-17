@@ -43,7 +43,7 @@ using namespace libdap ;
 
 class WWWStr: public Str {
 public:
-    WWWStr(const string &n = (char *)0);
+    WWWStr(const string &n);
     WWWStr( Str *bt ) : Str( bt->name() ) {}
     virtual ~WWWStr() {}
 

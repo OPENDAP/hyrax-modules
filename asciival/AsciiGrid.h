@@ -47,7 +47,7 @@ private:
     void print_grid(ostream &strm, bool print_name);
 
 public:
-    AsciiGrid(const string &n = (char *)0);
+    AsciiGrid(const string &n);
     AsciiGrid( Grid *grid ) ;
     virtual ~AsciiGrid();
     

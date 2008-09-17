@@ -38,7 +38,8 @@
 #include <stdio.h>
 #include <vector>
 
-#include "InternalErr.h"
+#include <InternalErr.h>
+#include <BaseType.h>
 
 using namespace std;
 using namespace libdap;

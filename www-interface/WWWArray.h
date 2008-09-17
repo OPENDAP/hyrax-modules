@@ -46,7 +46,7 @@ private:
     Array * _redirect ;
     void do_print_val( ostream &strm ) ;
 public:
-    WWWArray(const string &n = (char *)0, BaseType *v = 0);
+    WWWArray(const string &n, BaseType *v);
     WWWArray( Array *bt ) ;
     virtual ~WWWArray();
 

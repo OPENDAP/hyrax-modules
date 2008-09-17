@@ -58,7 +58,8 @@ AsciiSequence::AsciiSequence(const string &n) : Sequence(n)
 {
 }
 
-AsciiSequence::AsciiSequence(Sequence * bt):AsciiOutput(bt)
+AsciiSequence::AsciiSequence(Sequence * bt)
+    : Sequence( bt->name() ), AsciiOutput( bt )
 {
     // Let's make the alternative structure of Ascii types now so that we
     // don't have to do it on the fly.
@@ -71,7 +72,6 @@ AsciiSequence::AsciiSequence(Sequence * bt):AsciiOutput(bt)
         }
         p++;
     }
-    set_name(bt->name());
 }
 
 AsciiSequence::~AsciiSequence()

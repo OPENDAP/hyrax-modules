@@ -36,18 +36,17 @@
 #ifndef _asciiint16_h
 #define _asciiint16_h 1
 
-#include "Int16.h"
+#include <Int16.h>
 #include "AsciiOutput.h"
 
 class AsciiInt16: public Int16, public AsciiOutput {
 public:
-    AsciiInt16(const string &n = (char *)0) : Int16( n ) {}
-    AsciiInt16( Int16 *bt ) : AsciiOutput( bt ) { set_name( bt->name() ) ; }
+    AsciiInt16(const string &n) : Int16( n ) {}
+    AsciiInt16( Int16 *bt ) : Int16( bt->name() ), AsciiOutput( bt ) { }
     virtual ~AsciiInt16() {}
 
     virtual BaseType *ptr_duplicate();
 };
-
 
 #endif
 

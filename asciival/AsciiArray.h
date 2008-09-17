@@ -51,7 +51,7 @@ private:
     void print_complex_array(ostream &strm, bool print_name);
 
 public:
-    AsciiArray(const string &n = (char *)0, BaseType *v = 0);
+    AsciiArray(const string &n, BaseType *v);
     AsciiArray( Array *bt ) ;
     virtual ~AsciiArray();
 

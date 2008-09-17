@@ -41,7 +41,7 @@
 
 class AsciiSequence: public Sequence, public AsciiOutput {
 public:
-    AsciiSequence(const string &n = (char *)0);
+    AsciiSequence(const string &n);
     AsciiSequence( Sequence *bt ) ;
     virtual ~AsciiSequence();
 

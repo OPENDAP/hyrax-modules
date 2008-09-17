@@ -55,7 +55,8 @@ AsciiStructure::AsciiStructure(const string &n) : Structure(n)
 {
 }
 
-AsciiStructure::AsciiStructure( Structure *bt ) : AsciiOutput( bt )
+AsciiStructure::AsciiStructure( Structure *bt )
+    : Structure( bt->name() ), AsciiOutput( bt )
 {
     // Let's make the alternative structure of Ascii types now so that we
     // don't have to do it on the fly. This will also set the parents of
@@ -73,7 +74,6 @@ AsciiStructure::AsciiStructure( Structure *bt ) : AsciiOutput( bt )
 	}
 	p++ ;
     }
-    set_name( bt->name() ) ;
 }
 
 AsciiStructure::~AsciiStructure()

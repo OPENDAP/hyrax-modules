@@ -41,8 +41,8 @@
 
 class AsciiFloat64: public Float64, public AsciiOutput {
 public:
-    AsciiFloat64(const string &n = (char *)0) : Float64( n ) {}
-    AsciiFloat64( Float64 *bt ) : AsciiOutput( bt ) { set_name( bt->name() ) ; }
+    AsciiFloat64(const string &n) : Float64( n ) {}
+    AsciiFloat64( Float64 *bt ) : Float64( bt->name() ), AsciiOutput( bt ) { }
     virtual ~AsciiFloat64() {}
 
     virtual BaseType *ptr_duplicate();

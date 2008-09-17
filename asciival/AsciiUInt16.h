@@ -41,8 +41,8 @@
 
 class AsciiUInt16: public UInt16, public AsciiOutput {
 public:
-    AsciiUInt16(const string &n = (char *)0) : UInt16( n ) {}
-    AsciiUInt16( UInt16 *bt ) : AsciiOutput( bt ) { set_name( bt->name() ) ; }
+    AsciiUInt16(const string &n) : UInt16( n ) {}
+    AsciiUInt16( UInt16 *bt ) : UInt16( bt->name() ), AsciiOutput( bt ) { }
     virtual ~AsciiUInt16() {}
 
     virtual BaseType *ptr_duplicate();

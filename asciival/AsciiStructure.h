@@ -41,7 +41,7 @@
 
 class AsciiStructure: public Structure, public AsciiOutput {
 public:
-    AsciiStructure(const string &n = (char *)0);
+    AsciiStructure(const string &n);
     AsciiStructure( Structure *bt ) ;
     virtual ~AsciiStructure();
 

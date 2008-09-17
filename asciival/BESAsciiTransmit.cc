@@ -106,7 +106,7 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
                 throw Error(unknown_error,
                             "Error calling the CE function.");
 
-            var->read(dataset_name);
+            var->read();
 
             // FIXME: Do I need to delete the other DataDDS? Do I need it
             // anymore. I've got what I need doing the eval_function call
@@ -127,7 +127,7 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
                 BESDEBUG( "ascii", "processing var: " << (*i)->name() << endl )
                 if ((*i)->send_p()) {
                     BESDEBUG( "ascii", "reading some data for: " << (*i)->name() << endl )
-                    (**i).intern_data(dataset_name, ce, *dds);
+                    (**i).intern_data(ce, *dds);
 #if 0
                     switch ((*i)->type()) {
                     case dods_sequence_c:

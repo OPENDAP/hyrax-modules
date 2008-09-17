@@ -62,7 +62,8 @@ AsciiArray::AsciiArray(const string &n, BaseType *v) : Array(n, v)
 {
 }
 
-AsciiArray::AsciiArray( Array *bt ) : AsciiOutput( bt )
+AsciiArray::AsciiArray( Array *bt )
+    : Array(bt->name(), 0), AsciiOutput( bt )
 {
     // By calling var() without any parameters we get back the template
     // itself, then we can add it to this Array as the template. By doing
@@ -78,8 +79,6 @@ AsciiArray::AsciiArray( Array *bt ) : AsciiOutput( bt )
         append_dim(bt->dimension_size(p, true), bt->dimension_name(p));
         ++p;
     }
-    
-    set_name( bt->name() ) ;
 }
 
 AsciiArray::~AsciiArray()

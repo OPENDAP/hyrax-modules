@@ -44,7 +44,7 @@ class WWWGrid: public Grid {
 private:
     void do_print_val( ostream &strm ) ;
 public:
-    WWWGrid(const string &n = (char *)0);
+    WWWGrid(const string &n);
     WWWGrid( Grid *bt );
     virtual ~WWWGrid();
     

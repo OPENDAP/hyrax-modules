@@ -60,7 +60,7 @@ WWWArray::WWWArray(const string & n, BaseType * v):Array(n, v), _redirect(0)
 {
 }
 
-WWWArray::WWWArray(Array * bt):Array(bt->name()), _redirect(bt)
+WWWArray::WWWArray(Array * bt) : Array( bt->name(), 0), _redirect(bt)
 {
     BaseType *abt = basetype_to_wwwtype(bt->var());
     add_var(abt);

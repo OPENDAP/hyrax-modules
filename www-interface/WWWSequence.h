@@ -46,7 +46,7 @@ private:
     void print_header(ostream &os);
 
 public:
-    WWWSequence(const string &n = (char *)0);
+    WWWSequence(const string &n);
     WWWSequence( Sequence *bt );
     virtual ~WWWSequence();
 

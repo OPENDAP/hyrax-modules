@@ -36,13 +36,13 @@
 #ifndef _asciiint32_h
 #define _asciiint32_h 1
 
-#include "Int32.h"
+#include <Int32.h>
 #include "AsciiOutput.h"
 
-class AsciiInt32: public Int32, public AsciiOutput {
+class AsciiInt32 : public Int32, public AsciiOutput {
 public:
-    AsciiInt32(const string &n = (char *)0) : Int32( n ) {}
-    AsciiInt32( Int32 *bt ) : AsciiOutput( bt ) { set_name( bt->name() ) ; }
+    AsciiInt32(const string &n) : Int32( n ) {}
+    AsciiInt32( Int32 *bt ) : Int32( bt->name() ), AsciiOutput( bt ) { }
     virtual ~AsciiInt32() {}
 
     virtual BaseType *ptr_duplicate();

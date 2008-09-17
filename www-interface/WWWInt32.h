@@ -42,7 +42,7 @@ using namespace libdap ;
 
 class WWWInt32: public Int32 {
 public:
-    WWWInt32(const string &n = (char *)0);
+    WWWInt32(const string &n);
     WWWInt32( Int32 *bt ) : Int32( bt->name() ) {}
     virtual ~WWWInt32() {}
 

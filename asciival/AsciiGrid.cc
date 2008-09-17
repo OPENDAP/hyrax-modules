@@ -61,7 +61,8 @@ AsciiGrid::AsciiGrid(const string &n) : Grid(n)
 {
 }
 
-AsciiGrid::AsciiGrid(Grid * grid):AsciiOutput(grid)
+AsciiGrid::AsciiGrid( Grid *grid )
+    : Grid( grid->name() ), AsciiOutput( grid )
 {
     BaseType *bt = basetype_to_asciitype(grid->array_var());
     add_var(bt, array);
@@ -78,7 +79,6 @@ AsciiGrid::AsciiGrid(Grid * grid):AsciiOutput(grid)
         delete bt;
         ++i;
     }
-    set_name(grid->name());
 }
 
 AsciiGrid::~AsciiGrid()
