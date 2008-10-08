@@ -8,12 +8,12 @@
 // terms of the GNU Lesser General Public License as published by the Free
 // Software Foundation; either version 2.1 of the License, or (at your
 // option) any later version.
-// 
+//
 // This is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 // FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
 // more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -64,7 +64,7 @@ WWWOutput *wo = 0;
 
 /** Given a BaseType varaible, return a pointer to a new variable that has the
     same parent types (Byte, et c.) but is now one of the WWW specializations.
-    
+
     @param bt A BaseType such as NCArray, HDFArray, ...
     @return A BaseType that uses the WWW specialization (e.g., WWWArray). */
 BaseType *basetype_to_wwwtype(BaseType * bt)
@@ -102,9 +102,9 @@ BaseType *basetype_to_wwwtype(BaseType * bt)
 }
 
 /** Given a DDS filled with variables that are one specialization of BaseType,
-    build a second DDS which contains variables made using the WWW 
+    build a second DDS which contains variables made using the WWW
     specialization.
-    
+
     @param dds A DDS
     @return A DDS where each variable in \e dds is now a WWW* variable. */
 DDS *dds_to_www_dds(DDS * dds)
@@ -126,12 +126,12 @@ DDS *dds_to_www_dds(DDS * dds)
     return wwwdds;
 }
 
-/** Using the stuff in WWWOutput and the hacked (specialized) print_val() 
+/** Using the stuff in WWWOutput and the hacked (specialized) print_val()
     methods in the WWW* classes, write out the HTML form interface.
-    
+
     @todo Modify this code to expect a DDS whose BaseTypes are loaded with
     Attribute tables.
-    
+
     @param dest Write HTML here.
     @param dds A DataDDS loaded with data; the BaseTypes in this must be
     WWW* instances,
@@ -139,11 +139,11 @@ DDS *dds_to_www_dds(DDS * dds)
     form's javescript code will update this incrementally as the user builds
     a constraint.
     @param html_header Print a HTML header/footer for the page. True by default.
-    @param admin_name "support@opendap.org" by default; use this as the 
+    @param admin_name "support@opendap.org" by default; use this as the
     address for support printed on the form.
-    @param help_location "http://www.opendap.org/online_help_files/opendap_form_help.html" 
-    by default; otherwise, this is locataion where an HTML document that 
-    explains the page can be found. 
+    @param help_location "http://www.opendap.org/online_help_files/opendap_form_help.html"
+    by default; otherwise, this is locataion where an HTML document that
+    explains the page can be found.
     */
 void write_html_form_interface(FILE * dest, DDS * dds,
                                const string & url, bool html_header,
@@ -197,12 +197,12 @@ void write_html_form_interface(FILE * dest, DDS * dds,
 
 }
 
-/** Using the stuff in WWWOutput and the hacked (specialized) print_val() 
+/** Using the stuff in WWWOutput and the hacked (specialized) print_val()
     methods in the WWW* classes, write out the HTML form interface.
-    
+
     @todo Modify this code to expect a DDS whose BaseTypes are loaded with
     Attribute tables.
-    
+
     @param dest Write HTML here.
     @param dds A DataDDS loaded with data; the BaseTypes in this must be
     WWW* instances,
@@ -210,11 +210,11 @@ void write_html_form_interface(FILE * dest, DDS * dds,
     form's javescript code will update this incrementally as the user builds
     a constraint.
     @param html_header Print a HTML header/footer for the page. True by default.
-    @param admin_name "support@opendap.org" by default; use this as the 
+    @param admin_name "support@opendap.org" by default; use this as the
     address for support printed on the form.
-    @param help_location "http://www.opendap.org/online_help_files/opendap_form_help.html" 
-    by default; otherwise, this is locataion where an HTML document that 
-    explains the page can be found. 
+    @param help_location "http://www.opendap.org/online_help_files/opendap_form_help.html"
+    by default; otherwise, this is locataion where an HTML document that
+    explains the page can be found.
     */
 void write_html_form_interface(ostream &strm, DDS * dds,
                                const string & url, bool html_header,
@@ -313,9 +313,24 @@ string fancy_typename(BaseType * v)
         return "Structure";
     case dods_sequence_c:
         return "Sequence";
-    case dods_grid_c:
+    case dods_grid_c:{
+        ostringstream type;
+        Grid &g = dynamic_cast<Grid&>(*v);
+        type << "Grid of " << fancy_typename(g.get_array());
+#if 0
+        << "s ";
+        for (Grid::Map_iter p = g.map_begin(); p != g.map_end(); ++p) {
+            Array &a = dynamic_cast<Array&>(**p);
+            type << "[" << a.dimension_name(a.dim_begin()) << " = 0.." \
+                 << a.dimension_size(a.dim_begin(), false) - 1 << "]";
+        }
+#endif
+        return type.str();
+    }
+#if 0
         return "Grid";
-    default:
+#endif
+        default:
         return "Unknown";
     }
 }
@@ -357,7 +372,7 @@ write_simple_variable(ostream &strm, const string & name, const string & type)
          << "<input type=\"checkbox\" name=\"get_" << name_for_js_code(name)
          << "\"\n" << "onclick=\"" << name_for_js_code(name)
          << ".handle_projection_change(get_" << name_for_js_code(name)
-         << ") \"  onfocus=\"describe_projection()\">\n" << "<font size=\"+1\">" 
+         << ") \"  onfocus=\"describe_projection()\">\n" << "<font size=\"+1\">"
          << name << "</font>" << ": "
          << type << "</b><br>\n\n";
 
