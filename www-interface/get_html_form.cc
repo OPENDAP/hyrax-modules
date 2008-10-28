@@ -62,7 +62,7 @@ namespace dap_html_form {
 // from both Structure and WWWOutput. But I didn't... jhrg 8/29/05
 WWWOutput *wo = 0;
 
-/** Given a BaseType varaible, return a pointer to a new variable that has the
+/** Given a BaseType variable, return a pointer to a new variable that has the
     same parent types (Byte, et c.) but is now one of the WWW specializations.
 
     @param bt A BaseType such as NCArray, HDFArray, ...
@@ -142,7 +142,7 @@ DDS *dds_to_www_dds(DDS * dds)
     @param admin_name "support@opendap.org" by default; use this as the
     address for support printed on the form.
     @param help_location "http://www.opendap.org/online_help_files/opendap_form_help.html"
-    by default; otherwise, this is locataion where an HTML document that
+    by default; otherwise, this is location where an HTML document that
     explains the page can be found.
     */
 void write_html_form_interface(FILE * dest, DDS * dds,
@@ -207,7 +207,7 @@ void write_html_form_interface(FILE * dest, DDS * dds,
     @param dds A DataDDS loaded with data; the BaseTypes in this must be
     WWW* instances,
     @param url The URL that should be initially displayed in the form. The
-    form's javescript code will update this incrementally as the user builds
+    form's javascript code will update this incrementally as the user builds
     a constraint.
     @param html_header Print a HTML header/footer for the page. True by default.
     @param admin_name "support@opendap.org" by default; use this as the
@@ -278,6 +278,31 @@ string name_for_js_code(const string & dods_name)
         esc2underscore(id2www(dods_name, allowable));
 }
 
+/** Get the Fully Qualified Name for a variable.
+    This function uses the BaseType name() and get_parent() methods to 'walk
+    up' the hierarchy and build the FQN for a given variable.
+    @return The FQN for a variable
+    @param var The variable. */
+string
+get_fqn(BaseType *var)
+{
+    // I made this a local static object to avoid the repeated cost of creation
+    // and also the issues with global static objects in dynamically-loaded
+    // code.
+    static const string dot = ".";
+
+    // Testing !get_parent() means that the function returns the top most name.
+    // If we tested !var instead it would return "" and the FQN would have a
+    // leading dot. The test for !var is here as cheap insurance; it should
+    // never happen.
+    if (!var)
+        return string("");
+    else if (!var->get_parent())
+        return var->name();
+    else
+        return get_fqn(var->get_parent()) + dot + var->name();
+}
+
 string fancy_typename(BaseType * v)
 {
     switch (v->type()) {
@@ -342,10 +367,11 @@ string fancy_typename(BaseType * v)
     @param name The name of the variable.
     @param type The name of the variable's data type. */
 void
-write_simple_variable(FILE * os, const string & name, const string & type)
+write_simple_variable(FILE * os, BaseType *var)
+// const string & name, const string & type)
 {
     ostringstream ss;
-    write_simple_variable( ss, name, type ) ;
+    write_simple_variable( ss, var); //name, type ) ;
 
     // Now write that string to os
     fprintf(os, "%s", ss.str().c_str());
@@ -358,25 +384,28 @@ write_simple_variable(FILE * os, const string & name, const string & type)
     @param name The name of the variable.
     @param type The name of the variable's data type. */
 void
-write_simple_variable(ostream &strm, const string & name, const string & type)
+write_simple_variable(ostream &strm, BaseType *var)
+// const string & name, const string & type)
 {
+    const string fqn = get_fqn(var);
+
     strm << "<script type=\"text/javascript\">\n"
          << "<!--\n"
-         << name_for_js_code(name) << " = new dods_var(\""
-	 << id2www_ce(name)
-         << "\", \"" << name_for_js_code(name) << "\", 0);\n" <<
-         "DODS_URL.add_dods_var(" << name_for_js_code(name) << ");\n" <<
+         << name_for_js_code(fqn) << " = new dods_var(\""
+         << id2www_ce(fqn)
+         << "\", \"" << name_for_js_code(fqn) << "\", 0);\n" <<
+         "DODS_URL.add_dods_var(" << name_for_js_code(fqn) << ");\n" <<
          "// -->\n" << "</script>\n";
 
     strm << "<b>"
-         << "<input type=\"checkbox\" name=\"get_" << name_for_js_code(name)
-         << "\"\n" << "onclick=\"" << name_for_js_code(name)
-         << ".handle_projection_change(get_" << name_for_js_code(name)
+         << "<input type=\"checkbox\" name=\"get_" << name_for_js_code(fqn)
+         << "\"\n" << "onclick=\"" << name_for_js_code(fqn)
+         << ".handle_projection_change(get_" << name_for_js_code(fqn)
          << ") \"  onfocus=\"describe_projection()\">\n" << "<font size=\"+1\">"
-         << name << "</font>" << ": "
-         << type << "</b><br>\n\n";
+         << var->name() << "</font>" << ": "
+         << fancy_typename(var) << "</b><br>\n\n";
 
-    strm << name << " <select name=\"" << name_for_js_code(name)
+    strm << var->name() << " <select name=\"" << name_for_js_code(fqn)
          << "_operator\"" << " onfocus=\"describe_operator()\""
          << " onchange=\"DODS_URL.update_url()\">\n"
          << "<option value=\"=\" selected>=\n"
@@ -385,7 +414,7 @@ write_simple_variable(ostream &strm, const string & name, const string & type)
          << "<option value=\">=\">>=\n" << "<option value=\"-\">--\n"
          << "</select>\n";
 
-    strm << "<input type=\"text\" name=\"" << name_for_js_code(name)
+    strm << "<input type=\"text\" name=\"" << name_for_js_code(fqn)
          << "_selection"
          << "\" size=12 onFocus=\"describe_selection()\" "
          << "onChange=\"DODS_URL.update_url()\">\n";

@@ -11,16 +11,16 @@
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
 
 // (c) COPYRIGHT URI/MIT 1999
@@ -56,19 +56,20 @@ WWWStructure::ptr_duplicate()
     return new WWWStructure(*this);
 }
 
-WWWStructure::WWWStructure(const string &n) : Structure(n)
+WWWStructure::WWWStructure(const string &n) :
+    Structure(n)
 {
 }
 
-WWWStructure::WWWStructure( Structure *bt ) : Structure( bt->name() )
+WWWStructure::WWWStructure(Structure *bt) :
+    Structure(bt->name())
 {
     Vars_iter p = bt->var_begin();
-    while( p != bt->var_end() )
-    {
-        BaseType *new_bt = basetype_to_wwwtype( *p ) ;
-        add_var( new_bt ) ;
-        delete new_bt ;
-        p++ ;
+    while (p != bt->var_end()) {
+        BaseType *new_bt = basetype_to_wwwtype(*p);
+        add_var(new_bt);
+        delete new_bt;
+        p++;
     }
 }
 
@@ -77,13 +78,12 @@ WWWStructure::~WWWStructure()
 }
 
 // For this `WWW' class, run the read mfunc for each of variables which
-// comprise the structure. 
+// comprise the structure.
 
 // As is the case with geturl, use print_all_vals to print all the values of
-// a sequence. 
+// a sequence.
 
-void 
-WWWStructure::print_val(FILE *os, string /*space*/, bool print_decls)
+void WWWStructure::print_val(FILE *os, string /*space*/, bool print_decls)
 {
     fprintf(os, "<b>Structure %s </b><br>\n", name().c_str());
     fprintf(os, "<dl><dd>\n");
@@ -97,38 +97,36 @@ WWWStructure::print_val(FILE *os, string /*space*/, bool print_decls)
     fprintf(os, "</dd></dl>\n");
 }
 
-void 
-WWWStructure::print_val(ostream &strm, string /*space*/, bool print_decls)
+void WWWStructure::print_val(ostream &strm, string /*space*/,
+        bool print_decls)
 {
-    strm << "<b>Structure " << name() << " </b><br>\n" ;
-    strm << "<dl><dd>\n" ;
+    strm << "<b>Structure " << name() << " </b><br>\n";
+    strm << "<dl><dd>\n";
 
     for (Vars_iter i = var_begin(); i != var_end(); ++i) {
         (*i)->print_val(strm, "", print_decls);
         wo->write_variable_attributes(*i);
-        strm << "<p><p>\n" ;
+        strm << "<p><p>\n";
     }
 
-    strm << "</dd></dl>\n" ;
+    strm << "</dd></dl>\n";
 }
 
 // Is this a simple WWWStructure? Simple WWWStructures are composed of
 // only simple type elements *or* other structures which are simple.
 
-bool
-WWWStructure::is_simple_structure()
+bool WWWStructure::is_simple_structure()
 {
     for (Vars_iter i = var_begin(); i != var_end(); ++i) {
-	if ((*i)->type() == dods_structure_c) {
-	    if (!dynamic_cast<WWWStructure *>(*i)->is_simple_structure())
-		return false;
-	}
-	else {
-	    if (!(*i)->is_simple_type())
-		return false;
-	}
+        if ((*i)->type() == dods_structure_c) {
+            if (!dynamic_cast<WWWStructure *> (*i)->is_simple_structure())
+                return false;
+        }
+        else {
+            if (!(*i)->is_simple_type())
+                return false;
+        }
     }
-
 
     return true;
 }

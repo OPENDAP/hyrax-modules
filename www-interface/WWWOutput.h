@@ -11,16 +11,16 @@
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
 
 // (c) COPYRIGHT URI/MIT 1999
@@ -35,14 +35,14 @@
 #include <string>
 #include <iostream>
 
-#include "BaseType.h"
-#include "DDS.h"
-#include "DAS.h"
+#include <BaseType.h>
+#include <DDS.h>
+#include <DAS.h>
 
 using namespace libdap ;
 
 /** Write various parts of the HTML form for a dataset.
-    
+
     @author jhrg. */
 
 class WWWOutput {
@@ -67,7 +67,7 @@ private:
     void write_attributes(AttrTable *attr, const string prefix = "");
 
  public:
-    /** Create a WWWOutput. 
+    /** Create a WWWOutput.
 
 	@param os The output stream to which HTML should be sent.
 	@param rows The number of rows to show in the attribute textbox
@@ -88,7 +88,7 @@ private:
     void write_disposition(string url);
 
     void write_global_attributes(AttrTable &attr);
-    
+
     /** Write the dataset variable list. This is a scrolling select box.
 
 	@deprecated

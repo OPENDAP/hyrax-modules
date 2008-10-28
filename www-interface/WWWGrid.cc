@@ -11,16 +11,16 @@
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
 
 // (c) COPYRIGHT URI/MIT 1999
@@ -70,7 +70,7 @@ WWWGrid::WWWGrid(Grid * grid): Grid(grid->name())
 
     // To make a valid Grid, this method must set the array dimensions as it
     // adds new maps.
-    
+
     Grid::Map_iter i = grid->map_begin();
     Grid::Map_iter e = grid->map_end();
     while ( i != e ) {
@@ -89,38 +89,39 @@ WWWGrid::~WWWGrid()
 void
 WWWGrid::do_print_val(ostream &ss)
 {
+    const string fqn = get_fqn(this);
     ss << "<script type=\"text/javascript\">\n"
         << "<!--\n"
-        << name_for_js_code(name()) << " = new dods_var(\""
-        << id2www_ce(name())
-        << "\", \"" << name_for_js_code(name()) << "\", 1);\n"
-        << "DODS_URL.add_dods_var(" << name_for_js_code(name()) << ");\n"
+        << name_for_js_code(fqn) << " = new dods_var(\""
+        << id2www_ce(fqn)
+        << "\", \"" << name_for_js_code(fqn) << "\", 1);\n"
+        << "DODS_URL.add_dods_var(" << name_for_js_code(fqn) << ");\n"
         << "// -->\n" << "</script>\n";
 
     ss << "<b>"
         << "<input type=\"checkbox\" name=\"get_" <<
-        name_for_js_code(name())
-        << "\"\n" << "onclick=\"" << name_for_js_code(name())
+        name_for_js_code(fqn)
+        << "\"\n" << "onclick=\"" << name_for_js_code(fqn)
         << ".handle_projection_change(get_"
-        << name_for_js_code(name()) << ") \"  onfocus=\"describe_projection()\">\n"
-        << "<font size=\"+1\">" << name() << "</font>"
-        << ": " << fancy_typename(this) << "</b><br>\n\n";
+        << name_for_js_code(fqn) << ") \"  onfocus=\"describe_projection()\">\n"
+        << "<font size=\"+1\">" << name() << "</font></b>"
+        << ": " << fancy_typename(this) << "<br>\n\n";
 
     Array *a = dynamic_cast < Array * >(array_var());
-    
+
     Array::Dim_iter p = a->dim_begin();
     for (int i = 0; p != a->dim_end(); ++i, ++p) {
-        int size = a->dimension_size(p, true);
-        string n = a->dimension_name(p);
+        const int size = a->dimension_size(p, true);
+        const string n = a->dimension_name(p);
         if (n != "")
             ss << n << ":";
-        ss << "<input type=\"text\" name=\"" << name_for_js_code(name())
+        ss << "<input type=\"text\" name=\"" << name_for_js_code(fqn)
             << "_" << i
             << "\" size=8 onfocus=\"describe_index()\""
             << "onChange=\"DODS_URL.update_url()\">\n";
         ss << "<script type=\"text/javascript\">\n"
             << "<!--\n"
-            << name_for_js_code(name()) << ".add_dim(" << size << ");\n"
+            << name_for_js_code(fqn) << ".add_dim(" << size << ");\n"
             << "// -->\n" << "</script>\n";
     }
 

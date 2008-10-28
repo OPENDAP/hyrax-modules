@@ -11,16 +11,16 @@
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
 
 // (c) COPYRIGHT URI/MIT 1999
@@ -55,19 +55,20 @@ WWWSequence::ptr_duplicate()
     return new WWWSequence(*this);
 }
 
-WWWSequence::WWWSequence(const string &n) : Sequence(n)
+WWWSequence::WWWSequence(const string &n) :
+    Sequence(n)
 {
 }
 
-WWWSequence::WWWSequence( Sequence *bt ) : Sequence( bt->name() )
+WWWSequence::WWWSequence(Sequence *bt) :
+    Sequence(bt->name())
 {
     Vars_iter p = bt->var_begin();
-    while( p != bt->var_end() )
-    {
-        BaseType *new_bt = basetype_to_wwwtype( *p ) ;
-        add_var( new_bt ) ;
-        delete new_bt ;
-        p++ ;
+    while (p != bt->var_end()) {
+        BaseType *new_bt = basetype_to_wwwtype(*p);
+        add_var(new_bt);
+        delete new_bt;
+        p++;
     }
 }
 
@@ -75,57 +76,53 @@ WWWSequence::~WWWSequence()
 {
 }
 
-int
-WWWSequence::length()
+int WWWSequence::length()
 {
     return -1;
 }
 
-bool
-WWWSequence::is_simple_sequence()
+bool WWWSequence::is_simple_sequence()
 {
     for (Vars_iter i = var_begin(); i != var_end(); ++i) {
-	if ((*i)->type() == dods_sequence_c) {
-	    if (!dynamic_cast<WWWSequence *>((*i))->is_simple_sequence())
-		return false;
-	}
-	else {
-	    if (!(*i)->is_simple_type())
-		return false;
-	}
+        if ((*i)->type() == dods_sequence_c) {
+            if (!dynamic_cast<WWWSequence *> ((*i))->is_simple_sequence())
+                return false;
+        }
+        else {
+            if (!(*i)->is_simple_type())
+                return false;
+        }
     }
 
     return true;
 }
 
 // As is the case with geturl, use print_all_vals to print all the values of
-// a sequence. 
+// a sequence.
 
-void 
-WWWSequence::print_val(FILE *os, string /*space*/, bool print_decls)
+void WWWSequence::print_val(FILE *os, string /*space*/, bool print_decls)
 {
     fprintf(os, "<b>Sequence %s</b><br>\n", name().c_str());
     fprintf(os, "<dl><dd>\n");
 
     for (Vars_iter i = var_begin(); i != var_end(); ++i) {
-	(*i)->print_val(os, "", print_decls);
-    wo->write_variable_attributes(*i);
-	fprintf(os,  "<p><p>\n");
+        (*i)->print_val(os, "", print_decls);
+        wo->write_variable_attributes(*i);
+        fprintf(os, "<p><p>\n");
     }
 
     fprintf(os, "</dd></dl>\n");
 }
 
-void 
-WWWSequence::print_val(ostream &strm, string /*space*/, bool print_decls)
+void WWWSequence::print_val(ostream &strm, string /*space*/, bool print_decls)
 {
-    strm << "<b>Sequence " << name() << "</b><br>\n" ;
+    strm << "<b>Sequence " << name() << "</b><br>\n";
     strm << "<dl><dd>\n";
 
     for (Vars_iter i = var_begin(); i != var_end(); ++i) {
-	(*i)->print_val(strm, "", print_decls);
-    wo->write_variable_attributes(*i);
-	strm << "<p><p>\n";
+        (*i)->print_val(strm, "", print_decls);
+        wo->write_variable_attributes(*i);
+        strm << "<p><p>\n";
     }
 
     strm << "</dd></dl>\n";

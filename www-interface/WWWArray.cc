@@ -11,16 +11,16 @@
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
 
 // (c) COPYRIGHT URI/MIT 1999
@@ -82,22 +82,24 @@ WWWArray::~WWWArray()
 void
 WWWArray::do_print_val( ostream &ss )
 {
+    const string fqn = get_fqn(this);
     ss << "<script type=\"text/javascript\">\n"
         << "<!--\n"
-        << name_for_js_code(name()) << " = new dods_var(\""
-        << id2www_ce(name())
-        << "\", \"" << name_for_js_code(name()) << "\", 1);\n"
-        << "DODS_URL.add_dods_var(" << name_for_js_code(name()) << ");\n"
+        << name_for_js_code(fqn) << " = new dods_var(\""
+        << id2www_ce(fqn)
+        << "\", \"" << name_for_js_code(fqn) << "\", 1);\n"
+        << "DODS_URL.add_dods_var(" << name_for_js_code(fqn) << ");\n"
         << "// -->\n" << "</script>\n";
 
+    // Slight formatting change: The typename is no longer bold. 10/28/08
     ss << "<b>"
         << "<input type=\"checkbox\" name=\"get_" <<
-        name_for_js_code(name())
-        << "\"\n" << "onclick=\"" << name_for_js_code(name())
+        name_for_js_code(fqn)
+        << "\"\n" << "onclick=\"" << name_for_js_code(fqn)
         << ".handle_projection_change(get_"
-        << name_for_js_code(name()) << ") \"  onfocus=\"describe_projection()\">\n"
-        << "<font size=\"+1\">" << name() << "</font>"
-        << ": " << fancy_typename(this) << "</b><br>\n\n";
+        << name_for_js_code(fqn) << ") \"  onfocus=\"describe_projection()\">\n"
+        << "<font size=\"+1\">" << name() << "</font></b>"
+        << ": " << fancy_typename(this) << "<br>\n\n";
 
     Dim_iter p = dim_begin();
     for (int i = 0; p != dim_end(); ++i, ++p) {
@@ -105,13 +107,13 @@ WWWArray::do_print_val( ostream &ss )
         string n = dimension_name(p);
         if (n != "")
             ss << n << ":";
-        ss << "<input type=\"text\" name=\"" << name_for_js_code(name())
+        ss << "<input type=\"text\" name=\"" << name_for_js_code(fqn)
             << "_" << i
             << "\" size=8 onfocus=\"describe_index()\""
             << " onChange=\"DODS_URL.update_url()\">\n";
         ss << "<script type=\"text/javascript\">\n"
             << "<!--\n"
-            << name_for_js_code(name()) << ".add_dim(" << size << ");\n"
+            << name_for_js_code(fqn) << ".add_dim(" << size << ");\n"
             << "// -->\n" << "</script>\n";
     }
 

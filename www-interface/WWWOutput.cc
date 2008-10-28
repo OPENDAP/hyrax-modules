@@ -11,16 +11,16 @@
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
 
 // (c) COPYRIGHT URI/MIT 1999,2000
@@ -59,7 +59,7 @@ using namespace std;
 #ifdef WIN32
 #define getpid _getpid
 #define access _access
-#define X_OK 00                 //  Simple existance
+#define X_OK 00                 //  Simple existence
 #endif
 
 // From what I can tell d_das is not used, commenting out for now pcw 08/15/07
@@ -129,41 +129,40 @@ void WWWOutput::write_disposition(string url)
 void WWWOutput::write_attributes(AttrTable * attr, const string prefix)
 {
     if (attr) {
-        for (AttrTable::Attr_iter a = attr->attr_begin();
-             a != attr->attr_end(); ++a) {
+        for (AttrTable::Attr_iter a = attr->attr_begin(); a
+                != attr->attr_end(); ++a) {
             if (attr->is_container(a))
                 write_attributes(attr->get_attr_table(a),
-                                 (prefix == "") ? attr->get_name(a)
-                                 : prefix + string(".") + attr->get_name(a));
+                        (prefix == "") ? attr->get_name(a) : prefix + string(
+                                ".") + attr->get_name(a));
             else {
                 if (prefix != "")
-		    if( d_os )
-			fprintf(d_os, "%s.%s: ", prefix.c_str(),
-				attr->get_name(a).c_str());
-		    else
-			*d_strm << prefix << "." << attr->get_name(a) << ": " ;
+                    if (d_os)
+                        fprintf(d_os, "%s.%s: ", prefix.c_str(),
+                                attr->get_name(a).c_str());
+                    else
+                        *d_strm << prefix << "." << attr->get_name(a) << ": ";
+                else if (d_os)
+                    fprintf(d_os, "%s: ", attr->get_name(a).c_str());
                 else
-		    if( d_os )
-			fprintf(d_os, "%s: ", attr->get_name(a).c_str());
-		    else
-			*d_strm << attr->get_name(a) << ": " ;
+                    *d_strm << attr->get_name(a) << ": ";
 
                 int num_attr = attr->get_attr_num(a) - 1;
                 for (int i = 0; i < num_attr; ++i)
-		    if( d_os )
-			fprintf(d_os, "%s, ", attr->get_attr(a, i).c_str());
-		    else
-			*d_strm << attr->get_attr(a, i) << ", ";
-		if( d_os )
-		    fprintf(d_os, "%s\n", attr->get_attr(a, num_attr).c_str());
-		else
-		    *d_strm << attr->get_attr(a, num_attr) << "\n" ;
+                    if (d_os)
+                        fprintf(d_os, "%s, ", attr->get_attr(a, i).c_str());
+                    else
+                        *d_strm << attr->get_attr(a, i) << ", ";
+                if (d_os)
+                    fprintf(d_os, "%s\n", attr->get_attr(a, num_attr).c_str());
+                else
+                    *d_strm << attr->get_attr(a, num_attr) << "\n";
             }
         }
     }
 }
 
-/** Given the global attribute table, write the HTML which contains all the 
+/** Given the global attribute table, write the HTML which contains all the
     global attributes for this dataset. A global attribute is defined in the
     source file DDS.cc by the DDS::transfer_attributes() method.
 
@@ -220,7 +219,7 @@ void WWWOutput::write_variable_entries(DDS &dds)
 	    (*p)->print_val(*d_strm);
 
         write_variable_attributes(*p);
-        
+
 	if( d_os )
 	{
 	    fprintf(d_os, "\n<p><p>\n\n");  // End the current var's section
@@ -234,13 +233,13 @@ void WWWOutput::write_variable_entries(DDS &dds)
     }
 }
 
-/** Write a variable's attribtute information. 
+/** Write a variable's attribtute information.
 
     @param btp A pointer to the variable.*/
 void WWWOutput::write_variable_attributes(BaseType * btp)
 {
     AttrTable &attr = btp->get_attr_table();
-    
+
     // Don't write anything if there are no attributes.
     if (attr.get_size() == 0) {
         DBG(cerr << "No Attributes for " << btp->name() << endl);
