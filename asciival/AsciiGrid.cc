@@ -11,18 +11,18 @@
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
- 
+
 // (c) COPYRIGHT URI/MIT 1998,2000
 // Please read the full copyright statement in the file COPYRIGHT_URI.
 //
@@ -85,6 +85,7 @@ AsciiGrid::~AsciiGrid()
 {
 }
 
+#ifdef FILE_METHODS
 void
 AsciiGrid::print_ascii(FILE * os, bool print_name) throw(InternalErr)
 {
@@ -97,6 +98,7 @@ AsciiGrid::print_ascii(FILE * os, bool print_name) throw(InternalErr)
     else
         print_vector(os, print_name);
 }
+#endif
 
 void
 AsciiGrid::print_ascii(ostream &strm, bool print_name) throw(InternalErr)
@@ -111,6 +113,7 @@ AsciiGrid::print_ascii(ostream &strm, bool print_name) throw(InternalErr)
         print_vector(strm, print_name);
 }
 
+#ifdef FILE_METHODS
 // Similar to AsciiArray's print_vector. Print a Grid that has only one
 // dimension. To fit the spec we can call print_ascii() on the map vector and
 // then the array (which has only one dimension). This is a special case; if
@@ -121,12 +124,12 @@ AsciiGrid::print_vector(FILE *os, bool print_name)
     DBG(cerr << "AsciiGrid::print_vector" << endl);
 
     dynamic_cast<AsciiArray&>(**map_begin()).print_ascii(os, print_name);
-    
+
     fprintf(os, "\n");
 
     dynamic_cast<AsciiArray&>(*array_var()).print_ascii(os, print_name);
 }
-
+#endif
 // Similar to AsciiArray's print_vector. Print a Grid that has only one
 // dimension. To fit the spec we can call print_ascii() on the map vector and
 // then the array (which has only one dimension). This is a special case; if
@@ -137,12 +140,12 @@ AsciiGrid::print_vector(ostream &strm, bool print_name)
     DBG(cerr << "AsciiGrid::print_vector" << endl);
 
     dynamic_cast<AsciiArray&>(**map_begin()).print_ascii(strm, print_name);
-    
+
     strm << "\n" ;
 
     dynamic_cast<AsciiArray&>(*array_var()).print_ascii(strm, print_name);
 }
-
+#ifdef FILE_METHODS
 void
 AsciiGrid::print_grid(FILE * os, bool print_name)
 {
@@ -166,7 +169,7 @@ AsciiGrid::print_grid(FILE * os, bool print_name)
                           "Dimension count is <= 1 while printing multidimensional array.");
 
     // shape holds the maximum index value of each dimension of the array
-    // (not the size; each value is one less that the size). 
+    // (not the size; each value is one less that the size).
     vector < int >shape = a_grid_array->get_shape_vector(dims - 1);
     int rightmost_dim_size = a_grid_array->get_nth_dim_size(dims - 1);
 
@@ -227,7 +230,7 @@ AsciiGrid::print_grid(FILE * os, bool print_name)
 
     } while (more_indices);
 }
-
+#endif
 void
 AsciiGrid::print_grid(ostream &strm, bool print_name)
 {
@@ -251,7 +254,7 @@ AsciiGrid::print_grid(ostream &strm, bool print_name)
                           "Dimension count is <= 1 while printing multidimensional array.");
 
     // shape holds the maximum index value of each dimension of the array
-    // (not the size; each value is one less that the size). 
+    // (not the size; each value is one less that the size).
     vector < int >shape = a_grid_array->get_shape_vector(dims - 1);
     int rightmost_dim_size = a_grid_array->get_nth_dim_size(dims - 1);
 

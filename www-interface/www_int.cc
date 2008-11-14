@@ -11,16 +11,16 @@
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
 // (c) COPYRIGHT URI/MIT 1999
 // Please read the full copyright statement in the file COPYRIGHT_URI.
@@ -28,7 +28,7 @@
 // Authors:
 //      jhrg,jimg       James Gallagher <jgallagher@gso.uri.edu>
 
-/** 
+/**
     @author: jhrg */
 
 #include "config.h"
@@ -73,13 +73,13 @@ static void usage(string name)
         << "m: Print a MIME header. Use this with nph- style CGIs.\n"
         << "n: Print HTTP protocol and status for reply.\n"
         << "f <handler pathname>: Use a local handler instead of reading from a URL"
-        << endl 
+        << endl
         << "H: Location (URL) of the help file. Should end in '\'.\n"
         << "a <email>: Server administrator email.\n"
         << "v <string>: Read the server version information.\n"
         << "r <dir>: Path to the cache directory.\n"
         << "u <url>: URL to the referenced data source.\n"
-        << "V: Print version information and exit.\n" 
+        << "V: Print version information and exit.\n"
         << "h|?: This meassage.\n";
 }
 
@@ -113,16 +113,16 @@ read_from_file(DAS & das, DDS & dds, const string & handler,
     Regex options_allowed("[-a-zA-Z_]+");
     if (!options_allowed.match(options.c_str(), options.length()))
         throw Error("Invalid input (2)");
-        
+
     // The file paramter (data source name, really) may have escape characters
-    // (DODSFilter::initialize calls www2id()) so it's called here and the 
-    // resulting string is sanitized. I believe that the only escaped 
+    // (DODSFilter::initialize calls www2id()) so it's called here and the
+    // resulting string is sanitized. I believe that the only escaped
     // character allowed is a space...
     Regex file_allowed("[-a-zA-Z0-9_%]+");
     string unesc_file = www2id(file, "%", "%20");
     if (!file_allowed.match(unesc_file.c_str(), unesc_file.length()))
         throw Error("Invalid input (3)");
-    
+
     FILE *in = 0;
     try {
         string command = handler + " -o DAS " + options + " \"" + file + "\"";
@@ -152,23 +152,23 @@ read_from_file(DAS & das, DDS & dds, const string & handler,
 }
 
 /* How this code is called from server3
- * 
+ *
  *     } elsif ( $self->ext() eq "html" ) {
         $options    = "-v " . $self->caller_revision() . " ";
         if ( $self->cache_dir() ne "" ) {
             $options .= "-r " . $self->cache_dir();
         }
 
-        @command = ( $self->www_int(), $options, "-m", "-n", 
+        @command = ( $self->www_int(), $options, "-m", "-n",
                      "-u", $self->url_text(),
-                     "-f", $self->handler(), 
+                     "-f", $self->handler(),
                      "--", $self->filename() ); #. "?" . $self->query() );
  */
 
-/** 
+/**
     Build an HTML page which both describes the data and provides a way for
     users to query the dataset. The page prompts for the input of query
-    parameters and builds a URL which matches those parameters. 
+    parameters and builds a URL which matches those parameters.
 
     Since this HTML page should display both DDS and DAS information it makes
     little sense to have it read from standard input. Thus the only way to
@@ -304,8 +304,8 @@ int main(int argc, char *argv[])
             read_from_url(das, dds, url);
 
         dds.transfer_attributes(&das);
-        
-        write_html_form_interface(stdout, &dds, url,
+
+        write_html_form_interface(cout, &dds, url,
                                   regular_header || nph_header,
                                   admin_name, help_location);
     }

@@ -11,16 +11,16 @@
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
 
 // (c) COPYRIGHT URI/MIT 1998,2000
@@ -63,7 +63,7 @@ string AsciiOutput::get_full_name()
         return dynamic_cast < AsciiOutput * >(btp2)->get_full_name()
             + "." + btp->name();
 }
-
+#ifdef FILE_METHODS
 void AsciiOutput::print_ascii(FILE * os,
                               bool print_name) throw(InternalErr)
 {
@@ -81,7 +81,7 @@ void AsciiOutput::print_ascii(FILE * os,
 
     BTptr->print_val(os, "", false);
 }
-
+#endif
 /** @brief Print values as ASCII
     Prints the values of \e this in ASCII suitable for import into a
     spreadsheet. This version prints only the values of simple types; other
@@ -112,7 +112,7 @@ void AsciiOutput::print_ascii(ostream &strm,
 // state. For example, if shape holds 10, 20 then when state holds 0, 20
 // calling this method will increment state to 1, 0. For this example,
 // calling the method with state equal to 10, 20 will reset state to 0, 0 and
-// the return value will be false. 
+// the return value will be false.
 bool AsciiOutput::increment_state(vector < int >*state,
                                   const vector < int >&shape)
 {

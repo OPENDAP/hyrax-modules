@@ -48,7 +48,7 @@ using std::endl;
 #include "BESReturnManager.h"
 #include "BESTransmitterNames.h"
 
-#include "BESWWWGetCommand.h"
+#include "BESXMLWWWGetCommand.h"
 
 void
  BESWWWModule::initialize(const string & modname)
@@ -80,8 +80,12 @@ void
     }
 
     BESDEBUG( "www", "    adding " << WWW_RESPONSE << " command" << endl )
+    /* old-style string command
     BESCommand *cmd = new BESWWWGetCommand(WWW_RESPONSE);
     BESCommand::add_command(WWW_RESPONSE, cmd);
+    */
+    BESXMLCommand::add_command( WWW_RESPONSE,
+				BESXMLWWWGetCommand::CommandBuilder ) ;
 
     BESDEBUG( "www", "Adding www context to BESDebug" << endl )
     BESDebug::Register( "www" ) ;
@@ -101,7 +105,7 @@ void BESWWWModule::terminate(const string & modname)
     BESResponseHandlerList::TheList()->remove_handler(WWW_RESPONSE);
 
     BESDEBUG( "www", "    removing " << WWW_RESPONSE << " command" << endl )
-    BESCommand::del_command( WWW_RESPONSE ) ;
+    BESXMLCommand::del_command( WWW_RESPONSE ) ;
 
     BESTransmitter *t =
         BESReturnManager::TheManager()->find_transmitter(BASIC_TRANSMITTER);

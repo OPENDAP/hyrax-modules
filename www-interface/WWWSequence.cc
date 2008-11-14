@@ -96,11 +96,12 @@ bool WWWSequence::is_simple_sequence()
 
     return true;
 }
-
+#ifdef FILE_METHODS
 // As is the case with geturl, use print_all_vals to print all the values of
 // a sequence.
 
-void WWWSequence::print_val(FILE *os, string /*space*/, bool print_decls)
+void
+WWWSequence::print_val(FILE *os, string /*space*/, bool print_decls)
 {
     fprintf(os, "<b>Sequence %s</b><br>\n", name().c_str());
     fprintf(os, "<dl><dd>\n");
@@ -113,8 +114,10 @@ void WWWSequence::print_val(FILE *os, string /*space*/, bool print_decls)
 
     fprintf(os, "</dd></dl>\n");
 }
+#endif
 
-void WWWSequence::print_val(ostream &strm, string /*space*/, bool print_decls)
+void
+WWWSequence::print_val(ostream &strm, string /*space*/, bool print_decls)
 {
     strm << "<b>Sequence " << name() << "</b><br>\n";
     strm << "<dl><dd>\n";

@@ -41,9 +41,9 @@ WWW_SOURCES = WWWArray.cc WWWFloat64.cc WWWInt32.cc WWWSequence.cc	 \
 	get_html_form.h  
 
 BES_SOURCES = BESWWWModule.cc BESWWWResponseHandler.cc BESWWWTransmit.cc \
-	BESWWWGetCommand.cc BESWWWRequestHandler.cc			 \
-	BESWWW.h BESWWWModule.h BESWWWNames.h BESWWWRequestHandler.h	 \
-	BESWWWResponseHandler.h BESWWWTransmit.h BESWWWGetCommand.h
+	BESXMLWWWGetCommand.cc BESWWWRequestHandler.cc			\
+	BESWWW.h BESWWWModule.h BESWWWNames.h BESWWWRequestHandler.h	\
+	BESWWWResponseHandler.h BESWWWTransmit.h BESXMLWWWGetCommand.h
 
 EXTRA_DIST = js2h.pl www.js
 

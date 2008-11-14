@@ -76,14 +76,15 @@ WWWStructure::WWWStructure(Structure *bt) :
 WWWStructure::~WWWStructure()
 {
 }
-
+#ifdef FILE_METHODS
 // For this `WWW' class, run the read mfunc for each of variables which
 // comprise the structure.
 
 // As is the case with geturl, use print_all_vals to print all the values of
 // a sequence.
 
-void WWWStructure::print_val(FILE *os, string /*space*/, bool print_decls)
+void
+WWWStructure::print_val(FILE *os, string /*space*/, bool print_decls)
 {
     fprintf(os, "<b>Structure %s </b><br>\n", name().c_str());
     fprintf(os, "<dl><dd>\n");
@@ -96,9 +97,10 @@ void WWWStructure::print_val(FILE *os, string /*space*/, bool print_decls)
 
     fprintf(os, "</dd></dl>\n");
 }
+#endif
 
-void WWWStructure::print_val(ostream &strm, string /*space*/,
-        bool print_decls)
+void
+WWWStructure::print_val(ostream &strm, string /*space*/, bool print_decls)
 {
     strm << "<b>Structure " << name() << " </b><br>\n";
     strm << "<dl><dd>\n";

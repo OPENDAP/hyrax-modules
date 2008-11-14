@@ -11,18 +11,18 @@
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
- 
+
 // (c) COPYRIGHT URI/MIT 1998,2000
 // Please read the full copyright statement in the file COPYRIGHT_URI.
 //
@@ -84,8 +84,8 @@ AsciiSequence::length()
     return -1;
 }
 
-// This specialization is different from the Sequence version only in that 
-// it tests '*iter)->send_p()' before incrementing 'i' by 
+// This specialization is different from the Sequence version only in that
+// it tests '*iter)->send_p()' before incrementing 'i' by
 // '(*iter)->element_count(true)'.
 int
 AsciiSequence::element_count(bool leaves)
@@ -101,7 +101,7 @@ AsciiSequence::element_count(bool leaves)
         return i;
     }
 }
-
+#ifdef FILE_METHODS
 // case 1: Simple, Seq - handled
 // Case 2: Seq, Simple
 void
@@ -135,17 +135,17 @@ AsciiSequence::print_ascii_row(FILE * os, int row, BaseTypeRow outer_vars)
             // we only need the ascii type here, so delete it
             delete abt_ptr;
         }
-        
+
         // ++j;
         // When we're finally done, set the flag and omit the comma.
         if (j > elements)
             done = true;
         else if (bt_ptr)
             fprintf(os, ", ");
-            
+
     } while (!done);
 }
-
+#endif
 void
 AsciiSequence::print_ascii_row(ostream &strm, int row, BaseTypeRow outer_vars)
 {
@@ -177,17 +177,17 @@ AsciiSequence::print_ascii_row(ostream &strm, int row, BaseTypeRow outer_vars)
             // we only need the ascii type here, so delete it
             delete abt_ptr;
         }
-        
+
         // ++j;
         // When we're finally done, set the flag and omit the comma.
         if (j > elements)
             done = true;
         else if (bt_ptr)
             strm << ", " ;
-            
+
     } while (!done);
 }
-
+#ifdef FILE_METHODS
 void
 AsciiSequence::print_leading_vars(FILE * os, BaseTypeRow & outer_vars)
 {
@@ -201,7 +201,7 @@ AsciiSequence::print_leading_vars(FILE * os, BaseTypeRow & outer_vars)
         delete abt_ptr;
     }
 }
-
+#endif
 void
 AsciiSequence::print_leading_vars(ostream &strm, BaseTypeRow & outer_vars)
 {
@@ -215,7 +215,7 @@ AsciiSequence::print_leading_vars(ostream &strm, BaseTypeRow & outer_vars)
         delete abt_ptr;
     }
 }
-
+#ifdef FILE_METHODS
 void
 AsciiSequence::print_ascii_rows(FILE * os, BaseTypeRow outer_vars)
 {
@@ -238,7 +238,7 @@ AsciiSequence::print_ascii_rows(FILE * os, BaseTypeRow outer_vars)
             fprintf(os, "\n");
     } while (!done);
 }
-
+#endif
 void
 AsciiSequence::print_ascii_rows(ostream &strm, BaseTypeRow outer_vars)
 {
@@ -261,9 +261,9 @@ AsciiSequence::print_ascii_rows(ostream &strm, BaseTypeRow outer_vars)
             strm << "\n" ;
     } while (!done);
 }
-
+#ifdef FILE_METHODS
 // Assume that this mfunc is called only for simple sequences. Do not print
-// table style headers for complex sequences. 
+// table style headers for complex sequences.
 
 void
 AsciiSequence::print_header(FILE * os)
@@ -285,7 +285,7 @@ AsciiSequence::print_header(FILE * os)
             fprintf(os, ", ");
     }
 }
-
+#endif
 void
 AsciiSequence::print_header(ostream &strm)
 {
@@ -305,7 +305,7 @@ AsciiSequence::print_header(ostream &strm)
             strm << ", " ;
     }
 }
-
+#ifdef FILE_METHODS
 void
 AsciiSequence::print_ascii(FILE * os, bool print_name) throw(InternalErr)
 {
@@ -354,7 +354,7 @@ AsciiSequence::print_ascii(FILE * os, bool print_name) throw(InternalErr)
         } while (!rows_done);
     }
 }
-
+#endif
 void
 AsciiSequence::print_ascii(ostream &strm, bool print_name) throw(InternalErr)
 {

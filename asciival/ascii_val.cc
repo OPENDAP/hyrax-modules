@@ -8,12 +8,12 @@
 // terms of the GNU Lesser General Public License as published by the Free
 // Software Foundation; either version 2.1 of the License, or (at your
 // option) any later version.
-// 
+//
 // This is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 // FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
 // more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -21,7 +21,7 @@
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
 
 // (c) COPYRIGHT URI/MIT 1998-2000
-// Please read the full copyright statement in the file COPYRIGHT_URI.  
+// Please read the full copyright statement in the file COPYRIGHT_URI.
 //
 // Authors:
 //      jhrg,jimg       James Gallagher <jgallagher@gso.uri.edu>
@@ -38,7 +38,7 @@
     file/handler mode makes server operation much more efficient since the
     data are not read by making another trip to the server. Instead, the
     handler, running in a subprocess, will return data directly to asciival.
-    
+
     The -r 'per url' option has been removed. This was also not ever used.
 
     @todo The code in read_from_file should really be moved into DDS. Or
@@ -145,28 +145,28 @@ read_from_file(DataDDS & dds, const string & handler,
     Regex options_allowed("[-a-zA-Z_]+");
     if (!options_allowed.match(options.c_str(), options.length()))
         throw Error("Invalid input (2)");
-        
+
     // The file paramter (data source name, really) may have escape characters
-    // (DODSFilter::initialize calls www2id()) so it's called here and the 
-    // resulting string is sanitized. I believe that the only escaped 
+    // (DODSFilter::initialize calls www2id()) so it's called here and the
+    // resulting string is sanitized. I believe that the only escaped
     // character allowed is a space...
     Regex file_allowed("[-a-zA-Z0-9_%]+");
     string unesc_file = www2id(file, "%", "%20");
     if (!file_allowed.match(unesc_file.c_str(), unesc_file.length()))
         throw Error("Invalid input (3)");
-        
+
     // The allowed set of characters for a constraint is fairly large. One way
     // to validate this input would be to build the DDS first (w/o the ce) and
-    // then parse the CE to test it (a DDS is required to parse the DDS). 
+    // then parse the CE to test it (a DDS is required to parse the DDS).
     // Finanally, the validated CE would be used to get a DataDDS (the DDS
     // would not be used for anything other than validation). Instead this code
-    // removes all the escaped characters except the spaces (%20) and then 
-    // filters the expression. 
+    // removes all the escaped characters except the spaces (%20) and then
+    // filters the expression.
     Regex expr_allowed("[-+a-zA-Z0-9_/%.\\#:,(){}[\\]&<>=~]*");
     string unesc_expr = www2id(expr, "%", "%20");
     if (!expr_allowed.match(unesc_expr.c_str(), unesc_expr.length()))
         throw Error("Invalid input (4)");
-	    
+
     string command = handler + " -o dods " + options
         + " -e " + "\"" + unesc_expr + "\"" + " \"" + unesc_file + "\"";
 
@@ -186,7 +186,7 @@ read_from_file(DataDDS & dds, const string & handler,
         pclose(in);
         throw;
     }
-    
+
 }
 
 /** Write out the given error object. If the Error object #e# is empty, don't
@@ -207,9 +207,9 @@ static void output_error_object(const Error & e)
             $options .= "-r " . $self->cache_dir();
         }
 
-        @command = ( $self->asciival(), $options, "-m", 
+        @command = ( $self->asciival(), $options, "-m",
                      "-u", $self->url_text(),
-                     "-f", $self->handler(), 
+                     "-f", $self->handler(),
                      "--", $self->filename() ); #. "?" . $self->query() );
  */
 
@@ -344,7 +344,7 @@ int main(int argc, char *argv[])
         // Trick: Since the DataDDS just read has only the stuff matching the
         // CE, set all the send_p flags. The code below must deal with the case
         // where the DDS is not serialized by another process and is instead the
-        // whole DDS, so it checks the send_p flag. 
+        // whole DDS, so it checks the send_p flag.
         //
         // NB: This code is here for debugging the handler version of asciival
         // jhrg 11/30/06
@@ -359,7 +359,7 @@ int main(int argc, char *argv[])
         get_data_values_as_ascii(adds, stdout);
         fflush(stdout);
 #else
-        get_data_values_as_ascii(&dds, stdout);
+        get_data_values_as_ascii(&dds, cout);
 #endif
     }
     catch(Error & e) {

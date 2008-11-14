@@ -11,18 +11,18 @@
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
- 
+
 // (c) COPYRIGHT URI/MIT 1998,2000
 // Please read the full copyright statement in the file COPYRIGHT_URI.
 //
@@ -43,12 +43,16 @@ using namespace libdap ;
 
 class AsciiArray: public Array, public AsciiOutput {
 private:
-    void print_vector(FILE *os, bool print_name);
+
     void print_vector(ostream &strm, bool print_name);
-    void print_array(FILE *os, bool print_name);
     void print_array(ostream &strm, bool print_name);
-    void print_complex_array(FILE *os, bool print_name);
     void print_complex_array(ostream &strm, bool print_name);
+
+    #ifdef FILE_METHODS
+    void print_vector(FILE *os, bool print_name);
+    void print_array(FILE *os, bool print_name);
+    void print_complex_array(FILE *os, bool print_name);
+#endif
 
 public:
     AsciiArray(const string &n, BaseType *v);
@@ -56,13 +60,14 @@ public:
     virtual ~AsciiArray();
 
     virtual BaseType *ptr_duplicate();
-
+#ifdef FILE_METHODS
     int print_row(FILE *os, int index, int number);
+#endif
     int print_row(ostream &strm, int index, int number);
 
     int get_index(vector<int> indices) throw(InternalErr);
 
-    /** Get the size of dimension #n#. 
+    /** Get the size of dimension #n#.
 	@param n Return the size of the n^{th} dimension.
 	@return The size of the n^{th} dimension.
 	@exception InternalErr. */
@@ -73,10 +78,11 @@ public:
 	@return A vector describing the shape of the array. Each value
 	contains the highest index value. To get the size, add one. */
     vector<int> get_shape_vector(size_t n) throw(InternalErr);
-
-    virtual void print_ascii(FILE *os, bool print_name = true) 
+#ifdef FILE_METHODS
+    virtual void print_ascii(FILE *os, bool print_name = true)
 	throw(InternalErr);
-    virtual void print_ascii(ostream &strm, bool print_name = true) 
+#endif
+    virtual void print_ascii(ostream &strm, bool print_name = true)
 	throw(InternalErr);
 };
 

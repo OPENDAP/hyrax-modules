@@ -61,13 +61,13 @@ using namespace std;
 #define access _access
 #define X_OK 00                 //  Simple existence
 #endif
-
+#ifdef FILE_METHODS
 // From what I can tell d_das is not used, commenting out for now pcw 08/15/07
 WWWOutput::WWWOutput(FILE * os, int rows, int cols) : /*d_das(0),*/ d_os(os),
     d_strm(0), d_attr_rows(rows), d_attr_cols(cols)
 {
 }
-
+#endif
 WWWOutput::WWWOutput(ostream &strm, int rows, int cols) : /*d_das(0),*/ d_os(0),
     d_strm(&strm), d_attr_rows(rows), d_attr_cols(cols)
 {
@@ -213,9 +213,11 @@ void WWWOutput::write_variable_entries(DDS &dds)
     }
 
     for (DDS::Vars_iter p = dds.var_begin(); p != dds.var_end(); ++p) {
-	if( d_os )
+#ifdef FILE_METHODS
+        if( d_os )
 	    (*p)->print_val(d_os);
 	else
+#endif
 	    (*p)->print_val(*d_strm);
 
         write_variable_attributes(*p);

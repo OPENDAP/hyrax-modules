@@ -125,7 +125,7 @@ DDS *dds_to_www_dds(DDS * dds)
 
     return wwwdds;
 }
-
+#ifdef FILE_METHODS
 /** Using the stuff in WWWOutput and the hacked (specialized) print_val()
     methods in the WWW* classes, write out the HTML form interface.
 
@@ -142,9 +142,9 @@ DDS *dds_to_www_dds(DDS * dds)
     @param admin_name "support@opendap.org" by default; use this as the
     address for support printed on the form.
     @param help_location "http://www.opendap.org/online_help_files/opendap_form_help.html"
-    by default; otherwise, this is location where an HTML document that
+    by default; otherwise, this is locataion where an HTML document that
     explains the page can be found.
-    */
+*/
 void write_html_form_interface(FILE * dest, DDS * dds,
                                const string & url, bool html_header,
                                const string & admin_name,
@@ -196,7 +196,7 @@ void write_html_form_interface(FILE * dest, DDS * dds,
     fprintf(dest, "%s", oss.str().c_str());
 
 }
-
+#endif
 /** Using the stuff in WWWOutput and the hacked (specialized) print_val()
     methods in the WWW* classes, write out the HTML form interface.
 

@@ -8,12 +8,12 @@
 // terms of the GNU Lesser General Public License as published by the Free
 // Software Foundation; either version 2.1 of the License, or (at your
 // option) any later version.
-// 
+//
 // This is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 // FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
 // more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -54,14 +54,14 @@ using std::endl ;
 #include "AsciiGrid.h"
 
 namespace dap_asciival {
-
-/** Using the AsciiOutput::print_ascii(), write the data values to an 
+#ifdef FILE_METHODS
+/** Using the AsciiOutput::print_ascii(), write the data values to an
     output file/stream as ASCII.
-    
+
     @param dds A DataDDS loaded with data. The variables must use the AsciiByte,
     et c., type classes. Use the function datadds_to_ascii_datadds() to
     build such a DataDDS from one whose types are, say NCByte, et cetera.
-    @param dest Write ASCII here. */  
+    @param dest Write ASCII here. */
 void
 get_data_values_as_ascii(DataDDS *dds, FILE *dest)
 {
@@ -76,14 +76,14 @@ get_data_values_as_ascii(DataDDS *dds, FILE *dest)
         fprintf(dest, "\n");
     }
 }
-
-/** Using the AsciiOutput::print_ascii(), write the data values to an 
+#endif
+/** Using the AsciiOutput::print_ascii(), write the data values to an
     output file/stream as ASCII.
-    
+
     @param dds A DataDDS loaded with data. The variables must use the AsciiByte,
     et c., type classes. Use the function datadds_to_ascii_datadds() to
     build such a DataDDS from one whose types are, say NCByte, et cetera.
-    @param strm Write ASCII to stream. */  
+    @param strm Write ASCII to stream. */
 void
 get_data_values_as_ascii(DataDDS *dds, ostream &strm)
 {
@@ -104,7 +104,7 @@ DataDDS *datadds_to_ascii_datadds(DataDDS * dds)
     // Should the following use AsciiOutputFactory instead of the source DDS'
     // factory class? It doesn't matter for the following since the function
     // basetype_to_asciitype() doesn't use the factory. So long as no other
-    // code uses the DDS' factory, this is fine. jhrg 9/5/06 
+    // code uses the DDS' factory, this is fine. jhrg 9/5/06
     DataDDS *asciidds = new DataDDS(dds->get_factory(),
                                     dds->get_dataset_name(),
                                     dds->get_version(),
@@ -123,7 +123,7 @@ DataDDS *datadds_to_ascii_datadds(DataDDS * dds)
         i++;
     }
 
-    // Calling tag_nested_sequences() makes it easier to figure out if a 
+    // Calling tag_nested_sequences() makes it easier to figure out if a
     // sequence has parent or child sequences or if it is a 'flat' sequence.
     asciidds->tag_nested_sequences();
 
@@ -174,7 +174,7 @@ basetype_to_asciitype( BaseType *bt )
 
 	case dods_grid_c:
 	    return new AsciiGrid( dynamic_cast<Grid *>(bt) ) ;
-        
+
     default:
         throw InternalErr(__FILE__, __LINE__, "Unknown type");
     }

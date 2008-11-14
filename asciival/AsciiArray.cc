@@ -11,18 +11,18 @@
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
- 
+
 // (c) COPYRIGHT URI/MIT 1998,2000
 // Please read the full copyright statement in the file COPYRIGHT_URI.
 //
@@ -72,7 +72,7 @@ AsciiArray::AsciiArray( Array *bt )
     add_var( abt ) ;
     // add_var makes a copy of the base type passed, so delete it
     delete abt ;
-    
+
     // Copy the dimensions
     Dim_iter p = bt->dim_begin();
     while ( p != bt->dim_end() ) {
@@ -85,6 +85,7 @@ AsciiArray::~AsciiArray()
 {
 }
 
+#ifdef FILE_METHODS
 void AsciiArray::print_ascii(FILE * os, bool print_name) throw(InternalErr)
 {
     Array *bt = dynamic_cast < Array * >(_redirect);
@@ -102,7 +103,7 @@ void AsciiArray::print_ascii(FILE * os, bool print_name) throw(InternalErr)
         print_complex_array(os, print_name);
     }
 }
-
+#endif
 void AsciiArray::print_ascii(ostream &strm, bool print_name) throw(InternalErr)
 {
     Array *bt = dynamic_cast < Array * >(_redirect);
@@ -120,7 +121,7 @@ void AsciiArray::print_ascii(ostream &strm, bool print_name) throw(InternalErr)
         print_complex_array(strm, print_name);
     }
 }
-
+#ifdef FILE_METHODS
 // Print out a values for a vector (one dimensional array) of simple types.
 void AsciiArray::print_vector(FILE * os, bool print_name)
 {
@@ -148,7 +149,7 @@ void AsciiArray::print_vector(FILE * os, bool print_name)
     // we're not saving curr_var for future use, so delete it here
     delete curr_var;
 }
-
+#endif
 // Print out a values for a vector (one dimensional array) of simple types.
 void AsciiArray::print_vector(ostream &strm, bool print_name)
 {
@@ -175,11 +176,11 @@ void AsciiArray::print_vector(ostream &strm, bool print_name)
     // we're not saving curr_var for future use, so delete it here
     delete curr_var;
 }
-
+#ifdef FILE_METHODS
 /** Print a single row of values for a N-dimensional array. Since we store
     N-dim arrays in vectors, #index# gives the starting point in that vector
     for this row and #number# is the number of values to print. The counter
-    #index# is returned. 
+    #index# is returned.
 
     @param os Write to stream os.
     @param index Print values starting from this point.
@@ -208,11 +209,11 @@ int AsciiArray::print_row(FILE * os, int index, int number)
 
     return index;
 }
-
+#endif
 /** Print a single row of values for a N-dimensional array. Since we store
     N-dim arrays in vectors, #index# gives the starting point in that vector
     for this row and #number# is the number of values to print. The counter
-    #index# is returned. 
+    #index# is returned.
 
     @param os Write to stream os.
     @param index Print values starting from this point.
@@ -257,7 +258,7 @@ int AsciiArray::get_index(vector < int >indices) throw(InternalErr)
     }
     // suppose shape is [3][4][5][6] for x,y,z,t. The index is
     // t + z(6) + y(5 * 6) + x(4 * 5 *6).
-    // Assume that indices[0] holds x, indices[1] holds y, ... 
+    // Assume that indices[0] holds x, indices[1] holds y, ...
 
     // It's hard to work with Pixes
     vector < int >shape = get_shape_vector(indices.size());
@@ -329,7 +330,8 @@ int AsciiArray::get_nth_dim_size(size_t n) throw(InternalErr)
 
     return /*bt->*/dimension_size(/*bt->*/dim_begin() + n, true);
 }
- 
+
+#ifdef FILE_METHODS
 void AsciiArray::print_array(FILE * os, bool /*print_name */ )
 {
     DBG(cerr << "Entering AsciiArray::print_array" << endl);
@@ -376,6 +378,7 @@ void AsciiArray::print_array(FILE * os, bool /*print_name */ )
 
     DBG(cerr << "ExitingAsciiArray::print_array" << endl);
 }
+#endif
 
 void AsciiArray::print_array(ostream &strm, bool /*print_name */ )
 {
@@ -421,7 +424,7 @@ void AsciiArray::print_array(ostream &strm, bool /*print_name */ )
 
     DBG(cerr << "ExitingAsciiArray::print_array" << endl);
 }
-
+#ifdef FILE_METHODS
 void AsciiArray::print_complex_array(FILE * os, bool /*print_name */ )
 {
     DBG(cerr << "Entering AsciiArray::print_complex_array" << endl);
@@ -467,7 +470,7 @@ void AsciiArray::print_complex_array(FILE * os, bool /*print_name */ )
 
     DBG(cerr << "ExitingAsciiArray::print_complex_array" << endl);
 }
-
+#endif
 void AsciiArray::print_complex_array(ostream &strm, bool /*print_name */ )
 {
     DBG(cerr << "Entering AsciiArray::print_complex_array" << endl);
