@@ -3,14 +3,14 @@ dnl -*- autoconf -*-
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(dap-server, 3.8.5, opendap-tech@opendap.org)
+AC_INIT(dap-server, 3.9.0, opendap-tech@opendap.org)
 AC_CONFIG_AUX_DIR([conf])
 
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([nph-dods.in])
 AM_CONFIG_HEADER([config.h])
 
-AC_DEFINE([DAP_PROTOCOL_VERSION], ["3.1"], [What DAP version is supported?])
+AC_DEFINE([DAP_PROTOCOL_VERSION], ["3.2"], [What DAP version is supported?])
 AC_SUBST([DAP_PROTOCOL_VERSION])
 
 dnl flags for the compilers and linkers - set these before locating the
