@@ -1,3 +1,104 @@
+2008-11-14  James Gallagher <jgallagher@opendap.org>
+
+	Merged the xmlrequest branch to the trunk.
+
+	_M   .
+	_M   www-interface
+	M    www-interface/www_int.cc
+	A  + www-interface/BESXMLWWWGetCommand.cc
+	M    www-interface/WWWOutput.cc
+	M    www-interface/WWWStructure.cc
+	M    www-interface/WWWOutput.h
+	M    www-interface/WWWStructure.h
+	M    www-interface/BESWWWModule.cc
+	M    www-interface/get_html_form.cc
+	A  + www-interface/BESXMLWWWGetCommand.h
+	M    www-interface/WWWSequence.cc
+	M    www-interface/WWWSequence.h
+	M    www-interface/Makefile.am
+	M    www-interface/get_html_form.h
+	_M   asciival
+	M    asciival/AsciiGrid.h
+	M    asciival/AsciiStructure.cc
+	M    asciival/AsciiOutput.cc
+	M    asciival/AsciiStructure.h
+	M    asciival/AsciiOutput.h
+	M    asciival/ascii_val.cc
+	M    asciival/AsciiGrid.cc
+	M    asciival/AsciiSequence.cc
+	M    asciival/AsciiSequence.h
+	M    asciival/AsciiArray.cc
+	M    asciival/get_ascii.cc
+	M    asciival/AsciiArray.h
+	D    test_file2.bz2
+	D    test_file.gz
+
+2008-10-28  James Gallagher <jgallagher@opendap.org>
+
+	Change for ticket 906: The HTML form was not using fully qulaified
+	names and was thus not building correct URLs for datasets where
+	the same name is used in multiple places.
+
+	M    www-interface/WWWOutput.cc
+	M    www-interface/WWWStructure.cc
+	M    www-interface/WWWOutput.h
+	M    www-interface/WWWStr.cc
+	M    www-interface/get_html_form.cc
+	M    www-interface/WWWUInt32.cc
+	M    www-interface/WWWGrid.cc
+	M    www-interface/WWWUInt16.cc
+	M    www-interface/WWWInt32.cc
+	M    www-interface/WWWInt16.cc
+	M    www-interface/WWWByte.cc
+	M    www-interface/WWWSequence.cc
+	M    www-interface/WWWFloat32.cc
+	M    www-interface/WWWArray.cc
+	M    www-interface/WWWFloat64.cc
+	M    www-interface/get_html_form.h
+
+2008-10-08  James Gallagher <jgallagher@opendap.org>
+
+	Fixed ticket 984: The HTML form now includes the type of the Grid!
+
+	M get_html_form.cc
+
+2008-09-17  James Gallagher <jgallagher@opendap.org>
+
+	Merged multifile branch
+
+2008-07-16  Patrick West <pwest@ucar.edu>
+
+	Added debug statements.
+	M    asciival/BESAsciiTransmit.cc
+
+2008-03-07  Nathan Potter <ndp@coas.oregonstate.edu>
+
+	$i: Fixing bug in OSX build.
+
+2008-03-05  Patrick West <pwest@ucar.edu>
+
+	www and ascii Makefiles now depend on BES_DAP_LIBS, not just
+	BES_LIBS. This fixes the rpm build problem where bes_dap library
+	not being included. dap-server.spec removed individual README
+	files for hyrax and cgi and replaced with just README. Checking
+	for architecture in InstallCheck and added messages in
+	InstallCheck.strings. Release 3.8.5.
+	
+	M    www-interface/Makefile.am
+	M    asciival/Makefile.am
+	M    configure.ac
+	M    INSTALL
+	M    NEWS
+	M    ChangeLog
+	M    README
+	M    dap-server.spec
+	M    OSX_Resources/InstallationCheck
+	M    OSX_Resources/update_mac_package_contents.pl
+	M    OSX_Resources/Info.plist
+	M    OSX_Resources/InstallationCheck.strings
+	M    OSX_Resources/ReadMe.txt
+	M    OSX_Resources/Welcome.html
+
 2008-02-27  James Gallagher <jgallagher@opendap.org>
 
 	Auto reset of Subversion properties

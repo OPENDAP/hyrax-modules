@@ -1,4 +1,13 @@
 
+version 3.9.0 (29 Jan 2009)
+
+Bug fixes and updates to work with the new libdap and bes changes.
+
+The HTML Form interface now works correctly with data sets that use the same
+field names in doubly-nested structures.
+
+The Form also now shows the type information for a Grid.
+
 Version 3.8.5 (03 Mar 2008)
 
 pkg build update to automate the creation of the .pkg and .dmg files using
