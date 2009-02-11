@@ -57,9 +57,14 @@ static char rcsid[] not_used = {"$Id$"};
 
 #include <GNURegex.h>
 
+#include <Array.h>
+#include <Structure.h>
+#include <Sequence.h>
+#include <Grid.h>
+
+#include <DAS.h>
 #include <cgi_util.h>
 #include <util.h>
-#include <DAS.h>
 
 #include <debug.h>
 
