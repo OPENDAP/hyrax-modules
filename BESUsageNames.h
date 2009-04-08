@@ -23,7 +23,7 @@
 // You can contact University Corporation for Atmospheric Research at
 // 3080 Center Green Drive, Boulder, CO 80301
  
-// (c) COPYRIGHT University Corporation for Atmostpheric Research 2004-2005
+// (c) COPYRIGHT University Corporation for Atmospheric Research 2004-2005
 // Please read the full copyright statement in the file COPYRIGHT_UCAR.
 //
 // Authors:
@@ -43,6 +43,7 @@
  */
 
 #define Usage_RESPONSE "get.info_page"
+#define Usage_SERVICE "info_page"
 #define Usage_RESPONSE_STR "getInfoPage"
 
 #endif // E_BESUsageNames_H

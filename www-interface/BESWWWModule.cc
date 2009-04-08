@@ -23,7 +23,7 @@
 // You can contact University Corporation for Atmospheric Research at
 // 3080 Center Green Drive, Boulder, CO 80301
 
-// (c) COPYRIGHT University Corporation for Atmostpheric Research 2004-2005
+// (c) COPYRIGHT University Corporation for Atmospheric Research 2004-2005
 // Please read the full copyright statement in the file COPYRIGHT_UCAR.
 //
 // Authors:
@@ -37,11 +37,14 @@ using std::endl;
 #include "BESDebug.h"
 
 #include "BESWWWNames.h"
+#include "BESResponseNames.h"
 #include "BESResponseHandlerList.h"
 #include "BESWWWResponseHandler.h"
 
 #include "BESWWWRequestHandler.h"
 #include "BESRequestHandlerList.h"
+
+#include "BESDapService.h"
 
 #include "BESWWWTransmit.h"
 #include "BESTransmitter.h"
@@ -64,19 +67,16 @@ void
                                                    BESWWWResponseHandler::
                                                    WWWResponseBuilder);
 
+    BESDEBUG( "www", "Adding to dap services" << endl )
+    BESDapService::add_to_dap_service( WWW_SERVICE,
+		       "OPeNDAP HTML Form for data constraints and access" ) ;
+
     BESTransmitter *t =
-        BESReturnManager::TheManager()->find_transmitter(BASIC_TRANSMITTER);
+        BESReturnManager::TheManager()->find_transmitter( DAP2_FORMAT ) ;
     if( t )
     {
 	BESDEBUG( "www", "    adding basic " << WWW_TRANSMITTER << " transmit function" << endl )
-        t->add_method(WWW_TRANSMITTER, BESWWWTransmit::send_basic_form);
-    }
-
-    t = BESReturnManager::TheManager()->find_transmitter(HTTP_TRANSMITTER);
-    if( t )
-    {
-	BESDEBUG( "www", "    adding http " << WWW_TRANSMITTER << " transmit function" << endl )
-        t->add_method(WWW_TRANSMITTER, BESWWWTransmit::send_http_form);
+        t->add_method( WWW_TRANSMITTER, BESWWWTransmit::send_basic_form ) ;
     }
 
     BESDEBUG( "www", "    adding " << WWW_RESPONSE << " command" << endl )

@@ -86,8 +86,9 @@ private:
 	the URL and provides buttons with which the user can choose the type
 	of output.
 
-	@param url The initial URL to display. */
-    void write_disposition(string url);
+	@param url The initial URL to display.
+	@param FONc True if the Fileout netCDF button should be shown. */
+    void write_disposition(string url, bool FONc);
 
     void write_global_attributes(AttrTable &attr);
 

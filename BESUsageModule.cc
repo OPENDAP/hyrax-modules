@@ -23,7 +23,7 @@
 // You can contact University Corporation for Atmospheric Research at
 // 3080 Center Green Drive, Boulder, CO 80301
  
-// (c) COPYRIGHT University Corporation for Atmostpheric Research 2004-2005
+// (c) COPYRIGHT University Corporation for Atmospheric Research 2004-2005
 // Please read the full copyright statement in the file COPYRIGHT_UCAR.
 //
 // Authors:
@@ -36,12 +36,15 @@ using std::endl ;
 #include "BESUsageModule.h"
 
 #include "BESUsageNames.h"
+#include "BESResponseNames.h"
 #include "BESResponseHandlerList.h"
 
 #include "BESUsageRequestHandler.h"
 #include "BESRequestHandlerList.h"
 
 #include "BESUsageResponseHandler.h"
+
+#include "BESDapService.h"
 
 #include "BESUsageTransmit.h"
 #include "BESTransmitter.h"
@@ -63,18 +66,15 @@ BESUsageModule::initialize( const string &modname )
     BESDEBUG( "usage", "    adding " << Usage_RESPONSE << " response handler" << endl )
     BESResponseHandlerList::TheList()->add_handler( Usage_RESPONSE, BESUsageResponseHandler::UsageResponseBuilder ) ;
 
-    BESTransmitter *t = BESReturnManager::TheManager()->find_transmitter( BASIC_TRANSMITTER ) ;
+    BESDEBUG( "usage", "Adding to dap  services" << endl )
+    BESDapService::add_to_dap_service( Usage_SERVICE,
+				       "OPeNDAP Data Information Page" ) ;
+
+    BESTransmitter *t = BESReturnManager::TheManager()->find_transmitter( DAP2_FORMAT ) ;
     if( t )
     {
 	BESDEBUG( "usage", "    adding basic " << Usage_TRANSMITTER << " transmitter" << endl )
 	t->add_method( Usage_TRANSMITTER, BESUsageTransmit::send_basic_usage ) ;
-    }
-
-    t = BESReturnManager::TheManager()->find_transmitter( HTTP_TRANSMITTER ) ;
-    if( t )
-    {
-	BESDEBUG( "usage", "    adding http " << Usage_TRANSMITTER << " transmitter" << endl )
-	t->add_method( Usage_TRANSMITTER, BESUsageTransmit::send_http_usage ) ;
     }
 
     BESDEBUG( "usage", "    adding usage debug context" << endl )
@@ -89,27 +89,32 @@ BESUsageModule::terminate( const string &modname )
     BESDEBUG( "usage", "Cleaning OPeNDAP usage module " << modname << endl )
 
     BESDEBUG( "usage", "    removing " << modname << " request handler " << endl )
-    BESRequestHandler *rh = BESRequestHandlerList::TheList()->remove_handler( modname ) ;
+    BESRequestHandler *rh =
+	BESRequestHandlerList::TheList()->remove_handler( modname ) ;
     if( rh ) delete rh ;
 
-    BESDEBUG( "usage", "    removing " << Usage_RESPONSE << " response handler " << endl )
+    BESDEBUG( "usage", "    removing " << Usage_RESPONSE
+		       << " response handler " << endl )
     BESResponseHandlerList::TheList()->remove_handler( Usage_RESPONSE ) ;
 
-    BESTransmitter *t = BESReturnManager::TheManager()->find_transmitter( BASIC_TRANSMITTER ) ;
+    BESTransmitter *t =
+	BESReturnManager::TheManager()->find_transmitter( BASIC_TRANSMITTER ) ;
     if( t )
     {
-	BESDEBUG( "usage", "    removing basic " << Usage_TRANSMITTER << " transmitter" << endl )
+	BESDEBUG( "usage", "    removing basic " << Usage_TRANSMITTER
+			   << " transmitter" << endl )
 	t->remove_method( Usage_TRANSMITTER ) ;
     }
 
     t = BESReturnManager::TheManager()->find_transmitter( HTTP_TRANSMITTER ) ;
     if( t )
     {
-	BESDEBUG( "usage", "    removing http " << Usage_TRANSMITTER << " transmitter" << endl )
+	BESDEBUG( "usage", "    removing http " << Usage_TRANSMITTER
+			   << " transmitter" << endl )
 	t->remove_method( Usage_TRANSMITTER ) ;
     }
 
-    BESDEBUG( "usage", "Done Cleaning OPeNDAP usage module " << modname << endl )
+    BESDEBUG( "usage", "Done Cleaning OPeNDAP usage module " << modname << endl)
 }
 
 /** @brief dumps information about this object

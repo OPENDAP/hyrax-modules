@@ -107,7 +107,7 @@ AsciiGrid::print_ascii(ostream &strm, bool print_name) throw(InternalErr)
     if (!g)
         g = this;
 
-    if (dynamic_cast < Array * >(g->array_var())->dimensions(true) > 1)
+    if (dynamic_cast < Array & >(*g->array_var()).dimensions(true) > 1)
         print_grid(strm, print_name);
     else
         print_vector(strm, print_name);

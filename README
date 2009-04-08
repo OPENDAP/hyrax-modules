@@ -1,4 +1,5 @@
-  Updated for version 3.8.5 of the OPeNDAP Server Software.
+
+Updated for version 3.9.2 of the OPeNDAP Server Software.
 
 This software is used by two projects: The original OPeNDAP Data
 Server, which uses CGI 1.1 in conjunction with a web server such as

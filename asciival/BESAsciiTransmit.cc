@@ -10,12 +10,12 @@
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -23,7 +23,7 @@
 // You can contact University Corporation for Atmospheric Research at
 // 3080 Center Green Drive, Boulder, CO 80301
 
-// (c) COPYRIGHT University Corporation for Atmostpheric Research 2004-2005
+// (c) COPYRIGHT University Corporation for Atmospheric Research 2004-2005
 // Please read the full copyright statement in the file COPYRIGHT_UCAR.
 //
 // Authors:
@@ -44,6 +44,7 @@
 #include "get_ascii.h"
 #include "InternalErr.h"
 #include "util.h"
+#include <escaping.h>
 #include "BESDapError.h"
 #include "BESInternalFatalError.h"
 
@@ -62,10 +63,11 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
 
     dhi.first_container();
 
-    string constraint = dhi.data[POST_CONSTRAINT];
+    string constraint = www2id(dhi.data[POST_CONSTRAINT], "%", "%20%26");
+
     try
     {
-	BESDEBUG( "ascii", "BESAsciiTransmit::send_base_ascii - parsing constraint" << endl )
+	BESDEBUG( "ascii", "BESAsciiTransmit::send_base_ascii - parsing constraint: "  << constraint << endl )
         ce.parse_constraint( constraint, *dds ) ;
     }
     catch( InternalErr &e )
@@ -92,11 +94,12 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
 
     BESDEBUG( "ascii", "BESAsciiTransmit::send_base_ascii - accessing container" << endl )
     string dataset_name = dhi.container->access();
-    BESDEBUG( "ascii", "BESAsciiTransmit::send_base_ascii - dataset_name = " 
+    BESDEBUG( "ascii", "BESAsciiTransmit::send_base_ascii - dataset_name = "
                        << dataset_name << endl )
 
+	bool functional_constraint = false;
     try {
-        // Handle *functional* constraint expressions specially 
+        // Handle *functional* constraint expressions specially
         if (ce.functional_expression()) {
             // This returns a new BaseType, not a pointer to one in the DataDDS
             // So once the data has been read using this var create a new
@@ -108,17 +111,12 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
 
             var->read();
 
-            // FIXME: Do I need to delete the other DataDDS? Do I need it
-            // anymore. I've got what I need doing the eval_function call
-            // and I'm going to create a new DataDDS with it. So I don't
-            // think I need the old one.
-            //
-            // delete dds ;
             dds = new DataDDS(NULL, "virtual");
+            functional_constraint = true;
             dds->add_var(var);
         } else {
             // Iterate through the variables in the DataDDS and read in the data
-            // if the variable has the send flag set. 
+            // if the variable has the send flag set.
             // Note the special case for Sequence. The transfer_data() method
             // uses the same logic as serialize() to read values but transfers
             // them to the d_values field instead of writing them to a XDR sink
@@ -128,23 +126,6 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
                 if ((*i)->send_p()) {
                     BESDEBUG( "ascii", "reading some data for: " << (*i)->name() << endl )
                     (**i).intern_data(ce, *dds);
-#if 0
-                    switch ((*i)->type()) {
-                    case dods_sequence_c:
-                        dynamic_cast <
-                            Sequence & >(**i).transfer_data(dataset_name, ce, *dds);
-                        break;
-
-                    case dods_structure_c:
-                        dynamic_cast <
-                            Structure & >(**i).transfer_data(dataset_name, ce, *dds);
-                        break;
-
-                    default:
-                        (*i)->read(dataset_name);
-                        break;
-                    }
-#endif
                 }
             }
         }
@@ -152,16 +133,22 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
 
     catch( InternalErr &e )
     {
+    	if (functional_constraint)
+    		delete dds;
         string err = "Failed to read data: " + e.get_error_message() ;
 	throw BESDapError( err, true, e.get_error_code(), __FILE__, __LINE__ ) ;
     }
     catch(Error & e)
     {
+    	if (functional_constraint)
+    		delete dds;
         string err = "Failed to read data: " + e.get_error_message() ;
         throw BESDapError( err, false, e.get_error_code(), __FILE__, __LINE__ );
     }
     catch(...)
     {
+    	if (functional_constraint)
+    		delete dds;
         string err = "Failed to read data: Unknown exception caught";
         throw BESInternalFatalError( err, __FILE__, __LINE__ ) ;
     }
@@ -181,21 +168,30 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
     }
     catch( InternalErr &e )
     {
+    	if (functional_constraint)
+    		delete dds;
         string err =
             "Failed to get values as ascii: " + e.get_error_message() ;
         throw BESDapError( err, true, e.get_error_code(), __FILE__, __LINE__ ) ;
     }
     catch( Error &e )
     {
+     	if (functional_constraint)
+    		delete dds;
         string err =
             "Failed to get values as ascii: " + e.get_error_message() ;
         throw BESDapError( err, false, e.get_error_code(), __FILE__, __LINE__ );
     }
     catch(...) {
+    	if (functional_constraint)
+    		delete dds;
         string err =
             "Failed to get values as ascii: Unknown exception caught";
         throw BESInternalFatalError( err, __FILE__, __LINE__ ) ;
     }
+    if (functional_constraint)
+    	delete dds;
+    
 }
 
 void

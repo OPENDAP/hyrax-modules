@@ -114,7 +114,7 @@ read_from_file(DAS & das, DDS & dds, const string & handler,
     if (!options_allowed.match(options.c_str(), options.length()))
         throw Error("Invalid input (2)");
 
-    // The file paramter (data source name, really) may have escape characters
+    // The file parameter (data source name, really) may have escape characters
     // (DODSFilter::initialize calls www2id()) so it's called here and the
     // resulting string is sanitized. I believe that the only escaped
     // character allowed is a space...
@@ -307,6 +307,7 @@ int main(int argc, char *argv[])
 
         write_html_form_interface(cout, &dds, url,
                                   regular_header || nph_header,
+                                  false,
                                   admin_name, help_location);
     }
     catch(Error & e) {

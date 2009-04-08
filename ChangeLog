@@ -1,3 +1,123 @@
+2009-03-16  James Gallagher <jgallagher@opendap.org>
+
+	Results of a code review.
+
+	M    www-interface/BESWWWTransmit.cc
+	M    www-interface/BESWWWNames.h
+	M    www-interface/BESWWWModule.cc
+	M    www-interface/BESWWWRequestHandler.cc
+	M    www-interface/BESWWWRequestHandler.h
+	M    www-interface/WWWGrid.cc
+	M    www-interface/BESWWWResponseHandler.cc
+	M    www-interface/BESWWWResponseHandler.h
+	M    www-interface/BESWWWTransmit.h
+	M    www-interface/BESWWWGetCommand.cc
+	M    www-interface/BESWWWGetCommand.h
+	M    www-interface/BESWWW.h
+	M    www-interface/BESWWWModule.h
+	M    BESUsage.h
+	M    BESUsageModule.h
+	M    asciival/BESAsciiTransmit.cc
+	M    asciival/BESAsciiNames.h
+	M    asciival/BESAsciiModule.cc
+	M    asciival/BESAsciiRequestHandler.cc
+	M    asciival/BESAsciiRequestHandler.h
+	M    asciival/BESAsciiResponseHandler.cc
+	M    asciival/BESAsciiResponseHandler.h
+	M    asciival/BESAsciiTransmit.h
+	M    asciival/BESAsciiModule.h
+	M    BESUsageTransmit.cc
+	M    BESUsageNames.h
+	M    BESUsageModule.cc
+	M    BESUsageRequestHandler.cc
+	M    BESUsageRequestHandler.h
+	M    BESUsageResponseHandler.cc
+	M    BESUsageResponseHandler.h
+	M    BESUsageTransmit.h
+
+2009-03-11  James Gallagher <jgallagher@opendap.org>
+
+	Audit fixes.
+
+	M    asciival/AsciiGrid.cc
+	M    asciival/AsciiArray.cc
+
+2009-02-27  Patrick West <pwest@ucar.edu>
+
+	Registering transmit functions with dap2 transmitter instead of basic
+	transmitters. Registering commands to dap service.
+	
+	M    www-interface/BESWWWTransmit.cc
+	M    www-interface/BESWWWModule.cc
+	M    asciival/BESAsciiModule.cc
+	M    BESUsageModule.cc
+
+2009-02-24  James Gallagher <jgallagher@opendap.org>
+
+	Added call to www2id() in the BES Transmitter method. This ensures
+	that WWW escape codes are removed before the CE is parsed (except that
+	spaces and '&' are left encoded to match behavior of the current
+	DDS implementation. This changes means that names can be quoted,
+	allowing all kinds of unwise characters to appear in a variable name.
+	See ticket 1248
+
+2009-02-20  James Gallagher <jgallagher@opendap.org>
+
+	Merged the xmlresponse branch to the hyrax 1.5 release branch.
+
+	_M   .
+	M    www-interface/BESWWWNames.h
+	M    www-interface/BESWWWModule.cc
+	M    www-interface/BESWWWRequestHandler.cc
+	M    dap-server_help.html
+	M    asciival/BESAsciiNames.h
+	M    asciival/BESAsciiModule.cc
+	M    asciival/BESAsciiRequestHandler.cc
+	M    BESUsageNames.h
+	M    ChangeLog
+	M    BESUsageModule.cc
+	M    BESUsageRequestHandler.cc
+	M    dap-server_help.txt
+
+2009-02-20  James Gallagher <jgallagher@opendap.org>
+
+	Editorial changes
+
+2009-02-18  James Gallagher <jgallagher@opendap.org>
+
+	Now the WWW handler includes a button for a netCDF file return
+	for data requests. This button only appears if the NetCDF file-out
+	handler is defined in the BES (the test actually uses the
+	tempdir parameter of the handler, so it can be fooled...
+
+2009-02-05  James Gallagher <jgallagher@opendap.org>
+
+	Bump up the version and release.
+
+	M    configure.ac
+	M    ChangeLog
+
+2009-02-05  James Gallagher <jgallagher@opendap.org>
+
+	Updated the Makefile.am so that it contains the bes cflags info in
+	www-interface.
+
+	M    www-interface/Makefile.am
+
+2009-01-30  James Gallagher <jgallagher@opendap.org>
+
+	Moved here to coalesce the branches
+
+2009-01-29  James Gallagher <jgallagher@opendap.org>
+
+	Updated libdap version in configure.ac
+
+2009-01-29  James Gallagher <jgallagher@opendap.org>
+
+	Branch for the hyrax 1.5 release
+
+	A    http://scm.opendap.org/svn/branch/dap-server/3.9.0
+
 2008-11-14  James Gallagher <jgallagher@opendap.org>
 
 	Merged the xmlrequest branch to the trunk.

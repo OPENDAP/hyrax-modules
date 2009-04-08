@@ -1,4 +1,12 @@
 
+Version 3.9.2 (16 March 2009)
+
+Fixed the 'netCDF' button in the HTML form.
+
+version 3.9.1 (5 Feb 2009)
+
+Build fix - a libxml2 include file was not being found.
+
 version 3.9.0 (29 Jan 2009)
 
 Bug fixes and updates to work with the new libdap and bes changes.

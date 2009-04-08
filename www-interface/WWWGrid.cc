@@ -68,9 +68,6 @@ WWWGrid::WWWGrid(Grid * grid): Grid(grid->name())
     add_var(bt, array);
     delete bt;
 
-    // To make a valid Grid, this method must set the array dimensions as it
-    // adds new maps.
-
     Grid::Map_iter i = grid->map_begin();
     Grid::Map_iter e = grid->map_end();
     while ( i != e ) {

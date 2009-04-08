@@ -53,6 +53,25 @@ function ascii_button() {
     window.open(ascii_url, "ASCII_Data");
 }
 
+/* The netcdf_button handler loads the data to the current window. Since it 
+   is netcdf/binary, Netscape will ask the user for a filename and save the data
+   to that file. The parameter 'ext' should be 'nc'. */
+
+function netcdf_button(ext) {
+    var url = new String(document.forms[0].url.value);
+
+    var url_parts = url.split("?");
+    /* handle case where constraint is null. */
+    if (url_parts[1] != null) {
+        var binary_url = url_parts[0] + "." + ext + "?" + url_parts[1];
+    }
+    else {
+        var binary_url = url_parts[0] + "." + ext + "?";
+    }
+
+    window.location = binary_url;
+}
+
 /* The binary_button handler loads the data to the current window. Since it 
    is binary, Netscape will ask the user for a filename and save the data
    to that file. */

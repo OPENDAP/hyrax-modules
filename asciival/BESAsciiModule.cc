@@ -23,7 +23,7 @@
 // You can contact University Corporation for Atmospheric Research at
 // 3080 Center Green Drive, Boulder, CO 80301
  
-// (c) COPYRIGHT University Corporation for Atmostpheric Research 2004-2005
+// (c) COPYRIGHT University Corporation for Atmospheric Research 2004-2005
 // Please read the full copyright statement in the file COPYRIGHT_UCAR.
 //
 // Authors:
@@ -37,11 +37,14 @@ using std::endl ;
 #include "BESDebug.h"
 
 #include "BESAsciiNames.h"
+#include "BESResponseNames.h"
 #include "BESResponseHandlerList.h"
 #include "BESAsciiResponseHandler.h"
 
 #include "BESAsciiRequestHandler.h"
 #include "BESRequestHandlerList.h"
+
+#include "BESDapService.h"
 
 #include "BESAsciiTransmit.h"
 #include "BESTransmitter.h"
@@ -61,18 +64,16 @@ BESAsciiModule::initialize( const string &modname )
     BESDEBUG( "ascii", "    adding " << ASCII_RESPONSE << " response handler" << endl )
     BESResponseHandlerList::TheList()->add_handler( ASCII_RESPONSE, BESAsciiResponseHandler::AsciiResponseBuilder ) ;
 
-    BESTransmitter *t = BESReturnManager::TheManager()->find_transmitter( BASIC_TRANSMITTER ) ;
+    BESDEBUG( "ascii", "Adding to dap services" << endl )
+    BESDapService::add_to_dap_service( ASCII_SERVICE,
+				       "OPeNDAP ascii data representation" ) ;
+
+    BESTransmitter *t =
+	BESReturnManager::TheManager()->find_transmitter( DAP2_FORMAT ) ;
     if( t )
     {
 	BESDEBUG( "ascii", "    adding basic " << ASCII_TRANSMITTER << " transmit function" << endl )
 	t->add_method( ASCII_TRANSMITTER, BESAsciiTransmit::send_basic_ascii ) ;
-    }
-
-    t = BESReturnManager::TheManager()->find_transmitter( HTTP_TRANSMITTER ) ;
-    if( t )
-    {
-	BESDEBUG( "ascii", "    adding http " << ASCII_TRANSMITTER << " transmit function" << endl )
-	t->add_method( ASCII_TRANSMITTER, BESAsciiTransmit::send_http_ascii ) ;
     }
 
     BESDEBUG( "ascii", "    adding ascii debug context" << endl )

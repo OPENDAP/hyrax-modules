@@ -23,7 +23,7 @@
 // You can contact University Corporation for Atmospheric Research at
 // 3080 Center Green Drive, Boulder, CO 80301
  
-// (c) COPYRIGHT University Corporation for Atmostpheric Research 2004-2005
+// (c) COPYRIGHT University Corporation for Atmospheric Research 2004-2005
 // Please read the full copyright statement in the file COPYRIGHT_UCAR.
 //
 // Authors:
@@ -56,10 +56,18 @@ BESWWWRequestHandler::dap_build_help( BESDataHandlerInterface &dhi )
     // three dap-server modules are usually loaded, we'll assume it's
     // already taken care of
     /*
-    BESInfo *info = (BESInfo *)dhi.response_handler->get_response_object() ;
-    info->begin_tag( "dap-server" ) ;
-    info->add_data_from_file( "dap-server.Help", "dap-server Help" ) ;
-    info->end_tag( "dap-server" ) ;
+    BESResponseObject *response = dhi.response_handler->get_response_object() ;
+    BESInfo *info = dynamic_cast < BESInfo * >(response) ;
+    if( !info )
+	throw BESInternalError( "cast error", __FILE__, __LINE__ ) ;
+
+    map<string,string> attrs ;
+    string name = (string)PACKAGE_NAME + "/www" ;
+    attrs["name"] = name ;
+    attrs["version"] = PACKAGE_VERSION ;
+    info->begin_tag( "module", &attrs ) ;
+    info->add_data_from_file( "DAP-SERVER.Help", "Dap server Help" ) ;
+    info->end_tag( "module" ) ;
     */
 
     return true ;
@@ -68,9 +76,13 @@ BESWWWRequestHandler::dap_build_help( BESDataHandlerInterface &dhi )
 bool
 BESWWWRequestHandler::dap_build_version( BESDataHandlerInterface &dhi )
 {
-    BESVersionInfo *info = (BESVersionInfo *)dhi.response_handler->get_response_object() ;
+    BESResponseObject *response = dhi.response_handler->get_response_object() ;
+    BESVersionInfo *info = dynamic_cast < BESVersionInfo * >(response) ;
+    if( !info )
+	throw BESInternalError( "cast error", __FILE__, __LINE__ ) ;
+
     string name = (string)PACKAGE_NAME + "/www" ;
-    info->addHandlerVersion(name, PACKAGE_VERSION);
+    info->add_module( name, PACKAGE_VERSION ) ;
     return true ;
 }
 

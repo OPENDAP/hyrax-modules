@@ -3,7 +3,7 @@ dnl -*- autoconf -*-
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(dap-server, 3.9.0, opendap-tech@opendap.org)
+AC_INIT(dap-server, 3.9.2, opendap-tech@opendap.org)
 AC_CONFIG_AUX_DIR([conf])
 
 AM_INIT_AUTOMAKE
@@ -90,7 +90,7 @@ AC_SUBST([dap_cgiconfdir])
 AC_CHECK_FUNCS([putenv strtol])
 
 dnl Checks for specific libraries
-AC_CHECK_LIBDAP([3.8.0],
+AC_CHECK_LIBDAP([3.9.0],
  [
   LIBS="$LIBS $DAP_CLIENT_LIBS $DAP_SERVER_LIBS"
   CPPFLAGS="$CPPFLAGS $DAP_CFLAGS"
@@ -98,7 +98,7 @@ AC_CHECK_LIBDAP([3.8.0],
  [ AC_MSG_ERROR([Cannot find libdap])
 ])
 
-AC_CHECK_BES([3.6.0],
+AC_CHECK_BES([3.7.0],
 [
     # I think the AC_SUBST([BES_MODULE_DIR]) in bes.m4 will put that 
     # symbol in the output. Same for BES_CPPFLAGS. jhrg 5/1/06

@@ -10,12 +10,12 @@
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -23,64 +23,62 @@
 // You can contact University Corporation for Atmospheric Research at
 // 3080 Center Green Drive, Boulder, CO 80301
 
-// (c) COPYRIGHT University Corporation for Atmostpheric Research 2004-2005
+// (c) COPYRIGHT University Corporation for Atmospheric Research 2004-2005
 // Please read the full copyright statement in the file COPYRIGHT_UCAR.
 //
 // Authors:
 //      pwest       Patrick West <pwest@ucar.edu>
 //      jgarcia     Jose Garcia <jgarcia@ucar.edu>
 
-#include "BESDapTransmit.h"
-#include "DODSFilter.h"
-#include "BESWWWTransmit.h"
-#include "DODSFilter.h"
-#include "BESContainer.h"
-#include "BESDataNames.h"
-#include "BESWWWNames.h"
-#include "cgi_util.h"
-#include "BESWWW.h"
-#include "util.h"
-#include "InternalErr.h"
-#include "BESDapError.h"
-#include "BESInternalFatalError.h"
+#include <BESDapTransmit.h>
+#include <DODSFilter.h>
+#include <BESWWWTransmit.h>
+#include <DODSFilter.h>
+#include <BESContainer.h>
+#include <BESDataNames.h>
+#include <BESWWWNames.h>
+#include <BESResponseNames.h>
+#include <cgi_util.h>
+#include <BESWWW.h>
+#include <util.h>
+#include <InternalErr.h>
+#include <BESDapError.h>
+#include <BESInternalFatalError.h>
+#include <BESServiceRegistry.h>
 
-#include "BESDebug.h"
+#include <BESDebug.h>
 
 #include "get_html_form.h"
 
 using namespace dap_html_form;
 
 void
- BESWWWTransmit::send_basic_form(BESResponseObject * obj,
-                                 BESDataHandlerInterface & dhi)
+BESWWWTransmit::send_basic_form(BESResponseObject * obj,
+                                BESDataHandlerInterface & dhi)
 {
-#if 0
-    BESWWW *usage = dynamic_cast < BESWWW * >(obj);
-    DAS *das = usage->get_das();
-    DDS *dds = usage->get_dds();
-#endif
-
     dhi.first_container();
-#if 0
-    string dataset_name = dhi.container->access();
-#endif
     try {
-        BESDEBUG( "www", "converting dds to www dds" << endl )
+        BESDEBUG( "www", "converting dds to www dds" << endl );
 
 	DDS *dds = dynamic_cast<BESWWW*>(obj)->get_dds()->get_dds() ;
         DDS *wwwdds = dds_to_www_dds( dds ) ;
 	DAS *das = dynamic_cast<BESWWW*>(obj)->get_das()->get_das() ;
         wwwdds->transfer_attributes( das ) ;
-        
-        BESDEBUG( "www", "writing form" << endl )
+
+        BESDEBUG( "www", "writing form" << endl );
 
         string url = dhi.data[WWW_URL];
-#if 0
-        write_html_form_interface(dhi.get_output_stream(), wwwdds, das, url, false);
-#endif
-        write_html_form_interface(dhi.get_output_stream(), wwwdds, url, false);
 
-        BESDEBUG( "www", "done transmitting form" << endl )
+	// Look for the netcdf format in the dap service. If present
+	// then have the interface make a button for it.
+	BESServiceRegistry *registry = BESServiceRegistry::TheRegistry() ;
+        bool FONc = registry->service_available( OPENDAP_SERVICE,
+						 DATA_SERVICE,
+						 "netcdf" ) ;
+
+        write_html_form_interface(dhi.get_output_stream(), wwwdds, url, false, FONc);
+
+        BESDEBUG( "www", "done transmitting form" << endl );
 
 	delete wwwdds ;
     }

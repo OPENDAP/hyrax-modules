@@ -82,7 +82,7 @@ WWWOutput::write_html_header()
 	set_mime_html(*d_strm, unknown_type, dap_version(), x_plain);
 }
 
-void WWWOutput::write_disposition(string url)
+void WWWOutput::write_disposition(string url, bool FONc)
 {
     // To get the size to be a function of the image window size, you need to
     // use some JavaScript code to generate the HTML. C++ --> JS --> HTML.
@@ -96,6 +96,10 @@ void WWWOutput::write_disposition(string url)
 <a href=\"opendap_form_help.html#disposition\" target=\"help\">Action:</a></h3>\n\
 <td>\n\
 <input type=\"button\" value=\"Get ASCII\" onclick=\"ascii_button()\">\n");
+
+	if (FONc)
+	    fprintf(d_os,
+	            "<input type=\"button\" value=\"Get as NetCDF\" onclick=\"binary_button('nc')\">\n");
 
 	fprintf(d_os,
 		"<input type=\"button\" value=\"Binary Data Object \" onclick=\"binary_button('dods')\">\n\
@@ -116,7 +120,12 @@ void WWWOutput::write_disposition(string url)
 <td>\n\
 <input type=\"button\" value=\"Get ASCII\" onclick=\"ascii_button()\">\n";
 
-	*d_strm << "<input type=\"button\" value=\"Binary Data Object \" onclick=\"binary_button('dods')\">\n\
+	// Add new netcdf_button call here *** jhrg 2/9/09
+	if (FONc)
+	    *d_strm << "<input type=\"button\" value=\"Get as NetCDF\" onclick=\"binary_button('nc')\">\n";
+
+	*d_strm <<
+"<input type=\"button\" value=\"Binary (DAP) Object\" onclick=\"binary_button('dods')\">\n\
 <input type=\"button\" value=\"Show Help\" onclick=\"help_button()\">\n\
 \n\
 <tr>\n\

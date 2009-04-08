@@ -166,13 +166,13 @@ void AsciiArray::print_vector(ostream &strm, bool print_name)
 
     for (int i = 0; i < end; ++i) {
         BaseType *curr_var = basetype_to_asciitype(bt->var(i));
-        dynamic_cast < AsciiOutput * >(curr_var)->print_ascii(strm, false);
+        dynamic_cast < AsciiOutput & >(*curr_var).print_ascii(strm, false);
         strm << ", ";
         // we're not saving curr_var for future use, so delete it here
         delete curr_var;
     }
     BaseType *curr_var = basetype_to_asciitype(bt->var(end));
-    dynamic_cast < AsciiOutput * >(curr_var)->print_ascii(strm, false);
+    dynamic_cast < AsciiOutput & >(*curr_var).print_ascii(strm, false);
     // we're not saving curr_var for future use, so delete it here
     delete curr_var;
 }
@@ -230,13 +230,13 @@ int AsciiArray::print_row(ostream &strm, int index, int number)
 
     for (int i = 0; i < number; ++i) {
         BaseType *curr_var = basetype_to_asciitype(bt->var(index++));
-        dynamic_cast < AsciiOutput * >(curr_var)->print_ascii(strm, false);
+        dynamic_cast < AsciiOutput & >(*curr_var).print_ascii(strm, false);
         strm << ", " ;
         // we're not saving curr_var for future use, so delete it here
         delete curr_var;
     }
     BaseType *curr_var = basetype_to_asciitype(bt->var(index++));
-    dynamic_cast < AsciiOutput * >(curr_var)->print_ascii(strm, false);
+    dynamic_cast < AsciiOutput & >(*curr_var).print_ascii(strm, false);
     // we're not saving curr_var for future use, so delete it here
     delete curr_var;
 
@@ -502,7 +502,7 @@ void AsciiArray::print_complex_array(ostream &strm, bool /*print_name */ )
 
         BaseType *curr_var =
             basetype_to_asciitype(bt->var(get_index(state)));
-        dynamic_cast < AsciiOutput * >(curr_var)->print_ascii(strm, true);
+        dynamic_cast < AsciiOutput & >(*curr_var).print_ascii(strm, true);
         // we are not saving curr_var for future reference, so delete it
         delete curr_var;
 

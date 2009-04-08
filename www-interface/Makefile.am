@@ -7,7 +7,8 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-AM_CPPFLAGS = -I$(top_srcdir)
+AM_CPPFLAGS = -I$(top_srcdir) $(BES_CPPFLAGS)
+#$(XML2_CFLAGS)
 
 # These are not used by automak but are often useful for certain types of
 # debugging.

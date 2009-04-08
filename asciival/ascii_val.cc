@@ -146,7 +146,7 @@ read_from_file(DataDDS & dds, const string & handler,
     if (!options_allowed.match(options.c_str(), options.length()))
         throw Error("Invalid input (2)");
 
-    // The file paramter (data source name, really) may have escape characters
+    // The file parameter (data source name, really) may have escape characters
     // (DODSFilter::initialize calls www2id()) so it's called here and the
     // resulting string is sanitized. I believe that the only escaped
     // character allowed is a space...
@@ -158,7 +158,7 @@ read_from_file(DataDDS & dds, const string & handler,
     // The allowed set of characters for a constraint is fairly large. One way
     // to validate this input would be to build the DDS first (w/o the ce) and
     // then parse the CE to test it (a DDS is required to parse the DDS).
-    // Finanally, the validated CE would be used to get a DataDDS (the DDS
+    // Finally, the validated CE would be used to get a DataDDS (the DDS
     // would not be used for anything other than validation). Instead this code
     // removes all the escaped characters except the spaces (%20) and then
     // filters the expression.
