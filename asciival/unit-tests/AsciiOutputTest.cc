@@ -34,6 +34,7 @@
 
 #include "AsciiOutput.h"
 #include "AsciiOutputFactory.h"
+#include <test_config.h>
 //#include "name_map.h"
 
 // These globals are defined in ascii_val.cc and are needed by the Ascii*
@@ -58,7 +59,9 @@ public:
     void setUp() {
         aof = new AsciiOutputFactory;
 	dds = new DDS(aof, "ascii_output_test");
-	dds->parse("testsuite/AsciiOutputTest1.dds");
+	string parsefile = (string)TEST_SRC_DIR
+			    + "/testsuite/AsciiOutputTest1.dds";
+	dds->parse(parsefile);
     }
 
     void tearDown() {

@@ -56,7 +56,7 @@ void
 BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
                                     BESDataHandlerInterface & dhi )
 {
-    BESDEBUG( "ascii", "BESAsciiTransmit::send_base_ascii" << endl )
+    BESDEBUG( "ascii", "BESAsciiTransmit::send_base_ascii" << endl );
     BESDataDDSResponse *bdds = dynamic_cast < BESDataDDSResponse * >(obj);
     DataDDS *dds = bdds->get_dds();
     ConstraintEvaluator & ce = bdds->get_ce();
@@ -89,18 +89,19 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
         throw BESInternalFatalError( err, __FILE__, __LINE__ ) ;
     }
 
-    BESDEBUG( "ascii", "BESAsciiTransmit::send_base_ascii - tagging sequences" << endl )
+    BESDEBUG( "ascii", "BESAsciiTransmit::send_base_ascii - tagging sequences" << endl );
     dds->tag_nested_sequences();        // Tag Sequences as Parent or Leaf node.
 
-    BESDEBUG( "ascii", "BESAsciiTransmit::send_base_ascii - accessing container" << endl )
+    BESDEBUG( "ascii", "BESAsciiTransmit::send_base_ascii - accessing container" << endl );
     string dataset_name = dhi.container->access();
     BESDEBUG( "ascii", "BESAsciiTransmit::send_base_ascii - dataset_name = "
                        << dataset_name << endl )
 
-	bool functional_constraint = false;
+    bool functional_constraint = false;
     try {
         // Handle *functional* constraint expressions specially
         if (ce.functional_expression()) {
+            BESDEBUG( "ascii", "processing a functional constraint." << endl );
             // This returns a new BaseType, not a pointer to one in the DataDDS
             // So once the data has been read using this var create a new
             // DataDDS and add this new var to the it.
@@ -122,7 +123,7 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
             // them to the d_values field instead of writing them to a XDR sink
             // pointer. jhrg 9/13/06
             for (DDS::Vars_iter i = dds->var_begin(); i != dds->var_end(); i++) {
-                BESDEBUG( "ascii", "processing var: " << (*i)->name() << endl )
+                BESDEBUG( "ascii", "processing var: " << (*i)->name() << endl );
                 if ((*i)->send_p()) {
                     BESDEBUG( "ascii", "reading some data for: " << (*i)->name() << endl )
                     (**i).intern_data(ce, *dds);
@@ -156,15 +157,17 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
     try {
         // Now that we have constrained the DataDDS and read in the data,
         // send it as ascii
-        BESDEBUG( "ascii", "converting to ascii datadds" << endl )
+        BESDEBUG( "ascii", "converting to ascii datadds" << endl );
         DataDDS *ascii_dds = datadds_to_ascii_datadds(dds);
-        BESDEBUG( "ascii", "getting ascii values" << endl )
+
+        BESDEBUG( "ascii", "getting ascii values" << endl );
         get_data_values_as_ascii(ascii_dds, dhi.get_output_stream());
-        BESDEBUG( "ascii", "got the ascii values" << endl )
+
+        BESDEBUG( "ascii", "got the ascii values" << endl );
 	dhi.get_output_stream() << flush ;
         delete ascii_dds;
 
-        BESDEBUG( "ascii", "done transmitting ascii" << endl )
+        BESDEBUG( "ascii", "done transmitting ascii" << endl );
     }
     catch( InternalErr &e )
     {
@@ -189,9 +192,9 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
             "Failed to get values as ascii: Unknown exception caught";
         throw BESInternalFatalError( err, __FILE__, __LINE__ ) ;
     }
+
     if (functional_constraint)
     	delete dds;
-    
 }
 
 void

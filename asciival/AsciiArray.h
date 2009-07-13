@@ -48,21 +48,12 @@ private:
     void print_array(ostream &strm, bool print_name);
     void print_complex_array(ostream &strm, bool print_name);
 
-    #ifdef FILE_METHODS
-    void print_vector(FILE *os, bool print_name);
-    void print_array(FILE *os, bool print_name);
-    void print_complex_array(FILE *os, bool print_name);
-#endif
-
 public:
     AsciiArray(const string &n, BaseType *v);
     AsciiArray( Array *bt ) ;
     virtual ~AsciiArray();
 
     virtual BaseType *ptr_duplicate();
-#ifdef FILE_METHODS
-    int print_row(FILE *os, int index, int number);
-#endif
     int print_row(ostream &strm, int index, int number);
 
     int get_index(vector<int> indices) throw(InternalErr);
@@ -78,10 +69,6 @@ public:
 	@return A vector describing the shape of the array. Each value
 	contains the highest index value. To get the size, add one. */
     vector<int> get_shape_vector(size_t n) throw(InternalErr);
-#ifdef FILE_METHODS
-    virtual void print_ascii(FILE *os, bool print_name = true)
-	throw(InternalErr);
-#endif
     virtual void print_ascii(ostream &strm, bool print_name = true)
 	throw(InternalErr);
 };

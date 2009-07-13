@@ -1,4 +1,12 @@
 
+version 3.9.3 (9 June 2009)
+
+Fixes for ticket 1301, which address problems with the ASCII representation
+of Grids and Sequences. I've added the dap_asciival exec back in to keep the
+RPMs from breaking, but I suspect the tests may still not work. Those are
+testing the old CGI code, which nobody should be using anymore and which will
+be removed for the next major release.
+
 Version 3.9.2 (16 March 2009)
 
 Fixed the 'netCDF' button in the HTML form.

@@ -98,7 +98,7 @@ BESUsageModule::terminate( const string &modname )
     BESResponseHandlerList::TheList()->remove_handler( Usage_RESPONSE ) ;
 
     BESTransmitter *t =
-	BESReturnManager::TheManager()->find_transmitter( BASIC_TRANSMITTER ) ;
+	BESReturnManager::TheManager()->find_transmitter( DAP2_FORMAT ) ;
     if( t )
     {
 	BESDEBUG( "usage", "    removing basic " << Usage_TRANSMITTER
@@ -106,7 +106,7 @@ BESUsageModule::terminate( const string &modname )
 	t->remove_method( Usage_TRANSMITTER ) ;
     }
 
-    t = BESReturnManager::TheManager()->find_transmitter( HTTP_TRANSMITTER ) ;
+    t = BESReturnManager::TheManager()->find_transmitter( DAP2_FORMAT ) ;
     if( t )
     {
 	BESDEBUG( "usage", "    removing http " << Usage_TRANSMITTER

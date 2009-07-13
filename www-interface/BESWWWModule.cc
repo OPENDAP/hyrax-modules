@@ -108,14 +108,14 @@ void BESWWWModule::terminate(const string & modname)
     BESXMLCommand::del_command( WWW_RESPONSE ) ;
 
     BESTransmitter *t =
-        BESReturnManager::TheManager()->find_transmitter(BASIC_TRANSMITTER);
+        BESReturnManager::TheManager()->find_transmitter( DAP2_FORMAT ) ;
     if( t )
     {
 	BESDEBUG( "www", "    removing basic " << WWW_TRANSMITTER << " transmit function" << endl )
         t->remove_method(WWW_TRANSMITTER);
     }
 
-    t = BESReturnManager::TheManager()->find_transmitter(HTTP_TRANSMITTER);
+    t = BESReturnManager::TheManager()->find_transmitter( DAP2_FORMAT ) ;
     if( t )
     {
 	BESDEBUG( "www", "    removing http " << WWW_TRANSMITTER << " transmit function" << endl )

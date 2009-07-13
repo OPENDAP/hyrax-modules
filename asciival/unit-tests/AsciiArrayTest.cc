@@ -39,6 +39,7 @@
 //#include "name_map.h"
 #include "AsciiArray.h"
 #include "AsciiOutputFactory.h"
+#include <test_config.h>
 
 bool translate = false;
 using namespace CppUnit;
@@ -58,7 +59,9 @@ public:
         aof = new AsciiOutputFactory;
 	dds1 = new DDS(aof, "ascii_array_test");
         try {
-	    dds1->parse("testsuite/AsciiArrayTest1.dds");
+	    string parsefile = (string)TEST_SRC_DIR
+				+ "/testsuite/AsciiArrayTest1.dds";
+	    dds1->parse(parsefile);
 	    DDS::Vars_iter p = dds1->var_begin();
 	    a = dynamic_cast<AsciiArray*>(*p++);
 	    b = dynamic_cast<AsciiArray*>(*p++);

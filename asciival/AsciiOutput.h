@@ -60,20 +60,7 @@ public:
 
 	@return The fully qualified name of this object. */
     string get_full_name();
-#ifdef FILE_METHODS
-    /** Print an ASCII representation for an instance of BaseType's children.
-	This version prints the suggested output only for simple types.
-	Complex types should overload this with their own definition.
 
-	The caller of this method is responsible for adding a trialing comma
-	where appropriate.
-
-	@param os Write to this FILE pointer.
-	@param print_name If True, write the name of the variable, a comma
-	and then the value. If False, simply write the value. */
-    virtual void print_ascii(FILE *os, bool print_name = true)
-	throw(InternalErr);
-#endif
     /** Print an ASCII representation for an instance of BaseType's children.
 	This version prints the suggested output only for simple types.
 	Complex types should overload this with their own definition.

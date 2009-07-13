@@ -35,6 +35,8 @@ using std::endl ;
 
 #include <DataDDS.h>
 
+#include <BESDebug.h>
+
 #include "get_ascii.h"
 #include "AsciiOutput.h"
 //#include "name_map.h"
@@ -54,29 +56,6 @@ using std::endl ;
 #include "AsciiGrid.h"
 
 namespace dap_asciival {
-#ifdef FILE_METHODS
-/** Using the AsciiOutput::print_ascii(), write the data values to an
-    output file/stream as ASCII.
-
-    @param dds A DataDDS loaded with data. The variables must use the AsciiByte,
-    et c., type classes. Use the function datadds_to_ascii_datadds() to
-    build such a DataDDS from one whose types are, say NCByte, et cetera.
-    @param dest Write ASCII here. */
-void
-get_data_values_as_ascii(DataDDS *dds, FILE *dest)
-{
-    //cerr << "dataset name = " << dds->get_dataset_name() << endl ;
-    fprintf(dest, "Dataset: %s\n", dds->get_dataset_name().c_str());
-
-    //cerr << "iterating through the thing" << endl ;
-    DDS::Vars_iter i = dds->var_begin();
-    while (i != dds->var_end()) {
-        //cerr << "getting " << (*i)->name() << " of type " << (*i)->type_name() << endl ;
-        dynamic_cast<AsciiOutput &>(**i++).print_ascii(dest);
-        fprintf(dest, "\n");
-    }
-}
-#endif
 /** Using the AsciiOutput::print_ascii(), write the data values to an
     output file/stream as ASCII.
 
@@ -87,20 +66,24 @@ get_data_values_as_ascii(DataDDS *dds, FILE *dest)
 void
 get_data_values_as_ascii(DataDDS *dds, ostream &strm)
 {
-    //cerr << "dataset name = " << dds->get_dataset_name() << endl ;
+    BESDEBUG("ascii", "In get_data_values_as_ascii; dataset name = " << dds->get_dataset_name() << endl );
     strm << "Dataset: " << dds->get_dataset_name() << "\n" ;
 
-    //cerr << "iterating through the thing" << endl ;
     DDS::Vars_iter i = dds->var_begin();
     while (i != dds->var_end()) {
-        //cerr << "getting " << (*i)->name() << " of type " << (*i)->type_name() << endl ;
-        dynamic_cast<AsciiOutput &>(**i++).print_ascii(strm);
-        strm << "\n";
+        if ((*i)->send_p()) {
+            dynamic_cast<AsciiOutput &>(**i).print_ascii(strm);
+            strm << "\n";
+        }
+        ++i;
     }
+
+    BESDEBUG("ascii", "Out get_data_values_as_ascii" << endl );
 }
 
 DataDDS *datadds_to_ascii_datadds(DataDDS * dds)
 {
+    BESDEBUG("ascii", "In datadds_to_ascii_datadds" << endl);
     // Should the following use AsciiOutputFactory instead of the source DDS'
     // factory class? It doesn't matter for the following since the function
     // basetype_to_asciitype() doesn't use the factory. So long as no other
@@ -112,15 +95,12 @@ DataDDS *datadds_to_ascii_datadds(DataDDS * dds)
 
     DDS::Vars_iter i = dds->var_begin();
     while (i != dds->var_end()) {
-        // Remove the send_p test here and put it where the values are output
-        if ((*i)->send_p()) {
-            BaseType *abt = basetype_to_asciitype(*i);
-            asciidds->add_var(abt);
-            // add_var makes a copy of the base type passed to it, so delete
-            // it here
-            delete abt;
-        }
-        i++;
+        BaseType *abt = basetype_to_asciitype(*i);
+        asciidds->add_var(abt);
+        // add_var makes a copy of the base type passed to it, so delete
+        // it here
+        delete abt;
+        ++i;
     }
 
     // Calling tag_nested_sequences() makes it easier to figure out if a

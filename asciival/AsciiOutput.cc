@@ -63,25 +63,7 @@ string AsciiOutput::get_full_name()
         return dynamic_cast < AsciiOutput * >(btp2)->get_full_name()
             + "." + btp->name();
 }
-#ifdef FILE_METHODS
-void AsciiOutput::print_ascii(FILE * os,
-                              bool print_name) throw(InternalErr)
-{
-    BaseType *BTptr = _redirect;
-    if (!BTptr) {
-        BTptr = dynamic_cast < BaseType * >(this);
-    }
 
-    if (!BTptr)
-        throw InternalErr(__FILE__, __LINE__,
-                          "An instance of AsciiOutput failed to cast to BaseType.");
-
-    if (print_name)
-        fprintf(os, "%s, ", get_full_name().c_str());
-
-    BTptr->print_val(os, "", false);
-}
-#endif
 /** @brief Print values as ASCII
     Prints the values of \e this in ASCII suitable for import into a
     spreadsheet. This version prints only the values of simple types; other

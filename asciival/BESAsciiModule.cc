@@ -94,14 +94,15 @@ BESAsciiModule::terminate( const string &modname )
     BESDEBUG( "ascii", "    removing " << ASCII_RESPONSE << " response handler" << endl )
     BESResponseHandlerList::TheList()->remove_handler( ASCII_RESPONSE ) ;
 
-    BESTransmitter *t = BESReturnManager::TheManager()->find_transmitter( BASIC_TRANSMITTER ) ;
+    BESTransmitter *t =
+	BESReturnManager::TheManager()->find_transmitter( DAP2_FORMAT ) ;
     if( t )
     {
 	BESDEBUG( "ascii", "    removing basic " << ASCII_TRANSMITTER << " transmit function" << endl )
 	t->remove_method( ASCII_TRANSMITTER ) ;
     }
 
-    t = BESReturnManager::TheManager()->find_transmitter( HTTP_TRANSMITTER ) ;
+    t = BESReturnManager::TheManager()->find_transmitter( DAP2_FORMAT ) ;
     if( t )
     {
 	BESDEBUG( "ascii", "    removing http " << ASCII_TRANSMITTER << " transmit function" << endl )

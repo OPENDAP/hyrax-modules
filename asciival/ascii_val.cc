@@ -282,10 +282,8 @@ int main(int argc, char *argv[])
             exit(1);
             break;
         }
-#if 0
-    AsciiOutputFactory *aof;
-#endif
-    try {
+
+        try {
         // After processing options, test for errors. There must be a single
         // argument in addition to any given with the options. This will be
         // either a file or a URL, depending on the options supplied and will
@@ -313,12 +311,8 @@ int main(int argc, char *argv[])
             expr = url.substr(url.find('?') + 1);
             url = url.substr(0, url.find('?'));
         }
-#if 0
-        // See comment below.
-        BaseTypeFactory aof;
-#else
+
         AsciiOutputFactory aof;
-#endif
 
         // The version should be read from the handler! jhrg 10/18/05
         DataDDS dds(&aof, "Ascii Data", "DAP2/3.5");
@@ -340,27 +334,8 @@ int main(int argc, char *argv[])
 
         if (mime_header)
             set_mime_text(stdout, dods_data);
-#if 0
-        // Trick: Since the DataDDS just read has only the stuff matching the
-        // CE, set all the send_p flags. The code below must deal with the case
-        // where the DDS is not serialized by another process and is instead the
-        // whole DDS, so it checks the send_p flag.
-        //
-        // NB: This code is here for debugging the handler version of asciival
-        // jhrg 11/30/06
-        DDS::Vars_iter i = dds.var_begin();
-        while (i != dds.var_end()) {
-            (*i)->set_send_p(true);
-            ++i;
-        }
 
-        DataDDS *adds = datadds_to_ascii_datadds(&dds);
-
-        get_data_values_as_ascii(adds, stdout);
-        fflush(stdout);
-#else
         get_data_values_as_ascii(&dds, cout);
-#endif
     }
     catch(Error & e) {
         DBG(cerr << "Caught an Error object." << endl);

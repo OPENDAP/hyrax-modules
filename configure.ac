@@ -3,7 +3,7 @@ dnl -*- autoconf -*-
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(dap-server, 3.9.2, opendap-tech@opendap.org)
+AC_INIT(dap-server, 3.9.3, opendap-tech@opendap.org)
 AC_CONFIG_AUX_DIR([conf])
 
 AM_INIT_AUTOMAKE
@@ -106,6 +106,10 @@ AC_CHECK_BES([3.7.0],
 ],
 [ AM_CONDITIONAL([OPENDAPSERVER], [false])
 ])
+
+AM_PATH_CPPUNIT(1.12.0,
+	[AM_CONDITIONAL([CPPUNIT], [true])],
+	[AM_CONDITIONAL([CPPUNIT], [false])])
 
 dnl I wrote these checks because we need the *-config scripts to build, so 
 dnl the AC_CHECK_LIB macro is not needed.

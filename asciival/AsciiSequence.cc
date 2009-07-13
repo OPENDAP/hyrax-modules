@@ -38,10 +38,11 @@
 #include <iostream>
 #include <string>
 
+#include <BESDebug.h>
+
 #include "InternalErr.h"
 #include "AsciiSequence.h"
 #include "AsciiStructure.h"
-//#include "name_map.h"
 #include "get_ascii.h"
 #include "debug.h"
 
@@ -65,13 +66,13 @@ AsciiSequence::AsciiSequence(Sequence * bt)
     // don't have to do it on the fly.
     Vars_iter p = bt->var_begin();
     while (p != bt->var_end()) {
-        if ((*p)->send_p()) {
-            BaseType *new_bt = basetype_to_asciitype(*p);
-            add_var(new_bt);
-            delete new_bt;
-        }
+        BaseType *new_bt = basetype_to_asciitype(*p);
+        add_var(new_bt);
+        delete new_bt;
         p++;
     }
+
+    BaseType::set_send_p(bt->send_p());
 }
 
 AsciiSequence::~AsciiSequence()
@@ -85,7 +86,7 @@ AsciiSequence::length()
 }
 
 // This specialization is different from the Sequence version only in that
-// it tests '*iter)->send_p()' before incrementing 'i' by
+// it tests '(*iter)->send_p()' before incrementing 'i' by
 // '(*iter)->element_count(true)'.
 int
 AsciiSequence::element_count(bool leaves)
@@ -101,144 +102,81 @@ AsciiSequence::element_count(bool leaves)
         return i;
     }
 }
-#ifdef FILE_METHODS
-// case 1: Simple, Seq - handled
-// Case 2: Seq, Simple
-void
-AsciiSequence::print_ascii_row(FILE * os, int row, BaseTypeRow outer_vars)
-{
-    Sequence *seq = dynamic_cast < Sequence * >(_redirect);
-    if (!seq)
-        seq = this;
 
-    // Print the values from this sequence.
-    // AsciiSequence::element_count() returns only vars with send_p() set.
-    int elements = element_count() - 1;
-    int j = 0;
-    bool done = false;
-    do {
-        BaseType *bt_ptr = seq->var_value(row, j);
-        if (bt_ptr) {           // Check for data.
-            BaseType *abt_ptr = basetype_to_asciitype(bt_ptr);
-            if (bt_ptr->type() == dods_sequence_c) {
-                dynamic_cast <
-                    AsciiSequence * >(abt_ptr)->print_ascii_rows(os,
-                                                                 outer_vars);
-            } else {
-                // push the real base type pointer instead of the ascii one.
-                // We can cast it again later from the outer_vars vector.
-                outer_vars.push_back(bt_ptr);
-                dynamic_cast < AsciiOutput * >(abt_ptr)->print_ascii(os,
-                                                                     false);
-            }
-            ++j;
-            // we only need the ascii type here, so delete it
-            delete abt_ptr;
-        }
-
-        // ++j;
-        // When we're finally done, set the flag and omit the comma.
-        if (j > elements)
-            done = true;
-        else if (bt_ptr)
-            fprintf(os, ", ");
-
-    } while (!done);
-}
-#endif
 void
 AsciiSequence::print_ascii_row(ostream &strm, int row, BaseTypeRow outer_vars)
 {
+    BESDEBUG("ascii", "    In AsciiSequence::print_ascii_row" << endl);
+
     Sequence *seq = dynamic_cast < Sequence * >(_redirect);
     if (!seq)
         seq = this;
 
     // Print the values from this sequence.
     // AsciiSequence::element_count() returns only vars with send_p() set.
-    int elements = element_count() - 1;
+    const int elements = element_count();
+    bool first_var = true;     // used to control printing the comma separator
     int j = 0;
-    bool done = false;
     do {
         BaseType *bt_ptr = seq->var_value(row, j);
         if (bt_ptr) {           // Check for data.
             BaseType *abt_ptr = basetype_to_asciitype(bt_ptr);
-            if (bt_ptr->type() == dods_sequence_c) {
-                dynamic_cast <
-                    AsciiSequence * >(abt_ptr)->print_ascii_rows(strm,
-                                                                 outer_vars);
-            } else {
+            if (abt_ptr->type() == dods_sequence_c) {
+                if (abt_ptr->send_p()) {
+                    if (!first_var)
+                        strm << ", ";
+                    else
+                        first_var = false;
+
+                    dynamic_cast <AsciiSequence * >(abt_ptr)
+                        ->print_ascii_rows(strm, outer_vars);
+                }
+            }
+            else {
                 // push the real base type pointer instead of the ascii one.
                 // We can cast it again later from the outer_vars vector.
                 outer_vars.push_back(bt_ptr);
-                dynamic_cast < AsciiOutput * >(abt_ptr)->print_ascii(strm,
-                                                                     false);
+                if (abt_ptr->send_p()) {
+                    if (!first_var)
+                        strm << ", ";
+                    else
+                        first_var = false;
+
+                    dynamic_cast < AsciiOutput * >(abt_ptr)->print_ascii(strm,
+                        false);
+                }
             }
-            ++j;
+
             // we only need the ascii type here, so delete it
             delete abt_ptr;
         }
 
-        // ++j;
-        // When we're finally done, set the flag and omit the comma.
-        if (j > elements)
-            done = true;
-        else if (bt_ptr)
-            strm << ", " ;
+        ++j;
+    } while (j < elements);
+}
 
-    } while (!done);
-}
-#ifdef FILE_METHODS
-void
-AsciiSequence::print_leading_vars(FILE * os, BaseTypeRow & outer_vars)
-{
-    BaseTypeRow::iterator BTR_iter = outer_vars.begin();
-    for (BTR_iter = outer_vars.begin(); BTR_iter != outer_vars.end();
-         BTR_iter++) {
-        BaseType *abt_ptr = basetype_to_asciitype(*BTR_iter);
-        dynamic_cast < AsciiOutput * >(abt_ptr)->print_ascii(os, false);
-        fprintf(os, ", ");
-        // we only need the ascii base type locally, so delete it
-        delete abt_ptr;
-    }
-}
-#endif
 void
 AsciiSequence::print_leading_vars(ostream &strm, BaseTypeRow & outer_vars)
 {
+    BESDEBUG("ascii", "    In AsciiSequence::print_leading_vars" << endl);
+
+    bool first_var = true;
     BaseTypeRow::iterator BTR_iter = outer_vars.begin();
-    for (BTR_iter = outer_vars.begin(); BTR_iter != outer_vars.end();
-         BTR_iter++) {
+    while (BTR_iter != outer_vars.end()) {
         BaseType *abt_ptr = basetype_to_asciitype(*BTR_iter);
-        dynamic_cast < AsciiOutput * >(abt_ptr)->print_ascii(strm, false);
-        strm << ", " ;
-        // we only need the ascii base type locally, so delete it
-        delete abt_ptr;
-    }
-}
-#ifdef FILE_METHODS
-void
-AsciiSequence::print_ascii_rows(FILE * os, BaseTypeRow outer_vars)
-{
-    Sequence *seq = dynamic_cast < Sequence * >(_redirect);
-    if (!seq)
-        seq = this;
-
-    int rows = seq->number_of_rows() - 1;
-    int i = 0;
-    bool done = false;
-    do {
-        if (i > 0 && !outer_vars.empty())
-            print_leading_vars(os, outer_vars);
-
-        print_ascii_row(os, i++, outer_vars);
-
-        if (i > rows)
-            done = true;
+        if (!first_var)
+            strm << ", " ;
         else
-            fprintf(os, "\n");
-    } while (!done);
+            first_var = false;
+        dynamic_cast < AsciiOutput * >(abt_ptr)->print_ascii(strm, false);
+        delete abt_ptr;
+
+        ++BTR_iter;
+    }
+
+    BESDEBUG("ascii", "    Out AsciiSequence::print_leading_vars" << endl);
 }
-#endif
+
 void
 AsciiSequence::print_ascii_rows(ostream &strm, BaseTypeRow outer_vars)
 {
@@ -246,7 +184,7 @@ AsciiSequence::print_ascii_rows(ostream &strm, BaseTypeRow outer_vars)
     if (!seq)
         seq = this;
 
-    int rows = seq->number_of_rows() - 1;
+    const int rows = seq->number_of_rows() - 1;
     int i = 0;
     bool done = false;
     do {
@@ -260,104 +198,45 @@ AsciiSequence::print_ascii_rows(ostream &strm, BaseTypeRow outer_vars)
         else
             strm << "\n" ;
     } while (!done);
-}
-#ifdef FILE_METHODS
-// Assume that this mfunc is called only for simple sequences. Do not print
-// table style headers for complex sequences.
 
-void
-AsciiSequence::print_header(FILE * os)
-{
-    Vars_iter p = var_begin();
-    while (p != var_end()) {
-        if ((*p)->is_simple_type())
-            fprintf(os, "%s",
-                    dynamic_cast <
-                    AsciiOutput * >(*p)->get_full_name().c_str());
-        else if ((*p)->type() == dods_sequence_c)
-            dynamic_cast < AsciiSequence * >((*p))->print_header(os);
-        else if ((*p)->type() == dods_structure_c)
-            dynamic_cast < AsciiStructure * >((*p))->print_header(os);
-        else
-            throw InternalErr(__FILE__, __LINE__,
-                              "This method should only be called by instances for which `is_simple_sequence' returns true.");
-        if (++p != var_end())
-            fprintf(os, ", ");
-    }
+    BESDEBUG("ascii", "    Out AsciiSequence::print_ascii_rows" << endl);
 }
-#endif
+
 void
 AsciiSequence::print_header(ostream &strm)
 {
+    bool first_var = true;    // Print commas as separators
     Vars_iter p = var_begin();
     while (p != var_end())
     {
-        if ((*p)->is_simple_type())
-            strm << dynamic_cast <AsciiOutput *>(*p)->get_full_name() ;
-        else if ((*p)->type() == dods_sequence_c)
-            dynamic_cast < AsciiSequence * >((*p))->print_header(strm);
-        else if ((*p)->type() == dods_structure_c)
-            dynamic_cast < AsciiStructure * >((*p))->print_header(strm);
-        else
-            throw InternalErr(__FILE__, __LINE__,
-                              "This method should only be called by instances for which `is_simple_sequence' returns true.");
-        if (++p != var_end())
-            strm << ", " ;
-    }
-}
-#ifdef FILE_METHODS
-void
-AsciiSequence::print_ascii(FILE * os, bool print_name) throw(InternalErr)
-{
-    Sequence *seq = dynamic_cast < Sequence * >(_redirect);
-    if (!seq)
-        seq = this;
+        if ((*p)->send_p()) {
+            if (!first_var)
+                strm << ", ";
+            else
+                first_var = false;
 
-    if (seq->is_linear()) {
-        if (print_name) {
-            print_header(os);
-            fprintf(os, "\n");
+            if ((*p)->is_simple_type())
+                strm << dynamic_cast<AsciiOutput *> (*p)->get_full_name();
+            else if ((*p)->type() == dods_sequence_c)
+                dynamic_cast<AsciiSequence *> ((*p))->print_header(strm);
+            else if ((*p)->type() == dods_structure_c)
+                dynamic_cast<AsciiStructure *> ((*p))->print_header(strm);
+            else
+                throw InternalErr(
+                        __FILE__,
+                        __LINE__,
+                        "This method should only be called by instances for which `is_simple_sequence' returns true.");
+
         }
 
-        BaseTypeRow outer_vars(0);
-        print_ascii_rows(os, outer_vars);
-    } else {
-        int rows = seq->number_of_rows() - 1;
-        int elements = seq->element_count() - 1;
-
-        // For each row of the Sequence...
-        bool rows_done = false;
-        int i = 0;
-        do {
-            // For each variable of the row...
-            bool vars_done = false;
-            int j = 0;
-            do {
-                BaseType *bt_ptr = seq->var_value(i, j++);
-                BaseType *abt_ptr = basetype_to_asciitype(bt_ptr);
-                dynamic_cast < AsciiOutput * >(abt_ptr)->print_ascii(os,
-                                                                     true);
-                // abt_ptr is not stored for future use, so delete it
-                delete abt_ptr;
-
-                if (j > elements)
-                    vars_done = true;
-                else
-                    fprintf(os, "\n");
-            } while (!vars_done);
-
-            i++;
-            if (i > rows)
-                rows_done = true;
-            else
-                fprintf(os, "\n");
-        } while (!rows_done);
+        ++p;
     }
 }
-#endif
+
 void
 AsciiSequence::print_ascii(ostream &strm, bool print_name) throw(InternalErr)
 {
+    BESDEBUG("ascii", "In AsciiSequence::print_ascii" << endl);
     Sequence *seq = dynamic_cast < Sequence * >(_redirect);
     if (!seq)
         seq = this;
@@ -370,9 +249,10 @@ AsciiSequence::print_ascii(ostream &strm, bool print_name) throw(InternalErr)
 
         BaseTypeRow outer_vars(0);
         print_ascii_rows(strm, outer_vars);
-    } else {
-        int rows = seq->number_of_rows() - 1;
-        int elements = seq->element_count() - 1;
+    }
+    else {
+        const int rows = seq->number_of_rows() - 1;
+        const int elements = seq->element_count() - 1;
 
         // For each row of the Sequence...
         bool rows_done = false;
@@ -403,4 +283,3 @@ AsciiSequence::print_ascii(ostream &strm, bool print_name) throw(InternalErr)
         } while (!rows_done);
     }
 }
-

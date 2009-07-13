@@ -37,6 +37,8 @@
 
 #include <string>
 
+#include <BESDebug.h>
+
 #include "InternalErr.h"
 #include "AsciiStructure.h"
 #include "AsciiSequence.h"
@@ -62,44 +64,22 @@ AsciiStructure::AsciiStructure( Structure *bt )
     // don't have to do it on the fly. This will also set the parents of
     // each of the underlying vars of the structure.
     Vars_iter p = bt->var_begin();
-    while( p != bt->var_end() )
-    {
-	if( (*p)->send_p() )
-	{
-	    BaseType *new_bt = basetype_to_asciitype( *p ) ;
-	    add_var( new_bt ) ;
-	    // add_var makes a copy of the base type passed to it, so delete
-	    // it here
-	    delete new_bt ;
-	}
-	p++ ;
+    while (p != bt->var_end()) {
+        BaseType *new_bt = basetype_to_asciitype(*p);
+        add_var(new_bt);
+        // add_var makes a copy of the base type passed to it, so delete
+        // it here
+        delete new_bt;
+        p++;
     }
+
+    BaseType::set_send_p(bt->send_p());
 }
 
 AsciiStructure::~AsciiStructure()
 {
 }
-#ifdef FILE_METHODS
-// This must only be called for simple structures!
-void
-AsciiStructure::print_header(FILE *os)
-{
-    Vars_iter p = var_begin();
-    while (p != var_end()) {
-	if ((*p)->is_simple_type())
-	    fprintf( os, "%s", dynamic_cast<AsciiOutput*>(*p)->get_full_name().c_str() ) ;
-	else if ((*p)->type() == dods_structure_c)
-	    dynamic_cast<AsciiStructure*>((*p))->print_header(os);
-	// May need a case here for Sequence 2/18/2002 jhrg
-	// Yes, we do, and for Grid as well. 04/04/03 jhrg
-	else
-	    throw InternalErr(__FILE__, __LINE__,
-			      "Support for ASCII output of datasets with structures which contain Sequences or Grids has not been completed.");
-	if (++p != var_end())
-	    fprintf(os, ", ");
-    }
-}
-#endif
+
 void
 AsciiStructure::print_header(ostream &strm)
 {
@@ -118,37 +98,12 @@ AsciiStructure::print_header(ostream &strm)
 	    strm << ", " ;
     }
 }
-#ifdef FILE_METHODS
-void
-AsciiStructure::print_ascii(FILE *os, bool print_name) throw(InternalErr)
-{
-    if (is_linear()) {
-	if (print_name) {
-	    print_header(os);
-	    fprintf(os, "\n");
-	}
 
-	Vars_iter p = var_begin();
-	while (p != var_end()) {
-	    dynamic_cast<AsciiOutput*>((*p))->print_ascii(os, false);
-	    if (++p != var_end())
-		fprintf(os, ", ");
-	}
-    }
-    else {
-	for (Vars_iter p = var_begin(); p != var_end(); ++p) {
-	    dynamic_cast<AsciiOutput*>((*p))->print_ascii(os, true);
-	    // This line outputs an extra endl when print_ascii is called for
-	    // nested structures because an endl is written for each member
-	    // and then once for the structure itself. 9/14/2001 jhrg
-	    fprintf(os, "\n");
-	}
-    }
-}
-#endif
 void
 AsciiStructure::print_ascii(ostream &strm, bool print_name) throw(InternalErr)
 {
+    BESDEBUG("ascii", "In 'AsciiStructure::print_ascii'" << endl);
+
     if (is_linear()) {
 	if (print_name) {
 	    print_header(strm);
@@ -156,20 +111,24 @@ AsciiStructure::print_ascii(ostream &strm, bool print_name) throw(InternalErr)
 	}
 
 	Vars_iter p = var_begin();
-	while (p != var_end()) {
-	    dynamic_cast<AsciiOutput*>((*p))->print_ascii(strm, false);
-	    if (++p != var_end())
-		strm << ", " ;
-	}
+        while (p != var_end()) {
+            if ((*p)->send_p())
+                dynamic_cast<AsciiOutput*> ((*p))->print_ascii(strm, false);
+
+            if (++p != var_end())
+                strm << ", ";
+        }
     }
     else {
-	for (Vars_iter p = var_begin(); p != var_end(); ++p) {
-	    dynamic_cast<AsciiOutput*>((*p))->print_ascii(strm, true);
-	    // This line outputs an extra endl when print_ascii is called for
-	    // nested structures because an endl is written for each member
-	    // and then once for the structure itself. 9/14/2001 jhrg
-	    strm << "\n" ;
-	}
+        for (Vars_iter p = var_begin(); p != var_end(); ++p) {
+            if ((*p)->send_p()) {
+                dynamic_cast<AsciiOutput*> ((*p))->print_ascii(strm, true);
+                // This line outputs an extra endl when print_ascii is called for
+                // nested structures because an endl is written for each member
+                // and then once for the structure itself. 9/14/2001 jhrg
+                strm << "\n";
+            }
+        }
     }
 }
 

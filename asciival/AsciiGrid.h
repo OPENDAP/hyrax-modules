@@ -44,21 +44,12 @@ private:
     void print_vector(ostream &strm, bool print_name);
     void print_grid(ostream &strm, bool print_name);
 
-#ifdef FILE_METHODS
-    void print_vector(FILE *os, bool print_name);
-    void print_grid(FILE *os, bool print_name);
-#endif
-
 public:
     AsciiGrid(const string &n);
     AsciiGrid( Grid *grid ) ;
     virtual ~AsciiGrid();
 
     virtual BaseType *ptr_duplicate();
-#ifdef FILE_METHODS
-    virtual void print_ascii(FILE *os, bool print_name = true)
-	throw(InternalErr);
-#endif
     virtual void print_ascii(ostream &strm, bool print_name = true)
 	throw(InternalErr);
 };

@@ -7,7 +7,7 @@
 
 Summary:         Basic request handling for OPeNDAP servers 
 Name:            dap-server
-Version:         3.9.2
+Version:         3.9.3
 Release:         1
 License:         LGPL
 Group:           System Environment/Daemons 
@@ -111,7 +111,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc __dist_doc/*
 %{_bindir}/bes-dap-data.sh
 %{_bindir}/dap_usage
-%{_bindir}/dap_asciival
+#%{_bindir}/dap_asciival
 %{_bindir}/dap_www_int
 %{_datadir}/bes/
 %{_datadir}/dap-server/
