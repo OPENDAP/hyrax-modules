@@ -36,6 +36,7 @@ using std::endl ;
 #include "BESUsageModule.h"
 
 #include "BESUsageNames.h"
+#include "BESDapNames.h"
 #include "BESResponseNames.h"
 #include "BESResponseHandlerList.h"
 

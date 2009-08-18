@@ -37,6 +37,7 @@ using std::endl;
 #include "BESDebug.h"
 
 #include "BESWWWNames.h"
+#include "BESDapNames.h"
 #include "BESResponseNames.h"
 #include "BESResponseHandlerList.h"
 #include "BESWWWResponseHandler.h"

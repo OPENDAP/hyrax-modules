@@ -47,9 +47,9 @@ BESXMLWWWGetCommand::BESXMLWWWGetCommand( const BESDataHandlerInterface &base_dh
 {
 }
 
-/** @brief parse a show command. No properties or children elements
+/** @brief parse a get html_form command.
  *
-    <get  type="dds" definition="d" returnAs="name" />
+    <get type="dds" definition="d" url="url"/>
  *
  * @param node xml2 element node pointer
  */
@@ -83,6 +83,7 @@ BESXMLWWWGetCommand::parse_request( xmlNode *node )
 	string err = name + " html_form command: missing url property" ;
 	throw BESSyntaxUserError( err, __FILE__, __LINE__ ) ;
     }
+    _str_cmd += " using " + _dhi.data[WWW_URL] ;
 
     // now that we've set the action, go get the response handler for the
     // action

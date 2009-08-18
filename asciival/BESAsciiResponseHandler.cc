@@ -32,8 +32,7 @@
 
 #include "BESAsciiResponseHandler.h"
 #include "BESRequestHandlerList.h"
-#include "BESResponseNames.h"
-#include "BESDataNames.h"
+#include "BESDapNames.h"
 #include "BESAsciiNames.h"
 #include "BESDataDDSResponse.h"
 #include "BESAsciiTransmit.h"

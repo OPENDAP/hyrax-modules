@@ -35,9 +35,8 @@
 #include <BESWWWTransmit.h>
 #include <DODSFilter.h>
 #include <BESContainer.h>
-#include <BESDataNames.h>
+#include <BESDapNames.h>
 #include <BESWWWNames.h>
-#include <BESResponseNames.h>
 #include <cgi_util.h>
 #include <BESWWW.h>
 #include <util.h>

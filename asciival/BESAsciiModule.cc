@@ -37,6 +37,7 @@ using std::endl ;
 #include "BESDebug.h"
 
 #include "BESAsciiNames.h"
+#include "BESDapNames.h"
 #include "BESResponseNames.h"
 #include "BESResponseHandlerList.h"
 #include "BESAsciiResponseHandler.h"

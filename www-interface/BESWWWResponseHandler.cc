@@ -32,8 +32,7 @@
 
 #include "BESWWWResponseHandler.h"
 #include "BESRequestHandlerList.h"
-#include "BESResponseNames.h"
-#include "BESDataNames.h"
+#include "BESDapNames.h"
 #include "BESWWWNames.h"
 #include "BESWWW.h"
 #include "BESDASResponse.h"
