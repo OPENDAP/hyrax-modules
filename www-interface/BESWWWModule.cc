@@ -57,18 +57,19 @@ using std::endl;
 void
  BESWWWModule::initialize(const string & modname)
 {
-    BESDEBUG( "www", "Initializing OPeNDAP WWW module " << modname << endl )
+    BESDEBUG( "www", "Initializing OPeNDAP WWW module " << modname << endl ) ;
 
-    BESDEBUG( "www", "    adding " << modname << " request handler" << endl )
+    BESDEBUG( "www", "    adding " << modname << " request handler" << endl ) ;
     BESRequestHandler *handler = new BESWWWRequestHandler( modname ) ;
     BESRequestHandlerList::TheList()->add_handler( modname, handler ) ;
 
-    BESDEBUG( "www", "    adding " << WWW_RESPONSE << " response handler" << endl )
+    BESDEBUG( "www", "    adding " << WWW_RESPONSE
+		     << " response handler" << endl ) ;
     BESResponseHandlerList::TheList()->add_handler(WWW_RESPONSE,
                                                    BESWWWResponseHandler::
                                                    WWWResponseBuilder);
 
-    BESDEBUG( "www", "Adding to dap services" << endl )
+    BESDEBUG( "www", "Adding to dap services" << endl ) ;
     BESDapService::add_to_dap_service( WWW_SERVICE,
 		       "OPeNDAP HTML Form for data constraints and access" ) ;
 
@@ -76,11 +77,12 @@ void
         BESReturnManager::TheManager()->find_transmitter( DAP2_FORMAT ) ;
     if( t )
     {
-	BESDEBUG( "www", "    adding basic " << WWW_TRANSMITTER << " transmit function" << endl )
+	BESDEBUG( "www", "    adding basic " << WWW_TRANSMITTER
+			 << " transmit function" << endl ) ;
         t->add_method( WWW_TRANSMITTER, BESWWWTransmit::send_basic_form ) ;
     }
 
-    BESDEBUG( "www", "    adding " << WWW_RESPONSE << " command" << endl )
+    BESDEBUG( "www", "    adding " << WWW_RESPONSE << " command" << endl) ;
     /* old-style string command
     BESCommand *cmd = new BESWWWGetCommand(WWW_RESPONSE);
     BESCommand::add_command(WWW_RESPONSE, cmd);
@@ -88,42 +90,47 @@ void
     BESXMLCommand::add_command( WWW_RESPONSE,
 				BESXMLWWWGetCommand::CommandBuilder ) ;
 
-    BESDEBUG( "www", "Adding www context to BESDebug" << endl )
+    BESDEBUG( "www", "Adding www context to BESDebug" << endl ) ;
     BESDebug::Register( "www" ) ;
 
-    BESDEBUG( "www", "Done Initializing OPeNDAP WWW module " << modname << endl )
+    BESDEBUG( "www", "Done Initializing OPeNDAP WWW module "
+		     << modname << endl ) ;
 }
 
 void BESWWWModule::terminate(const string & modname)
 {
-    BESDEBUG( "www", "Cleaning OPeNDAP WWW module " << modname << endl )
+    BESDEBUG( "www", "Cleaning OPeNDAP WWW module " << modname << endl ) ;
 
-    BESDEBUG( "www", "    removing " << modname << " request handler " << endl )
+    BESDEBUG( "www", "    removing " << modname <<
+		     " request handler " << endl ) ;
     BESRequestHandler *rh = BESRequestHandlerList::TheList()->remove_handler( modname ) ;
     if( rh ) delete rh ;
 
-    BESDEBUG( "www", "    removing " << WWW_RESPONSE << " response handler" << endl )
+    BESDEBUG( "www", "    removing " << WWW_RESPONSE
+		     << " response handler" << endl ) ;
     BESResponseHandlerList::TheList()->remove_handler(WWW_RESPONSE);
 
-    BESDEBUG( "www", "    removing " << WWW_RESPONSE << " command" << endl )
+    BESDEBUG( "www", "    removing " << WWW_RESPONSE << " command" << endl ) ;
     BESXMLCommand::del_command( WWW_RESPONSE ) ;
 
     BESTransmitter *t =
         BESReturnManager::TheManager()->find_transmitter( DAP2_FORMAT ) ;
     if( t )
     {
-	BESDEBUG( "www", "    removing basic " << WWW_TRANSMITTER << " transmit function" << endl )
+	BESDEBUG( "www", "    removing basic " << WWW_TRANSMITTER
+			 << " transmit function" << endl ) ;
         t->remove_method(WWW_TRANSMITTER);
     }
 
     t = BESReturnManager::TheManager()->find_transmitter( DAP2_FORMAT ) ;
     if( t )
     {
-	BESDEBUG( "www", "    removing http " << WWW_TRANSMITTER << " transmit function" << endl )
+	BESDEBUG( "www", "    removing http " << WWW_TRANSMITTER
+			 << " transmit function" << endl ) ;
         t->remove_method(WWW_TRANSMITTER);
     }
 
-    BESDEBUG( "www", "Done Cleaning OPeNDAP WWW module " << modname << endl )
+    BESDEBUG( "www", "Done Cleaning OPeNDAP WWW module " << modname << endl ) ;
 }
 
 /** @brief dumps information about this object

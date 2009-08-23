@@ -56,16 +56,19 @@ using std::endl ;
 void
 BESAsciiModule::initialize( const string &modname )
 {
-    BESDEBUG( "ascii", "Initializing OPeNDAP Ascii module " << modname << endl )
+    BESDEBUG( "ascii", "Initializing OPeNDAP Ascii module "
+		       << modname << endl ) ;
 
-    BESDEBUG( "ascii", "    adding " << modname << " request handler" << endl )
+    BESDEBUG( "ascii", "    adding " << modname
+		       << " request handler" << endl ) ;
     BESRequestHandler *handler = new BESAsciiRequestHandler( modname ) ;
     BESRequestHandlerList::TheList()->add_handler( modname, handler ) ;
 
-    BESDEBUG( "ascii", "    adding " << ASCII_RESPONSE << " response handler" << endl )
+    BESDEBUG( "ascii", "    adding " << ASCII_RESPONSE
+		       << " response handler" << endl ) ;
     BESResponseHandlerList::TheList()->add_handler( ASCII_RESPONSE, BESAsciiResponseHandler::AsciiResponseBuilder ) ;
 
-    BESDEBUG( "ascii", "Adding to dap services" << endl )
+    BESDEBUG( "ascii", "Adding to dap services" << endl ) ;
     BESDapService::add_to_dap_service( ASCII_SERVICE,
 				       "OPeNDAP ascii data representation" ) ;
 
@@ -73,44 +76,52 @@ BESAsciiModule::initialize( const string &modname )
 	BESReturnManager::TheManager()->find_transmitter( DAP2_FORMAT ) ;
     if( t )
     {
-	BESDEBUG( "ascii", "    adding basic " << ASCII_TRANSMITTER << " transmit function" << endl )
+	BESDEBUG( "ascii", "    adding basic " << ASCII_TRANSMITTER
+			   << " transmit function" << endl ) ;
 	t->add_method( ASCII_TRANSMITTER, BESAsciiTransmit::send_basic_ascii ) ;
     }
 
-    BESDEBUG( "ascii", "    adding ascii debug context" << endl )
+    BESDEBUG( "ascii", "    adding ascii debug context" << endl ) ;
     BESDebug::Register( "ascii" ) ;
 
-    BESDEBUG( "ascii", "Done Initializing OPeNDAP Ascii module " << modname << endl )
+    BESDEBUG( "ascii", "Done Initializing OPeNDAP Ascii module "
+		       << modname << endl ) ;
 }
 
 void
 BESAsciiModule::terminate( const string &modname )
 {
-    BESDEBUG( "ascii", "Cleaning OPeNDAP Ascii module " << modname << endl )
+    BESDEBUG( "ascii", "Cleaning OPeNDAP Ascii module "
+		       << modname << endl ) ;
 
-    BESDEBUG( "ascii", "    removing " << modname << " request handler " << endl )
+    BESDEBUG( "ascii", "    removing " << modname
+		       << " request handler " << endl ) ;
     BESRequestHandler *rh = BESRequestHandlerList::TheList()->remove_handler( modname ) ;
     if( rh ) delete rh ;
 
-    BESDEBUG( "ascii", "    removing " << ASCII_RESPONSE << " response handler" << endl )
+    BESDEBUG( "ascii", "    removing " << ASCII_RESPONSE
+		       << " response handler" << endl ) ;
     BESResponseHandlerList::TheList()->remove_handler( ASCII_RESPONSE ) ;
 
     BESTransmitter *t =
 	BESReturnManager::TheManager()->find_transmitter( DAP2_FORMAT ) ;
     if( t )
     {
-	BESDEBUG( "ascii", "    removing basic " << ASCII_TRANSMITTER << " transmit function" << endl )
+	BESDEBUG( "ascii", "    removing basic " << ASCII_TRANSMITTER
+			   << " transmit function" << endl ) ;
 	t->remove_method( ASCII_TRANSMITTER ) ;
     }
 
     t = BESReturnManager::TheManager()->find_transmitter( DAP2_FORMAT ) ;
     if( t )
     {
-	BESDEBUG( "ascii", "    removing http " << ASCII_TRANSMITTER << " transmit function" << endl )
+	BESDEBUG( "ascii", "    removing http " << ASCII_TRANSMITTER
+			   << " transmit function" << endl ) ;
 	t->remove_method( ASCII_TRANSMITTER ) ;
     }
 
-    BESDEBUG( "ascii", "Done Cleaning OPeNDAP Ascii module " << modname << endl )
+    BESDEBUG( "ascii", "Done Cleaning OPeNDAP Ascii module "
+		       << modname << endl ) ;
 }
 
 /** @brief dumps information about this object

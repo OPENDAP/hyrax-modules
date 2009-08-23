@@ -61,11 +61,11 @@ void
     string dataset_name = dhi.container->access();
 
     try {
-	BESDEBUG( "usage", "writing usage/info" << endl )
+	BESDEBUG( "usage", "writing usage/info" << endl ) ;
 
         write_usage_response(dhi.get_output_stream(), *dds, *das, dataset_name, "", false);
 
-        BESDEBUG( "usage", "done transmitting usage/info" << endl )
+        BESDEBUG( "usage", "done transmitting usage/info" << endl ) ;
     }
     catch( InternalErr &e )
     {
