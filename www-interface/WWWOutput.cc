@@ -49,7 +49,7 @@ static char rcsid[] not_used =
 #include <DDS.h>
 
 #include <debug.h>
-#include <cgi_util.h>
+#include <mime_util.h>
 #include <util.h>
 
 #include "WWWOutput.h"

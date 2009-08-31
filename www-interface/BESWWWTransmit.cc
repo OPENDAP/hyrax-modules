@@ -37,7 +37,7 @@
 #include <BESContainer.h>
 #include <BESDapNames.h>
 #include <BESWWWNames.h>
-#include <cgi_util.h>
+#include <mime_util.h>
 #include <BESWWW.h>
 #include <util.h>
 #include <InternalErr.h>

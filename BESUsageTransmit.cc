@@ -36,7 +36,7 @@
 #include "DODSFilter.h"
 #include "BESContainer.h"
 #include "BESDataNames.h"
-#include "cgi_util.h"
+#include "mime_util.h"
 #include "BESUsage.h"
 #include "usage.h"
 #include "util.h"

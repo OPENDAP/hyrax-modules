@@ -63,7 +63,7 @@ static char rcsid[] not_used = {"$Id$"};
 #include <Grid.h>
 
 #include <DAS.h>
-#include <cgi_util.h>
+#include <mime_util.h>
 #include <util.h>
 
 #include <debug.h>

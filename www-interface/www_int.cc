@@ -54,7 +54,7 @@ static char rcsid[] not_used =
 #include <BaseTypeFactory.h>
 #include <escaping.h>
 #include <GNURegex.h>
-#include <cgi_util.h>
+#include <mime_util.h>
 #include <util.h>
 #include <debug.h>
 
