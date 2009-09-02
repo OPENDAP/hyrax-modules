@@ -11,18 +11,18 @@
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
- 
+
 // (c) COPYRIGHT URI/MIT 1996, 1999
 // Please read the full copyright statement in the file COPYRIGHT_URI.
 //
@@ -86,10 +86,10 @@ using namespace dap_usage;
 #define RETURN_TYPE void
 #else
 #define RETURN_TYPE int
-#endif 
+#endif
 
 namespace dap_usage {
-        
+
 // This code could use a real `kill-file' some day - about the same time that
 // the rest of the server gets a `rc' file... For the present just see if a
 // small collection of regexs match the name.
@@ -161,18 +161,18 @@ name_is_global(string &name)
 // understand. So, I'm keeping this as two separate functions even though
 // there's some duplication... 3/27/2002 jhrg
 static void
-write_global_attributes(ostringstream &oss, AttrTable *attr, 
+write_global_attributes(ostringstream &oss, AttrTable *attr,
 			const string prefix = "")
 {
     if (attr) {
 	AttrTable::Attr_iter a;
 	for (a = attr->attr_begin(); a != attr->attr_end(); a++) {
 	    if (attr->is_container(a))
-		write_global_attributes(oss, attr->get_attr_table(a), 
-					(prefix == "") ? attr->get_name(a) 
+		write_global_attributes(oss, attr->get_attr_table(a),
+					(prefix == "") ? attr->get_name(a)
 					: prefix + string(".") + attr->get_name(a));
 	    else {
-		oss << "\n<tr><td align=right valign=top><b>"; 
+		oss << "\n<tr><td align=right valign=top><b>";
 		if (prefix != "")
 		    oss << prefix << "." << attr->get_name(a);
 		else
@@ -196,8 +196,8 @@ write_attributes(ostringstream &oss, AttrTable *attr, const string prefix = "")
 	AttrTable::Attr_iter a;
 	for (a = attr->attr_begin(); a != attr->attr_end(); a++) {
 	    if (attr->is_container(a))
-		write_attributes(oss, attr->get_attr_table(a), 
-				 (prefix == "") ? attr->get_name(a) 
+		write_attributes(oss, attr->get_attr_table(a),
+				 (prefix == "") ? attr->get_name(a)
 				 : prefix + string(".") + attr->get_name(a));
 	    else {
 		if (prefix != "")
@@ -288,7 +288,7 @@ fancy_typename(BaseType *v)
 	  Array *a = (Array *)v;
 	  type << "Array of " << fancy_typename(a->var()) <<"s ";
 	  for (Array::Dim_iter p = a->dim_begin(); p != a->dim_end(); p++) {
-	      type << "[" << a->dimension_name(p) << " = 0.." 
+	      type << "[" << a->dimension_name(p) << " = 0.."
 		   << a->dimension_size(p, false)-1 << "]";
 	  }
 	  return type.str();
@@ -308,13 +308,13 @@ fancy_typename(BaseType *v)
 static void
 write_variable(BaseType *btp, DAS &das, ostringstream &vs)
 {
-    vs << "<td align=right valign=top><b>" << btp->name() 
+    vs << "<td align=right valign=top><b>" << btp->name()
        << "</b>:</td>\n"
        << "<td align=left valign=top>" << fancy_typename(btp)
        << "<br>";
 
     AttrTable *attr = das.get_table(btp->name());
-	    
+
     write_attributes(vs, attr, "");
 
     switch (btp->type()) {
@@ -426,16 +426,16 @@ html_header( ostream &strm )
 
 /** Build an HTML page that summarizes the information held int eh DDS/DAS.
     This also uses the dataset and server name to lookup extra information
-    that the data provider has made available (using libdap's 
-    cgi_util.cc:get_user_supplied_docs().
-    
+    that the data provider has made available (using libdap's
+    mime_util.cc:get_user_supplied_docs().
+
     @note This function is faithful to the original server3 'info' response
     in all ways \e except that it does not handle the 'override' document
     feature of that server. This feature was never used outside of testing,
     to the best of our knowledge.
-    
+
     @todo Update this to use the DDX.
-    
+
     @param os Write the HTML to this FILE pointer
     @param dds The DDS
     @param das THe DAS
@@ -478,16 +478,16 @@ write_usage_response(FILE *os, DDS &dds, DAS &das, const string &dataset_name,
 
 /** Build an HTML page that summarizes the information held int eh DDS/DAS.
     This also uses the dataset and server name to lookup extra information
-    that the data provider has made available (using libdap's 
-    cgi_util.cc:get_user_supplied_docs().
-    
+    that the data provider has made available (using libdap's
+    mime_util.cc:get_user_supplied_docs().
+
     @note This function is faithful to the original server3 'info' response
     in all ways \e except that it does not handle the 'override' document
     feature of that server. This feature was never used outside of testing,
     to the best of our knowledge.
-    
+
     @todo Update this to use the DDX.
-    
+
     @param strm Write the HTML to this stream
     @param dds The DDS
     @param das THe DAS

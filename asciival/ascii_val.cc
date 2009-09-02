@@ -74,7 +74,7 @@ using namespace std;
 #include <PipeResponse.h>
 #include <escaping.h>
 #include <GNURegex.h>
-#include <cgi_util.h>
+#include <mime_util.h>
 #include <debug.h>
 
 #include "AsciiByte.h"

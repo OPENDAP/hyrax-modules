@@ -11,18 +11,18 @@
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
- 
+
 /** ais_tool is a simple proxy device for DODS URLs. Given a URL, ais_tool
     dereferences it and merges in any AIS resources that the current ais
     database returns for the URL.
@@ -48,13 +48,13 @@ static char rcsid[] not_used = {"$Id$"};
 #include "DDS.h"
 #include "DataDDS.h"
 #include "ObjectType.h"
-#include "cgi_util.h"
+#include "mime_util.h"
 #include "debug.h"
 
 static void
 usage(string name)
 {
-    cerr << "Usage: " << name 
+    cerr << "Usage: " << name
 	 << " [madDV] -- <url>" << endl
 	 << "       m: Output a MIME header." << endl
 	 << "       a: Get a DAS object from the URL." << endl
@@ -81,9 +81,9 @@ main(int argc, char * argv[])
 The AIS proxy server has not been configured correctly.\n\
 In the DODS server script (nph-ais), set the name of the AIS database.");
 
-	AISConnect *url = new AISConnect(df.get_dataset_name(), 
+	AISConnect *url = new AISConnect(df.get_dataset_name(),
 					 df.get_ais_db());
-	
+
 	// *** Set accept_deflate ???
 	url->set_cache_enabled(false);
 
@@ -113,7 +113,7 @@ In the DODS server script (nph-ais), set the name of the AIS database.");
 	    DBG(cerr << "CE: " << df.get_ce() << endl);
 	    url->request_data(dds, df.get_ce()); // other requests ignore this
 	    DBG(cerr << "Successfully got data from the server..." << endl);
-	    
+
 	    // Before sending, mark all the variables as read so that the
 	    // read() methods don't get called by serialize().
 	    for (DDS::Vars_iter i = dds.var_begin(); i != dds.var_end(); ++i)
@@ -130,7 +130,7 @@ In the DODS server script (nph-ais), set the name of the AIS database.");
 	}
     }
     catch (Error &e) {
-	DBG(cerr << "Caught an Error: " << e.get_error_message() 
+	DBG(cerr << "Caught an Error: " << e.get_error_message()
 	    << endl);
 	set_mime_text(stdout, dods_error, df.get_cgi_version());
 	e.print(stdout);

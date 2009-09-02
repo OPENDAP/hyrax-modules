@@ -11,18 +11,18 @@
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
-// 
+//
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
- 
+
 #include "config.h"
 
 static char rcsid[] not_used = {"$Id$"};
@@ -55,7 +55,7 @@ using namespace dap_usage;
 #define RETURN_TYPE void
 #else
 #define RETURN_TYPE int
-#endif 
+#endif
 
 static void
 usage(char *argv[])
@@ -63,7 +63,7 @@ usage(char *argv[])
     cerr << argv[0] << " <options> <filename> <CGI prefix>" << endl
          << "Takes three required arguments; command options to be" << endl
          << "passed to the filter programs, the dataset filename and" << endl
-         << "the directory and api prefix for the filter program." << endl; 
+         << "the directory and api prefix for the filter program." << endl;
 }
 
 // This program is passes a collection of Unix-style options, the pathname
@@ -88,7 +88,7 @@ main(int argc, char *argv[])
     }
 
     // The site is not overriding the DAS/DDS generated information, so read
-    // the DAS, DDS and user supplied documents. 
+    // the DAS, DDS and user supplied documents.
 
     string handler = argv[3];
 
@@ -98,10 +98,10 @@ main(int argc, char *argv[])
     Regex options_allowed("[-a-zA-Z_]+");
     if (!options_allowed.match(options.c_str(), options.length()))
         throw Error("Invalid input (2)");
-        
+
     // The file paramter (data source name, really) may have escape characters
-    // (DODSFilter::initialize calls www2id()) so it's called here and the 
-    // resulting string is sanitized. I believe that the only escaped 
+    // (DODSFilter::initialize calls www2id()) so it's called here and the
+    // resulting string is sanitized. I believe that the only escaped
     // character allowed is a space...
     Regex name_allowed("[-a-zA-Z0-9_%]+");
     string unesc_name = www2id(name, "%", "%20");
@@ -139,7 +139,7 @@ main(int argc, char *argv[])
     }
     catch (Error &e) {
         pclose(in);
-        
+
         string error_msg = e.get_error_message();
         fprintf( stdout, "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n" ) ;
         fprintf( stdout, "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n") ;
@@ -149,7 +149,7 @@ main(int argc, char *argv[])
         fprintf( stdout, "<h3>Error building the DODS dataset usage repsonse</h3>:\n" ) ;
         fprintf( stdout, "%s", error_msg.c_str() ) ;
         fprintf( stdout, "<hr>\n" ) ;
-        
+
         return EXIT_FAILURE;
     }
     catch (exception &e) {
@@ -164,7 +164,7 @@ main(int argc, char *argv[])
         fprintf( stdout, "<h3>Error building the DODS dataset usage repsonse</h3>:\n" ) ;
         fprintf( stdout, "%s", error_msg.c_str() ) ;
         fprintf( stdout, "<hr>\n" ) ;
-        
+
         return EXIT_FAILURE;
     }
 
