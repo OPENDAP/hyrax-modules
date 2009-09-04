@@ -5,7 +5,7 @@ AUTOMAKE_OPTIONS = foreign
 
 # Arrange to build with the backward compatibility mode enabled.
 AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/asciival $(BES_CPPFLAGS)
-AM_LDADD = 
+AM_LDADD =
 AM_CXXFLAGS = 
 
 if CPPUNIT
@@ -23,8 +23,6 @@ noinst_HEADERS = test_config.h
 
 check_PROGRAMS = $(UNIT_TESTS)
 
-# This determines what gets run by 'make check.' The dejagnu_driver.sh 
-# runs all the dejagnu test drivers by calling runtest 'by hand.'
 TESTS = $(UNIT_TESTS)
 
 EXTRA_DIST = testsuite test_config.h.in

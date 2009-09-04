@@ -7,8 +7,8 @@ AC_INIT(dap-server, 3.9.3, opendap-tech@opendap.org)
 AC_CONFIG_AUX_DIR([conf])
 AC_CONFIG_MACRO_DIR([conf])
 
-AM_INIT_AUTOMAKE
-AC_CONFIG_SRCDIR([nph-dods.in])
+AM_INIT_AUTOMAKE(1.10)
+AC_CONFIG_SRCDIR([usage_main.cc])
 AM_CONFIG_HEADER([config.h])
 
 AC_DEFINE([DAP_PROTOCOL_VERSION], ["3.2"], [What DAP version is supported?])
@@ -99,13 +99,10 @@ AC_CHECK_LIBDAP([3.9.0],
  [ AC_MSG_ERROR([Cannot find libdap])
 ])
 
-AC_CHECK_BES([3.7.0],
+AC_CHECK_BES([3.7.2],
 [
-    # I think the AC_SUBST([BES_MODULE_DIR]) in bes.m4 will put that 
-    # symbol in the output. Same for BES_CPPFLAGS. jhrg 5/1/06
-    AM_CONDITIONAL([OPENDAPSERVER], [true])
 ],
-[ AM_CONDITIONAL([OPENDAPSERVER], [false])
+[ AC_MSG_ERROR([Cannot find bes])
 ])
 
 AM_PATH_CPPUNIT(1.12.0,
@@ -134,7 +131,7 @@ AH_BOTTOM([/* Shorthand for gcc's unused attribute feature */
 
 AC_CONFIG_FILES([Makefile
                  asciival/Makefile
-		         asciival/unit-tests/Makefile
+		 asciival/unit-tests/Makefile
                  www-interface/Makefile])
                  
 AC_CONFIG_FILES([www-interface/js2h.pl], [chmod +x www-interface/js2h.pl])

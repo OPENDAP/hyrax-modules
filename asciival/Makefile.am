@@ -15,26 +15,13 @@ TEST_COV_FLAGS = -ftest-coverage -fprofile-arcs
 
 SUBDIRS = unit-tests
 
-# This was only built for the DEJAGNU tests, which are broken. Use the
-# unit-tests and the integration tests run from the OLFS code. Using the
-# newer autotest-based regrression tests is hard because running this handler
-# requires that various data handlers be in place first.
-# bin_PROGRAMS = dap_asciival
-
-if OPENDAPSERVER
-    # lib_besdir=$(BES_MODULE_DIR)
-    lib_besdir=$(libdir)/bes
-    lib_bes_LTLIBRARIES = libascii_module.la
-endif
+lib_besdir=$(libdir)/bes
+lib_bes_LTLIBRARIES = libascii_module.la
 
 libascii_module_la_SOURCES = $(ASCII_SOURCES) $(BES_SOURCES)
 libascii_module_la_CPPFLAGS = $(BES_CPPFLAGS)
 libascii_module_la_LDFLAGS = -avoid-version -module 
 libascii_module_la_LIBADD = $(BES_DAP_LIBS)
-
-#dap_asciival_SOURCES = $(ASCII_SOURCES) ascii_val.cc
-#dap_asciival_CPPFLAGS = $(BES_CPPFLAGS)
-#dap_asciival_LDADD = $(BES_DAP_LIBS)
 
 ASCII_SOURCES = AsciiArray.cc AsciiInt16.cc AsciiStructure.cc		   \
 		AsciiInt32.cc AsciiUInt16.cc AsciiByte.cc AsciiOutput.cc   \
@@ -51,9 +38,7 @@ BES_SOURCES = BESAsciiModule.cc BESAsciiResponseHandler.cc		   \
 	      BESAsciiModule.h BESAsciiResponseHandler.h		   \
 	      BESAsciiTransmit.h BESAsciiRequestHandler.h BESAsciiNames.h
 
-# DEJATOOL = dap_asciival
-RUNTESTDEFAULTFLAGS = --tool $$tool --srcdir testsuite
-EXTRA_DIST = testsuite common_tests.exp
+EXTRA_DIST = 
 
 CLEANFILES = *~ *.log *.sum
 

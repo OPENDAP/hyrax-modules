@@ -10,20 +10,12 @@ ACLOCAL_AMFLAGS = -I conf
 
 SUBDIRS = . asciival www-interface
 
-bin_PROGRAMS = dap_usage
-
-dap_usage_SOURCES = usage_main.cc $(USAGE_SOURCES)
-
-if OPENDAPSERVER
-
 lib_besdir=$(libdir)/bes
 lib_bes_LTLIBRARIES = libusage_module.la
 besdir=$(datadir)/bes
 
 dist_bin_SCRIPTS = bes-dap-data.sh
 dist_bes_DATA = dap-server_help.html dap-server_help.txt
-
-endif
 
 USAGE_SOURCES = usage.cc usage.h 
 
@@ -37,44 +29,15 @@ libusage_module_la_CPPFLAGS = $(BES_CPPFLAGS)
 libusage_module_la_LDFLAGS = -avoid-version -module 
 libusage_module_la_LIBADD = $(BES_DAP_LIBS)
 
-modulesdir = $(dap_modulesdir)
+EXTRA_DIST = COPYING COPYRIGHT_URI dap-server.spec README \
+	bes-dap-data.sh.in OSX_Resources
 
-dist_modules_DATA = DODS_Dispatch.pm DODS_Cache.pm dods_logging.pm \
-       FilterDirHTML.pm read_config.pm
-
-cgidir = $(dap_cgidir)
-cgiconfdir = $(dap_cgiconfdir)
-
-nodist_cgi_SCRIPTS = nph-dods
-
-nodist_cgiconf_DATA = dap-server.rc
-
-EXTRA_DIST = EXAMPLE_OPENDAP_STATISTICS COPYING COPYRIGHT_URI \
-  nph-dods.in dap-server.rc.in dap-server.spec opendap_apache.conf \
-  README bes-dap-data.sh.in OSX_Resources
-
-nph-dods: nph-dods.in config.status
-	sed -e 's%[@]PERL[@]%${PERL}%' \
-		-e 's%[@]bindir[@]%${bindir}%' \
-		-e 's%[@]dap_modulesdir[@]%${dap_modulesdir}%' \
-		-e 's%[@]PACKAGE_VERSION[@]%${PACKAGE_VERSION}%' \
-		-e 's%[@]dap_cgiconfdir[@]%${dap_cgiconfdir}%' $(srcdir)/nph-dods.in > nph-dods
-	chmod +x nph-dods
-
-dap-server.rc: dap-server.rc.in config.status
-	sed -e 's%[@]CURL[@]%${CURL}%' \
-		-e 's%[@]bindir[@]%${bindir}%' $(srcdir)/dap-server.rc.in > dap-server.rc
-
-DISTCLEANFILES = nph-dods dap-server.rc stamp-nph-dods bes-dap-data.sh
-CLEANFILES = *~
+DISTCLEANFILES = stamp-nph-dods bes-dap-data.sh
+CLEANFILES = *~ bes-dap-data.sh
 
 bes-dap-data.sh: bes-dap-data.sh.in config.status
 	$(do_subst) < $(srcdir)/bes-dap-data.sh.in > bes-dap-data.sh
 	chmod +x bes-dap-data.sh
-
-if OPENDAPSERVER
-
-CLEANFILES += bes-dap-data.sh
 
 do_subst = sed -e 's,[@]sysconfdir[@],$(sysconfdir),g' \
                -e 's,[@]libdir[@],$(libdir),g' \
@@ -90,8 +53,6 @@ bes-conf: bes-dap-data.sh
 	else \
 	    ./bes-dap-data.sh $$bes_prefix/etc/bes/bes.conf $$bes_prefix/lib/bes ;\
 	fi)
-
-endif
 
 ###########################################################################
 

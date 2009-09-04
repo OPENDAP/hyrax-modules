@@ -8,27 +8,19 @@
 AUTOMAKE_OPTIONS = foreign
 
 AM_CPPFLAGS = -I$(top_srcdir) $(BES_CPPFLAGS)
-#$(XML2_CFLAGS)
 
 # These are not used by automak but are often useful for certain types of
 # debugging.
 CXXFLAGS_DEBUG = -g3 -O0 -Wall -fno-defer-pop
 TEST_COV_FLAGS = -ftest-coverage -fprofile-arcs
 
-bin_PROGRAMS = dap_www_int
-
-if OPENDAPSERVER
-    lib_besdir=$(libdir)/bes
-    # $(BES_MODULE_DIR)
-    lib_bes_LTLIBRARIES = libwww_module.la
-endif
+lib_besdir=$(libdir)/bes
+lib_bes_LTLIBRARIES = libwww_module.la
 
 libwww_module_la_SOURCES = $(WWW_SOURCES) $(BES_SOURCES)
 libwww_module_la_CPPFLAGS = $(BES_CPPFLAGS)
 libwww_module_la_LDFLAGS = -avoid-version -module 
 libwww_module_la_LIBADD = $(BES_DAP_LIBS)
-
-dap_www_int_SOURCES =  www_int.cc $(WWW_SOURCES)
 
 BUILT_SOURCES = javascript.h
 
