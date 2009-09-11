@@ -8,7 +8,7 @@ AC_CONFIG_AUX_DIR([conf])
 AC_CONFIG_MACRO_DIR([conf])
 
 AM_INIT_AUTOMAKE(1.10)
-AC_CONFIG_SRCDIR([usage_main.cc])
+AC_CONFIG_SRCDIR([usage.cc])
 AM_CONFIG_HEADER([config.h])
 
 AC_DEFINE([DAP_PROTOCOL_VERSION], ["3.2"], [What DAP version is supported?])
