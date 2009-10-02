@@ -61,6 +61,7 @@ static char rcsid[] not_used = {"$Id$"};
 #include <Structure.h>
 #include <Sequence.h>
 #include <Grid.h>
+#include <Ancillary.h>
 
 #include <DAS.h>
 #include <mime_util.h>
@@ -403,17 +404,6 @@ build_variable_summaries(DAS &das, DDS &dds)
 }
 
 void
-html_header( FILE *os )
-{
-    fprintf( os, "HTTP/1.0 200 OK\r\n" ) ;
-    fprintf( os, "XDODS-Server: %s\r\n", PACKAGE_VERSION ) ;
-    fprintf( os, "XDAP: %s\r\n", DAP_PROTOCOL_VERSION ) ;
-    fprintf( os, "Content-type: text/html\r\n" ) ;
-    fprintf( os, "Content-Description: dods_description\r\n" ) ;
-    fprintf( os, "\r\n" ) ;	// MIME header ends with a blank line
-}
-
-void
 html_header( ostream &strm )
 {
     strm << "HTTP/1.0 200 OK\r\n" ;
@@ -436,58 +426,6 @@ html_header( ostream &strm )
 
     @todo Update this to use the DDX.
 
-    @param os Write the HTML to this FILE pointer
-    @param dds The DDS
-    @param das THe DAS
-    @param dataset_name Use this name to find dataset-specific info added by
-    the provider.
-    @param server_name Use this name to find server-specific info. */
-void
-write_usage_response(FILE *os, DDS &dds, DAS &das, const string &dataset_name,
-                     const string &server_name, bool httpheader) throw(Error)
-{
-        // This will require some hacking in libdap; maybe that code should
-        // move here? jhrg
-        string user_html = get_user_supplied_docs(dataset_name, server_name);
-
-        string global_attrs = build_global_attributes(das, dds);
-
-        string variable_sum = build_variable_summaries(das, dds);
-
-        // Write out the HTML document.
-
-	if( httpheader )
-	    html_header( os );
-
-        if (global_attrs.length()) {
-            fprintf(os, "%s\n%s\n%s\n%s\n",
-                    "<html><head><title>Dataset Information</title></head>",
-                    "<body>",
-                    global_attrs.c_str(),
-                    "<hr>" ) ;
-        }
-
-        fprintf( os, "%s\n", variable_sum.c_str() ) ;
-
-        fprintf( os, "<hr>\n" ) ;
-
-        fprintf( os, "%s\n", user_html.c_str() ) ;
-
-        fprintf( os, "</body>\n</html>\n" ) ;
-}
-
-/** Build an HTML page that summarizes the information held int eh DDS/DAS.
-    This also uses the dataset and server name to lookup extra information
-    that the data provider has made available (using libdap's
-    mime_util.cc:get_user_supplied_docs().
-
-    @note This function is faithful to the original server3 'info' response
-    in all ways \e except that it does not handle the 'override' document
-    feature of that server. This feature was never used outside of testing,
-    to the best of our knowledge.
-
-    @todo Update this to use the DDX.
-
     @param strm Write the HTML to this stream
     @param dds The DDS
     @param das THe DAS
@@ -495,8 +433,10 @@ write_usage_response(FILE *os, DDS &dds, DAS &das, const string &dataset_name,
     the provider.
     @param server_name Use this name to find server-specific info. */
 void
-write_usage_response(ostream &strm, DDS &dds, DAS &das, const string &dataset_name,
-                     const string &server_name, bool httpheader) throw(Error)
+write_usage_response(ostream &strm, DDS &dds, DAS &das,
+		     const string &dataset_name,
+                     const string &server_name,
+		     bool httpheader) throw(Error)
 {
         // This will require some hacking in libdap; maybe that code should
         // move here? jhrg
@@ -524,6 +464,70 @@ write_usage_response(ostream &strm, DDS &dds, DAS &das, const string &dataset_na
         strm << user_html.c_str() << "\n" ;
 
         strm << "</body>\n</html>\n" ;
+}
+
+/** Look in the CGI directory (given by \c cgi) for a per-cgi HTML* file.
+    Also look for a dataset-specific HTML* document. Catenate the documents
+    and return them in a single String variable.
+
+    Similarly, to locate the dataset-specific HTML* file it catenates `.html'
+    to \c name, where \c name is the name of the dataset. If the filename
+    part of \c name is of the form [A-Za-z]+[0-9]*.* then this function also
+    looks for a file whose name is [A-Za-z]+.html For example, if \c name is
+    .../data/fnoc1.nc this function first looks for .../data/fnoc1.nc.html.
+    However, if that does not exist it will look for .../data/fnoc.html. This
+    allows one `per-dataset' file to be used for a collection of files with
+    the same root name.
+
+    @note An HTML* file contains HTML without the \c html, \c head or \c body
+    tags (my own notation).
+
+    @brief Look for the user supplied CGI- and dataset-specific HTML*
+    documents.
+
+    @return A String which contains these two documents catenated. Documents
+    that don't exist are treated as `empty'.  */
+
+string
+get_user_supplied_docs(string name, string cgi)
+{
+    char tmp[256];
+    ostringstream oss;
+    ifstream ifs((cgi + ".html").c_str());
+
+    if (ifs) {
+        while (!ifs.eof()) {
+            ifs.getline(tmp, 255);
+            oss << tmp << "\n";
+        }
+        ifs.close();
+
+        oss << "<hr>";
+    }
+
+    // Problem: This code is run with the CWD as the CGI-BIN directory but
+    // the data are in DocumentRoot (and we don't have the pathname of the
+    // data relative to DocumentRoot). So the only time this will work is
+    // when the server is in the same directory as the data. See bug 815.
+    // 10/08/04 jhrg
+    ifs.open((name + ".html").c_str());
+
+    // If name.html cannot be opened, look for basename.html
+    if (!ifs) {
+        string new_name = Ancillary::find_group_ancillary_file(name, ".html");
+        if (new_name != "")
+            ifs.open(new_name.c_str());
+    }
+
+    if (ifs) {
+        while (!ifs.eof()) {
+            ifs.getline(tmp, 255);
+            oss << tmp << "\n";
+        }
+        ifs.close();
+    }
+
+    return oss.str();
 }
 
 } // namespace dap_usage

@@ -59,7 +59,6 @@ private:
     //DAS *d_das;
 
  protected:
-    FILE *d_os;
     ostream *d_strm;
     int d_attr_rows;
     int d_attr_cols;
@@ -74,9 +73,6 @@ private:
 	(default 5).
 	@param cols The number of columns to show in the attribute textbox
 	(default 70). */
-#ifdef FILE_METHODS
-    WWWOutput(FILE *os, int rows = 5, int cols = 70);
-#endif
     WWWOutput(ostream &strm, int rows = 5, int cols = 70);
 
     /** Write out the header for the HTML document. */

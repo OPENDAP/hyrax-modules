@@ -25,16 +25,14 @@
 
 namespace dap_usage {
  
-void write_usage_response(FILE *os, DDS &dds, DAS &das, 
-                          const string &dataset_name = "",
-                          const string &server_name = "",
-			  bool httpheader = true) throw(Error);
 void write_usage_response(ostream &strm, DDS &dds, DAS &das, 
                           const string &dataset_name = "",
                           const string &server_name = "",
 			  bool httpheader = true) throw(Error);
 
-void html_header(FILE *os);
 void html_header(ostream &strm);
 
+string get_user_supplied_docs(string name, string cgi);
+
 }
+
