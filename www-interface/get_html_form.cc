@@ -125,6 +125,11 @@ DDS *dds_to_www_dds(DDS * dds)
 
     return wwwdds;
 }
+
+// This hack is needed because we have moved the #define of FILE_METHODS to
+// the libdap header files until we can remove those methods from the library.
+#undef FILE_METHODS
+
 #ifdef FILE_METHODS
 /** Using the stuff in WWWOutput and the hacked (specialized) print_val()
     methods in the WWW* classes, write out the HTML form interface.
