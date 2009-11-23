@@ -35,7 +35,9 @@
 #include "BESDapNames.h"
 #include "BESWWWNames.h"
 #include "BESWWW.h"
+#if 0
 #include "BESDASResponse.h"
+#endif
 #include "BESDDSResponse.h"
 #include "BESWWWTransmit.h"
 
@@ -78,7 +80,7 @@ void
     _response_name = DDS_RESPONSE;
     dhi.action = DDS_RESPONSE;
     BESRequestHandlerList::TheList()->execute_each(dhi);
-
+#if 0
     // Fill the DAS
     DAS *das = new DAS;
     BESDASResponse *bdas = new BESDASResponse(das);
@@ -86,8 +88,8 @@ void
     _response_name = DAS_RESPONSE;
     dhi.action = DAS_RESPONSE;
     BESRequestHandlerList::TheList()->execute_each(dhi);
-
-    BESWWW *www = new BESWWW(bdas, bdds);
+#endif
+    BESWWW *www = new BESWWW(/*bdas,*/ bdds);
     _response = www;
     dhi.action = WWW_RESPONSE;
 }

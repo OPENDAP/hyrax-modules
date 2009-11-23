@@ -43,7 +43,7 @@ using namespace libdap ;
 class WWWInt16: public Int16 {
 public:
     WWWInt16(const string &n);
-    WWWInt16( Int16 *bt ) : Int16( bt->name() ) {}
+    WWWInt16( Int16 *bt ) : Int16( *bt ) {}
     virtual ~WWWInt16() {}
 
     virtual BaseType *ptr_duplicate();

@@ -44,7 +44,7 @@ using namespace libdap ;
 class WWWStr: public Str {
 public:
     WWWStr(const string &n);
-    WWWStr( Str *bt ) : Str( bt->name() ) {}
+    WWWStr( Str *bt ) : Str( *bt ) {}
     virtual ~WWWStr() {}
 
     virtual BaseType *ptr_duplicate();

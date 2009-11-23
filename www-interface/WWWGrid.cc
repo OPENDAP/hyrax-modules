@@ -65,6 +65,7 @@ WWWGrid::WWWGrid(const string & n) : Grid(n)
 WWWGrid::WWWGrid(Grid * grid): Grid(grid->name())
 {
     BaseType *bt = basetype_to_wwwtype(grid->array_var());
+    bt->set_attr_table(grid->array_var()->get_attr_table());
     add_var(bt, array);
     delete bt;
 
@@ -72,6 +73,7 @@ WWWGrid::WWWGrid(Grid * grid): Grid(grid->name())
     Grid::Map_iter e = grid->map_end();
     while ( i != e ) {
         Array *at = dynamic_cast<Array *>(basetype_to_wwwtype(*i));
+        at->set_attr_table((*i)->get_attr_table());
         add_var(at, maps);
         delete at;
         ++i;

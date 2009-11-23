@@ -43,7 +43,7 @@ using namespace libdap ;
 class WWWUInt32: public UInt32 {
 public:
     WWWUInt32(const string &n);
-    WWWUInt32( UInt32 *bt ) : UInt32( bt->name() ) {}
+    WWWUInt32( UInt32 *bt ) : UInt32( *bt ) {}
     virtual ~WWWUInt32() {}
 
     virtual BaseType *ptr_duplicate();

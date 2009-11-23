@@ -43,7 +43,7 @@ using namespace libdap ;
 class WWWFloat64: public Float64 {
 public:
     WWWFloat64(const string &n);
-    WWWFloat64( Float64 *bt ) : Float64( bt->name() ) {}
+    WWWFloat64( Float64 *bt ) : Float64( *bt ) {}
     virtual ~WWWFloat64() {}
 
     virtual BaseType *ptr_duplicate();

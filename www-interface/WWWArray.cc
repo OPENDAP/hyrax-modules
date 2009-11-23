@@ -56,13 +56,14 @@ BaseType *WWWArray::ptr_duplicate()
     return new WWWArray(*this);
 }
 
-WWWArray::WWWArray(const string & n, BaseType * v):Array(n, v), _redirect(0)
+WWWArray::WWWArray(const string & n, BaseType * v): Array(n, v), _redirect(0)
 {
 }
 
 WWWArray::WWWArray(Array * bt) : Array( bt->name(), 0), _redirect(bt)
 {
     BaseType *abt = basetype_to_wwwtype(bt->var());
+    abt->set_attr_table(bt->get_attr_table());
     add_var(abt);
     // add_var makes a copy of the base type passed to it, so delete it here
     delete abt;

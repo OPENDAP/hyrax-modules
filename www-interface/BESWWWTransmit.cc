@@ -61,9 +61,10 @@ BESWWWTransmit::send_basic_form(BESResponseObject * obj,
 
 	DDS *dds = dynamic_cast<BESWWW*>(obj)->get_dds()->get_dds() ;
         DDS *wwwdds = dds_to_www_dds( dds ) ;
-	DAS *das = dynamic_cast<BESWWW*>(obj)->get_das()->get_das() ;
+#if 0
+        DAS *das = dynamic_cast<BESWWW*>(obj)->get_das()->get_das() ;
         wwwdds->transfer_attributes( das ) ;
-
+#endif
         BESDEBUG( "www", "writing form" << endl );
 
         string url = dhi.data[WWW_URL];

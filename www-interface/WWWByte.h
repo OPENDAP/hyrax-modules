@@ -44,7 +44,7 @@ using namespace libdap ;
 class WWWByte: public Byte {
 public:
     WWWByte(const string &n);
-    WWWByte( Byte *bt ) : Byte( bt->name() ) {}
+    WWWByte( Byte *bt ) : Byte( *bt ) {}
     virtual ~WWWByte() {}
 
     virtual BaseType *ptr_duplicate();

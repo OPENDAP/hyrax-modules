@@ -43,7 +43,9 @@ using namespace libdap ;
 class WWWFloat32: public Float32 {
 public:
     WWWFloat32(const string &n);
-    WWWFloat32( Float32 *bt ) : Float32( bt->name() ) {}
+
+    WWWFloat32( Float32 *bt ) : Float32( *bt ) {}
+
     virtual ~WWWFloat32() {}
 
     virtual BaseType *ptr_duplicate();

@@ -51,22 +51,28 @@
 class BESWWW : public BESResponseObject
 {
 private:
+#if 0
     BESDASResponse *_das ;
+#endif
     BESDDSResponse *_dds ;
 
-	BESWWW() {}
+    BESWWW() {}
 
 public:
-    BESWWW( BESDASResponse *das, BESDDSResponse *dds )
-	: _das( das ), _dds( dds ) {}
+    BESWWW( /* BESDASResponse *das,*/ BESDDSResponse *dds )
+	: /*_das( das ),*/ _dds( dds ) {}
     virtual ~ BESWWW() {
-        if (_das)
+#if 0
+	if (_das)
             delete _das;
-        if (_dds)
+#endif
+	if (_dds)
             delete _dds;
     }
 
+#if 0
     BESDASResponse *get_das() { return _das ; }
+#endif
     BESDDSResponse *get_dds() { return _dds ; }
 
     /** @brief dumps information about this object
@@ -79,7 +85,9 @@ public:
     virtual void dump(ostream & strm) const {
         strm << BESIndent::LMarg << "dump - (" << (void *) this << ")" << endl;
         BESIndent::Indent();
+#if 0
         strm << BESIndent::LMarg << "das: " << *_das << endl;
+#endif
         strm << BESIndent::LMarg << "dds: " << *_dds << endl;
         BESIndent::UnIndent();
     }

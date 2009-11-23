@@ -109,9 +109,44 @@ BaseType *basetype_to_wwwtype(BaseType * bt)
     @return A DDS where each variable in \e dds is now a WWW* variable. */
 DDS *dds_to_www_dds(DDS * dds)
 {
+#if 0
+    // Using the factory class has no effect because it does not control
+    // how a class like Structure or Grid builds child instances, so we have
+    // to use the basetype_to_wwwtype() function.
+    WWWOutputFactory wwwfactory;
+    dds->set_factory(&wwwfactory);
+#endif
+    // Use the copy constructor to copy all the various private fields in DDS
+    // including the attribute table for global attributes
+    DDS *wwwdds = new DDS(*dds);
+
+    // Because the DDS copy constructor copies the variables, we now, erase
+    // them and...
+    wwwdds->del_var(wwwdds->var_begin(), wwwdds->var_end());
+
+    // Build copies of the variables using the WWW* types and manually add
+    // their attribute tables.
+    DDS::Vars_iter i = dds->var_begin();
+    while (i != dds->var_end()) {
+        BaseType *abt = basetype_to_wwwtype(*i);
+        abt->set_attr_table((*i)->get_attr_table());
+#if 0
+        cerr << "dds attr: "; (*i)->get_attr_table().print(cerr); cerr << endl;
+        cerr << "abt attr: "; abt->get_attr_table().print(cerr); cerr << endl;
+#endif
+        wwwdds->add_var(abt);
+        // add_var makes a copy of the base type passed to it, so delete it
+        // here
+        delete abt;
+        i++;
+    }
+
+#if 0
     // Should the following use WWWOutputFactory instead of the source DDS'
     // factory class?
     DDS *wwwdds = new DDS(dds->get_factory(), dds->get_dataset_name());
+
+    wwwdds->set_attr_table(dds->get_attr_table);
 
     DDS::Vars_iter i = dds->var_begin();
     while (i != dds->var_end()) {
@@ -122,7 +157,7 @@ DDS *dds_to_www_dds(DDS * dds)
         delete abt;
         i++;
     }
-
+#endif
     return wwwdds;
 }
 

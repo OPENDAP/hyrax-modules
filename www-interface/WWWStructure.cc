@@ -67,6 +67,7 @@ WWWStructure::WWWStructure(Structure *bt) :
     Vars_iter p = bt->var_begin();
     while (p != bt->var_end()) {
         BaseType *new_bt = basetype_to_wwwtype(*p);
+        new_bt->set_attr_table((*p)->get_attr_table());
         add_var(new_bt);
         delete new_bt;
         p++;
