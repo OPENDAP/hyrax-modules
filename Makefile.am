@@ -54,6 +54,17 @@ bes-conf: bes-dap-data.sh
 	    ./bes-dap-data.sh $$bes_prefix/etc/bes/bes.conf $$bes_prefix/lib/bes ;\
 	fi)
 
+C4_DIR=./cccc
+C4_USAGE=--html_outfile=cccc-usage.html --xml_outfile=cccc-usage.xml --db_outfile=cccc-usage.db
+C4_ASC=--html_outfile=cccc-asc.html --xml_outfile=cccc-asc.xml --db_outfile=cccc-asc.db
+C4_WWW=--html_outfile=cccc-www.html --xml_outfile=cccc-www.xml --db_outfile=cccc-www.db
+
+.PHONY: cccc
+cccc:	
+	cccc --outdir=$(C4_DIR) $(C4_USAGE) $(libusage_module_la_SOURCES)
+	cccc --outdir=$(C4_DIR) $(C4_ASC) asciival/*.{cc,h}
+	cccc --outdir=$(C4_DIR) $(C4_WWW) www-interface/*.{cc,h}
+
 ###########################################################################
 
 # Fortify targets.

@@ -70,7 +70,7 @@ AsciiArray::AsciiArray( Array *bt )
     // this we set the parent as well, which is what we need.
     BaseType *abt = basetype_to_asciitype( bt->var() ) ;
     add_var( abt ) ;
-    // add_var makes a copy of the base type passed, so delete it
+    // add_var makes a copy of the base type passed, so delete the original
     delete abt ;
 
     // Copy the dimensions
@@ -154,6 +154,16 @@ int AsciiArray::print_row(ostream &strm, int index, int number)
         bt = this;
     }
 
+#if 0
+    // basetype_to_asciitype() returns a copy
+    AsciiArray *abt = dynamic_cast<AsciiArray*>(basetype_to_asciitype( bt ));
+    for (int i = 0; i < number; ++i) {
+	dynamic_cast<AsciiOutput*>(abt->var(index++))->print_ascii(strm, false);
+    }
+    dynamic_cast<AsciiOutput*>(abt->var(index++))->print_ascii(strm, false);
+
+    delete abt;
+#else
     for (int i = 0; i < number; ++i) {
         BaseType *curr_var = basetype_to_asciitype(bt->var(index++));
         dynamic_cast < AsciiOutput & >(*curr_var).print_ascii(strm, false);
@@ -165,11 +175,12 @@ int AsciiArray::print_row(ostream &strm, int index, int number)
     dynamic_cast < AsciiOutput & >(*curr_var).print_ascii(strm, false);
     // we're not saving curr_var for future use, so delete it here
     delete curr_var;
+#endif
 
     return index;
 }
 
-// Given a vector of indices, return the cooresponding index.
+// Given a vector of indices, return the corresponding index.
 
 int AsciiArray::get_index(vector < int >indices) throw(InternalErr)
 {
