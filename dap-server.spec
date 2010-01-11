@@ -39,7 +39,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %doc __dist_doc/*
 %dir %{_sysconfdir}/bes/modules
-%config(noreplace) %{_sysconfdir}/bes/modules/dap.conf
+%config(noreplace) %{_sysconfdir}/bes/modules/dap-server.conf
 %{_datadir}/bes/
 %{_libdir}/bes/libascii_module.so
 %{_libdir}/bes/libusage_module.so
