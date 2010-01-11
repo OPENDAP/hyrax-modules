@@ -14,7 +14,6 @@ lib_besdir=$(libdir)/bes
 lib_bes_LTLIBRARIES = libusage_module.la
 besdir=$(datadir)/bes
 
-dist_bin_SCRIPTS = bes-dap-data.sh
 dist_bes_DATA = dap-server_help.html dap-server_help.txt
 
 USAGE_SOURCES = usage.cc usage.h 
@@ -30,29 +29,22 @@ libusage_module_la_LDFLAGS = -avoid-version -module
 libusage_module_la_LIBADD = $(BES_DAP_LIBS)
 
 EXTRA_DIST = COPYING COPYRIGHT_URI dap-server.spec README \
-	bes-dap-data.sh.in OSX_Resources
+	dap-server.conf.in OSX_Resources
 
-DISTCLEANFILES = stamp-nph-dods bes-dap-data.sh
-CLEANFILES = *~ bes-dap-data.sh
+DISTCLEANFILES = stamp-nph-dods dap-server.conf
 
-bes-dap-data.sh: bes-dap-data.sh.in config.status
-	$(do_subst) < $(srcdir)/bes-dap-data.sh.in > bes-dap-data.sh
-	chmod +x bes-dap-data.sh
+install-data-local: dap-server.conf
+	@currdate=`date +"%y%m%d%H%M"`; \
+	test -d $(DESTDIR)$(sysconfdir)/bes || $(MKDIR_P) $(DESTDIR)$(sysconfdir)/bes; \
+	test -d $(DESTDIR)$(sysconfdir)/bes/modules || $(MKDIR_P) $(DESTDIR)$(sysconfdir)/bes/modules; \
+	test -f $(DESTDIR)$(sysconfdir)/bes/modules/dap-server.conf && mv -f $(DESTDIR)$(sysconfdir)/bes/modules/dap-server.conf $(DESTDIR)$(sysconfdir)/bes/modules/dap-server.conf.$$currdate; \
+	$(INSTALL_DATA) dap-server.conf $(DESTDIR)$(sysconfdir)/bes/modules/dap-server.conf
 
-do_subst = sed -e 's,[@]sysconfdir[@],$(sysconfdir),g' \
-               -e 's,[@]libdir[@],$(libdir),g' \
-               -e 's,[@]datadir[@],$(datadir),g'
+uninstall-local:
+	rm -f $(sysconfdir)/bes/bes.conf $(sysconfdir)/bes/dap.conf
 
-# This makes sure that the handler modifies the bes  which confiure found
-# even with distcheck is run.
-bes-conf: bes-dap-data.sh
-	(bes_prefix=`bes-config --prefix` ; \
-	if test "$$bes_prefix" = "/usr" ; \
-	 then \
-	    ./bes-dap-data.sh /etc/bes/bes.conf /usr/lib/bes ;\
-	else \
-	    ./bes-dap-data.sh $$bes_prefix/etc/bes/bes.conf $$bes_prefix/lib/bes ;\
-	fi)
+dap-server.conf: dap-server.conf.in config.status
+	sed -e "s%[@]bes_modules_dir[@]%${lib_besdir}%" $< > dap-server.conf
 
 C4_DIR=./cccc
 C4_USAGE=--html_outfile=cccc-usage.html --xml_outfile=cccc-usage.xml --db_outfile=cccc-usage.db

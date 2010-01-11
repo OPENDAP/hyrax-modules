@@ -38,7 +38,8 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,-)
 %doc __dist_doc/*
-%{_bindir}/bes-dap-data.sh
+%dir %{_sysconfdir}/bes/modules
+%config(noreplace) %{_sysconfdir}/bes/modules/dap.conf
 %{_datadir}/bes/
 %{_libdir}/bes/libascii_module.so
 %{_libdir}/bes/libusage_module.so
