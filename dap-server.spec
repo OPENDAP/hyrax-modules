@@ -38,6 +38,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,-)
 %doc __dist_doc/*
+%dir %{_sysconfdir}/bes
 %dir %{_sysconfdir}/bes/modules
 %config(noreplace) %{_sysconfdir}/bes/modules/dap-server.conf
 %{_datadir}/bes/
