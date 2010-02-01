@@ -1,3 +1,12 @@
+Version 4.0 (1 Feb 2010)
+
+This version of dap-server contains only C++ code intended for use
+with Hyrax (well, except for the old ais-tool code, but that's not
+really relevant). The old Perl code that implemented the data server
+based on the CGI specification is gone. We have removed all of the
+support for that server from the handlers.
+
+There are many bug fixes in this software; see ChangeLog.
 
 version 3.9.3 (9 June 2009)
 

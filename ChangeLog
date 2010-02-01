@@ -36,15 +36,30 @@
 
 2009-12-29  James Gallagher <jgallagher@opendap.org>
 
-	Shrew build changes that will hopefully lead to a version that we can build using NMI's B&T system. Also, I added 'cccc' targets so that we can take a 'metrics snapshot' without undue pain.
+	Shrew build changes that will hopefully lead to a version that we
+	can build using NMI's B&T system. Also, I added 'cccc' targets so
+	that we can take a 'metrics snapshot' without undue pain.
 
 2009-11-23  James Gallagher <jgallagher@opendap.org>
 
-	I removed the calls that request a DAS since all of our current handlers return a DDS that is loaded with attributes (so the DAS is redundant). This should fix the problem when using the ncml handler (which cannot build a DAS). To make this work I had to fix the way the variables are copied/transformed by the handler so the transformation operation copied the variables' attribute tables too. A different way to write this handler would be to subclass DDS and have that new DDS use a base type factory class. However, the problem with that is libdap copies the variables contained by constructor types but does not use a factory (neither does DDS, but since DDS has an instance of the factory that could be changed).
+	I removed the calls that request a DAS since all of our current
+	handlers return a DDS that is loaded with attributes (so the DAS
+	is redundant). This should fix the problem when using the ncml
+	handler (which cannot build a DAS). To make this work I had to fix
+	the way the variables are copied/transformed by the handler so the
+	transformation operation copied the variables' attribute tables
+	too. A different way to write this handler would be to subclass
+	DDS and have that new DDS use a base type factory class. However,
+	the problem with that is libdap copies the variables contained by
+	constructor types but does not use a factory (neither does DDS,
+	but since DDS has an instance of the factory that could be
+	changed).
 
 2009-11-05  James Gallagher <jgallagher@opendap.org>
 
-	Tweaked the FILE_METHODS define given the change in libdap - that symbol is now defined in the header files and not in the cc and config.h files.
+	Tweaked the FILE_METHODS define given the change in libdap - that
+	symbol is now defined in the header files and not in the cc and
+	config.h files.
 
 2009-10-02  Patrick West <pwest@ucar.edu>
 
@@ -97,7 +112,8 @@
 
 2009-08-31  Patrick West <pwest@ucar.edu>
 
-	changed include of cgi_util to mime_util and removed include where not needed
+	changed include of cgi_util to mime_util and removed include where
+	not needed
 
 2009-08-23  Patrick West <pwest@ucar.edu>
 
@@ -210,9 +226,6 @@
 	M    BESUsageResponseHandler.h
 	M    BESUsageTransmit.h
 
-;; Local Variables:
-;; coding: utf-8
-;; End:
 2009-03-16  James Gallagher <jgallagher@opendap.org>
 
 	Results of a code review.
