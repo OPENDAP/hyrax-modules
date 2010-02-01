@@ -1,6 +1,6 @@
 Summary:         Basic request handling for OPeNDAP servers 
 Name:            dap-server
-Version:         3.9.3
+Version:         4.0.0
 Release:         1
 License:         LGPL
 Group:           System Environment/Daemons 
