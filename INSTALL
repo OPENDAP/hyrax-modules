@@ -58,7 +58,7 @@ BUILDING THE SOFTWARE
 
 REQUIREMENTS
 
-  o The Server Base Software uses libdap 3.9.0 or greater. You must install
+  o The Server Base Software uses libdap 3.10.0 or greater. You must install
     that software. See http://www.opendap.org/download/.
     
   o To build this as part of Hyrax, you need the bes, version 3.8.0
