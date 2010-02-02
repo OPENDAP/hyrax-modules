@@ -1,4 +1,4 @@
-Version 4.0 (1 Feb 2010)
+Version 4.0.0 (1 Feb 2010)
 
 This version of dap-server contains only C++ code intended for use
 with Hyrax (well, except for the old ais-tool code, but that's not
