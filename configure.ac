@@ -91,7 +91,7 @@ AC_SUBST([dap_cgiconfdir])
 AC_CHECK_FUNCS([putenv strtol])
 
 dnl Checks for specific libraries
-AC_CHECK_LIBDAP([3.9.0],
+AC_CHECK_LIBDAP([3.10.0],
  [
   LIBS="$LIBS $DAP_CLIENT_LIBS $DAP_SERVER_LIBS"
   CPPFLAGS="$CPPFLAGS $DAP_CFLAGS"
@@ -99,7 +99,7 @@ AC_CHECK_LIBDAP([3.9.0],
  [ AC_MSG_ERROR([Cannot find libdap])
 ])
 
-AC_CHECK_BES([3.7.2],
+AC_CHECK_BES([3.8.0],
 [
 ],
 [ AC_MSG_ERROR([Cannot find bes])
