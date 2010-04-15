@@ -33,6 +33,11 @@ EXTRA_DIST = COPYING COPYRIGHT_URI dap-server.spec README \
 
 DISTCLEANFILES = stamp-nph-dods dap-server.conf
 
+# Not nearly as clean as it could be, but this removes .svn directories
+# in subdirs.
+dist-hook:
+	rm -rf `find $(distdir) -name .svn`
+
 install-data-local: dap-server.conf
 	@currdate=`date +"%y%m%d%H%M"`; \
 	test -d $(DESTDIR)$(sysconfdir)/bes || $(MKDIR_P) $(DESTDIR)$(sysconfdir)/bes; \
@@ -80,10 +85,10 @@ fortifyclean:
 # Build linux RPMs
 
 srpm: dist
-	rpmbuild -ts --clean @PACKAGE@-@PACKAGE_VERSION@.tar.gz
+	rpmbuild -ts --clean $(RPM_OPTIONS) @PACKAGE@-@PACKAGE_VERSION@.tar.gz
 
 rpm: dist
-	rpmbuild -tb --clean @PACKAGE@-@PACKAGE_VERSION@.tar.gz
+	rpmbuild -tb --clean $(RPM_OPTIONS) @PACKAGE@-@PACKAGE_VERSION@.tar.gz
 
 ###########################################################################
 
