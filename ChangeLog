@@ -1,3 +1,87 @@
+2010-04-22  Patrick West <pwest@ucar.edu>
+
+	Fixed issue with dap-config --version with b at end (for beta)
+	M    conf/libdap.m4
+
+2010-04-15  James Gallagher <jgallagher@opendap.org>
+
+	Added a dist-hook target that removes .svn dirs from the dist tar.
+
+	M    dap-server/Makefile.am
+	M    fileout_netcdf/Makefile.am
+	M    freeform_handler/Makefile.am
+	M    hdf4_handler/Makefile.am
+	M    hdf5_handler/Makefile.am
+	M    ncml_module/Makefile.am
+	M    netcdf_handler/Makefile.am
+
+2010-04-15  James Gallagher <jgallagher@opendap.org>
+
+	Added Requires: lines to the .spec files for all the modules we build rpms for.
+
+2010-03-29  Patrick West <pwest@ucar.edu>
+
+	+= for modules
+	M    dap-server.conf.in
+
+2010-02-05  Patrick West <pwest@ucar.edu>
+
+	Version requirements for libdap and bes updated. removed docs
+	requirement in spec file. Removing only dap-server .la files in the spec
+	file. Was doing *.la.
+	M    configure.ac
+	M    dap-server.spec
+
+2010-02-03  rduncan
+
+	Release 4.0
+
+2010-02-02  James Gallagher <jgallagher@opendap.org>
+
+	Spec file version number changes
+
+2010-02-02  James Gallagher <jgallagher@opendap.org>
+
+	Fixed the versions to match the value in configure
+
+	M    INSTALL
+	M    NEWS
+	M    README
+
+2010-02-01  James Gallagher <jgallagher@opendap.org>
+
+	Updated for Hyrax 1.6
+
+	M    INSTALL
+
+2010-02-01  James Gallagher <jgallagher@opendap.org>
+
+	Updated for version 4.0
+
+	M    INSTALL
+	M    NEWS
+	M    ChangeLog
+	M    README
+
+2010-02-01  rduncan
+
+	Release 02/01/2010 4.0
+
+2010-02-01  rduncan
+
+	Release 02/01/2010 4.0
+
+2010-02-01  rduncan
+
+	Release 02/01/2010
+
+2010-02-01  rduncan
+
+	Release 1/01/2010
+
+;; Local Variables:
+;; coding: utf-8
+;; End:
 2010-02-01  rduncan
 
 	Release 1/01/2010
