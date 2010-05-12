@@ -1,14 +1,17 @@
 Summary:         Basic request handling for OPeNDAP servers 
 Name:            dap-server
 Version:         4.0.0
-Release:         1
+Release:         2
 License:         LGPL
 Group:           System Environment/Daemons 
 Source0:         http://www.opendap.org/pub/source/%{name}-%{version}.tar.gz
 URL:             http://www.opendap.org/
+Requires:        libdap >= 3.10.0
+Requires:        bes >= 3.8.0
 
 BuildRoot:       %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires:   libdap-devel >= 3.10.
+
+BuildRequires:   libdap-devel >= 3.10.0
 BuildRequires:   bes-devel >= 3.8.0
 
 %description
@@ -28,16 +31,15 @@ make %{?_smp_mflags}
 rm -rf $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT install INSTALL='install -p'
 
-rm $RPM_BUILD_ROOT%{_libdir}/*.la
-rm $RPM_BUILD_ROOT%{_libdir}/*.so
-rm $RPM_BUILD_ROOT%{_libdir}/bes/*.la
+rm $RPM_BUILD_ROOT%{_libdir}/bes/libascii_module.la
+rm $RPM_BUILD_ROOT%{_libdir}/bes/libusage_module.la
+rm $RPM_BUILD_ROOT%{_libdir}/bes/libwww_module.la
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%doc __dist_doc/*
 %dir %{_sysconfdir}/bes
 %dir %{_sysconfdir}/bes/modules
 %config(noreplace) %{_sysconfdir}/bes/modules/dap-server.conf
