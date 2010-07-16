@@ -28,7 +28,8 @@ AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
 
-DODS_PROG_PERL
+dnl Perl is no longer used by this code; stop checking for it!
+dnl DODS_PROG_PERL
 
 dods_HTML_Filter=no
 if $PERL -e "use HTML::Filter;" > /dev/null 2>&1; then 
