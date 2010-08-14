@@ -28,8 +28,9 @@ AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
 
-dnl Perl is no longer used by this code; stop checking for it!
+dnl Perl is  used by www-interface during the build
 dnl DODS_PROG_PERL
+AC_CHECK_PROG([PERL], [perl], [`which perl`])
 
 dods_HTML_Filter=no
 if $PERL -e "use HTML::Filter;" > /dev/null 2>&1; then 
