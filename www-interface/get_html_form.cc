@@ -461,5 +461,53 @@ write_simple_variable(ostream &strm, BaseType *var)
 
     strm << "<br>\n\n";
 }
+#if 0
+void
+write_simple_var_attributes(FILE * os, BaseType *var)
+{
+    ostringstream ss;
+    write_simple_var_attributes(ss, var);
 
+    // Now write that string to os
+    fprintf(os, "%s", ss.str().c_str());
+}
+
+void
+write_simple_var_attributes(ostream &os, int rows, int cols, BaseType *btp)
+{
+    AttrTable &attr = btp->get_attr_table();
+
+    // Don't write anything if there are no attributes.
+    if (attr.get_size() == 0) {
+        return;
+    }
+
+    os << "<textarea name=\"" << btp->name()
+	   << "_attr\" rows=\"" << rows
+	   << "\" cols=\"" << cols << "\">\n" ;
+    write_attributes(os, attr, "");
+    os << "</textarea>\n\n" ;
+}
+
+void
+write_attributes(ostream &os, AttrTable &attr, const string &prefix)
+{
+    for (AttrTable::Attr_iter a = attr.attr_begin(); a != attr.attr_end(); ++a) {
+	if (attr.is_container(a))
+	    write_attributes(os, attr.get_attr_table(a), (prefix == "") ? attr.get_name(a) : prefix + string(".") + attr.get_name(a));
+	else {
+	    if (prefix != "")
+		os << prefix << "." << attr.get_name(a) << ": ";
+	    else
+		os << attr.get_name(a) << ": ";
+
+	    int num_attr = attr.get_attr_num(a) - 1;
+	    for (int i = 0; i < num_attr; ++i) {
+		os << attr.get_attr(a, i) << ", ";
+	    }
+	    os << attr.get_attr(a, num_attr) << "\n";
+	}
+    }
+}
+#endif
 } // namespace dap_html_form

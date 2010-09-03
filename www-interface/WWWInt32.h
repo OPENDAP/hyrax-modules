@@ -52,6 +52,10 @@ public:
 			   bool print_decl_p = true);
     virtual void print_val(ostream &strm, string space = "", 
 			   bool print_decl_p = true);
+#if 0
+    //virtual void print_attributes(FILE *os);
+    virtual void print_attributes(ostream &os, int rows, int cols);
+#endif
 };
 
 #endif

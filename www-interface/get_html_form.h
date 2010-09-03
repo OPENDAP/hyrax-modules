@@ -63,6 +63,10 @@ void write_simple_variable(FILE *os, BaseType *var);
 void write_simple_variable(ostream &strm, BaseType *var);
                            // const string &name,
                            // const string &type);
+#if 0
+void write_attributes(ostream &os, AttrTable &attr, const string &prefix);
+void write_simple_var_attributes(ostream &os, int rows, int cols, BaseType *btp);
+#endif
 
 /** Return a string which describes the datatype of a DODS variable.
 
