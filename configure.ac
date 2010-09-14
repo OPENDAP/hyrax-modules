@@ -101,7 +101,7 @@ AC_CHECK_LIBDAP([3.11.0],
  [ AC_MSG_ERROR([Cannot find libdap])
 ])
 
-AC_CHECK_BES([3.8.3],
+AC_CHECK_BES([3.9.0],
 [
 ],
 [ AC_MSG_ERROR([Cannot find bes])
