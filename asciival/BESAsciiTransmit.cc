@@ -30,25 +30,28 @@
 //      pwest       Patrick West <pwest@ucar.edu>
 //      jgarcia     Jose Garcia <jgarcia@ucar.edu>
 
-#include "BESDapTransmit.h"
-#include "DODSFilter.h"
-#include "BESAsciiTransmit.h"
-#include "DODSFilter.h"
-#include "BESContainer.h"
-#include "BESDataNames.h"
-#include "mime_util.h"
-#include "BESDataDDSResponse.h"
-#include "BaseType.h"
-#include "Sequence.h"
-#include "ConstraintEvaluator.h"
-#include "get_ascii.h"
-#include "InternalErr.h"
-#include "util.h"
-#include <escaping.h>
-#include "BESDapError.h"
-#include "BESInternalFatalError.h"
+#include <BaseType.h>
+#include <Sequence.h>
+#include <ConstraintEvaluator.h>
+#include <InternalErr.h>
 
-#include "BESDebug.h"
+#include <DODSFilter.h>
+
+#include <util.h>
+#include <escaping.h>
+#include <mime_util.h>
+
+#include <BESDataNames.h>
+#include <BESDapTransmit.h>
+#include <BESContainer.h>
+#include <BESDataDDSResponse.h>
+#include <BESDapError.h>
+#include <BESInternalFatalError.h>
+
+#include <BESDebug.h>
+
+#include "BESAsciiTransmit.h"
+#include "get_ascii.h"
 
 using namespace dap_asciival;
 
@@ -85,7 +88,7 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
     }
     catch(...)
     {
-        string err = (string) "Failed to parse the constraint expression: "
+        string err = (string)"Failed to parse the constraint expression: "
             + "Unknown exception caught";
         throw BESInternalFatalError( err, __FILE__, __LINE__ ) ;
     }
@@ -97,12 +100,18 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
     BESDEBUG( "ascii", "BESAsciiTransmit::send_base_ascii - "
 		       "accessing container" << endl ) ;
     string dataset_name = dhi.container->access();
+
     BESDEBUG( "ascii", "BESAsciiTransmit::send_base_ascii - dataset_name = "
                        << dataset_name << endl ) ;
 
     bool functional_constraint = false;
     try {
-        // Handle *functional* constraint expressions specially
+	// Handle *functional* constraint expressions specially
+	if (ce.function_clauses()) {
+	    BESDEBUG( "ascii", "processing a functional constraint clause(s)." << endl );
+	    dds = ce.eval_function_clauses(*dds);
+	}
+#if 0
         if (ce.functional_expression()) {
             BESDEBUG( "ascii", "processing a functional constraint." << endl ) ;
             // This returns a new BaseType, not a pointer to one in the DataDDS
@@ -110,15 +119,16 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
             // DataDDS and add this new var to the it.
             BaseType *var = ce.eval_function(*dds, dataset_name);
             if (!var)
-                throw Error(unknown_error,
-                            "Error calling the CE function.");
+                throw Error(unknown_error, "Error calling the CE function.");
 
             var->read();
 
             dds = new DataDDS(NULL, "virtual");
             functional_constraint = true;
             dds->add_var(var);
-        } else {
+        }
+#endif
+        else {
             // Iterate through the variables in the DataDDS and read in the data
             // if the variable has the send flag set.
             // Note the special case for Sequence. The transfer_data() method
@@ -126,11 +136,9 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
             // them to the d_values field instead of writing them to a XDR sink
             // pointer. jhrg 9/13/06
             for (DDS::Vars_iter i = dds->var_begin(); i != dds->var_end(); i++) {
-                BESDEBUG( "ascii", "processing var: "
-				   << (*i)->name() << endl ) ;
+                BESDEBUG( "ascii", "processing var: " << (*i)->name() << endl ) ;
                 if ((*i)->send_p()) {
-                    BESDEBUG( "ascii", "reading some data for: "
-				       << (*i)->name() << endl ) ;
+                    BESDEBUG( "ascii", "reading some data for: " << (*i)->name() << endl ) ;
                     (**i).intern_data(ce, *dds);
                 }
             }
@@ -140,21 +148,21 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
     catch( InternalErr &e )
     {
     	if (functional_constraint)
-    		delete dds;
+    	    delete dds;
         string err = "Failed to read data: " + e.get_error_message() ;
 	throw BESDapError( err, true, e.get_error_code(), __FILE__, __LINE__ ) ;
     }
     catch(Error & e)
     {
     	if (functional_constraint)
-    		delete dds;
+    	    delete dds;
         string err = "Failed to read data: " + e.get_error_message() ;
         throw BESDapError( err, false, e.get_error_code(), __FILE__, __LINE__ );
     }
     catch(...)
     {
     	if (functional_constraint)
-    		delete dds;
+    	    delete dds;
         string err = "Failed to read data: Unknown exception caught";
         throw BESInternalFatalError( err, __FILE__, __LINE__ ) ;
     }
@@ -177,24 +185,21 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
     catch( InternalErr &e )
     {
     	if (functional_constraint)
-    		delete dds;
-        string err =
-            "Failed to get values as ascii: " + e.get_error_message() ;
+    	    delete dds;
+        string err = "Failed to get values as ascii: " + e.get_error_message() ;
         throw BESDapError( err, true, e.get_error_code(), __FILE__, __LINE__ ) ;
     }
     catch( Error &e )
     {
      	if (functional_constraint)
-    		delete dds;
-        string err =
-            "Failed to get values as ascii: " + e.get_error_message() ;
+     	    delete dds;
+        string err = "Failed to get values as ascii: " + e.get_error_message() ;
         throw BESDapError( err, false, e.get_error_code(), __FILE__, __LINE__ );
     }
     catch(...) {
     	if (functional_constraint)
-    		delete dds;
-        string err =
-            "Failed to get values as ascii: Unknown exception caught";
+    	    delete dds;
+        string err = "Failed to get values as ascii: Unknown exception caught";
         throw BESInternalFatalError( err, __FILE__, __LINE__ ) ;
     }
 
