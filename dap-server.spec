@@ -1,18 +1,18 @@
 Summary:         Basic request handling for OPeNDAP servers 
 Name:            dap-server
-Version:         4.0.0
-Release:         3
+Version:         4.1.0
+Release:         1
 License:         LGPL
 Group:           System Environment/Daemons 
 Source0:         http://www.opendap.org/pub/source/%{name}-%{version}.tar.gz
 URL:             http://www.opendap.org/
-Requires:        libdap >= 3.10.0
-Requires:        bes >= 3.8.0
+Requires:        libdap >= 3.11.0
+Requires:        bes >= 3.9.0
 
 BuildRoot:       %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires:   libdap-devel >= 3.10.0
-BuildRequires:   bes-devel >= 3.8.0
+BuildRequires:   libdap-devel >= 3.11.0
+BuildRequires:   bes-devel >= 3.9.0
 
 %description
 This package contains general purpose handlers for use with the new

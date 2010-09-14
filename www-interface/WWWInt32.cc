@@ -69,4 +69,16 @@ WWWInt32::print_val(ostream &strm, string, bool /*print_decl_p*/)
 {
     write_simple_variable(strm, this);
 }
+#if 0
+void
+WWWInt32::print_attributes(FILE *os)
+{
+    write_simple_var_attributes(os, this);
+}
 
+void
+WWWInt32::print_attributes(ostream &os, int rows, int cols)
+{
+    write_simple_var_attributes(os, rows, cols, this);
+}
+#endif
