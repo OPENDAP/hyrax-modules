@@ -1,3 +1,39 @@
+2010-09-14  James Gallagher <jgallagher@opendap.org>
+
+	This code now uses the new method in ConstraintEvaluator that
+	enables multiple functions to be called.
+
+2010-09-03  James Gallagher <jgallagher@opendap.org>
+
+	Grids have attributes again! I added the map vector attributes, too.
+
+2010-08-13  James Gallagher <jgallagher@opendap.org>
+
+	Fixed PERL which this code needs to build the javascript.h file.
+
+2010-07-16  James Gallagher <jgallagher@opendap.org>
+
+	Removed test for Perl - we don't use Perl in this code anymore.
+
+2010-07-15  Patrick West <pwest@ucar.edu>
+
+	Added include of dependent dap.conf
+
+2010-05-12  James Gallagher <jgallagher@opendap.org>
+
+	Merged Hyrax 1.6.1
+
+	_M   .
+	M    conf/libdap.m4
+	M    ais-tool/conf/libdap.m4
+	M    configure.ac
+	M    INSTALL
+	M    NEWS
+	M    ChangeLog
+	M    README
+	M    dap-server.spec
+	M    Makefile.am
+
 2010-04-22  Patrick West <pwest@ucar.edu>
 
 	Fixed issue with dap-config --version with b at end (for beta)

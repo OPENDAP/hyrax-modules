@@ -1,3 +1,11 @@
+Version 4.1.0 (14 Sept 2010)
+
+This version contains fixes for some annoying bugs - Grids are now
+represented sensibly in the HTML form, for example.
+
+Also, the ascii response supports constraints with multiple function
+calls.
+
 Version 4.0.0 (1 Feb 2010)
 
 This version of dap-server contains only C++ code intended for use
