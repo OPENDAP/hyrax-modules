@@ -50,7 +50,7 @@ static char rcsid[] not_used =
 #include <DDS.h>
 
 #include <debug.h>
-#include <mime_util.h>
+#include <mime_util.h>	// remove if write_html_headers() not needed
 #include <util.h>
 
 #include "WWWOutput.h"
@@ -67,13 +67,14 @@ WWWOutput::WWWOutput(ostream &strm, int rows, int cols)
     : d_strm(&strm), d_attr_rows(rows), d_attr_cols(cols)
 {
 }
-
+#if 1
+// TODO: Can this be removed?
 void
 WWWOutput::write_html_header()
 {
     set_mime_html(*d_strm, unknown_type, dap_version(), x_plain);
 }
-
+#endif
 void WWWOutput::write_disposition(string url, bool FONc)
 {
     // To get the size to be a function of the image window size, you need to

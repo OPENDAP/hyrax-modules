@@ -34,9 +34,9 @@
 #include <Sequence.h>
 #include <ConstraintEvaluator.h>
 #include <InternalErr.h>
-
+#if 0
 #include <DODSFilter.h>
-
+#endif
 #include <util.h>
 #include <escaping.h>
 #include <mime_util.h>

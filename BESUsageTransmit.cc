@@ -31,15 +31,17 @@
 //      jgarcia     Jose Garcia <jgarcia@ucar.edu>
 
 #include "BESDapTransmit.h"
+#if 0
 #include "DODSFilter.h"
+#endif
 #include "BESUsageTransmit.h"
-#include "DODSFilter.h"
+// #include "DODSFilter.h"
 #include "BESContainer.h"
 #include "BESDataNames.h"
 #include "mime_util.h"
 #include "BESUsage.h"
 #include "usage.h"
-#include "util.h"
+//#include "util.h"
 #include "InternalErr.h"
 #include "BESDapError.h"
 #include "BESInternalFatalError.h"
@@ -88,6 +90,7 @@ void
 BESUsageTransmit::send_http_usage( BESResponseObject *obj,
                                    BESDataHandlerInterface &dhi )
 {
+    // TODO: Is this used?
     set_mime_text( dhi.get_output_stream(), unknown_type ) ;
     BESUsageTransmit::send_basic_usage( obj, dhi ) ;
 }

@@ -76,8 +76,10 @@ private:
     WWWOutput(ostream &strm, int rows = 5, int cols = 70);
 
     /** Write out the header for the HTML document. */
+#if 1
+    // TODO: Can this be removed?
     void write_html_header();
-
+#endif
     /** Write the disposition section of the HTML page. This section shows
 	the URL and provides buttons with which the user can choose the type
 	of output.

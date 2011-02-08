@@ -31,9 +31,11 @@
 //      jgarcia     Jose Garcia <jgarcia@ucar.edu>
 
 #include <BESDapTransmit.h>
+#if 0
 #include <DODSFilter.h>
+#endif
 #include <BESWWWTransmit.h>
-#include <DODSFilter.h>
+// #include <DODSFilter.h>
 #include <BESContainer.h>
 #include <BESDapNames.h>
 #include <BESWWWNames.h>
