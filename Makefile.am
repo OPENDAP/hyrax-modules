@@ -1,5 +1,5 @@
 
-# Automake file for csv-handler
+# Automake file for csv_handler
 #
 # 5/17/2005 jhrg
 #
