@@ -34,6 +34,7 @@
 
 #include<vector>
 #include<iostream>
+#include<cstdlib>
 
 #include"CSV_Data.h"
 
