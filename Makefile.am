@@ -56,11 +56,11 @@ csv.conf: csv.conf.in config.status
 
 # Build linux RPMs
 
-srpm:
-	rpmbuild -ts csv_module-@PACKAGE_VERSION@.tar.gz
+srpm: dist
+	rpmbuild -ts --clean $(RPM_OPTIONS) @PACKAGE@-@PACKAGE_VERSION@.tar.gz
 
-rpm:
-	rpmbuild -tb csv_module-@PACKAGE_VERSION@.tar.gz
+rpm: dist
+	rpmbuild -tb --clean $(RPM_OPTIONS) @PACKAGE@-@PACKAGE_VERSION@.tar.gz
 
 ###########################################################################
 
