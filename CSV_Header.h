@@ -35,36 +35,36 @@
 #ifndef I_CSV_Header_h
 #define I_CSV_Header_h 1
 
-#include<string>
-#include<map>
-#include<vector>
+#include <string>
+#include <map>
+#include <vector>
 
-#include"CSV_Field.h"
+#include <BESObj.h>
+
+#include "CSV_Field.h"
 
 using namespace std;
 
-class CSV_Header {
- public:
-  CSV_Header();
-  ~CSV_Header();
+class CSV_Header : public BESObj
+{
+private:
+    map<string,CSV_Field*>*	_hdr ;
+    map<int,string>*		_index2field ;
+public:
+  				CSV_Header();
+    virtual		        ~CSV_Header();
   
-  const bool populate(vector<string>* foo);
+    const bool			populate( vector<string>* headerinfo ) ;
 
-  void print();
+    void			getFieldList( vector<string> &list ) ;
 
-  vector<string> getFieldList();
+    const string		getFieldType(const string& fieldName);
 
-  const string getFieldType(const string& fieldName);
+    CSV_Field *			getField(const int& index) ;
+    CSV_Field *			getField(const string& fieldName) ;
 
-  CSV_Field* getField(const int& index) throw(string);
-  CSV_Field* getField(const string& fieldName) throw(string);
-  
- private:
-  map<string,CSV_Field*>* hdr;
-  map<int,string>* index2field;
+    virtual void		dump( ostream &strm ) const ;
 };
-
-void slim(string& str);
 
 #endif // I_CSV_Header_h
 

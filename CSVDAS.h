@@ -37,12 +37,11 @@
 
 #include<string>
 
-#include "Error.h"
 #include "DAS.h"
 
 using namespace libdap ;
 
-void csv_read_attributes(DAS &das, const string &filename) throw(Error);
+void csv_read_attributes(DAS &das, const string &filename) ;
 
 #endif // E_CSVDAS_h
 

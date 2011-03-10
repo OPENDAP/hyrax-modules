@@ -36,130 +36,169 @@
 #include <string>
 
 #include "CSVDDS.h"
-#include "BESInternalError.h"
-#include "BaseTypeFactory.h"
-#include "DDS.h"
-#include "Error.h"
-
-#include "Str.h"
-#include "Int16.h"
-#include "Int32.h"
-#include "Float32.h"
-#include "Float64.h"
-#include "mime_util.h"
-
-#include "Array.h"
-
 #include "CSV_Obj.h"
 
-void csv_read_descriptors(DDS &dds, const string &filename) {
+#include <BESInternalError.h>
+#include <BESNotFoundError.h>
+#include <BaseTypeFactory.h>
+#include <DDS.h>
+#include <Error.h>
 
-  vector<string> fieldList;
-  string type;
-  int recordCount;
-  int index;
+#include <Str.h>
+#include <Int16.h>
+#include <Int32.h>
+#include <Float32.h>
+#include <Float64.h>
+#include <mime_util.h>
 
-  Array* ar;
-  void* data;
-  BaseType *bt = NULL;
+#include <Array.h>
 
-  CSV_Obj* csvObj = new CSV_Obj();
-  csvObj->open(filename);
-  csvObj->load();
 
-  dds.set_dataset_name(name_path(filename));
+#include <BESDebug.h>
 
-  fieldList = csvObj->getFieldList();
-  recordCount = csvObj->getRecordCount();
+void
+csv_read_descriptors( DDS &dds, const string &filename )
+{
+    string type ;
+    int index = 0 ;
 
-  for(vector<string>::iterator it = fieldList.begin(); it != fieldList.end(); it++) {
-    type = csvObj->getFieldType(*it);
-    ar = dds.get_factory()->NewArray(string(*it));
-    data = csvObj->getFieldData(*it);
+    Array* ar = 0 ;
+    void* data = 0 ;
+    BaseType *bt = NULL ;
 
-    if(type.compare(string(STRING)) == 0) {
-      string* strings = new string[recordCount];
+    CSV_Obj* csvObj = new CSV_Obj();
+    if( !csvObj->open( filename ) )
+    {
+	string err = (string)"Unable to open file " + filename ;
+	throw BESNotFoundError( err, __FILE__, __LINE__ ) ;
+    }
+    csvObj->load() ;
 
-      bt = dds.get_factory()->NewStr(string(*it));
-      ar->add_var(bt);
-      ar->append_dim(recordCount, "record");
+    BESDEBUG( "csv", "File loaded:" << endl << *csvObj << endl ) ;
 
-      index = 0;
-      for(vector<string>::iterator it = ((vector<string>*)data)->begin();
-	  it != ((vector<string>*)data)->end(); it++) {
-	strings[index] = *it;
-	index++;
-      }
+    dds.set_dataset_name( name_path( filename ) ) ;
 
-      ar->set_value(strings, recordCount);
+    vector<string> fieldList;
+    csvObj->getFieldList( fieldList ) ;
+    int recordCount = csvObj->getRecordCount();
 
-    } else if(type.compare(string(INT16)) == 0) {
-      short* int16 = new short[recordCount];
-      bt = dds.get_factory()->NewInt16(*it);
-      ar->add_var(bt);
-      ar->append_dim(recordCount, "record");
+    vector<string>::iterator it = fieldList.begin() ;
+    vector<string>::iterator et = fieldList.end() ;
+    for( ; it != et; it++ )
+    {
+	string fieldName = (*it) ;
+	type = csvObj->getFieldType( fieldName ) ;
+	ar = dds.get_factory()->NewArray( fieldName ) ;
+	data = csvObj->getFieldData( fieldName ) ;
 
-      index = 0;
-      for(vector<short>::iterator it = ((vector<short>*)data)->begin();
-	  it != ((vector<short>*)data)->end(); it++) {
-	int16[index] = *it;
-	index++;
-      }
+	if( type.compare( string( STRING ) ) == 0 )
+	{
+	    string* strings = new string[recordCount] ;
 
-      ar->set_value(int16, recordCount);
+	    bt = dds.get_factory()->NewStr( fieldName ) ;
+	    ar->add_var( bt ) ;
+	    ar->append_dim( recordCount, "record" ) ;
 
-    } else if(type.compare(string(INT32)) == 0) {
-      int* int32 = new int[recordCount];
-      bt = dds.get_factory()->NewInt32(*it);
-      ar->add_var(bt);
-      ar->append_dim(recordCount, "record");
+	    index = 0 ;
+	    vector<string>::iterator iv = ((vector<string>*)data)->begin() ;
+	    vector<string>::iterator ev = ((vector<string>*)data)->end() ;
+	    for( ; iv != ev; iv++)
+	    {
+		strings[index] = *iv ;
+		index++ ;
+	    }
 
-      index = 0;
-      for(vector<int>::iterator it = ((vector<int>*)data)->begin();
-	  it != ((vector<int>*)data)->end(); it++) {
-	int32[index] = *it;
-	index++;
-      }
+	    ar->set_value( strings, recordCount ) ;
+	    delete [] strings ;
+	}
+	else if( type.compare( string( INT16 ) ) == 0 )
+	{
+	    short* int16 = new short[recordCount] ;
+	    bt = dds.get_factory()->NewInt16( fieldName ) ;
+	    ar->add_var( bt ) ;
+	    ar->append_dim( recordCount, "record" ) ;
 
-      ar->set_value((dods_int32*)int32, recordCount); //blah!
+	    index = 0 ;
+	    vector<short>::iterator iv = ((vector<short>*)data)->begin() ;
+	    vector<short>::iterator ev = ((vector<short>*)data)->end() ;
+	    for( ; iv != ev; iv++)
+	    {
+		int16[index] = *iv ;
+		index++ ;
+	    }
 
-    } else if(type.compare(string(FLOAT32)) == 0) {
-      float* floats = new float[recordCount];
-      bt = dds.get_factory()->NewFloat32(*it);
-      ar->add_var(bt);
-      ar->append_dim(recordCount, "record");
+	    ar->set_value( int16, recordCount ) ;
+	    delete [] int16 ;
+	}
+	else if( type.compare( string( INT32 ) ) == 0 )
+	{
+	    int *int32 = new int[recordCount] ;
+	    bt = dds.get_factory()->NewInt32( fieldName ) ;
+	    ar->add_var( bt ) ;
+	    ar->append_dim( recordCount, "record" ) ;
 
-      index = 0;
-      for(vector<float>::iterator it = ((vector<float>*)data)->begin();
-	  it != ((vector<float>*)data)->end(); it++) {
-	floats[index] = *it;
-	index++;
-      }
+	    index = 0 ;
+	    vector<int>::iterator iv = ((vector<int>*)data)->begin() ;
+	    vector<int>::iterator ev = ((vector<int>*)data)->end() ;
+	    for( ; iv != ev; iv++)
+	    {
+		int32[index] = *iv ;
+		index++ ;
+	    }
 
-      ar->set_value(floats, recordCount);
+	    ar->set_value( (dods_int32*)int32, recordCount ) ;
+	    delete [] int32 ;
+	}
+	else if( type.compare( string( FLOAT32 ) ) == 0 )
+	{
+	    float *floats = new float[recordCount] ;
+	    bt = dds.get_factory()->NewFloat32( fieldName ) ;
+	    ar->add_var( bt ) ;
+	    ar->append_dim( recordCount, "record" ) ;
 
-    } else if(type.compare(string(FLOAT64)) == 0) {
-      double* doubles = new double[recordCount];
-      bt = dds.get_factory()->NewFloat64(*it);
-      ar->add_var(bt);
-      ar->append_dim(recordCount, "record");
+	    index = 0 ;
+	    vector<float>::iterator iv = ((vector<float>*)data)->begin() ;
+	    vector<float>::iterator ev = ((vector<float>*)data)->end() ;
+	    for( ; iv != ev; iv++)
+	    {
+		floats[index] = *iv ;
+		index++ ;
+	    }
 
-      index = 0;
-      for(vector<double>::iterator it = ((vector<double>*)data)->begin();
-	  it != ((vector<double>*)data)->end(); it++) {
-	doubles[index] = *it;
-	index++;
-      }
+	    ar->set_value( floats, recordCount ) ;
+	    delete [] floats ;
+	}
+	else if( type.compare( string( FLOAT64 ) ) == 0 )
+	{
+	    double *doubles = new double[recordCount] ;
+	    bt = dds.get_factory()->NewFloat64( fieldName ) ;
+	    ar->add_var( bt ) ;
+	    ar->append_dim( recordCount, "record" ) ;
 
-      ar->set_value(doubles, recordCount);
-    } else {
-	throw BESInternalError( "Bad Things Man", __FILE__, __LINE__ ) ;
+	    index = 0 ;
+	    vector<double>::iterator iv = ((vector<double>*)data)->begin() ;
+	    vector<double>::iterator ev = ((vector<double>*)data)->end() ;
+	    for( ; iv != ev; iv++)
+	    {
+		doubles[index] = *iv;
+		index++ ;
+	    }
+
+	    ar->set_value( doubles, recordCount ) ;
+	    delete [] doubles ;
+	}
+	else
+	{
+	    string err = (string)"Unkown type for field " + fieldName ;
+	    throw BESInternalError( err, __FILE__, __LINE__ ) ;
+	}
+
+	dds.add_var( ar ) ;
+	if( ar ) { delete ar ; ar = 0 ; }
+	if( bt ) { delete bt ; bt = 0 ; }
     }
 
-    dds.add_var(ar);
-    delete ar;
-    delete bt;
-  }
-
-  delete csvObj;
+    delete csvObj ;
+    csvObj = 0 ;
 }
+

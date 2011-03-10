@@ -35,42 +35,43 @@
 #ifndef I_CSV_Obj_h
 #define I_CSV_Obj_h 1
 
-#include<string>
-#include<vector>
-#include"CSV_Reader.h"
-#include"CSV_Header.h"
-#include"CSV_Data.h"
+#include <string>
+#include <vector>
+
+#include <BESObj.h>
+
+#include "CSV_Reader.h"
+#include "CSV_Header.h"
+#include "CSV_Data.h"
 
 using namespace std;
 
-class CSV_Obj {
+class CSV_Obj : public BESObj
+{
+private:
+    CSV_Reader*			_reader ;
+    CSV_Header*			_header ;
+    vector<CSV_Data*>*		_data ;
+public:
+    				CSV_Obj() ;
+    virtual			~CSV_Obj() ;
 
- public:
-  CSV_Obj();
-  ~CSV_Obj();
-  
-  bool open(const string& filepath);
+    bool			open( const string& filepath ) ;
 
-  void load();
+    void			load() ;
 
-  void printField(const string& field);
+    void			getFieldList( vector<string> &list ) ;
 
-  vector<string> getFieldList();
-  
-  string getFieldType(const string& fieldName);
-  
-  int getRecordCount();
+    string			getFieldType( const string& fieldName ) ;
 
-  void* getFieldData(const string& field);
+    int				getRecordCount() ;
 
-  vector<string> getRecord(const int rowCount);
+    void *			getFieldData( const string& field ) ;
 
- private:
-  CSV_Reader* reader;
-  CSV_Header* header;
+    vector<string>		getRecord( const int rowCount ) ;
 
-  vector<CSV_Data*>* data;
-};
+    virtual void		dump( ostream &strm ) const ;
+} ;
 
 #endif // I_CSV_Obj_h
 

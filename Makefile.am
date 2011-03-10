@@ -15,15 +15,15 @@ lib_bes_LTLIBRARIES = libcsv_module.la
 SUBDIRS = bes-testsuite
 
 CSV_SRCS = \
-		CSVModule.cc CSVRequestHandler.cc \
-		CSV_Data.cc CSV_Header.cc CSV_Obj.cc CSV_Reader.cc \
-		CSVDAS.cc CSVDDS.cc
+		CSVModule.cc CSVRequestHandler.cc			\
+		CSV_Data.cc CSV_Header.cc CSV_Obj.cc CSV_Reader.cc	\
+		CSVDAS.cc CSVDDS.cc CSV_Utils.cc
 
 CSV_HDRS = \
-		CSVModule.h CSVRequestHandler.h \
-		CSVResponseNames.h \
-		CSVDAS.h CSVDDS.h CSV_Data.h CSV_Field.h \
-		CSV_Header.h CSV_Obj.h CSV_Reader.h
+		CSVModule.h CSVRequestHandler.h				\
+		CSVResponseNames.h					\
+		CSVDAS.h CSVDDS.h CSV_Data.h CSV_Field.h		\
+		CSV_Header.h CSV_Obj.h CSV_Reader.h CSV_Utils.h
 
 libcsv_module_la_SOURCES = $(CSV_SRCS) $(CSV_HDRS)
 libcsv_module_la_CPPFLAGS = $(BES_CPPFLAGS)

@@ -35,33 +35,35 @@
 #ifndef I_CSV_Reader_h
 #define I_CSV_Reader_h 1
 
-#include<string>
-#include<vector>
-#include<fstream>
-#include<iostream>
-#include<algorithm>
+#include <string>
+#include <vector>
+#include <fstream>
+#include <iostream>
+#include <algorithm>
 
-using namespace std;
+#include <BESObj.h>
 
-class CSV_Reader {
- public:
-  CSV_Reader();
-  ~CSV_Reader();
-  
-  const bool open(const string& filepath);
-  const bool close();
-  const bool eof();
+using namespace std ;
 
-  void reset();
+class CSV_Reader : public BESObj
+{
+private:
+    string			_filepath ;
+    fstream *			_stream_in ;
+public:
+    				CSV_Reader() ;
+    virtual			~CSV_Reader() ;
 
-  vector<string> get();
+    const bool			open( const string& filepath ) ;
+    const bool			close() ;
+    const bool			eof() ;
 
- private:
-  fstream* stream_in;
+    void			reset() ;
+
+    void			get( vector<string> &row ) ;
+
+    virtual void		dump( ostream &strm ) const ;
 };
-
-//I should probably build a string utilty header and put this in it...
-vector<string> split(const string& str, const string& delimiters);
 
 #endif // I_CSV_Reader_h
 

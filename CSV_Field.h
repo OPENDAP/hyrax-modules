@@ -35,29 +35,48 @@
 #ifndef I_CSV_Field_h
 #define I_CSV_Field_h 1
 
-#include<string>
+#include <string>
+
+#include <BESObj.h>
 
 using namespace std;
 
-class CSV_Field {
- public:
+class CSV_Field : public BESObj
+{
+private:
+    string			_name ;
+    string			_type ;
+    int				_index ;
+public:
+    				CSV_Field() { }
+    virtual 			~CSV_Field() { }
 
-  CSV_Field() { }
-  ~CSV_Field() { }
+    void			insertName( const string& fieldName )
+				    { _name = fieldName; }
+    void			insertType( const string& fieldType )
+				    { _type = fieldType; }
+    void			insertIndex( const int& fieldIndex )
+				    { _index = fieldIndex; }
 
-  void insertName(const string& fieldName) { name = fieldName; }
-  void insertType(const string& fieldType) { type = fieldType; }
-  void insertIndex(const int& fieldIndex) { index = fieldIndex; }
+    string			getName() { return _name ; }
+    string			getType() { return _type ; }
+    int				getIndex() { return _index ; }
 
-  string getName() { return name; }
-  string getType() { return type; }
-  int getIndex() { return index; }
-
- private:
-  string name;
-  string type;
-  int index;
-};
+    virtual void		dump( ostream &strm ) const
+				{
+				    strm << BESIndent::LMarg
+					 << "CSV_Field::dump - ("
+					 << (void *)this << ")" << endl ;
+				    BESIndent::Indent() ;
+				    strm << BESIndent::LMarg
+					 << "name: " << _name << endl
+				         << BESIndent::LMarg
+					 << "type: " << _type << endl
+				         << BESIndent::LMarg
+					 << "index: " << _index << endl ;
+				    BESIndent::UnIndent() ;
+				}
+} ;
 
 #endif // I_CSV_Field_h
 

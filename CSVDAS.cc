@@ -41,30 +41,44 @@
 
 #include "CSV_Obj.h"
 
-void csv_read_attributes(DAS &das, const string &filename) throw(Error) {
+#include <BESNotFoundError.h>
+#include <BESDebug.h>
 
-  vector<string> fieldList;
-  AttrTable *attr_table_ptr = NULL;
-  string type;
+void
+csv_read_attributes(DAS &das, const string &filename)
+{
+    AttrTable *attr_table_ptr = NULL ;
+    string type ;
 
-  CSV_Obj* csvObj = new CSV_Obj();
-  csvObj->open(filename);  //on fail, throw error
-  csvObj->load(); //on fail, throw error
-  
-  fieldList = csvObj->getFieldList();
-  
-  //loop through all the fields
-  for(vector<string>::iterator it = fieldList.begin(); it != fieldList.end(); it++) {
+    CSV_Obj* csvObj = new CSV_Obj() ;
+    if( !csvObj->open( filename ) )
+    {
+	string err = (string)"Unable to open file " + filename ;
+	throw BESNotFoundError( err, __FILE__, __LINE__ ) ;
+    }
+    csvObj->load() ;
 
-    attr_table_ptr = das.get_table((string(*it)).c_str());
+    BESDEBUG( "csv", "File Loaded:" << endl << *csvObj << endl ) ;
 
-    if(!attr_table_ptr)
-      attr_table_ptr = das.add_table((string(*it)).c_str(), new AttrTable);
-    
-    //only one attribute, field type, called "type"
-    type = csvObj->getFieldType(*it);
-    attr_table_ptr->append_attr("type",type,type);
-  }
+    vector<string> fieldList ;
+    csvObj->getFieldList( fieldList ) ;
 
-  delete csvObj;
+    //loop through all the fields
+    vector<string>::iterator it = fieldList.begin() ;
+    vector<string>::iterator et = fieldList.end() ;
+    for( ; it != et; it++)
+    {
+	attr_table_ptr = das.get_table((string(*it)).c_str());
+
+	if( !attr_table_ptr )
+	    attr_table_ptr =
+		das.add_table((string(*it)).c_str(), new AttrTable);
+
+	//only one attribute, field type, called "type"
+	type = csvObj->getFieldType(*it);
+	attr_table_ptr->append_attr( "type", type, type ) ;
+    }
+
+    delete csvObj;
 }
+

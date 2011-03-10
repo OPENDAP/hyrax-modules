@@ -130,7 +130,7 @@ CSVRequestHandler::csv_build_dds( BESDataHandlerInterface &dhi )
 	throw BESInternalError( "cast error", __FILE__, __LINE__ ) ;
   
     BaseTypeFactory *factory = new BaseTypeFactory ;
-    dds->set_factory(factory);
+    dds->set_factory( factory ) ;
     
     try
     {

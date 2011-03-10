@@ -32,96 +32,172 @@
 //      pwest       Patrick West <pwest@ucar.edu>
 //      jgarcia     Jose Garcia <jgarcia@ucar.edu>
 
-#include<iostream>
-#include<sstream>
-#include"CSV_Header.h"
+#include <iostream>
+#include <sstream>
 
-CSV_Header::CSV_Header() {
-  hdr = new map<string, CSV_Field*>;
-  index2field = new map<int,string>;
+#include "CSV_Header.h"
+#include "CSV_Utils.h"
+
+#include <BESInternalError.h>
+
+CSV_Header::CSV_Header()
+{
+    _hdr = new map<string, CSV_Field*> ;
+    _index2field = new map<int,string> ;
 }
 
-CSV_Header::~CSV_Header() {
-  delete hdr;
-  delete index2field;
+CSV_Header::~CSV_Header()
+{
+    if( _hdr )
+    {
+        map<string,CSV_Field*>::iterator i = _hdr->begin() ;
+        map<string,CSV_Field*>::iterator e = _hdr->end() ;
+	for( ; i != e; i++ )
+	{
+	  CSV_Field *f = (*i).second ;
+	  delete f ;
+	  (*i).second = 0 ;
+	}
+	delete _hdr;
+	_hdr = 0 ;
+    }
+    if( _index2field )
+    {
+	delete _index2field;
+	_index2field = 0 ;
+    }
 }
 
-const bool CSV_Header::populate(vector<string>* foo) {
-  
-  string::size_type lastPos;
+const bool
+CSV_Header::populate( vector<string> *headerinfo )
+{
+    string::size_type lastPos;
 
-  string fieldName;
-  string fieldType;
-  int fieldIndex = 0;
+    string fieldName;
+    string fieldType;
+    int fieldIndex = 0;
 
-  for(vector<string>::iterator it = foo->begin(); it != foo->end(); it++) {
-    slim(*it);
-    lastPos = (*it).find_first_of("<",0);
-    fieldName = (*it).substr(0,lastPos);
-    fieldType = (*it).substr(lastPos + 1,(*it).length() - lastPos - 2);
-    
-    CSV_Field* field = new CSV_Field();
-    field->insertName(fieldName);
-    field->insertType(fieldType);
-    field->insertIndex(fieldIndex);
-    
-    hdr->insert(make_pair(fieldName,field));
-    index2field->insert(make_pair(fieldIndex,fieldName));
-    
-    fieldIndex++;
-  }
+    vector<string>::iterator it = headerinfo->begin() ;
+    vector<string>::iterator et = headerinfo->end() ;
+    for( ; it != et; it++)
+    {
+	string headerinfo_s = (*it) ;
+	CSV_Utils::slim( headerinfo_s ) ;
+	string::size_type headerinfo_l = headerinfo_s.length() ;
 
-  return true;
+	lastPos = headerinfo_s.find_first_of( "<" ) ;
+	lastPos = headerinfo_s.find_first_of( "<", 0 ) ;
+	if( lastPos == string::npos )
+	{
+	    ostringstream err ;
+	    err << "malformed header information in column " << fieldIndex
+	        << ", missing type in " << headerinfo_s ;
+	    throw BESInternalError( err.str(), __FILE__, __LINE__ ) ;
+	}
+	if( *(--headerinfo_s.end()) != '>' )
+	{
+	    ostringstream err ;
+	    err << "malformed header information in column " << fieldIndex
+	        << ", missing type in " << headerinfo_s ;
+	    throw BESInternalError( err.str(), __FILE__, __LINE__ ) ;
+	}
+	fieldName = headerinfo_s.substr( 0, lastPos ) ;
+	fieldType = headerinfo_s.substr( lastPos + 1,
+					 headerinfo_l - lastPos - 2 ) ;
+
+	CSV_Field* field = new CSV_Field() ;
+	field->insertName( fieldName ) ;
+	field->insertType( fieldType ) ;
+	field->insertIndex( fieldIndex ) ;
+
+	_hdr->insert( make_pair( fieldName, field ) ) ;
+	_index2field->insert( make_pair( fieldIndex, fieldName ) ) ;
+
+	fieldIndex++ ;
+    }
+
+    return true ;
 }
 
-CSV_Field* CSV_Header::getField(const int& index) throw(string) {
-  if(index2field->find(index) != index2field->end()) {
-    string fieldName = index2field->find(index)->second;
-    return hdr->find(fieldName)->second;
-  } else {
-    ostringstream osstream;
-    osstream << "Could not find field at index " << index << endl;
-    throw osstream.str();
-  }
+CSV_Field *
+CSV_Header::getField( const int& index )
+{
+    CSV_Field *f = 0 ;
+    if( _index2field->find( index ) != _index2field->end() )
+    {
+	string fieldName = _index2field->find(index)->second ;
+	f = _hdr->find( fieldName )->second ;
+    }
+    else
+    {
+	ostringstream err ;
+	err << "Could not find field in column " << index ;
+	throw BESInternalError( err.str(), __FILE__, __LINE__ ) ;
+    }
+    return f ;
 }
 
-CSV_Field* CSV_Header::getField(const string& fieldName) throw(string) {
-  if(hdr->find(fieldName) != hdr->end()) {
-    return hdr->find(fieldName)->second;
-  } else {
-    ostringstream osstream;
-    osstream <<  "Could not find field \"" << fieldName << "\"\n";
-    throw osstream.str();
-  }
+CSV_Field *
+CSV_Header::getField( const string& fieldName )
+{
+    CSV_Field *f = 0 ;
+    if( _hdr->find(fieldName) != _hdr->end() )
+    {
+	f = _hdr->find( fieldName )->second ;
+    }
+    else
+    {
+	ostringstream err ;
+	err <<  "Could not find field \"" << fieldName ;
+	throw BESInternalError( err.str(), __FILE__, __LINE__ ) ;
+    }
+    return f ;
 }
 
-const string CSV_Header::getFieldType(const string& fieldName) {
-  map<string,CSV_Field*>::iterator it = hdr->find(fieldName);
-  
-  if(it != hdr->end())
-    return (it->second)->getType();
-  else
-    return "";
+const string
+CSV_Header::getFieldType(const string& fieldName)
+{
+    string type ;
+    map<string,CSV_Field*>::iterator it = _hdr->find( fieldName ) ;
+
+    if( it != _hdr->end() )
+    {
+	type = (it->second)->getType() ;
+    }
+    return type ;
 }
 
-void CSV_Header::print() {
-  for(unsigned int index = 0; index < index2field->size(); index++) {
-    string field = index2field->find(index)->second;
-    CSV_Field* csvField = hdr->find(field)->second;
-    cout << csvField->getIndex() << "\t" << csvField->getType() 
-	 << "\t" << csvField->getName() << "\n";
-  }
+void
+CSV_Header::getFieldList( vector<string> &list )
+{
+    for( unsigned int index = 0; index < _index2field->size(); index++ )
+    {
+	list.push_back( _index2field->find( index )->second ) ;
+    }
 }
 
-void slim(string& str) {
-  if(*(--str.end()) == '\"' and *str.begin() == '\"')
-    str = str.substr(1,str.length() - 2);
+void
+CSV_Header::dump( ostream &strm ) const
+{
+    strm << BESIndent::LMarg << "CSV_Header::dump - ("
+	 << (void *)this << ")" << endl ;
+    BESIndent::Indent() ;
+    map<int,string>::const_iterator ii = _index2field->begin() ;
+    map<int,string>::const_iterator ie = _index2field->end() ;
+    for( ; ii != ie; ii++ )
+    {
+	strm << BESIndent::LMarg << (*ii).first << ": "
+	     << (*ii).second << endl ;
+    }
+    map<string, CSV_Field*>::const_iterator fi = _hdr->begin() ;
+    map<string, CSV_Field*>::const_iterator fe = _hdr->end() ;
+    for( ; fi != fe; fi++ )
+    {
+	strm << BESIndent::LMarg << (*fi).first << ": " << endl ;
+	BESIndent::Indent() ;
+	(*fi).second->dump( strm ) ;
+	BESIndent::UnIndent() ;
+    }
+    BESIndent::UnIndent() ;
 }
 
-vector<string> CSV_Header::getFieldList() {
-  vector<string> fieldList;
-  for(unsigned int index = 0; index < index2field->size(); index++) {
-    fieldList.push_back(index2field->find(index)->second);
-  }
-  return fieldList;
-}

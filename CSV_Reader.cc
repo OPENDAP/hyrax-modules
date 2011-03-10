@@ -32,63 +32,91 @@
 //      pwest       Patrick West <pwest@ucar.edu>
 //      jgarcia     Jose Garcia <jgarcia@ucar.edu>
 
-#include"CSV_Reader.h"
+#include "CSV_Reader.h"
+#include "CSV_Utils.h"
+#include "BESUtil.h"
 
-CSV_Reader::CSV_Reader() {
-  stream_in = new fstream();
+CSV_Reader::CSV_Reader()
+{
+    _stream_in = new fstream() ;
 }
 
-CSV_Reader::~CSV_Reader() {
-  if(stream_in->is_open())
-    stream_in->close();
-  delete stream_in;
+CSV_Reader::~CSV_Reader()
+{
+    if( _stream_in )
+    {
+	if( _stream_in->is_open() )
+	{
+	    _stream_in->close();
+	}
+	delete _stream_in;
+	_stream_in = 0 ;
+    }
 }
 
-const bool CSV_Reader::open(const string& filepath) {
-  stream_in->open(filepath.c_str(),fstream::in);
-  if(stream_in->fail() or !(stream_in->is_open()))
-    return false;
-  else
-    return true;
+const bool
+CSV_Reader::open( const string& filepath )
+{
+    bool ret = false ;
+    _filepath = filepath ;
+    _stream_in->open( filepath.c_str(), fstream::in ) ;
+    if( !(_stream_in->fail()) && _stream_in->is_open() )
+    {
+	ret = true ;
+    }
+    return ret ;
 }
 
-const bool CSV_Reader::close() {
-  stream_in->close();
-  if(stream_in->bad() || stream_in->is_open())
-    return false;
-  else
-    return true;
+const bool
+CSV_Reader::close()
+{
+    bool ret = false ;
+    if( _stream_in )
+    {
+	_stream_in->close() ;
+	if( !(_stream_in->bad()) && !(_stream_in->is_open()) )
+	{
+	    ret = true ;
+	}
+    }
+    return ret ;
 }
 
-const bool CSV_Reader::eof() {
-  return stream_in->eof();
+const bool
+CSV_Reader::eof()
+{
+    return _stream_in->eof() ;
 }
 
-void CSV_Reader::reset() {
-  stream_in->seekg(ios::beg);
+void
+CSV_Reader::reset()
+{
+    _stream_in->seekg( ios::beg ) ;
 }
 
-vector<string> CSV_Reader::get() {
-  vector<string> foo;
-  string bar;
 
-  getline(*stream_in, bar);
-  foo = split(bar,",");
-  return foo;
+void
+CSV_Reader::get( vector<string> &row )
+{
+    string line ;
+
+    getline( *_stream_in, line ) ;
+    CSV_Utils::split( line, ',', row ) ;
 }
 
-vector<string> split(const string& str, const string& delimiters) {
-  vector<string> tokens;
-  string::size_type lastPos = str.find_first_not_of(delimiters, 0);
-  string::size_type pos = str.find_first_not_of(delimiters, lastPos);
-
-  while(string::npos != pos || string::npos != lastPos) {
-    if(lastPos != pos)
-      tokens.push_back(str.substr(lastPos, pos - lastPos));
-    lastPos = str.find_first_not_of(delimiters, pos);
-    pos = str.find_first_of(delimiters, lastPos);
-  }
-
-  return tokens;
+void
+CSV_Reader::dump( ostream &strm ) const
+{
+    strm << BESIndent::LMarg << "CSV_Reader::dump - ("
+	 << (void *)this << ")" << endl ;
+    BESIndent::Indent() ;
+    if( _stream_in )
+    {
+	strm << BESIndent::LMarg << "File " << _filepath << " is open" << endl ;
+    }
+    else
+    {
+	strm << BESIndent::LMarg << "No stream opened at this time" << endl ;
+    }
+    BESIndent::UnIndent() ;
 }
-
