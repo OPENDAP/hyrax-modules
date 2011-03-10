@@ -34,34 +34,35 @@
 
 #include "config.h"
 
-#include "BESDASResponse.h"
-#include "BESDDSResponse.h"
-#include "BESDataDDSResponse.h"
-#include "BESInfo.h"
-#include "BESContainer.h"
-#include "BESVersionInfo.h"
-#include "BESDataNames.h"
-#include "BESDapNames.h"
-#include "CSVRequestHandler.h"
-#include "BESResponseHandler.h"
-#include "BESResponseNames.h"
-#include "CSVResponseNames.h"
-#include "BESVersionInfo.h"
-#include "BESTextInfo.h"
-#include "BESDASResponse.h"
-#include "BESDDSResponse.h"
-#include "BESDataDDSResponse.h"
-#include "DDS.h"
-#include "DDS.h"
-#include "DAS.h"
-#include "BaseTypeFactory.h"
-#include "BESConstraintFuncs.h"
-#include "InternalErr.h"
-#include "BESDapError.h"
-#include "BESDebug.h"
-
 #include "CSVDDS.h"
 #include "CSVDAS.h"
+#include "CSVRequestHandler.h"
+#include "CSVResponseNames.h"
+
+#include <BESDASResponse.h>
+#include <BESDDSResponse.h>
+#include <BESDataDDSResponse.h>
+#include <BESInfo.h>
+#include <BESContainer.h>
+#include <BESVersionInfo.h>
+#include <BESDataNames.h>
+#include <BESDapNames.h>
+#include <BESResponseHandler.h>
+#include <BESResponseNames.h>
+#include <BESVersionInfo.h>
+#include <BESTextInfo.h>
+#include <BESDASResponse.h>
+#include <BESDDSResponse.h>
+#include <BESDataDDSResponse.h>
+#include <DDS.h>
+#include <DDS.h>
+#include <DAS.h>
+#include <BaseTypeFactory.h>
+#include <BESConstraintFuncs.h>
+#include <InternalErr.h>
+#include <BESDapError.h>
+#include <BESDebug.h>
+#include <Ancillary.h>
 
 CSVRequestHandler::CSVRequestHandler( string name )
     : BESRequestHandler( name )
@@ -93,7 +94,9 @@ CSVRequestHandler::csv_build_das( BESDataHandlerInterface &dhi )
   
     try
     {
-	csv_read_attributes(*das, dhi.container->access());
+	string accessed = dhi.container->access() ;
+	csv_read_attributes( *das, accessed ) ;
+	Ancillary::read_ancillary_das( *das, accessed ) ;
 	return ret;
     }
     catch(InternalErr &e)
@@ -137,9 +140,11 @@ CSVRequestHandler::csv_build_dds( BESDataHandlerInterface &dhi )
 	string accessed = dhi.container->access() ;
 	dds->filename( accessed ) ;
 	csv_read_descriptors( *dds, accessed ) ;
+	Ancillary::read_ancillary_dds( *dds, accessed ) ;
 
 	DAS das;
 	csv_read_attributes(das, accessed);
+	Ancillary::read_ancillary_das( das, accessed ) ;
 	dds->transfer_attributes( &das ) ;
 
 	BESDEBUG( "csv", "dds = " << endl << *dds << endl ) ;
@@ -189,9 +194,11 @@ CSVRequestHandler::csv_build_data( BESDataHandlerInterface &dhi )
 	string accessed = dhi.container->access() ;
 	dds->filename( accessed ) ;
 	csv_read_descriptors(*dds, accessed);
+	Ancillary::read_ancillary_dds( *dds, accessed ) ;
 
 	DAS das;
 	csv_read_attributes(das, accessed);
+	Ancillary::read_ancillary_das( das, accessed ) ;
 	dds->transfer_attributes( &das ) ;
 
 	BESDEBUG( "csv", "dds = " << endl << *dds << endl ) ;
