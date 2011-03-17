@@ -9,9 +9,9 @@
 	<key>CFBundleShortVersionString</key>
 	<string>4.1.0</string>
 	<key>IFMajorVersion</key>
-	<integer>3</integer>
+	<integer>4</integer>
 	<key>IFMinorVersion</key>
-	<integer>8</integer>
+	<integer>1</integer>
 	<key>IFPkgFlagAllowBackRev</key>
 	<false/>
 	<key>IFPkgFlagAuthorizationAction</key>
@@ -21,13 +21,13 @@
 	<key>IFPkgFlagBackgroundScaling</key>
 	<string>none</string>
 	<key>IFPkgFlagDefaultLocation</key>
-	<string>/usr</string>
+	<string>/usr/local/opendap/servers/hyrax-1.6.2</string>
 	<key>IFPkgFlagFollowLinks</key>
 	<true/>
 	<key>IFPkgFlagInstallFat</key>
 	<false/>
 	<key>IFPkgFlagInstalledSize</key>
-	<integer>3896</integer>
+	<integer>26924</integer>
 	<key>IFPkgFlagIsRequired</key>
 	<false/>
 	<key>IFPkgFlagOverwritePermissions</key>
