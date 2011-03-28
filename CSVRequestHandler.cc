@@ -101,21 +101,18 @@ CSVRequestHandler::csv_build_das( BESDataHandlerInterface &dhi )
     }
     catch(InternalErr &e)
     {
-	BESDapError ex( e.get_error_message(), true,
+	throw BESDapError( e.get_error_message(), true,
 		        e.get_error_code(), __FILE__, __LINE__ ) ;
-	throw ex ;
     }
     catch(Error &e)
     {
-	BESDapError ex( e.get_error_message(), false,
+	throw BESDapError( e.get_error_message(), false,
 			e.get_error_code(), __FILE__, __LINE__);
-	throw ex;
     }
     catch(...)
     {
-	BESDapError ex( "Caught unknown error build CSV DAS response", true,
+	throw BESDapError( "Caught unknown error build CSV DAS response", true,
 			unknown_error, __FILE__, __LINE__);
-	throw ex;
     }
 }
 
@@ -154,21 +151,18 @@ CSVRequestHandler::csv_build_dds( BESDataHandlerInterface &dhi )
   }
     catch(InternalErr &e)
     {
-	BESDapError ex( e.get_error_message(), true,
+	throw BESDapError( e.get_error_message(), true,
 			e.get_error_code(), __FILE__, __LINE__);
-	throw ex;
     }
     catch(Error &e)
     {
-	BESDapError ex( e.get_error_message(), false,
+	throw BESDapError( e.get_error_message(), false,
 			e.get_error_code(), __FILE__, __LINE__);
-	throw ex;
     }
     catch(...)
     {
-	BESDapError ex( "Caught unknown error build CSV DDS response", true,
+	throw BESDapError( "Caught unknown error build CSV DDS response", true,
 			unknown_error, __FILE__, __LINE__);
-	throw ex;
     }
 }
 
@@ -207,21 +201,18 @@ CSVRequestHandler::csv_build_data( BESDataHandlerInterface &dhi )
     }
     catch(InternalErr &e)
     {
-	BESDapError ex( e.get_error_message(), true,
+	throw BESDapError( e.get_error_message(), true,
 			e.get_error_code(), __FILE__, __LINE__);
-	throw ex;
     }
     catch(Error &e)
     {
-	BESDapError ex( e.get_error_message(), false,
+	throw BESDapError( e.get_error_message(), false,
 			e.get_error_code(), __FILE__, __LINE__);
-	throw ex;
     }
     catch(...)
     {
-	BESDapError ex( "Caught unknown error build CSV DataDDS response", true,
+	throw BESDapError( "Caught unknown error build CSV DataDDS response", true,
 			unknown_error, __FILE__, __LINE__);
-	throw ex;
     }
 }
 

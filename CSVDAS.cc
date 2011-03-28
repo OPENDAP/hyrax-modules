@@ -54,6 +54,7 @@ csv_read_attributes(DAS &das, const string &filename)
     if( !csvObj->open( filename ) )
     {
 	string err = (string)"Unable to open file " + filename ;
+	delete csvObj;
 	throw BESNotFoundError( err, __FILE__, __LINE__ ) ;
     }
     csvObj->load() ;
@@ -72,7 +73,7 @@ csv_read_attributes(DAS &das, const string &filename)
 
 	if( !attr_table_ptr )
 	    attr_table_ptr =
-		das.add_table((string(*it)).c_str(), new AttrTable);
+		das.add_table(string(*it), new AttrTable);
 
 	//only one attribute, field type, called "type"
 	type = csvObj->getFieldType(*it);
