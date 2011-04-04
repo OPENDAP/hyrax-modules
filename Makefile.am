@@ -52,6 +52,14 @@ uninstall-local:
 csv.conf: csv.conf.in config.status
 	sed -e "s%[@]bes_modules_dir[@]%${lib_besdir}%" $< > csv.conf
 
+dist-hook:
+	rm -rf `find $(distdir) -name .svn`
+
+C4_DIR=./cccc
+.PHONY: cccc
+cccc:	
+	cccc --outdir=$(C4_DIR) $(libgateway_module_la_SOURCES)
+
 ###########################################################################
 
 # Fortify targets.
