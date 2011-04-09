@@ -2,7 +2,7 @@
 #
 # use "i386" or "ppc.*" - nake sure to use a regex for PPC!
 
-PATH="/usr/local/opendap/servers/hyrax-1.7.0/bin:$PATH"
+PATH="/Users/jimg/src/shrew/bin:$PATH"
 
 
 architecture="i386.*"
