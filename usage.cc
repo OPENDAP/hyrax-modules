@@ -451,10 +451,12 @@ write_usage_response(ostream &strm, DDS &dds, DAS &das,
 	if( httpheader )
 	    html_header( strm );
 
-        if (global_attrs.length()) {
-	    strm << "<html><head><title>Dataset Information</title></head>"
-	         << "\n" << "<body>" << "\n" << global_attrs.c_str()
-		 << "\n" << "<hr>" << "\n" ;
+	strm << "<html><head><title>Dataset Information</title></head>"
+	     << "\n" << "<body>" << "\n" ;
+
+        if (global_attrs.length())
+	{
+	    strm << global_attrs.c_str() << "\n" << "<hr>" << "\n" ;
         }
 
         strm << variable_sum.c_str() << "\n" ;
