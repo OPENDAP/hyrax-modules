@@ -1,5 +1,5 @@
 
-Updated for version 4.1.0 of the dap-server package 
+Updated for version 4.1.1 of the dap-server package 
 
 This package contains general purpose handlers for use with the new
 Hyrax data server. These are the Usage, ASCII and HTML form handlers.
@@ -7,7 +7,7 @@ Each takes input from a 'data handler' and returns a HTML or plain text
 response --- something other than a DAP response object.
 
 Older version of this package contain the 'Server3' CGI software; that
-has been removed from this version.
+has been removed.
 
 Hyrax BES module
 
