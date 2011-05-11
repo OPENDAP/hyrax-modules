@@ -42,6 +42,6 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/bes/modules/csv.conf
 %{_libdir}/bes/libcsv_module.so
 %{_datadir}/hyrax/
-%doc COPYING COPYRIGHT NEWS README
+%doc COPYING NEWS README
 
 %changelog
