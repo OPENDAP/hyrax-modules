@@ -1,7 +1,9 @@
 
 	$Id: NEWS 16530 2007-05-21 18:47:32Z pwest $
 
-News for version 1.0.1 (15 Feb, 2011)
+News for version 1.0.1 
+
+Build fixes.
 
 Now a separate module from the bes test environment. No longer just a
 sample module, but now a real live module that can read in comma

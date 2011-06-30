@@ -1,3 +1,96 @@
+2011-04-20  James Gallagher <jgallagher@opendap.org>
+
+	Hyrax 1.7 release
+
+2011-04-04  James Gallagher <jgallagher@opendap.org>
+
+	Added dist-hook and cccc targets.
+
+2011-04-04  James Gallagher <jgallagher@opendap.org>
+
+	Added spec file.
+
+	A    csv_handler.spec
+	M    Makefile.am
+
+2011-03-28  James Gallagher <jgallagher@opendap.org>
+
+	1.7RC1
+
+2011-03-17  Nathan Potter <ndp@coas.oregonstate.edu>
+
+	csv_handler: Added automated version numbers to OSX Package builds
+
+2011-03-10  James Gallagher <jgallagher@opendap.org>
+
+	Fixed rpm targets in Makefile.am
+
+2011-03-09  Patrick West <pwest@ucar.edu>
+
+	New functions for general use
+	A    CSV_Utils.cc
+	A    CSV_Utils.h
+
+2011-03-09  Patrick West <pwest@ucar.edu>
+
+	Added Ancillary data access.
+	M    CSVRequestHandler.cc
+
+2011-03-09  Patrick West <pwest@ucar.edu>
+
+	Throwing correct errors, not strings. Cleaned up code. Improved
+	performance. Started adding debugging, need to add more. Removed main
+	code, will add unit-tests.
+	M    CSV_Header.cc
+	M    CSV_Header.h
+	M    CSV_Reader.cc
+	M    CSV_Reader.h
+	M    CSVDAS.cc
+	D    main.cc
+	M    CSVDAS.h
+	M    CSVDDS.cc
+	M    CSV_Field.h
+	M    CSVRequestHandler.cc
+	M    CSV_Obj.cc
+	M    Makefile.am
+	M    CSV_Obj.h
+
+2011-03-09  Patrick West <pwest@ucar.edu>
+
+	On linux, needed to include cstdlib
+	M    CSV_Data.cc
+
+2011-03-09  Patrick West <pwest@ucar.edu>
+
+	fixed distcheck
+	M    bes-testsuite/Makefile.am
+
+2011-03-09  Patrick West <pwest@ucar.edu>
+
+	Preparing for OSX pkg build
+	M    Makefile.am
+
+2011-02-16  Patrick West <pwest@ucar.edu>
+
+	 Able to build OSX package
+	A    OSX_Resources
+	A    OSX_Resources/License.txt
+	AM   OSX_Resources/InstallationCheck.proto
+	AM   OSX_Resources/update_mac_package_contents.pl
+	A    OSX_Resources/Info.plist.proto
+	A    OSX_Resources/InstallationCheck.strings
+	A    OSX_Resources/Description.plist
+	AM   OSX_Resources/background.jpg
+	A    OSX_Resources/Welcome.html
+
+2011-02-15  Patrick West <pwest@ucar.edu>
+
+	Adding ChangeLog from bes/ChangeLog where this handler used to reside.
+	A    ChangeLog
+
+;; Local Variables:
+;; coding: utf-8
+;; End:
 2011-02-16  Patrick West <pwest@ucar.edu>
 
 	Updated README to look more like the other data handlers. Updated NEWS
