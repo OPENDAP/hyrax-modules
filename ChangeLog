@@ -1,3 +1,76 @@
+2011-04-20  James Gallagher <jgallagher@opendap.org>
+
+	Hyrax 1.7 releaseHyrax 1.7 release
+
+2011-04-20  James Gallagher <jgallagher@opendap.org>
+
+	metapackage build
+
+	M    OSX_Resources/InstallationCheck
+
+2011-04-11  James Gallagher <jgallagher@opendap.org>
+
+	build change
+
+	M    OSX_Resources/InstallationCheck
+
+2011-04-08  James Gallagher <jgallagher@opendap.org>
+
+	Build fixes for	h 1.7 osx meta package
+
+	M    OSX_Resources/InstallationCheck
+
+2011-03-24  Nathan Potter <ndp@coas.oregonstate.edu>
+
+2011-03-17  Nathan Potter <ndp@coas.oregonstate.edu>
+
+2011-03-17  Nathan Potter <ndp@coas.oregonstate.edu>
+
+	dap-server: Added automated version numbers to OSX Package builds
+
+2011-03-08  James Gallagher <jgallagher@opendap.org>
+
+	Merge for hyrax	1.7 from the hyrax_1.6.2_release branch	of shrew to the	trunk
+
+	_M   .
+	A  + OSX_Resources/InstallationCheck.proto
+	M    OSX_Resources/update_mac_package_contents.pl
+	A  + OSX_Resources/Info.plist.proto
+	M    Makefile.am
+
+2011-02-08  James Gallagher <jgallagher@opendap.org>
+
+	removed unneeded mime_util.h and util.h includes; added comments about sending mime headers in our handlers (which may not be needed).
+
+2010-10-28  mjohnson
+
+	Merge from the Hyrax 1.6.2 Shrew Release branch.
+
+2010-09-14  James Gallagher <jgallagher@opendap.org>
+
+	Bumped bes version to 3.9.0 to handle issues with the conf files.
+
+	M    configure.ac
+
+2010-09-14  James Gallagher <jgallagher@opendap.org>
+
+	Mminor fix to configure - this can still use bes 3.8.3 but requires functions added to libdap 3.11.0.
+
+2010-09-14  James Gallagher <jgallagher@opendap.org>
+
+	Updated for version 4.1
+
+	M    configure.ac
+	M    INSTALL
+	M    NEWS
+	M    ChangeLog
+	M    README
+	M    dap-server.spec
+
+2010-09-14  James Gallagher <jgallagher@opendap.org>
+
+	This code now uses the new method in ConstraintEvaluator that enables multiple functions to be called.
+
 2010-09-14  James Gallagher <jgallagher@opendap.org>
 
 	This code now uses the new method in ConstraintEvaluator that
