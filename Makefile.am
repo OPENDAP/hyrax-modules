@@ -32,7 +32,7 @@ libcsv_module_la_LIBADD = $(BES_DAP_LIBS)
 
 EXTRA_PROGRAMS = 
 
-EXTRA_DIST = data COPYING csv.conf.in csv_handler.spec
+EXTRA_DIST = data COPYING COPYRIGHT csv.conf.in csv_handler.spec
 
 CLEANFILES = *~ csv.conf
 
