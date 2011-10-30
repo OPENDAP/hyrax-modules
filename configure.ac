@@ -152,6 +152,7 @@ AH_BOTTOM([/* Shorthand for gcc's unused attribute feature */
 AC_CONFIG_FILES([Makefile
                  asciival/Makefile
 		 asciival/unit-tests/Makefile
+		 asciival/unit-tests/test_config.h
                  www-interface/Makefile])
                  
 AC_CONFIG_FILES([www-interface/js2h.pl], [chmod +x www-interface/js2h.pl])

@@ -20,6 +20,7 @@ TEST_COV_FLAGS = -ftest-coverage -fprofile-arcs
 
 # This header file is used for parse files
 noinst_HEADERS = test_config.h
+#BUILT_SOURCES = test_config.h
 
 check_PROGRAMS = $(UNIT_TESTS)
 
@@ -35,8 +36,8 @@ DISTCLEANFILES = *.Po test_config.h
 # Unit Tests
 #
 
-test_config.h: test_config.h.in Makefile
-	sed -e "s%[@]srcdir[@]%${srcdir}%" $< > test_config.h
+#test_config.h: test_config.h.in Makefile
+#	sed -e "s%[@]srcdir[@]%${srcdir}%" $< > test_config.h
 
 # The object files from asciival are needed to link the unit tests
 ASCIIOBJS = ../AsciiByte.o ../AsciiInt32.o ../AsciiFloat64.o ../AsciiStr.o   \

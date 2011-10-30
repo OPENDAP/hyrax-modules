@@ -39,7 +39,7 @@
 //#include "name_map.h"
 #include "AsciiArray.h"
 #include "AsciiOutputFactory.h"
-#include <test_config.h>
+#include "test_config.h"
 
 bool translate = false;
 using namespace CppUnit;
