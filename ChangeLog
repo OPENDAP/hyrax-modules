@@ -1,3 +1,26 @@
+2011-10-23  James Gallagher <jgallagher@opendap.org>
+
+	Modified configure so that this code builds only the so version of the library by default.
+	Fixed a DDX test to work with the new libdap code.
+
+2011-09-21  James Gallagher <jgallagher@opendap.org>
+
+	Hyrax 1.8
+
+	A    http://scm.opendap.org/svn/branch/csv_handler/1.0.2
+
+2011-07-04  Patrick West <pwest@ucar.edu>
+
+	added COPYRIGHT back to the spec and makefile and added a COPYRIGHT
+	file. This was missing in the Hyrax 1.7 release.
+	M    csv_handler.spec
+	A    COPYRIGHT
+	M    Makefile.am
+
+2011-06-30  Patrick West <pwest@ucar.edu>
+
+	Merge hyrax 1.7 branch to trunk
+
 2011-04-20  James Gallagher <jgallagher@opendap.org>
 
 	Hyrax 1.7 release
