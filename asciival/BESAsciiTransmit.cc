@@ -147,22 +147,28 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
 
     catch( InternalErr &e )
     {
+#if 0    	
     	if (functional_constraint)
     	    delete dds;
+#endif
         string err = "Failed to read data: " + e.get_error_message() ;
 	throw BESDapError( err, true, e.get_error_code(), __FILE__, __LINE__ ) ;
     }
     catch(Error & e)
     {
+#if 0    	
     	if (functional_constraint)
     	    delete dds;
+#endif
         string err = "Failed to read data: " + e.get_error_message() ;
         throw BESDapError( err, false, e.get_error_code(), __FILE__, __LINE__ );
     }
     catch(...)
     {
+#if 0    	
     	if (functional_constraint)
     	    delete dds;
+#endif
         string err = "Failed to read data: Unknown exception caught";
         throw BESInternalFatalError( err, __FILE__, __LINE__ ) ;
     }
@@ -184,27 +190,35 @@ BESAsciiTransmit::send_basic_ascii( BESResponseObject * obj,
     }
     catch( InternalErr &e )
     {
+#if 0    	
     	if (functional_constraint)
     	    delete dds;
+#endif
         string err = "Failed to get values as ascii: " + e.get_error_message() ;
         throw BESDapError( err, true, e.get_error_code(), __FILE__, __LINE__ ) ;
     }
     catch( Error &e )
     {
-     	if (functional_constraint)
-     	    delete dds;
+#if 0    	
+    	if (functional_constraint)
+    	    delete dds;
+#endif
         string err = "Failed to get values as ascii: " + e.get_error_message() ;
         throw BESDapError( err, false, e.get_error_code(), __FILE__, __LINE__ );
     }
     catch(...) {
+#if 0    	
     	if (functional_constraint)
     	    delete dds;
+#endif
         string err = "Failed to get values as ascii: Unknown exception caught";
         throw BESInternalFatalError( err, __FILE__, __LINE__ ) ;
     }
 
-    if (functional_constraint)
-    	delete dds;
+#if 0    	
+    	if (functional_constraint)
+    	    delete dds;
+#endif
 }
 
 void
