@@ -1,3 +1,23 @@
+2011-06-30  Patrick West <pwest@ucar.edu>
+
+	Merge hyrax 1.7 branch to trunk
+
+2011-04-25  Patrick West <pwest@ucar.edu>
+
+	The html, head, and beginning body tag were not being printed. Also, the
+	mime type was being set to text/plain.
+	M    usage.cc
+	M    BESUsageTransmit.cc
+
+2011-04-20  James Gallagher <jgallagher@opendap.org>
+
+	metapackage build
+
+	M    OSX_Resources/InstallationCheck
+
+;; Local Variables:
+;; coding: utf-8
+;; End:
 2011-04-20  James Gallagher <jgallagher@opendap.org>
 
 	Hyrax 1.7 releaseHyrax 1.7 release
