@@ -1,6 +1,6 @@
 Summary:         CSV module for the OPeNDAP Data server
 Name:            csv_handler
-Version:         1.0.1
+Version:         1.0.2
 Release:         1
 License:         LGPLv2+
 Group:           System Environment/Daemons 

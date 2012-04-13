@@ -3,7 +3,7 @@
 # Configure script for OPeNDAP CSV data handler
 
 AC_PREREQ(2.59)
-AC_INIT(csv_handler, 1.0.1, opendap-tech@opendap.org)
+AC_INIT(csv_handler, 1.0.2, opendap-tech@opendap.org)
 AC_CONFIG_SRCDIR([configure.ac])
 AC_CONFIG_HEADER([config.h])
 
@@ -21,6 +21,12 @@ AC_CONFIG_AUX_DIR([conf])
 AC_CONFIG_MACRO_DIR([conf])
 
 AM_INIT_AUTOMAKE(1.10)
+
+# The handler is a shared object library, so we don't normally need
+# the static lib. Override this default by specifying `--enable-static',
+# which can make running unit tests with valgrind far more pleasant. 
+AM_DISABLE_STATIC
+
 AC_CONFIG_TESTDIR(bes-testsuite, [.])
 
 # Checks for programs.
