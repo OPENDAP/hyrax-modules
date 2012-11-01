@@ -22,7 +22,7 @@
 //
 // You can contact University Corporation for Atmospheric Research at
 // 3080 Center Green Drive, Boulder, CO 80301
- 
+
 // (c) COPYRIGHT University Corporation for Atmospheric Research 2004-2005
 // Please read the full copyright statement in the file COPYRIGHT_UCAR.
 //
@@ -37,12 +37,12 @@
 #include "BESDataDDSResponse.h"
 #include "BESAsciiTransmit.h"
 
-BESAsciiResponseHandler::BESAsciiResponseHandler( const string &name )
-    : BESResponseHandler( name )
+BESAsciiResponseHandler::BESAsciiResponseHandler(const string &name) :
+        BESResponseHandler(name)
 {
 }
 
-BESAsciiResponseHandler::~BESAsciiResponseHandler( )
+BESAsciiResponseHandler::~BESAsciiResponseHandler()
 {
 }
 
@@ -59,22 +59,21 @@ BESAsciiResponseHandler::~BESAsciiResponseHandler( )
  * @see DAS
  * @see BESRequestHandlerList
  */
-void
-BESAsciiResponseHandler::execute( BESDataHandlerInterface &dhi )
+void BESAsciiResponseHandler::execute(BESDataHandlerInterface &dhi)
 {
-    dhi.action_name = ASCII_RESPONSE_STR ;
+    dhi.action_name = ASCII_RESPONSE_STR;
     // Create the DDS.
-    // NOTE: It is the responsbility of the specific request handler to set
+    // NOTE: It is the responsibility of the specific request handler to set
     // the BaseTypeFactory. It is set to NULL here
-    DataDDS *dds = new DataDDS( NULL, "virtual" ) ;
-    BESDataDDSResponse *bdds = new BESDataDDSResponse( dds ) ;
-    _response = bdds ;
-    _response_name = DATA_RESPONSE ;
-    dhi.action = DATA_RESPONSE ;
-    BESRequestHandlerList::TheList()->execute_each( dhi ) ;
+    DataDDS *dds = new DataDDS(NULL, "virtual");
+    BESDataDDSResponse *bdds = new BESDataDDSResponse(dds);
+    _response = bdds;
+    _response_name = DATA_RESPONSE;
+    dhi.action = DATA_RESPONSE;
+    BESRequestHandlerList::TheList()->execute_each(dhi);
 
-    dhi.action = ASCII_RESPONSE ;
-    _response = bdds ;
+    dhi.action = ASCII_RESPONSE;
+    _response = bdds;
 }
 
 /** @brief transmit the response object built by the execute command
@@ -89,19 +88,16 @@ BESAsciiResponseHandler::execute( BESDataHandlerInterface &dhi )
  * @see BESTransmitter
  * @see _BESDataHandlerInterface
  */
-void
-BESAsciiResponseHandler::transmit( BESTransmitter *transmitter,
-                                   BESDataHandlerInterface &dhi )
+void BESAsciiResponseHandler::transmit(BESTransmitter *transmitter, BESDataHandlerInterface &dhi)
 {
-    if( _response )
-    {
-	transmitter->send_response( ASCII_TRANSMITTER, _response, dhi ) ;
+    if (_response) {
+        transmitter->send_response(ASCII_TRANSMITTER, _response, dhi);
     }
 }
 
 BESResponseHandler *
-BESAsciiResponseHandler::AsciiResponseBuilder( const string &handler_name )
+BESAsciiResponseHandler::AsciiResponseBuilder(const string &handler_name)
 {
-    return new BESAsciiResponseHandler( handler_name ) ;
+    return new BESAsciiResponseHandler(handler_name);
 }
 
