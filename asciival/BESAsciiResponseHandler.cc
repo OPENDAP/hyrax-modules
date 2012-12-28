@@ -47,9 +47,9 @@ BESAsciiResponseHandler::~BESAsciiResponseHandler()
 }
 
 /** @brief executes the command 'get ascii for &lt;def_name&gt;;' by executing
- * the request for each container in the specified defnition.
+ * the request for each container in the specified definition.
  *
- * For each container in the specified defnition go to the request
+ * For each container in the specified definition go to the request
  * handler for that container and have it add to the OPeNDAP DAS response
  * object. The DAS response object is built within this method and passed
  * to the request handler list.
