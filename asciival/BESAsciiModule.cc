@@ -22,7 +22,7 @@
 //
 // You can contact University Corporation for Atmospheric Research at
 // 3080 Center Green Drive, Boulder, CO 80301
- 
+
 // (c) COPYRIGHT University Corporation for Atmospheric Research 2004-2005
 // Please read the full copyright statement in the file COPYRIGHT_UCAR.
 //
@@ -31,7 +31,7 @@
 
 #include <iostream>
 
-using std::endl ;
+using std::endl;
 
 #include "BESAsciiModule.h"
 #include "BESDebug.h"
@@ -52,76 +52,58 @@ using std::endl ;
 #include "BESReturnManager.h"
 #include "BESTransmitterNames.h"
 
-
-void
-BESAsciiModule::initialize( const string &modname )
+void BESAsciiModule::initialize(const string &modname)
 {
-    BESDEBUG( "ascii", "Initializing OPeNDAP Ascii module "
-		       << modname << endl ) ;
+    BESDEBUG("ascii", "Initializing OPeNDAP Ascii module " << modname << endl);
+    BESDEBUG("ascii", "    adding " << modname << " request handler" << endl);
 
-    BESDEBUG( "ascii", "    adding " << modname
-		       << " request handler" << endl ) ;
-    BESRequestHandler *handler = new BESAsciiRequestHandler( modname ) ;
-    BESRequestHandlerList::TheList()->add_handler( modname, handler ) ;
+    BESRequestHandler *handler = new BESAsciiRequestHandler(modname);
+    BESRequestHandlerList::TheList()->add_handler(modname, handler);
 
-    BESDEBUG( "ascii", "    adding " << ASCII_RESPONSE
-		       << " response handler" << endl ) ;
-    BESResponseHandlerList::TheList()->add_handler( ASCII_RESPONSE, BESAsciiResponseHandler::AsciiResponseBuilder ) ;
+    BESDEBUG("ascii", "    adding " << ASCII_RESPONSE << " response handler" << endl);
 
-    BESDEBUG( "ascii", "Adding to dap services" << endl ) ;
-    BESDapService::add_to_dap_service( ASCII_SERVICE,
-				       "OPeNDAP ascii data representation" ) ;
+    BESResponseHandlerList::TheList()->add_handler(ASCII_RESPONSE, BESAsciiResponseHandler::AsciiResponseBuilder);
 
-    BESTransmitter *t =
-	BESReturnManager::TheManager()->find_transmitter( DAP2_FORMAT ) ;
-    if( t )
-    {
-	BESDEBUG( "ascii", "    adding basic " << ASCII_TRANSMITTER
-			   << " transmit function" << endl ) ;
-	t->add_method( ASCII_TRANSMITTER, BESAsciiTransmit::send_basic_ascii ) ;
+    BESDEBUG("ascii", "Adding to dap services" << endl);
+
+    BESDapService::add_to_dap_service(ASCII_SERVICE, "OPeNDAP ascii data representation");
+
+    BESTransmitter *t = BESReturnManager::TheManager()->find_transmitter(DAP2_FORMAT);
+    if (t) {
+        BESDEBUG("ascii", "    adding basic " << ASCII_TRANSMITTER << " transmit function" << endl);
+        t->add_method(ASCII_TRANSMITTER, BESAsciiTransmit::send_basic_ascii);
     }
 
-    BESDEBUG( "ascii", "    adding ascii debug context" << endl ) ;
-    BESDebug::Register( "ascii" ) ;
-
-    BESDEBUG( "ascii", "Done Initializing OPeNDAP Ascii module "
-		       << modname << endl ) ;
+    BESDEBUG("ascii", "    adding ascii debug context" << endl);
+    BESDebug::Register("ascii");
+    BESDEBUG("ascii", "Done Initializing OPeNDAP Ascii module " << modname << endl);
 }
 
-void
-BESAsciiModule::terminate( const string &modname )
+void BESAsciiModule::terminate(const string &modname)
 {
-    BESDEBUG( "ascii", "Cleaning OPeNDAP Ascii module "
-		       << modname << endl ) ;
+    BESDEBUG("ascii", "Cleaning OPeNDAP Ascii module " << modname << endl);
+    BESDEBUG("ascii", "    removing " << modname << " request handler " << endl);
 
-    BESDEBUG( "ascii", "    removing " << modname
-		       << " request handler " << endl ) ;
-    BESRequestHandler *rh = BESRequestHandlerList::TheList()->remove_handler( modname ) ;
-    if( rh ) delete rh ;
+    BESRequestHandler *rh = BESRequestHandlerList::TheList()->remove_handler(modname);
+    if (rh)
+        delete rh;
 
-    BESDEBUG( "ascii", "    removing " << ASCII_RESPONSE
-		       << " response handler" << endl ) ;
-    BESResponseHandlerList::TheList()->remove_handler( ASCII_RESPONSE ) ;
+    BESDEBUG("ascii", "    removing " << ASCII_RESPONSE << " response handler" << endl);
 
-    BESTransmitter *t =
-	BESReturnManager::TheManager()->find_transmitter( DAP2_FORMAT ) ;
-    if( t )
-    {
-	BESDEBUG( "ascii", "    removing basic " << ASCII_TRANSMITTER
-			   << " transmit function" << endl ) ;
-	t->remove_method( ASCII_TRANSMITTER ) ;
+    BESResponseHandlerList::TheList()->remove_handler(ASCII_RESPONSE);
+    BESTransmitter *t = BESReturnManager::TheManager()->find_transmitter(DAP2_FORMAT);
+    if (t) {
+        BESDEBUG("ascii", "    removing basic " << ASCII_TRANSMITTER << " transmit function" << endl);
+        t->remove_method(ASCII_TRANSMITTER);
     }
 
-    t = BESReturnManager::TheManager()->find_transmitter( DAP2_FORMAT ) ;
-    if( t )
-    {
-	BESDEBUG( "ascii", "    removing http " << ASCII_TRANSMITTER
-			   << " transmit function" << endl ) ;
-	t->remove_method( ASCII_TRANSMITTER ) ;
+    t = BESReturnManager::TheManager()->find_transmitter(DAP2_FORMAT);
+    if (t) {
+        BESDEBUG("ascii", "    removing http " << ASCII_TRANSMITTER << " transmit function" << endl);
+        t->remove_method(ASCII_TRANSMITTER);
     }
 
-    BESDEBUG( "ascii", "Done Cleaning OPeNDAP Ascii module "
-		       << modname << endl ) ;
+    BESDEBUG("ascii", "Done Cleaning OPeNDAP Ascii module " << modname << endl);
 }
 
 /** @brief dumps information about this object
@@ -130,18 +112,15 @@ BESAsciiModule::terminate( const string &modname )
  *
  * @param strm C++ i/o stream to dump the information to
  */
-void
-BESAsciiModule::dump( ostream &strm ) const
+void BESAsciiModule::dump(ostream &strm) const
 {
-    strm << BESIndent::LMarg << "BESAsciiModule::dump - ("
-			     << (void *)this << ")" << endl ;
+    strm << BESIndent::LMarg << "BESAsciiModule::dump - (" << (void *) this << ")" << endl;
 }
 
-extern "C"
+extern "C" {
+BESAbstractModule *maker()
 {
-    BESAbstractModule *maker()
-    {
-	return new BESAsciiModule ;
-    }
+    return new BESAsciiModule;
+}
 }
 

@@ -1,3 +1,35 @@
+2012-01-09  James Gallagher <jgallagher@opendap.org>
+
+	Code review.
+
+2011-10-29  James Gallagher <jgallagher@opendap.org>
+
+	Fixed distcheck - made asciival/unit-tests/test_config.h use the
+	abs_srcdir and also moved its generation into configure.ac. With
+	that change the dependency on Makefile is lost, but so is the
+	special-case hack in Makefile.am.
+
+	M    asciival/unit-tests/test_config.h.in
+	M    asciival/unit-tests/Makefile.am
+	M    asciival/unit-tests/AsciiArrayTest.cc
+	M    configure.ac
+	M    OSX_Resources/InstallationCheck
+	M    OSX_Resources/ReadMe.txt
+
+2011-10-26  James Gallagher <jgallagher@opendap.org>
+
+	Updates for the new DDX tests... nearly done
+
+2011-10-23  James Gallagher <jgallagher@opendap.org>
+
+	Modified configure so that this code builds only the so version of the library by default.
+
+2011-09-21  James Gallagher <jgallagher@opendap.org>
+
+	Hyrax 1.8
+
+	A    http://scm.opendap.org/svn/branch/dap-server/4.1.2
+
 2011-06-30  Patrick West <pwest@ucar.edu>
 
 	Merge hyrax 1.7 branch to trunk
@@ -15,9 +47,6 @@
 
 	M    OSX_Resources/InstallationCheck
 
-;; Local Variables:
-;; coding: utf-8
-;; End:
 2011-04-20  James Gallagher <jgallagher@opendap.org>
 
 	Hyrax 1.7 releaseHyrax 1.7 release

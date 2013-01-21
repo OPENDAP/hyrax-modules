@@ -3,11 +3,17 @@ dnl -*- autoconf -*-
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(dap-server, 4.1.1, opendap-tech@opendap.org)
+AC_INIT(dap-server, 4.1.2, opendap-tech@opendap.org)
 AC_CONFIG_AUX_DIR([conf])
 AC_CONFIG_MACRO_DIR([conf])
 
 AM_INIT_AUTOMAKE(1.10)
+
+# The handler is a shared object library, so we don't normally need
+# the static lib. Override this default by specifying `--enable-static',
+# which can make running unit tests with valgrind far more pleasant. 
+AM_DISABLE_STATIC
+
 AC_CONFIG_SRCDIR([usage.cc])
 AM_CONFIG_HEADER([config.h])
 
@@ -146,6 +152,7 @@ AH_BOTTOM([/* Shorthand for gcc's unused attribute feature */
 AC_CONFIG_FILES([Makefile
                  asciival/Makefile
 		 asciival/unit-tests/Makefile
+		 asciival/unit-tests/test_config.h
                  www-interface/Makefile])
                  
 AC_CONFIG_FILES([www-interface/js2h.pl], [chmod +x www-interface/js2h.pl])
