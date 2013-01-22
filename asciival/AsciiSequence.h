@@ -36,7 +36,8 @@
 #ifndef _asciisequence_h
 #define _asciisequence_h 1
 
-#include "Sequence.h"
+#include <Sequence.h>
+
 #include "AsciiOutput.h"
 
 class AsciiSequence: public Sequence, public AsciiOutput {

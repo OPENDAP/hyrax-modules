@@ -92,10 +92,10 @@ int
 AsciiSequence::element_count(bool leaves)
 {
     if (!leaves)
-        return _vars.size();
+        return d_vars.size();
     else {
         int i = 0;
-        for (Vars_iter iter = _vars.begin(); iter != _vars.end(); iter++) {
+        for (Vars_iter iter = d_vars.begin(); iter != d_vars.end(); iter++) {
             if ((*iter)->send_p())
                 i += (*iter)->element_count(true);
         }
