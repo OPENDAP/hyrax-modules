@@ -129,7 +129,7 @@ void BESAsciiTransmit::send_basic_ascii(BESResponseObject * obj, BESDataHandlerI
     }
 
     catch (InternalErr &e) {
-#if 0    	
+#if 0
         if (functional_constraint)
         delete dds;
 #endif
@@ -137,7 +137,7 @@ void BESAsciiTransmit::send_basic_ascii(BESResponseObject * obj, BESDataHandlerI
         throw BESDapError(err, true, e.get_error_code(), __FILE__, __LINE__);
     }
     catch (Error & e) {
-#if 0    	
+#if 0
         if (functional_constraint)
         delete dds;
 #endif
@@ -145,7 +145,7 @@ void BESAsciiTransmit::send_basic_ascii(BESResponseObject * obj, BESDataHandlerI
         throw BESDapError(err, false, e.get_error_code(), __FILE__, __LINE__);
     }
     catch (...) {
-#if 0    	
+#if 0
         if (functional_constraint)
         delete dds;
 #endif
@@ -169,7 +169,7 @@ void BESAsciiTransmit::send_basic_ascii(BESResponseObject * obj, BESDataHandlerI
         BESDEBUG("ascii", "done transmitting ascii" << endl);
     }
     catch (InternalErr &e) {
-#if 0    	
+#if 0
         if (functional_constraint)
         delete dds;
 #endif
@@ -177,7 +177,7 @@ void BESAsciiTransmit::send_basic_ascii(BESResponseObject * obj, BESDataHandlerI
         throw BESDapError(err, true, e.get_error_code(), __FILE__, __LINE__);
     }
     catch (Error &e) {
-#if 0    	
+#if 0
         if (functional_constraint)
         delete dds;
 #endif
@@ -185,7 +185,7 @@ void BESAsciiTransmit::send_basic_ascii(BESResponseObject * obj, BESDataHandlerI
         throw BESDapError(err, false, e.get_error_code(), __FILE__, __LINE__);
     }
     catch (...) {
-#if 0    	
+#if 0
         if (functional_constraint)
         delete dds;
 #endif
@@ -193,7 +193,7 @@ void BESAsciiTransmit::send_basic_ascii(BESResponseObject * obj, BESDataHandlerI
         throw BESInternalFatalError(err, __FILE__, __LINE__);
     }
 
-#if 0    	
+#if 0
     if (functional_constraint)
     delete dds;
 #endif
@@ -201,7 +201,7 @@ void BESAsciiTransmit::send_basic_ascii(BESResponseObject * obj, BESDataHandlerI
 
 void BESAsciiTransmit::send_http_ascii(BESResponseObject * obj, BESDataHandlerInterface & dhi)
 {
-    set_mime_text(dhi.get_output_stream(), dods_data);
+    set_mime_text(dhi.get_output_stream(), dods_data, x_plain);
     BESAsciiTransmit::send_basic_ascii(obj, dhi);
 }
 

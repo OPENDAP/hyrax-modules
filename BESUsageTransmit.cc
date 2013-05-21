@@ -91,7 +91,7 @@ BESUsageTransmit::send_http_usage( BESResponseObject *obj,
                                    BESDataHandlerInterface &dhi )
 {
     // TODO: Is this used?
-    set_mime_html( dhi.get_output_stream(), unknown_type ) ;
+    set_mime_html( dhi.get_output_stream(), unknown_type, x_plain ) ;
     BESUsageTransmit::send_basic_usage( obj, dhi ) ;
 }
 

@@ -104,7 +104,7 @@ BESWWWTransmit::send_basic_form(BESResponseObject * obj,
 void BESWWWTransmit::send_http_form(BESResponseObject * obj,
                                     BESDataHandlerInterface & dhi)
 {
-    set_mime_text(dhi.get_output_stream(), unknown_type);
+    set_mime_text(dhi.get_output_stream(), unknown_type, x_plain);
     BESWWWTransmit::send_basic_form(obj, dhi);
 }
 
