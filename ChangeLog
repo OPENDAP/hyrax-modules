@@ -1,3 +1,16 @@
+2012-04-13  James Gallagher <jgallagher@opendap.org>
+
+	After merge with hyrax 1.8 release branch and full build w/o test failures.
+
+	_M   .
+	M    csv_handler.spec
+	_M   bes-testsuite
+	M    bes-testsuite/csv/temperature.csv.2.bescmd.baseline
+	M    configure.ac
+	M    NEWS
+	M    ChangeLog
+	M    README
+
 2011-10-23  James Gallagher <jgallagher@opendap.org>
 
 	Modified configure so that this code builds only the so version of the library by default.
