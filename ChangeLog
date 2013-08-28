@@ -1,3 +1,55 @@
+2013-05-20  James Gallagher <jgallagher@opendap.org>
+
+	Added an explicit encoding type so that the set_mime_*() functions could differentiate between the new code moved to mime_util.cc/.h from ResponseBuilder and the old, deprecated, code already in mime_util.
+
+2013-05-20  James Gallagher <jgallagher@opendap.org>
+
+	Added an explicit encoding type so that the set_mime_*() functions could differentiate between the new code moved to mime_util.cc/.h from ResponseBuilder and the old, deprecated, code already in mime_util.
+
+2013-01-22  James Gallagher <jgallagher@opendap.org>
+
+	Minor tweaks from the merge.
+
+	M    asciival/AsciiSequence.cc
+	M    asciival/AsciiSequence.h
+
+2013-01-20  James Gallagher <jgallagher@opendap.org>
+
+	Merge of the hyrax 1.8 release branch.
+
+	_M   .
+	_M   www-interface
+	_M   conf
+	_M   asciival
+	M    asciival/BESAsciiTransmit.cc
+	M    asciival/BESAsciiModule.cc
+	M    asciival/BESAsciiRequestHandler.cc
+	_M   asciival/unit-tests
+	M    asciival/unit-tests/test_config.h.in
+	M    asciival/unit-tests/Makefile.am
+	M    asciival/unit-tests/testsuite/AsciiOutputTest1.dds
+	M    asciival/unit-tests/AsciiArrayTest.cc
+	M    asciival/unit-tests/AsciiOutputTest.cc
+	M    asciival/BESAsciiResponseHandler.cc
+	M    configure.ac
+	M    INSTALL
+	M    NEWS
+	M    ChangeLog
+	M    README
+	M    dap-server.spec
+	_M   OSX_Resources
+	M    OSX_Resources/InstallationCheck
+	M    OSX_Resources/ReadMe.txt
+
+2012-04-13  James Gallagher <jgallagher@opendap.org>
+
+	After merge with hyrax 1.8 release branch and full build w/o test failures.
+
+	M    ChangeLog
+
+;; Local Variables:
+;; coding: utf-8
+;; End:
 2012-01-09  James Gallagher <jgallagher@opendap.org>
 
 	Code review.
