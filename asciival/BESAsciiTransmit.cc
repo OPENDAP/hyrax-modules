@@ -91,13 +91,23 @@ void BESAsciiTransmit::send_basic_ascii(BESResponseObject * obj, BESDataHandlerI
 
     BESDEBUG("ascii", "BESAsciiTransmit::send_base_ascii - dataset_name = " << dataset_name << endl);
 
-    bool functional_constraint = false;
     try {
         // Handle *functional* constraint expressions specially
         if (ce.function_clauses()) {
             BESDEBUG("ascii", "processing a functional constraint clause(s)." << endl);
             // This leaks the DDS on the LHS, I think. jhrg 7/29/14
-            dds = ce.eval_function_clauses(*dds);
+	    // Yes, eval_function_clauses() allocates a new DDS object which
+	    // it returns. This code was assigning that to 'dds' which is
+	    // a pointer to the DataDDS managed by the BES. The fix is to 
+	    // store that in a temp, pass that new pointer into the BES object,
+	    // delete the old object held by the BES and then set the local pointer
+	    // so that the remaining code can use it. See ticket 2240. All of the
+	    // Transmitter functions in BES modules will need this fix if they
+	    // call eval_function_clauses(). jhrg 7/30/14
+            DataDDS *new_dds = ce.eval_function_clauses(*dds);
+	    bdds->set_dds(new_dds);
+	    delete dds;
+	    dds = new_dds;
         }
 #if 0
         if (ce.functional_expression()) {
