@@ -96,6 +96,7 @@ void BESAsciiTransmit::send_basic_ascii(BESResponseObject * obj, BESDataHandlerI
         // Handle *functional* constraint expressions specially
         if (ce.function_clauses()) {
             BESDEBUG("ascii", "processing a functional constraint clause(s)." << endl);
+            // This leaks the DDS on the LHS, I think. jhrg 7/29/14
             dds = ce.eval_function_clauses(*dds);
         }
 #if 0
